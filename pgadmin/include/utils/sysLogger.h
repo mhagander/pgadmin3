@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -35,7 +35,7 @@ public:
     static wxString logFile;
 
 private:
-    void WriteLog(const wxString& msg);
+    void WriteLog(const wxString &msg);
     bool SilenceMessage(const wxString &msg);
 };
 

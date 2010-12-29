@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,8 +18,8 @@
 #include "schema/pgTextSearchDictionary.h"
 
 
-pgTextSearchDictionary::pgTextSearchDictionary(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, textSearchDictionaryFactory, newName)
+pgTextSearchDictionary::pgTextSearchDictionary(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, textSearchDictionaryFactory, newName)
 {
 }
 
@@ -30,7 +30,7 @@ pgTextSearchDictionary::~pgTextSearchDictionary()
 wxString pgTextSearchDictionary::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -43,11 +43,11 @@ wxString pgTextSearchDictionary::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop FTS dictionary \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop FTS dictionary \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop FTS dictionary cascaded?");
@@ -104,18 +104,18 @@ wxString pgTextSearchDictionary::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Text Search Dictionary: ") + GetFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP TEXT SEARCH DICTIONARY ") + GetFullIdentifier() + wxT("\n\n")
-            + wxT("CREATE TEXT SEARCH DICTIONARY ") + GetFullIdentifier() + wxT(" (")
-            + wxT("\n   TEMPLATE = ") + qtTypeIdent(GetTemplate());
+              + wxT("-- DROP TEXT SEARCH DICTIONARY ") + GetFullIdentifier() + wxT("\n\n")
+              + wxT("CREATE TEXT SEARCH DICTIONARY ") + GetFullIdentifier() + wxT(" (")
+              + wxT("\n   TEMPLATE = ") + qtTypeIdent(GetTemplate());
 
         if (options.Length() > 0)
             sql += wxT(",\n   ") + options;
 
         sql += wxT("\n);\n");
 
-	if (!GetComment().IsNull())
-	    sql += wxT("COMMENT ON TEXT SEARCH DICTIONARY ") + GetFullIdentifier()
-	    + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+        if (!GetComment().IsNull())
+            sql += wxT("COMMENT ON TEXT SEARCH DICTIONARY ") + GetFullIdentifier()
+                   + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
     }
 
     return sql;
@@ -141,8 +141,8 @@ void pgTextSearchDictionary::ShowTreeDetail(ctlTree *browser, frmMain *form, ctl
 
 pgObject *pgTextSearchDictionary::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *dict=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *dict = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         dict = textSearchDictionaryFactory.CreateObjects(coll, 0, wxT("\n   AND dict.oid=") + GetOidStr());
 
@@ -153,7 +153,7 @@ pgObject *pgTextSearchDictionary::Refresh(ctlTree *browser, const wxTreeItemId i
 wxString pgTextSearchDictionaryCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -166,7 +166,7 @@ wxString pgTextSearchDictionaryCollection::GetTranslatedMessage(int kindOfMessag
             message = _("FTS dictionaries list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -176,17 +176,17 @@ wxString pgTextSearchDictionaryCollection::GetTranslatedMessage(int kindOfMessag
 
 pgObject *pgTextSearchDictionaryFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgTextSearchDictionary *dict=0;
+    pgTextSearchDictionary *dict = 0;
 
-	pgSet *dictionaries;
-	dictionaries = collection->GetDatabase()->ExecuteSet(
-		wxT("SELECT dict.oid, dict.dictname, pg_get_userbyid(dict.dictowner) as dictowner, t.tmplname, dict.dictinitoption, description\n")
-		wxT("  FROM pg_ts_dict dict\n")
-		wxT("  LEFT OUTER JOIN pg_ts_template t ON t.oid=dict.dicttemplate\n")
-		wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=dict.oid\n")
-		wxT(" WHERE dict.dictnamespace = ") + collection->GetSchema()->GetOidStr() 
-		+ restriction + wxT("\n")
-		wxT(" ORDER BY dict.dictname"));
+    pgSet *dictionaries;
+    dictionaries = collection->GetDatabase()->ExecuteSet(
+                       wxT("SELECT dict.oid, dict.dictname, pg_get_userbyid(dict.dictowner) as dictowner, t.tmplname, dict.dictinitoption, description\n")
+                       wxT("  FROM pg_ts_dict dict\n")
+                       wxT("  LEFT OUTER JOIN pg_ts_template t ON t.oid=dict.dicttemplate\n")
+                       wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=dict.oid\n")
+                       wxT(" WHERE dict.dictnamespace = ") + collection->GetSchema()->GetOidStr()
+                       + restriction + wxT("\n")
+                       wxT(" ORDER BY dict.dictname"));
 
     if (dictionaries)
     {
@@ -202,13 +202,13 @@ pgObject *pgTextSearchDictionaryFactory::CreateObjects(pgCollection *collection,
             if (browser)
             {
                 browser->AppendObject(collection, dict);
-		dictionaries->MoveNext();
+                dictionaries->MoveNext();
             }
             else
                 break;
         }
 
-		delete dictionaries;
+        delete dictionaries;
     }
     return dict;
 }
@@ -217,8 +217,8 @@ pgObject *pgTextSearchDictionaryFactory::CreateObjects(pgCollection *collection,
 #include "images/dictionary.xpm"
 #include "images/dictionaries.xpm"
 
-pgTextSearchDictionaryFactory::pgTextSearchDictionaryFactory() 
-: pgSchemaObjFactory(__("FTS Dictionary"), __("New FTS Dictionary..."), __("Create a new FTS Dictionary."), dictionary_xpm)
+pgTextSearchDictionaryFactory::pgTextSearchDictionaryFactory()
+    : pgSchemaObjFactory(__("FTS Dictionary"), __("New FTS Dictionary..."), __("Create a new FTS Dictionary."), dictionary_xpm)
 {
 }
 

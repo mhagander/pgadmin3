@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -24,7 +24,10 @@ class dlgRepNode : public dlgRepProperty
 public:
     dlgRepNode(pgaFactory *factory, frmMain *frame, slNode *node, slCluster *c);
     int Go(bool modal);
-    wxString GetHelpPage() const { return wxT("slony-install#node"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("slony-install#node");
+    }
 
     void CheckChange();
     wxString GetSql();

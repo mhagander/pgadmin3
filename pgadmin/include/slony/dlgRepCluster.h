@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -29,7 +29,7 @@ public:
     int Go(bool modal);
 
 private:
-    virtual void OnChangeCluster(wxCommandEvent &ev)=0;
+    virtual void OnChangeCluster(wxCommandEvent &ev) = 0;
 
 protected:
     void OnChangeServer(wxCommandEvent &ev);
@@ -62,7 +62,7 @@ private:
     void OnOK(wxCommandEvent &ev);
     void OnChangeJoin(wxCommandEvent &ev);
     void OnChangeCluster(wxCommandEvent &ev);
-    void OnEndProcess(wxProcessEvent& event);
+    void OnEndProcess(wxProcessEvent &event);
 
     bool CopyTable(pgConn *from, pgConn *to, const wxString &table);
     sysProcess *process;
@@ -84,7 +84,10 @@ class dlgRepClusterUpgrade : public dlgRepClusterBase
 public:
     dlgRepClusterUpgrade(pgaFactory *factory, frmMain *frame, slCluster *cl);
     int Go(bool modal);
-    wxString GetHelpPage() const { return wxT("slony-install#upgrade"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("slony-install#upgrade");
+    }
 
 
     void CheckChange();

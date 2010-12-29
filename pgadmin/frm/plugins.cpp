@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -35,144 +35,144 @@ void frmMain::LoadPluginUtilities()
     PluginUtility *util = new PluginUtility;
     ClearPluginUtility(util);
 
-	// Loop through all the ini files we find in the directory.
-	wxString iniFile;
-	wxDir iniDir(pluginsDir);
-	
-	if (!iniDir.IsOpened())
-		return;
-	
-	wxLogInfo(wxT("Loading plugin ini files from %s"), pluginsDir.c_str());
-	
-	bool cont = iniDir.GetFirst(&iniFile, wxT("*.ini"), wxDIR_FILES);
-	
-	while(cont)
-	{
-		// Load the config file
-		wxFileName utilIni(pluginsDir + wxT("/") + iniFile);
-		if (!utilIni.FileExists())
-		{
-			cont = iniDir.GetNext(&iniFile);
-			continue;
-		}
+    // Loop through all the ini files we find in the directory.
+    wxString iniFile;
+    wxDir iniDir(pluginsDir);
 
-		wxLogInfo(wxT("Loading plugin utilities from %s"), utilIni.GetFullPath().c_str());
-		wxString brCfg = FileRead(utilIni.GetFullPath());
+    if (!iniDir.IsOpened())
+        return;
 
-		wxStringTokenizer tkz(brCfg, wxT("\r\n"));
+    wxLogInfo(wxT("Loading plugin ini files from %s"), pluginsDir.c_str());
 
-		// Loop round the lines in the file. Everytime we find a new 'Title' value
-		// we create the current plugin and start a new one 
-		while(tkz.HasMoreTokens())
-		{
-			wxString token = tkz.GetNextToken();
+    bool cont = iniDir.GetFirst(&iniFile, wxT("*.ini"), wxDIR_FILES);
 
-			if (token.Trim() == wxEmptyString || token.StartsWith(wxT(";")))
-				continue;
+    while(cont)
+    {
+        // Load the config file
+        wxFileName utilIni(pluginsDir + wxT("/") + iniFile);
+        if (!utilIni.FileExists())
+        {
+            cont = iniDir.GetNext(&iniFile);
+            continue;
+        }
 
-			// Separator
-			if (token.Lower().StartsWith(wxT("[separator]")))
-			{
-				// Add the previous app if required.
-				AddPluginUtility(util);
-				pluginsMenu->AppendSeparator();
-			}
+        wxLogInfo(wxT("Loading plugin utilities from %s"), utilIni.GetFullPath().c_str());
+        wxString brCfg = FileRead(utilIni.GetFullPath());
 
-			// Title
-			if (token.Lower().StartsWith(wxT("title=")))
-			{
-				// Add the previous app if required.
-				AddPluginUtility(util);
-				util->title = token.AfterFirst('=').Trim();
-			}
+        wxStringTokenizer tkz(brCfg, wxT("\r\n"));
 
-			// Command
-			if (token.Lower().StartsWith(wxT("command=")))
-				util->command = token.AfterFirst('=').Trim();
+        // Loop round the lines in the file. Everytime we find a new 'Title' value
+        // we create the current plugin and start a new one
+        while(tkz.HasMoreTokens())
+        {
+            wxString token = tkz.GetNextToken();
 
-			// Description
-			if (token.Lower().StartsWith(wxT("description=")))
-				util->description = token.AfterFirst('=').Trim();
+            if (token.Trim() == wxEmptyString || token.StartsWith(wxT(";")))
+                continue;
 
-			// KeyFile
-			if (token.Lower().StartsWith(wxT("keyfile=")))
-			{
-				wxString keyfile = token.AfterFirst('=').Trim();
+            // Separator
+            if (token.Lower().StartsWith(wxT("[separator]")))
+            {
+                // Add the previous app if required.
+                AddPluginUtility(util);
+                pluginsMenu->AppendSeparator();
+            }
 
-				// Substitute path placeholders
-				keyfile.Replace(wxT("$$BINDIR"), loadPath);
-				keyfile.Replace(wxT("$$WORKINGDIR"), wxGetCwd());
-				keyfile.Replace(wxT("$$PGBINDIR"), settings->GetPostgresqlPath());
-				keyfile.Replace(wxT("$$EDBBINDIR"), settings->GetEnterprisedbPath());
-				keyfile.Replace(wxT("$$SLONYBINDIR"), settings->GetSlonyPath());
+            // Title
+            if (token.Lower().StartsWith(wxT("title=")))
+            {
+                // Add the previous app if required.
+                AddPluginUtility(util);
+                util->title = token.AfterFirst('=').Trim();
+            }
 
-				util->keyfile = keyfile;
-			}
+            // Command
+            if (token.Lower().StartsWith(wxT("command=")))
+                util->command = token.AfterFirst('=').Trim();
 
-			// Platform
-			if (token.Lower().StartsWith(wxT("platform=")))
-				util->platform = token.AfterFirst('=').Trim();
+            // Description
+            if (token.Lower().StartsWith(wxT("description=")))
+                util->description = token.AfterFirst('=').Trim();
 
-			// Server types
-			if (token.Lower().StartsWith(wxT("servertype=")))
-			{
-				util->server_types.Clear();
+            // KeyFile
+            if (token.Lower().StartsWith(wxT("keyfile=")))
+            {
+                wxString keyfile = token.AfterFirst('=').Trim();
 
-				// This is a comma delimited list of values going into an array.
-				wxStringTokenizer valueTkz(token.AfterFirst('='), wxT(","));
+                // Substitute path placeholders
+                keyfile.Replace(wxT("$$BINDIR"), loadPath);
+                keyfile.Replace(wxT("$$WORKINGDIR"), wxGetCwd());
+                keyfile.Replace(wxT("$$PGBINDIR"), settings->GetPostgresqlPath());
+                keyfile.Replace(wxT("$$EDBBINDIR"), settings->GetEnterprisedbPath());
+                keyfile.Replace(wxT("$$SLONYBINDIR"), settings->GetSlonyPath());
 
-				while(valueTkz.HasMoreTokens())
-					util->server_types.Add(valueTkz.GetNextToken());
-			}
+                util->keyfile = keyfile;
+            }
 
-			// Database
-			if (token.Lower().StartsWith(wxT("database=")))
-			{
-				if (token.AfterFirst('=').Trim().Lower() == wxT("yes"))
-					util->database = true;
-				else
-					util->database = false;
-			}
+            // Platform
+            if (token.Lower().StartsWith(wxT("platform=")))
+                util->platform = token.AfterFirst('=').Trim();
 
-			// Applies to
-			if (token.Lower().StartsWith(wxT("appliesto=")))
-			{
-				util->applies_to.Clear();
+            // Server types
+            if (token.Lower().StartsWith(wxT("servertype=")))
+            {
+                util->server_types.Clear();
 
-				// This is a comma delimited list of values going into an array.
-				wxStringTokenizer valueTkz(token.AfterFirst('='), wxT(","));
+                // This is a comma delimited list of values going into an array.
+                wxStringTokenizer valueTkz(token.AfterFirst('='), wxT(","));
 
-				while(valueTkz.HasMoreTokens())
-					util->applies_to.Add(valueTkz.GetNextToken());
-			}
+                while(valueTkz.HasMoreTokens())
+                    util->server_types.Add(valueTkz.GetNextToken());
+            }
 
-			// Set password
-			if (token.Lower().StartsWith(wxT("setpassword=")))
-			{
-				if (token.AfterFirst('=').Trim().Lower() == wxT("yes"))
-					util->set_password = true;
-				else
-					util->set_password = false;
-			}
-			// Environment
-			if (token.Lower().StartsWith(wxT("environment=")))
-			{
-				util->set_env.Clear();
+            // Database
+            if (token.Lower().StartsWith(wxT("database=")))
+            {
+                if (token.AfterFirst('=').Trim().Lower() == wxT("yes"))
+                    util->database = true;
+                else
+                    util->database = false;
+            }
 
-				// This is a comma delimited list of values going into an array.
-				wxStringTokenizer valueTkz(token.AfterFirst('='), wxT(","));
+            // Applies to
+            if (token.Lower().StartsWith(wxT("appliesto=")))
+            {
+                util->applies_to.Clear();
 
-				while(valueTkz.HasMoreTokens())
-				util->set_env.Add(valueTkz.GetNextToken());
-			}
-		}
+                // This is a comma delimited list of values going into an array.
+                wxStringTokenizer valueTkz(token.AfterFirst('='), wxT(","));
 
-		// Add the last app if required.
-		AddPluginUtility(util);
-		
-		// Get the next file
-		cont = iniDir.GetNext(&iniFile);
-	}
+                while(valueTkz.HasMoreTokens())
+                    util->applies_to.Add(valueTkz.GetNextToken());
+            }
+
+            // Set password
+            if (token.Lower().StartsWith(wxT("setpassword=")))
+            {
+                if (token.AfterFirst('=').Trim().Lower() == wxT("yes"))
+                    util->set_password = true;
+                else
+                    util->set_password = false;
+            }
+            // Environment
+            if (token.Lower().StartsWith(wxT("environment=")))
+            {
+                util->set_env.Clear();
+
+                // This is a comma delimited list of values going into an array.
+                wxStringTokenizer valueTkz(token.AfterFirst('='), wxT(","));
+
+                while(valueTkz.HasMoreTokens())
+                    util->set_env.Add(valueTkz.GetNextToken());
+            }
+        }
+
+        // Add the last app if required.
+        AddPluginUtility(util);
+
+        // Get the next file
+        cont = iniDir.GetNext(&iniFile);
+    }
 
     if (util)
         delete util;
@@ -195,7 +195,7 @@ void frmMain::AddPluginUtility(PluginUtility *util)
     // Only add apps targetted to this, or any platform
     if (util->platform.Lower() == thisPlatform || util->platform == wxEmptyString)
     {
-	    // Only add an app with a title and command
+        // Only add an app with a title and command
         if (!util->title.IsEmpty() && !util->command.IsEmpty())
         {
             // We're only going to add this if the keyfile exists or isn't specified
@@ -275,8 +275,8 @@ wxWindow *pluginUtilityFactory::StartDialog(frmMain *form, pgObject *obj)
         if (set_password && !obj->GetConnection()->GetPassword().IsEmpty())
             wxSetEnv(wxT("PGPASSWORD"), obj->GetConnection()->GetPassword());
 
-		// Pass the SSL mode via the environment
-		wxSetEnv(wxT("PGSSLMODE"), obj->GetConnection()->GetSslModeName());
+        // Pass the SSL mode via the environment
+        wxSetEnv(wxT("PGSSLMODE"), obj->GetConnection()->GetSslModeName());
     }
     else
     {
@@ -334,9 +334,9 @@ wxWindow *pluginUtilityFactory::StartDialog(frmMain *form, pgObject *obj)
     execCmd.Replace(wxT("$$SLONYBINDIR"), settings->GetSlonyPath());
 
     // set Environment variable.
-    for (size_t i=0 ; i < environment.GetCount() ; i++)
+    for (size_t i = 0 ; i < environment.GetCount() ; i++)
     {
-        wxString str=environment.Item(i);
+        wxString str = environment.Item(i);
         wxSetEnv(str.BeforeFirst('='), str.AfterFirst('='));
     }
 
@@ -353,7 +353,7 @@ bool pluginUtilityFactory::CheckEnable(pgObject *obj)
     // for this plugin. If none are specified, then anything goes
     if (database && server_types.Count() > 0)
     {
-        // If we need a specific server type, we can't enable unless 
+        // If we need a specific server type, we can't enable unless
         // we have a connection.
         if (!obj || !obj->GetConnection()->GetStatus() == PGCONN_OK)
             return false;
@@ -379,7 +379,7 @@ bool pluginUtilityFactory::CheckEnable(pgObject *obj)
     // If we don't need a database, we're always OK.
     if (!database)
         return true;
-   
+
     return HaveDatabase(obj);
 }
 
@@ -394,7 +394,7 @@ bool pluginUtilityFactory::HaveDatabase(pgObject *obj)
 
     if (!obj->GetDatabase()->GetConnection())
         return false;
-        
+
     if (!obj->GetDatabase()->GetConnection()->GetStatus() == PGCONN_OK)
         return false;
 
@@ -402,7 +402,7 @@ bool pluginUtilityFactory::HaveDatabase(pgObject *obj)
 }
 
 // The pluginButtonMenuFactory class manages the toolbar menu button
-// for the plugins. 
+// for the plugins.
 
 #include "images/plugins.xpm"
 pluginButtonMenuFactory::pluginButtonMenuFactory(menuFactoryList *list, wxMenu *popupmenu, ctlMenuToolbar *toolbar, int pluginCount) : actionFactory(list)
@@ -415,7 +415,7 @@ pluginButtonMenuFactory::pluginButtonMenuFactory(menuFactoryList *list, wxMenu *
     if (toolbar)
     {
         toolbar->AddTool(id, _("Plugins"), wxBitmap(plugins_xpm), _("Execute the last used plugin."));
-        pulldownButton = toolbar->AddMenuPulldownTool(MNU_PLUGINBUTTONLIST, wxT("Execute Plugin"), wxT("Select a plugin."), popupmenu); 
+        pulldownButton = toolbar->AddMenuPulldownTool(MNU_PLUGINBUTTONLIST, wxT("Execute Plugin"), wxT("Select a plugin."), popupmenu);
     }
 }
 

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,33 +21,33 @@ class pgsReferenceGen : public pgsObjectGen
 
 private:
 
-	typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
-	
-	pgsThread * m_app;
-	wxString m_table;
-	wxString m_column;
-	bool m_sequence;
-	
-	MAPM m_nb_rows;
+    typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
 
-	pgsRandomizer m_randomizer;
+    pgsThread *m_app;
+    wxString m_table;
+    wxString m_column;
+    bool m_sequence;
+
+    MAPM m_nb_rows;
+
+    pgsRandomizer m_randomizer;
 
 public:
 
-	pgsReferenceGen(pgsThread * app, const wxString & table, const wxString & column,
-			const bool & sequence = false, const long & seed = wxDateTime::GetTimeNow());
+    pgsReferenceGen(pgsThread *app, const wxString &table, const wxString &column,
+                    const bool &sequence = false, const long &seed = wxDateTime::GetTimeNow());
 
-	bool is_sequence() const;
+    bool is_sequence() const;
 
-	virtual wxString random();
+    virtual wxString random();
 
-	virtual ~pgsReferenceGen();
-	
-	virtual pgsReferenceGen * clone();
+    virtual ~pgsReferenceGen();
 
-	/* pgsReferenceGen & operator =(const pgsReferenceGen & that); */
+    virtual pgsReferenceGen *clone();
 
-	/* pgsReferenceGen(const pgsReferenceGen & that); */
+    /* pgsReferenceGen & operator =(const pgsReferenceGen & that); */
+
+    /* pgsReferenceGen(const pgsReferenceGen & that); */
 };
 
 #endif /*PGSREFERENCEGEN_H_*/

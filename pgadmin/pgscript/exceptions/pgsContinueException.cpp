@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -12,17 +12,17 @@
 #include "pgscript/exceptions/pgsContinueException.h"
 
 pgsContinueException::pgsContinueException() :
-	pgsException()
+    pgsException()
 {
-	
+
 }
 
 pgsContinueException::~pgsContinueException()
 {
-	
+
 }
 
 const wxString pgsContinueException::message() const
 {
-	return wxT("CONTINUE");
+    return wxT("CONTINUE");
 }

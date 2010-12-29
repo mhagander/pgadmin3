@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -45,7 +45,7 @@ wxUtfFile::wxUtfFile(int fd, wxFontEncoding encoding) : wxFile(fd)
 
 off_t wxUtfFile::Read(wxString &str, off_t nCount)
 {
-    if (nCount == (off_t)-1)
+    if (nCount == (off_t) - 1)
         nCount = Length() - Tell();
     if (!nCount)
         return 0;
@@ -53,44 +53,44 @@ off_t wxUtfFile::Read(wxString &str, off_t nCount)
     char *buffer = new char[nCount+4];
     // on some systems, len returned from wxFile::read might not reflect the number of bytes written
     // to the buffer, but the bytes read from file. In case of CR/LF translation, this is not the same.
-    memset(buffer, 0, nCount+4);
-    off_t len=wxFile::Read(buffer, nCount);
+    memset(buffer, 0, nCount + 4);
+    off_t len = wxFile::Read(buffer, nCount);
 
     if (len >= 0)
     {
-        memset(buffer+len, 0, 4);
+        memset(buffer + len, 0, 4);
 
         if (m_conversion)
         {
             int decr;
-            size_t nLen=0;
+            size_t nLen = 0;
 
 
             // We are trying 4 times to convert, in case the last utf char
             // was truncated.
-            for (decr=0 ; len > 0 && decr < 4 ; decr++)
+            for (decr = 0 ; len > 0 && decr < 4 ; decr++)
             {
                 nLen = m_conversion->MB2WC(NULL, buffer, 0);
-                if ( nLen != (size_t)-1 )
+                if ( nLen != (size_t) - 1 )
                     break;
                 len--;
-                buffer[len]= 0;
+                buffer[len] = 0;
             }
 
-            if (nLen == (size_t)-1)
+            if (nLen == (size_t) - 1)
             {
                 if (!m_strFileName.IsEmpty())
                     wxLogWarning(_("The file \"%s\" could not be opened because it contains characters that could not be interpreted."), m_strFileName.c_str());
-                Seek(decr-nLen, wxFromCurrent);
-                return (size_t)-1;
+                Seek(decr - nLen, wxFromCurrent);
+                return (size_t) - 1;
             }
             if (decr)
                 Seek(-decr, wxFromCurrent);
 
-            m_conversion->MB2WC((wchar_t*)(wxChar*)wxStringBuffer(str, nLen+1), (const char*)buffer, (size_t)(nLen+1));
+            m_conversion->MB2WC((wchar_t *)(wxChar *)wxStringBuffer(str, nLen + 1), (const char *)buffer, (size_t)(nLen + 1));
         }
         else
-            str = (wxChar*)buffer;
+            str = (wxChar *)buffer;
     }
 
     delete[] buffer;
@@ -98,7 +98,7 @@ off_t wxUtfFile::Read(wxString &str, off_t nCount)
 }
 
 
-bool wxUtfFile::Write(const wxString& str)
+bool wxUtfFile::Write(const wxString &str)
 {
     size_t len = str.Length();
     if (!len)
@@ -113,7 +113,7 @@ bool wxUtfFile::Write(const wxString& str)
         return wxFile::Write(str, *m_conversion);
     }
     else
-        return wxFile::Write(str.c_str(), len*sizeof(wxChar)) == len*sizeof(wxChar);
+        return wxFile::Write(str.c_str(), len * sizeof(wxChar)) == len * sizeof(wxChar);
 }
 
 
@@ -176,12 +176,12 @@ void wxUtfFile::Attach(int fd, wxFontEncoding encoding)
     EvalBOM(encoding);
 }
 
-    
+
 off_t wxUtfFile::Seek(off_t ofs, wxSeekMode mode)
 {
     off_t pos;
     if (mode == wxFromStart)
-        pos = wxFile::Seek(ofs+m_bomOffset, wxFromStart) - m_bomOffset;
+        pos = wxFile::Seek(ofs + m_bomOffset, wxFromStart) - m_bomOffset;
     else
         pos = wxFile::Seek(ofs, mode) - m_bomOffset;
 
@@ -212,26 +212,26 @@ void wxUtfFile::WriteBOM()
     {
         case wxFONTENCODING_UTF8:
             wxFile::Write(BOM_UTF8, 3);
-            m_bomOffset=3;
+            m_bomOffset = 3;
             break;
         case wxFONTENCODING_UTF16BE:
             wxFile::Write(BOM_UTF16BE, 2);
-            m_bomOffset=2;
+            m_bomOffset = 2;
             break;
         case wxFONTENCODING_UTF16LE:
             wxFile::Write(BOM_UTF16LE, 2);
-            m_bomOffset=2;
+            m_bomOffset = 2;
             break;
         case wxFONTENCODING_UTF32BE:
             wxFile::Write(BOM_UTF32LE, 4);
-            m_bomOffset=4;
+            m_bomOffset = 4;
             break;
         case wxFONTENCODING_UTF32LE:
             wxFile::Write(BOM_UTF32LE, 4);
-            m_bomOffset=4;
+            m_bomOffset = 4;
             break;
         default:
-            m_bomOffset=0;
+            m_bomOffset = 0;
             break;
     }
 }
@@ -278,8 +278,8 @@ void wxUtfFile::DetermineConversion(wxFontEncoding encoding)
             case wxFONTENCODING_UTF32LE:
                 m_conversion = &wxConvUTF32LE;
                 break;
-			default:
-				break;
+            default:
+                break;
         }
     }
 }
@@ -289,33 +289,33 @@ bool wxUtfFile::EvalBOM(wxFontEncoding encoding)
 {
     // returns true, if BOM needs to be written.
 
-    char bombuf[4]="###";
-    long len=wxFile::Read(bombuf, 4);
+    char bombuf[4] = "###";
+    long len = wxFile::Read(bombuf, 4);
 
     if (!memcmp(bombuf, BOM_UTF32BE, 4))
     {
         encoding = wxFONTENCODING_UTF32BE;
-        m_bomOffset=4;
+        m_bomOffset = 4;
     }
     else if (!memcmp(bombuf, BOM_UTF32LE, 4))
     {
         encoding = wxFONTENCODING_UTF32LE;
-        m_bomOffset=4;
+        m_bomOffset = 4;
     }
     else if (!memcmp(bombuf, BOM_UTF8, 3))
     {
         encoding = wxFONTENCODING_UTF8;
-        m_bomOffset=3;
+        m_bomOffset = 3;
     }
     else if (!memcmp(bombuf, BOM_UTF16BE, 2))
     {
         encoding = wxFONTENCODING_UTF16BE;
-        m_bomOffset=2;
+        m_bomOffset = 2;
     }
     else if (!memcmp(bombuf, BOM_UTF16LE, 2))
     {
         encoding = wxFONTENCODING_UTF16LE;
-        m_bomOffset=2;
+        m_bomOffset = 2;
     }
     else
     {

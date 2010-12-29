@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,16 +19,16 @@
 #include "frm/frmMain.h"
 
 
-slTable::slTable(slSet *s, const wxString& newName)
-: slSetObject(s, slTableFactory, newName)
+slTable::slTable(slSet *s, const wxString &newName)
+    : slSetObject(s, slTableFactory, newName)
 {
 }
 
 bool slTable::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(
-              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() 
-            + wxT("setdroptable(") + NumToStr(GetSlId()) + wxT(");\n"));
+               wxT("SELECT ") + GetCluster()->GetSchemaPrefix()
+               + wxT("setdroptable(") + NumToStr(GetSlId()) + wxT(");\n"));
 }
 
 
@@ -37,20 +37,20 @@ wxString slTable::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Register table ") + GetName() + wxT(" for replication.\n\n")
-              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() + wxT("setaddtable(") 
-                    + NumToStr(GetSet()->GetSlId()) + wxT(", ") 
-                    + NumToStr(GetSlId()) + wxT(", ")
-                    + qtDbString(GetName()) + wxT(", ")
-                    + qtDbString(GetIndexName()) + wxT(", ")
-                    + qtDbString(GetComment()) + wxT(");\n");
+              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() + wxT("setaddtable(")
+              + NumToStr(GetSet()->GetSlId()) + wxT(", ")
+              + NumToStr(GetSlId()) + wxT(", ")
+              + qtDbString(GetName()) + wxT(", ")
+              + qtDbString(GetIndexName()) + wxT(", ")
+              + qtDbString(GetComment()) + wxT(");\n");
 
-        
+
         size_t i;
-        for (i=0 ; i < triggers.GetCount() ; i++)
+        for (i = 0 ; i < triggers.GetCount() ; i++)
         {
-            sql += wxT("SELECT ") + GetCluster()->GetSchemaPrefix() + wxT("storetrigger(") 
-                    + NumToStr(GetSlId()) + wxT(", ")
-                    + qtDbString(triggers[i]) + wxT(");\n");
+            sql += wxT("SELECT ") + GetCluster()->GetSchemaPrefix() + wxT("storetrigger(")
+                   + NumToStr(GetSlId()) + wxT(", ")
+                   + qtDbString(triggers[i]) + wxT(");\n");
         }
     }
     return sql;
@@ -61,11 +61,11 @@ void slTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 {
     if (!expandedKids)
     {
-        expandedKids=true;
-        pgSet *set=GetConnection()->ExecuteSet(
-            wxT("SELECT trig_tgname\n")
-            wxT("  FROM ") + GetCluster()->GetSchemaPrefix() + wxT("sl_trigger\n")
-            wxT(" WHERE trig_tabid = ") + NumToStr(GetSlId()));
+        expandedKids = true;
+        pgSet *set = GetConnection()->ExecuteSet(
+                         wxT("SELECT trig_tgname\n")
+                         wxT("  FROM ") + GetCluster()->GetSchemaPrefix() + wxT("sl_trigger\n")
+                         wxT(" WHERE trig_tabid = ") + NumToStr(GetSlId()));
         if (set)
         {
             while (!set->Eof())
@@ -91,7 +91,7 @@ void slTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
             properties->AppendItem(_("Triggers"), triggers[0]);
 
             size_t i;
-            for (i=1 ; i < triggers.GetCount() ; i++)
+            for (i = 1 ; i < triggers.GetCount() ; i++)
                 properties->AppendItem(wxEmptyString, triggers[i]);
         }
     }
@@ -101,8 +101,8 @@ void slTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 
 pgObject *slTable::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *table=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *table = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         table = slTableFactory.CreateObjects(coll, 0, wxT(" WHERE tab_id=") + NumToStr(GetSlId()) + wxT("\n"));
 
@@ -113,8 +113,8 @@ pgObject *slTable::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *slSlTableFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restr)
 {
-    slSetObjCollection *collection=(slSetObjCollection*)coll;
-    slTable *table=0;
+    slSetObjCollection *collection = (slSetObjCollection *)coll;
+    slTable *table = 0;
     wxString restriction;
     if (restr.IsEmpty())
         restriction = wxT(" WHERE tab_set = ") + NumToStr(collection->GetSlId());
@@ -122,13 +122,13 @@ pgObject *slSlTableFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
         restriction = restr;
 
     pgSet *tables = collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT tab_id, tab_reloid, tab_set, nspname, relname, tab_idxname, tab_altered, tab_comment")
-        wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_table\n")
-        wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_set ON set_id=tab_set\n")
-        wxT("  JOIN pg_class cl ON cl.oid=tab_reloid\n")
-        wxT("  JOIN pg_namespace nsp ON nsp.oid=relnamespace\n")
-         + restriction +
-        wxT(" ORDER BY tab_id"));
+                        wxT("SELECT tab_id, tab_reloid, tab_set, nspname, relname, tab_idxname, tab_altered, tab_comment")
+                        wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_table\n")
+                        wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_set ON set_id=tab_set\n")
+                        wxT("  JOIN pg_class cl ON cl.oid=tab_reloid\n")
+                        wxT("  JOIN pg_namespace nsp ON nsp.oid=relnamespace\n")
+                        + restriction +
+                        wxT(" ORDER BY tab_id"));
 
     if (tables)
     {
@@ -144,13 +144,13 @@ pgObject *slSlTableFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
             if (browser)
             {
                 browser->AppendObject(collection, table);
-				tables->MoveNext();
+                tables->MoveNext();
             }
             else
                 break;
         }
 
-		delete tables;
+        delete tables;
     }
     return table;
 }
@@ -162,8 +162,8 @@ pgObject *slSlTableFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
 #include "images/table-repl-sm.xpm"
 #include "images/tables.xpm"
 
-slSlTableFactory::slSlTableFactory() 
-: slSetObjFactory(__("Table"), __("New Table"), __("Create a new Table."), table_repl_xpm, table_repl_sm_xpm)
+slSlTableFactory::slSlTableFactory()
+    : slSetObjFactory(__("Table"), __("New Table"), __("Create a new Table."), table_repl_xpm, table_repl_sm_xpm)
 {
     metaType = SLM_TABLE;
 }

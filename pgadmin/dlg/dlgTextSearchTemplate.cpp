@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -39,14 +39,14 @@ END_EVENT_TABLE();
 
 dlgProperty *pgTextSearchTemplateFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgTextSearchTemplate(this, frame, (pgTextSearchTemplate*)node, (pgSchema*)parent);
+    return new dlgTextSearchTemplate(this, frame, (pgTextSearchTemplate *)node, (pgSchema *)parent);
 }
 
 dlgTextSearchTemplate::dlgTextSearchTemplate(pgaFactory *f, frmMain *frame, pgTextSearchTemplate *node, pgSchema *sch)
-: dlgTypeProperty(f, frame, wxT("dlgTextSearchTemplate"))
+    : dlgTypeProperty(f, frame, wxT("dlgTextSearchTemplate"))
 {
-    schema=sch;
-    tmpl=node;
+    schema = sch;
+    tmpl = node;
 }
 
 
@@ -120,9 +120,9 @@ int dlgTextSearchTemplate::Go(bool modal)
 
 pgObject *dlgTextSearchTemplate::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=textSearchTemplateFactory.CreateObjects(collection, 0,
-         wxT("\n   AND tmpl.tmplname=") + qtDbString(GetName()) +
-         wxT("\n   AND tmpl.tmplnamespace=") + schema->GetOidStr());
+    pgObject *obj = textSearchTemplateFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND tmpl.tmplname=") + qtDbString(GetName()) +
+                    wxT("\n   AND tmpl.tmplnamespace=") + schema->GetOidStr());
 
     return obj;
 }
@@ -133,12 +133,12 @@ void dlgTextSearchTemplate::CheckChange()
     if (tmpl)
     {
         EnableOK(txtName->GetValue() != tmpl->GetName()
-            || txtComment->GetValue() != tmpl->GetComment());
+                 || txtComment->GetValue() != tmpl->GetComment());
     }
     else
     {
-        wxString name=GetName();
-        bool enable=true;
+        wxString name = GetName();
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
         CheckValid(enable, cbLexize->GetGuessedSelection() > 0 , _("Please select a lexize function."));
 
@@ -156,7 +156,7 @@ void dlgTextSearchTemplate::OnChange(wxCommandEvent &ev)
 wxString dlgTextSearchTemplate::GetSql()
 {
     wxString sql;
-    wxString objname=schema->GetQuotedPrefix() + qtIdent(GetName());
+    wxString objname = schema->GetQuotedPrefix() + qtIdent(GetName());
 
     if (tmpl)
     {
@@ -167,14 +167,14 @@ wxString dlgTextSearchTemplate::GetSql()
     {
         // create mode
         sql = wxT("CREATE TEXT SEARCH TEMPLATE ")
-            + schema->GetQuotedPrefix() + GetName()
-            + wxT(" (");
-        
+              + schema->GetQuotedPrefix() + GetName()
+              + wxT(" (");
+
         AppendIfFilled(sql, wxT("\n   INIT="), cbInit->GetValue());
         if (cbInit->GetValue().Length() > 0)
             sql += wxT(",");
         AppendIfFilled(sql, wxT("\n   LEXIZE="), cbLexize->GetValue());
-        
+
         sql += wxT("\n);\n");
 
     }

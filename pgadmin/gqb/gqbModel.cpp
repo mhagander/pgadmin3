@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,7 +19,7 @@
 #include "gqb/gqbQueryObjs.h"
 
 gqbModel::gqbModel():
-wxObject()
+    wxObject()
 {
 // here store all queryObjects
 // GQB-TODO: allow different names for each model
@@ -45,11 +45,11 @@ gqbModel::~gqbModel()
 }
 
 
-gqbQueryObject* gqbModel::addTable(gqbTable *table, wxPoint p)
+gqbQueryObject *gqbModel::addTable(gqbTable *table, wxPoint p)
 {
     // Get a table but introduce a QueryObject
     gqbQueryObject *tmp = new gqbQueryObject(table);
-    tmp->position=p;
+    tmp->position = p;
 
     // Now use insert the new object in the collection of the model
     queryCollection->addTable(tmp);
@@ -58,7 +58,7 @@ gqbQueryObject* gqbModel::addTable(gqbTable *table, wxPoint p)
     gqbIteratorBase *iterator = tmp->parent->createColumnsIterator();
     while(iterator->HasNext())
     {
-        gqbColumn *col= (gqbColumn *)iterator->Next();
+        gqbColumn *col = (gqbColumn *)iterator->Next();
         AvailableColumns.Add(col);
         ColumnAvailParent.Add(tmp);
     }
@@ -68,12 +68,12 @@ gqbQueryObject* gqbModel::addTable(gqbTable *table, wxPoint p)
 }
 
 
-gqbIteratorBase*  gqbModel::createQueryIterator()
+gqbIteratorBase  *gqbModel::createQueryIterator()
 {
     return queryCollection->createQueryIterator();
 }
 
-gqbIteratorBase*  gqbModel::createDownQueryIterator()
+gqbIteratorBase  *gqbModel::createDownQueryIterator()
 {
     return queryCollection->createDownQueryIterator();
 }
@@ -84,7 +84,7 @@ void gqbModel::deleteTable(gqbQueryObject *modelTable)
     {
         queryCollection->removeTable(modelTable);
         delete modelTable;
-        modelTable=NULL;
+        modelTable = NULL;
     }
 }
 
@@ -104,7 +104,7 @@ void gqbModel::emptyAll()
 }
 
 
-gqbQueryRestriction* gqbModel::addRestriction()
+gqbQueryRestriction *gqbModel::addRestriction()
 {
     gqbQueryRestriction *r = new gqbQueryRestriction();
     restrictions->addRestriction(r);

@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgFunction.h - Function property 
+// dlgFunction.h - Function property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -28,9 +28,15 @@ public:
     wxString GetSql();
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
-    void SetObject(pgObject *obj) { function = (pgFunction*)obj; }
+    void SetObject(pgObject *obj)
+    {
+        function = (pgFunction *)obj;
+    }
 
-    wxString GetHelpPage(bool forCreate) const { return wxT("pg/sql-createfunction"); }
+    wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pg/sql-createfunction");
+    }
 
 private:
     pgSchema *schema;
@@ -63,7 +69,7 @@ private:
     wxString GetArgs(const bool withNames = true, const bool inOnly = false);
     void ReplaceSizer(wxWindow *w, bool isC, int border);
 
-	virtual bool IsUpToDate();
+    virtual bool IsUpToDate();
     void OnApply(wxCommandEvent &ev);
 
     wxArrayString typOids;
@@ -86,7 +92,10 @@ class dlgProcedure : public dlgFunction
 public:
     dlgProcedure(pgaFactory *factory, frmMain *frame, pgFunction *node, pgSchema *sch);
 
-    wxString GetHelpPage(bool forCreate) const { return wxT("pg/sql-createprocedure"); }
+    wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pg/sql-createprocedure");
+    }
 };
 
 

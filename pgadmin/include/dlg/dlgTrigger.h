@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgTrigger.h - Trigger property 
+// dlgTrigger.h - Trigger property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +28,10 @@ public:
     wxString GetSql();
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
-    void SetObject(pgObject *obj) { trigger = (pgTrigger*)obj; }
+    void SetObject(pgObject *obj)
+    {
+        trigger = (pgTrigger *)obj;
+    }
     wxString GetColumns();
 
 
@@ -44,7 +47,7 @@ private:
     void OnAddCol(wxCommandEvent &ev);
     void OnRemoveCol(wxCommandEvent &ev);
 
-	virtual bool IsUpToDate();
+    virtual bool IsUpToDate();
     void OnApply(wxCommandEvent &ev);
 
     DECLARE_EVENT_TABLE()

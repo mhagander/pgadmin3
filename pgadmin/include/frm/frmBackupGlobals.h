@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -27,7 +27,7 @@ public:
     void Go();
     wxString GetDisplayCmd(int step);
     wxString GetCmd(int step);
-    
+
 private:
     wxString GetHelpPage() const;
     void OnChange(wxCommandEvent &ev);

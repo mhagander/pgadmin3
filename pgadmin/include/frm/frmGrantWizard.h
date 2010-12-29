@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -29,13 +29,13 @@ public:
     void Go();
     wxString GetSql();
     wxString GetHelpPage() const;
-    
+
 private:
 
-    void OnPageSelect(wxNotebookEvent& event);
+    void OnPageSelect(wxNotebookEvent &event);
     void OnCheckAll(wxCommandEvent &event);
     void OnUncheckAll(wxCommandEvent &event);
-    void OnChange(wxCommandEvent& event);
+    void OnChange(wxCommandEvent &event);
 
     void AddObjects(pgCollection *collection);
 

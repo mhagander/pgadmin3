@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,7 +18,7 @@
 
 enum
 {
-    CTL_PROPSQL=250,
+    CTL_PROPSQL = 250,
     CTL_MSG,
     CTL_LBPRIV,
     CTL_STATICGROUP,
@@ -50,7 +50,7 @@ public:
     /*
      *  Except column level privileges, column will be always an empty string in any case
      */
-    wxString GetGrant(const wxString &allPattern, const wxString &grantObject, wxArrayString *currentAcl=0, wxString column = wxEmptyString);
+    wxString GetGrant(const wxString &allPattern, const wxString &grantObject, wxArrayString *currentAcl = 0, wxString column = wxEmptyString);
     bool DisablePrivilege(const wxString &priv);
 protected:
     wxNotebook *nbNotebook;
@@ -63,12 +63,12 @@ protected:
     wxCheckBox *allPrivileges, *allPrivilegesGrant;
 
     void OnPrivSelChange(wxListEvent &ev);
-    void OnAddPriv(wxCommandEvent& ev);
+    void OnAddPriv(wxCommandEvent &ev);
     void OnGroupChange(wxCommandEvent &ev);
-    void OnDelPriv(wxCommandEvent& ev);
-    void OnPrivCheck(wxCommandEvent& ev);
-    void OnPrivCheckAll(wxCommandEvent& ev);
-    void OnPrivCheckAllGrant(wxCommandEvent& ev);
+    void OnDelPriv(wxCommandEvent &ev);
+    void OnPrivCheck(wxCommandEvent &ev);
+    void OnPrivCheckAll(wxCommandEvent &ev);
+    void OnPrivCheckAllGrant(wxCommandEvent &ev);
 
     void CheckGrantOpt(int index);
     bool GrantAllowed() const;

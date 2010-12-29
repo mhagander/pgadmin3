@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgAggregate.h - Aggregate property 
+// dlgAggregate.h - Aggregate property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -33,8 +33,11 @@ private:
     pgSchema *schema;
     pgAggregate *aggregate;
 
-    virtual wxString GetDisplayName() { return GetName() + wxT("(") + GetInputTypesList() + wxT(")"); };
-    
+    virtual wxString GetDisplayName()
+    {
+        return GetName() + wxT("(") + GetInputTypesList() + wxT(")");
+    };
+
 #ifdef __WXMAC__
     void OnChangeSize(wxSizeEvent &ev);
 #endif

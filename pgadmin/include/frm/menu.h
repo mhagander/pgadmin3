@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -109,24 +109,24 @@ enum
     MNU_LF,
 
     MNU_RECENT,
-    MNU_NEW=MNU_RECENT+15,  // leave space for recent file entries
+    MNU_NEW = MNU_RECENT + 15, // leave space for recent file entries
 
-    MNU_ACTION=MNU_NEW+1000, // leave space for objects
+    MNU_ACTION = MNU_NEW + 1000, // leave space for objects
 
-    MNU_FAVOURITES_ADD=MNU_ACTION+1000, // leave space for actions
+    MNU_FAVOURITES_ADD = MNU_ACTION + 1000, // leave space for actions
     MNU_FAVOURITES_MANAGE,
 
-    MNU_MACROS_MANAGE=MNU_FAVOURITES_MANAGE+1000, //leave space for favourites
+    MNU_MACROS_MANAGE = MNU_FAVOURITES_MANAGE + 1000, //leave space for favourites
 
     // This is used by the Query Tool - the event is fired when the query completes
-    QUERY_COMPLETE=MNU_MACROS_MANAGE+100,
+    QUERY_COMPLETE = MNU_MACROS_MANAGE + 100,
     PGSCRIPT_COMPLETE,
 
     // This is a dummy menu item
-    MNU_DUMMY=QUERY_COMPLETE+1000,
+    MNU_DUMMY = QUERY_COMPLETE + 1000,
 
-	//Menu Test
-	MNU_GENERATESQL
+    //Menu Test
+    MNU_GENERATESQL
 };
 
 #endif

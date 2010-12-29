@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,19 +23,19 @@
 #include "frm/frmReport.h"
 
 pgCollection::pgCollection(pgaFactory *factory)
-: pgObject(*factory)
-{ 
-	job=0;
-    schema=0;
-    database=0;
-    server= 0;
+    : pgObject(*factory)
+{
+    job = 0;
+    schema = 0;
+    database = 0;
+    server = 0;
 }
 
 bool pgCollection::IsCollectionFor(pgObject *obj)
 {
     if (!obj)
         return false;
-    pgaFactory *f=obj->GetFactory();
+    pgaFactory *f = obj->GetFactory();
     if (!f)
         return false;
     return GetFactory() == f->GetCollectionFactory();
@@ -46,7 +46,7 @@ bool pgCollection::IsCollectionForType(const int type)
 {
     if (GetFactory())
     {
-        pgaFactory *f=pgaFactory::GetFactoryByMetaType(type);
+        pgaFactory *f = pgaFactory::GetFactoryByMetaType(type);
         return (f && f->GetCollectionFactory() == GetFactory());
     }
     return false;
@@ -55,10 +55,10 @@ bool pgCollection::IsCollectionForType(const int type)
 
 void pgCollection::ShowList(ctlTree *browser, ctlListView *properties)
 {
-    ShowList(((pgaCollectionFactory*)GetFactory())->GetItemTypeName(), browser, properties);
+    ShowList(((pgaCollectionFactory *)GetFactory())->GetItemTypeName(), browser, properties);
 }
 
-void pgCollection::ShowList(const wxString& name, ctlTree *browser, ctlListView *properties)
+void pgCollection::ShowList(const wxString &name, ctlTree *browser, ctlListView *properties)
 {
     if (properties)
     {
@@ -70,7 +70,7 @@ void pgCollection::ShowList(const wxString& name, ctlTree *browser, ctlListView 
         CreateList3Columns(properties, wxGetTranslation(name), _("Owner"), _("Comment"));
 
         wxTreeItemId item = browser->GetFirstChild(GetId(), cookie);
-        long pos=0;
+        long pos = 0;
         while (item)
         {
             data = browser->GetObject(item);
@@ -90,14 +90,14 @@ void pgCollection::ShowList(const wxString& name, ctlTree *browser, ctlListView 
 void pgCollection::UpdateChildCount(ctlTree *browser, int substract)
 {
     wxString label;
-    label.Printf(wxString(wxGetTranslation(GetName())) + wxT(" (%d)"), browser->GetChildrenCount(GetId(), false) -substract);
+    label.Printf(wxString(wxGetTranslation(GetName())) + wxT(" (%d)"), browser->GetChildrenCount(GetId(), false) - substract);
     browser->SetItemText(GetId(), label);
 }
 
 
 int pgCollection::GetIconId()
 {
-    pgaFactory *objFactory=pgaFactory::GetFactory(GetType());
+    pgaFactory *objFactory = pgaFactory::GetFactory(GetType());
     if (objFactory)
         return objFactory->GetIconId();
     return 0;
@@ -110,7 +110,7 @@ pgObject *pgCollection::FindChild(ctlTree *browser, const int index)
     pgObject *data;
 
     wxTreeItemId item = browser->GetFirstChild(GetId(), cookie);
-    long pos=0;
+    long pos = 0;
     while (item && index >= 0)
     {
         data = browser->GetObject(item);

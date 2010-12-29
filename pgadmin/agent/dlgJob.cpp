@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -67,16 +67,16 @@ END_EVENT_TABLE();
 
 dlgProperty *pgaJobFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgJob(this, frame, (pgaJob*)node);
+    return new dlgJob(this, frame, (pgaJob *)node);
 }
 
 
 dlgJob::dlgJob(pgaFactory *f, frmMain *frame, pgaJob *node)
-: dlgAgentProperty(f, frame, wxT("dlgJob"))
+    : dlgAgentProperty(f, frame, wxT("dlgJob"))
 {
-    job=node;
+    job = node;
 
-	txtID->Disable();
+    txtID->Disable();
     txtCreated->Disable();
     txtChanged->Disable();
     txtNextrun->Disable();
@@ -105,10 +105,10 @@ pgObject *dlgJob::GetObject()
 #ifdef __WXMAC__
 void dlgJob::OnChangeSize(wxSizeEvent &ev)
 {
-	lstSteps->SetSize(wxDefaultCoord, wxDefaultCoord,
-	    ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
-	lstSchedules->SetSize(wxDefaultCoord, wxDefaultCoord,
-	    ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
+    lstSteps->SetSize(wxDefaultCoord, wxDefaultCoord,
+                      ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
+    lstSchedules->SetSize(wxDefaultCoord, wxDefaultCoord,
+                          ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
     if (GetAutoLayout())
     {
         Layout();
@@ -121,7 +121,7 @@ int dlgJob::Go(bool modal)
 {
     int returncode;
 
-    pgSet *jcl=connection->ExecuteSet(wxT("SELECT jclname FROM pgagent.pga_jobclass"));
+    pgSet *jcl = connection->ExecuteSet(wxT("SELECT jclname FROM pgagent.pga_jobclass"));
     if (jcl)
     {
         while (!jcl->Eof())
@@ -135,11 +135,11 @@ int dlgJob::Go(bool modal)
     if (job)
     {
         // edit mode
-		recId = job->GetRecId();
-		txtID->SetValue(NumToStr(recId));
+        recId = job->GetRecId();
+        txtID->SetValue(NumToStr(recId));
         cbJobclass->SetValue(job->GetJobclass());
         chkEnabled->SetValue(job->GetEnabled());
-		txtHostAgent->SetValue(job->GetHostAgent());
+        txtHostAgent->SetValue(job->GetHostAgent());
         txtCreated->SetValue(DateToStr(job->GetCreated()));
         txtChanged->SetValue(DateToStr(job->GetChanged()));
         txtNextrun->SetValue(DateToStr(job->GetNextrun()));
@@ -147,83 +147,83 @@ int dlgJob::Go(bool modal)
         txtLastresult->SetValue(job->GetLastresult());
 
         wxCookieType cookie;
-        pgObject *data=0;
+        pgObject *data = 0;
 
         wxTreeItemId item, stepsItem, schedulesItem;
-		item=mainForm->GetBrowser()->GetFirstChild(job->GetId(), cookie);
-		while (item)
-		{
-			data=mainForm->GetBrowser()->GetObject(item);
-            if (data->GetMetaType() == PGM_STEP) 
-				stepsItem = item;
-            else if (data->GetMetaType() == PGM_SCHEDULE) 
-				schedulesItem = item;
+        item = mainForm->GetBrowser()->GetFirstChild(job->GetId(), cookie);
+        while (item)
+        {
+            data = mainForm->GetBrowser()->GetObject(item);
+            if (data->GetMetaType() == PGM_STEP)
+                stepsItem = item;
+            else if (data->GetMetaType() == PGM_SCHEDULE)
+                schedulesItem = item;
 
-			item=mainForm->GetBrowser()->GetNextChild(job->GetId(), cookie);
-		}
+            item = mainForm->GetBrowser()->GetNextChild(job->GetId(), cookie);
+        }
 
-		if (stepsItem)
-		{
-            pgCollection *coll=(pgCollection*)data;
+        if (stepsItem)
+        {
+            pgCollection *coll = (pgCollection *)data;
             // make sure all columns are appended
             coll->ShowTreeDetail(mainForm->GetBrowser());
             // this is the columns collection
-            item=mainForm->GetBrowser()->GetFirstChild(stepsItem, cookie);
+            item = mainForm->GetBrowser()->GetFirstChild(stepsItem, cookie);
 
             // add columns
             while (item)
             {
-				data=mainForm->GetBrowser()->GetObject(item);
-				if (data->IsCreatedBy(stepFactory))
-				{
-					pgaStep *step=(pgaStep*)data;
-					int pos = lstSteps->AppendItem(stepFactory.GetIconId(), step->GetName(), step->GetComment());
-					lstSteps->SetItem(pos, 3, NumToStr((long)step));
-					previousSteps.Add(NumToStr((long)step));
-				}
-				item=mainForm->GetBrowser()->GetNextChild(job->GetId(), cookie);
-			}
-		}
+                data = mainForm->GetBrowser()->GetObject(item);
+                if (data->IsCreatedBy(stepFactory))
+                {
+                    pgaStep *step = (pgaStep *)data;
+                    int pos = lstSteps->AppendItem(stepFactory.GetIconId(), step->GetName(), step->GetComment());
+                    lstSteps->SetItem(pos, 3, NumToStr((long)step));
+                    previousSteps.Add(NumToStr((long)step));
+                }
+                item = mainForm->GetBrowser()->GetNextChild(job->GetId(), cookie);
+            }
+        }
 
-		if (schedulesItem)
-		{
-            pgCollection *coll=(pgCollection*)data;
+        if (schedulesItem)
+        {
+            pgCollection *coll = (pgCollection *)data;
             // make sure all columns are appended
             coll->ShowTreeDetail(mainForm->GetBrowser());
             // this is the columns collection
-            item=mainForm->GetBrowser()->GetFirstChild(schedulesItem, cookie);
+            item = mainForm->GetBrowser()->GetFirstChild(schedulesItem, cookie);
 
             // add columns
             while (item)
             {
-				data=mainForm->GetBrowser()->GetObject(item);
-				if (data->IsCreatedBy(scheduleFactory))
-				{
-					pgaSchedule *schedule=(pgaSchedule*)data;
-					int pos = lstSchedules->AppendItem(scheduleFactory.GetIconId(), schedule->GetName(), schedule->GetComment());
-					lstSchedules->SetItem(pos, 3, NumToStr((long)schedule));
-					previousSchedules.Add(NumToStr((long)schedule));
-				}
-				item=mainForm->GetBrowser()->GetNextChild(job->GetId(), cookie);
-			}
-		}
+                data = mainForm->GetBrowser()->GetObject(item);
+                if (data->IsCreatedBy(scheduleFactory))
+                {
+                    pgaSchedule *schedule = (pgaSchedule *)data;
+                    int pos = lstSchedules->AppendItem(scheduleFactory.GetIconId(), schedule->GetName(), schedule->GetComment());
+                    lstSchedules->SetItem(pos, 3, NumToStr((long)schedule));
+                    previousSchedules.Add(NumToStr((long)schedule));
+                }
+                item = mainForm->GetBrowser()->GetNextChild(job->GetId(), cookie);
+            }
+        }
     }
     else
     {
         // create mode
         cbJobclass->SetSelection(0);
-		btnChangeStep->Hide();
-		btnChangeSchedule->Hide();
+        btnChangeStep->Hide();
+        btnChangeSchedule->Hide();
     }
 
     returncode = dlgProperty::Go(modal);
-	
-	SetSqlReadOnly(true);
+
+    SetSqlReadOnly(true);
 
     // This fixes a UI glitch on MacOS X
     // Because of the new layout code, the Columns pane doesn't size itself properly
-    SetSize(GetSize().GetWidth()+1, GetSize().GetHeight());
-    SetSize(GetSize().GetWidth()-1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() + 1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() - 1, GetSize().GetHeight());
 
     return returncode;
 }
@@ -231,29 +231,29 @@ int dlgJob::Go(bool modal)
 
 pgObject *dlgJob::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=jobFactory.CreateObjects(collection, 0, wxT("   WHERE jobid=") + NumToStr(recId) + wxT("\n"));
+    pgObject *obj = jobFactory.CreateObjects(collection, 0, wxT("   WHERE jobid=") + NumToStr(recId) + wxT("\n"));
     return obj;
 }
 
 
 void dlgJob::CheckChange()
 {
-    bool enable=true;
-    wxString name=GetName();
+    bool enable = true;
+    wxString name = GetName();
     if (job)
     {
         enable  =  txtComment->GetValue() != job->GetComment()
-                || name != job->GetName()
-                || chkEnabled->GetValue() != job->GetEnabled()
-				|| txtHostAgent->GetValue() != job->GetHostAgent();
+                   || name != job->GetName()
+                   || chkEnabled->GetValue() != job->GetEnabled()
+                   || txtHostAgent->GetValue() != job->GetHostAgent();
         if (!enable)
         {
             enable = !GetUpdateSql().IsEmpty();
         }
     }
 
-	if (statusBar)
-		statusBar->SetStatusText(wxEmptyString);
+    if (statusBar)
+        statusBar->SetStatusText(wxEmptyString);
 
     CheckValid(enable, !txtName->GetValue().IsEmpty(), _("Please specify name."));
 
@@ -263,8 +263,8 @@ void dlgJob::CheckChange()
 
 void dlgJob::OnChangeStep(wxCommandEvent &ev)
 {
-    long pos=lstSteps->GetSelection();
-    pgaStep *obj=(pgaStep*) StrToLong(lstSteps->GetText(pos, 3));
+    long pos = lstSteps->GetSelection();
+    pgaStep *obj = (pgaStep *) StrToLong(lstSteps->GetText(pos, 3));
 
     dlgStep step(&stepFactory, mainForm, obj, job);
     step.CenterOnParent();
@@ -276,15 +276,15 @@ void dlgJob::OnChangeStep(wxCommandEvent &ev)
         lstSteps->SetItem(pos, 1, step.GetComment());
 
         if (lstSteps->GetText(pos, 3).IsEmpty())
-		{
-			wxString *stepSql = new wxString(step.GetInsertSql());
-			lstSteps->SetItemData(pos, (long)stepSql);
-		}
+        {
+            wxString *stepSql = new wxString(step.GetInsertSql());
+            lstSteps->SetItemData(pos, (long)stepSql);
+        }
         else
-		{
-			wxString *stepSql = new wxString(step.GetUpdateSql());
-			lstSteps->SetItemData(pos, (long)stepSql);
-		}
+        {
+            wxString *stepSql = new wxString(step.GetUpdateSql());
+            lstSteps->SetItemData(pos, (long)stepSql);
+        }
 
         CheckChange();
     }
@@ -306,8 +306,8 @@ void dlgJob::OnAddStep(wxCommandEvent &ev)
     if (step.Go(true) != wxID_CANCEL)
     {
         int pos = lstSteps->AppendItem(stepFactory.GetIconId(), step.GetName(), step.GetComment());
-		wxString *stepSql = new wxString(step.GetInsertSql());
-		lstSteps->SetItemData(pos, (long)stepSql);
+        wxString *stepSql = new wxString(step.GetInsertSql());
+        lstSteps->SetItemData(pos, (long)stepSql);
         CheckChange();
     }
 }
@@ -315,7 +315,7 @@ void dlgJob::OnAddStep(wxCommandEvent &ev)
 
 void dlgJob::OnRemoveStep(wxCommandEvent &ev)
 {
-	delete (wxString *)lstSteps->GetItemData(lstSteps->GetSelection());
+    delete (wxString *)lstSteps->GetItemData(lstSteps->GetSelection());
     lstSteps->DeleteCurrentItem();
 
     btnChangeStep->Disable();
@@ -334,8 +334,8 @@ void dlgJob::OnSelChangeSchedule(wxListEvent &ev)
 
 void dlgJob::OnChangeSchedule(wxCommandEvent &ev)
 {
-    long pos=lstSchedules->GetSelection();
-    pgaSchedule *obj=(pgaSchedule*) StrToLong(lstSchedules->GetText(pos, 3));
+    long pos = lstSchedules->GetSelection();
+    pgaSchedule *obj = (pgaSchedule *) StrToLong(lstSchedules->GetText(pos, 3));
 
     dlgSchedule schedule(&scheduleFactory, mainForm, obj, job);
     schedule.CenterOnParent();
@@ -347,15 +347,15 @@ void dlgJob::OnChangeSchedule(wxCommandEvent &ev)
         lstSchedules->SetItem(pos, 1, schedule.GetComment());
 
         if (lstSchedules->GetText(pos, 3).IsEmpty())
-		{
-			wxString *scheduleSql = new wxString(schedule.GetInsertSql());
-			lstSchedules->SetItemData(pos, (long)scheduleSql);
-		}
+        {
+            wxString *scheduleSql = new wxString(schedule.GetInsertSql());
+            lstSchedules->SetItemData(pos, (long)scheduleSql);
+        }
         else
-		{
-			wxString *scheduleSql = new wxString(schedule.GetUpdateSql());
-			lstSchedules->SetItemData(pos, (long)scheduleSql);
-		}
+        {
+            wxString *scheduleSql = new wxString(schedule.GetUpdateSql());
+            lstSchedules->SetItemData(pos, (long)scheduleSql);
+        }
 
         CheckChange();
     }
@@ -371,7 +371,7 @@ void dlgJob::OnAddSchedule(wxCommandEvent &ev)
     {
         int pos = lstSchedules->AppendItem(scheduleFactory.GetIconId(), schedule.GetName(), schedule.GetComment());
         wxString *scheduleSql = new wxString(schedule.GetInsertSql());
-		lstSchedules->SetItemData(pos, (long)scheduleSql);
+        lstSchedules->SetItemData(pos, (long)scheduleSql);
         CheckChange();
     }
 }
@@ -379,7 +379,7 @@ void dlgJob::OnAddSchedule(wxCommandEvent &ev)
 
 void dlgJob::OnRemoveSchedule(wxCommandEvent &ev)
 {
-	delete (wxString *)lstSchedules->GetItemData(lstSchedules->GetSelection());
+    delete (wxString *)lstSchedules->GetItemData(lstSchedules->GetSelection());
     lstSchedules->DeleteCurrentItem();
 
     btnChangeSchedule->Disable();
@@ -396,9 +396,9 @@ wxString dlgJob::GetInsertSql()
     if (!job)
     {
         sql = wxT("INSERT INTO pgagent.pga_job (jobid, jobjclid, jobname, jobdesc, jobenabled, jobhostagent)\n")
-              wxT("SELECT <JobId>, jcl.jclid, ") + qtDbString(GetName()) + 
-              wxT(", ") + qtDbString(txtComment->GetValue()) + wxT(", ") + BoolToStr(chkEnabled->GetValue()) + 
-			  wxT(", ") + qtDbString(txtHostAgent->GetValue()) + wxT("\n")
+              wxT("SELECT <JobId>, jcl.jclid, ") + qtDbString(GetName()) +
+              wxT(", ") + qtDbString(txtComment->GetValue()) + wxT(", ") + BoolToStr(chkEnabled->GetValue()) +
+              wxT(", ") + qtDbString(txtHostAgent->GetValue()) + wxT("\n")
               wxT("  FROM pgagent.pga_jobclass jcl WHERE jclname=") + qtDbString(cbJobclass->GetValue()) + wxT(";\n");
     }
     return sql;
@@ -408,7 +408,7 @@ wxString dlgJob::GetInsertSql()
 wxString dlgJob::GetUpdateSql()
 {
     wxString sql, name;
-    name=GetName();
+    name = GetName();
 
     if (job)
     {
@@ -460,54 +460,54 @@ wxString dlgJob::GetUpdateSql()
     int pos, index;
 
     wxArrayString tmpSteps = previousSteps;
-    for (pos=0 ; pos < lstSteps->GetItemCount() ; pos++)
+    for (pos = 0 ; pos < lstSteps->GetItemCount() ; pos++)
     {
-        wxString str=lstSteps->GetText(pos, 3);
+        wxString str = lstSteps->GetText(pos, 3);
         if (!str.IsEmpty())
         {
-            index=tmpSteps.Index(str);
+            index = tmpSteps.Index(str);
             if (index >= 0)
                 tmpSteps.RemoveAt(index);
         }
-		
-		if(lstSteps->GetItemData(pos))
-		{
-			str=*(wxString *)lstSteps->GetItemData(pos);
-			if (!str.IsEmpty())
-	            sql += str;
-		}
+
+        if(lstSteps->GetItemData(pos))
+        {
+            str = *(wxString *)lstSteps->GetItemData(pos);
+            if (!str.IsEmpty())
+                sql += str;
+        }
     }
 
     for (index = 0 ; index < (int)tmpSteps.GetCount() ; index++)
     {
-        sql += wxT("DELETE FROM pgagent.pga_jobstep WHERE jstid=") 
-            + NumToStr(((pgaStep*)StrToLong(tmpSteps.Item(index)))->GetRecId()) + wxT(";\n");
+        sql += wxT("DELETE FROM pgagent.pga_jobstep WHERE jstid=")
+               + NumToStr(((pgaStep *)StrToLong(tmpSteps.Item(index)))->GetRecId()) + wxT(";\n");
     }
 
     wxArrayString tmpSchedules = previousSchedules;
-    for (pos=0 ; pos < lstSchedules->GetItemCount() ; pos++)
+    for (pos = 0 ; pos < lstSchedules->GetItemCount() ; pos++)
     {
-        wxString str=lstSchedules->GetText(pos, 3);
+        wxString str = lstSchedules->GetText(pos, 3);
         if (!str.IsEmpty())
         {
-            index=tmpSchedules.Index(str);
+            index = tmpSchedules.Index(str);
             if (index >= 0)
                 tmpSchedules.RemoveAt(index);
         }
-		if(lstSchedules->GetItemData(pos))
-		{
-			str=*(wxString *)lstSchedules->GetItemData(pos);
-			if (!str.IsEmpty())
-	            sql += str;
-		}
+        if(lstSchedules->GetItemData(pos))
+        {
+            str = *(wxString *)lstSchedules->GetItemData(pos);
+            if (!str.IsEmpty())
+                sql += str;
+        }
     }
 
     for (index = 0 ; index < (int)tmpSchedules.GetCount() ; index++)
     {
-        sql += wxT("DELETE FROM pgagent.pga_schedule WHERE jscid=") 
-            + NumToStr(((pgaStep*)StrToLong(tmpSchedules.Item(index)))->GetRecId()) + wxT(";\n");
+        sql += wxT("DELETE FROM pgagent.pga_schedule WHERE jscid=")
+               + NumToStr(((pgaStep *)StrToLong(tmpSchedules.Item(index)))->GetRecId()) + wxT(";\n");
     }
 
-	return sql;
+    return sql;
 
 }

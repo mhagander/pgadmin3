@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -20,9 +20,12 @@ class slSetFactory : public slObjFactory
 public:
     slSetFactory();
     virtual dlgProperty *CreateDialog(frmMain *frame, pgObject *node, pgObject *parent);
-    virtual pgObject *CreateObjects(pgCollection *obj, ctlTree *browser, const wxString &restr=wxEmptyString);
-    int GetExportedIconId() { return exportedIconId; }
-    
+    virtual pgObject *CreateObjects(pgCollection *obj, ctlTree *browser, const wxString &restr = wxEmptyString);
+    int GetExportedIconId()
+    {
+        return exportedIconId;
+    }
+
 protected:
     int exportedIconId;
 };
@@ -32,21 +35,45 @@ extern slSetFactory setFactory;
 class slSet : public slObject
 {
 public:
-    slSet(slCluster *_cluster, const wxString& newName = wxT(""));
+    slSet(slCluster *_cluster, const wxString &newName = wxT(""));
 
     int GetIconId();
-    void ShowTreeDetail(ctlTree *browser, frmMain *form=0, ctlListView *properties=0, ctlSQLBox *sqlPane=0);
+    void ShowTreeDetail(ctlTree *browser, frmMain *form = 0, ctlListView *properties = 0, ctlSQLBox *sqlPane = 0);
 
     bool CanDrop();
-    bool RequireDropConfirm() { return true; }
-    bool WantDummyChild() { return true; }
+    bool RequireDropConfirm()
+    {
+        return true;
+    }
+    bool WantDummyChild()
+    {
+        return true;
+    }
 
-    long GetOriginId() const { return originId; }
-    void iSetOriginId(long l) { originId=l; }
-    wxString GetOriginNode() const { return originNode; }
-    void iSetOriginNode(const wxString s) { originNode = s; }
-    long GetSubscriptionCount() { return subscriptionCount; }
-    void iSetSubscriptionCount(long l) { subscriptionCount=l; }
+    long GetOriginId() const
+    {
+        return originId;
+    }
+    void iSetOriginId(long l)
+    {
+        originId = l;
+    }
+    wxString GetOriginNode() const
+    {
+        return originNode;
+    }
+    void iSetOriginNode(const wxString s)
+    {
+        originNode = s;
+    }
+    long GetSubscriptionCount()
+    {
+        return subscriptionCount;
+    }
+    void iSetSubscriptionCount(long l)
+    {
+        subscriptionCount = l;
+    }
 
     wxString GetLockXXID();
     bool Lock();
@@ -72,8 +99,11 @@ private:
 class slSetObject : public slObject
 {
 public:
-    slSetObject(slSet *s, pgaFactory &factory, const wxString& newName = wxT(""));
-    slSet *GetSet() { return set; }
+    slSetObject(slSet *s, pgaFactory &factory, const wxString &newName = wxT(""));
+    slSet *GetSet()
+    {
+        return set;
+    }
 
     bool CanDrop();
     bool CanCreate();
@@ -83,7 +113,7 @@ private:
 };
 
 
-// Collection of set objects 
+// Collection of set objects
 class slSubscription;
 class slSetObjCollection : public slObjCollection
 {
@@ -91,7 +121,10 @@ public:
     slSetObjCollection(pgaFactory *factory, slSet *_set);
     bool CanCreate();
 
-    slSet *GetSet() {return set; }
+    slSet *GetSet()
+    {
+        return set;
+    }
 
 private:
     slSet *set;
@@ -102,7 +135,7 @@ private:
 class slSetObjFactory : public slObjFactory
 {
 public:
-    slSetObjFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img, const char **smImg=0) : slObjFactory(tn, ns, nls, img, smImg) {}
+    slSetObjFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img, const char **smImg = 0) : slObjFactory(tn, ns, nls, img, smImg) {}
     virtual pgCollection *CreateCollection(pgObject *obj);
 };
 

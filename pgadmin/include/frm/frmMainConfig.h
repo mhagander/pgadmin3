@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,14 +25,14 @@ WX_DECLARE_OBJARRAY(pgConfigOrgLine, pgConfigOrgLineArray);
 class frmMainConfig : public frmConfig
 {
 public:
-    frmMainConfig(const wxString& title, const wxString &configFile);
-    frmMainConfig(frmMain *parent, pgServer *server=0);
+    frmMainConfig(const wxString &title, const wxString &configFile);
+    frmMainConfig(frmMain *parent, pgServer *server = 0);
 
     ~frmMainConfig();
 
 protected:
     void DisplayFile(const wxString &str);
-    void WriteFile(pgConn *conn=0);
+    void WriteFile(pgConn *conn = 0);
     wxString GetHintString();
     wxString GetHelpPage() const;
 
@@ -44,14 +44,14 @@ private:
     void FillList(const wxString &categoryMember, const wxString &altCategoryMember = wxEmptyString);
     void FillList(wxArrayString *category);
 
-    void OnContents(wxCommandEvent& event);
-    void OnUndo(wxCommandEvent& event);
-    void OnEditSetting(wxListEvent& event);
-    void OnSelectSetting(wxListEvent& event);
+    void OnContents(wxCommandEvent &event);
+    void OnUndo(wxCommandEvent &event);
+    void OnEditSetting(wxListEvent &event);
+    void OnSelectSetting(wxListEvent &event);
 
     void UpdateLine(int line);
 
-    void OnOpen(wxCommandEvent& event);
+    void OnOpen(wxCommandEvent &event);
 
 
     ctlListView *cfgList;

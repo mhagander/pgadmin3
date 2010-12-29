@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -36,7 +36,7 @@ END_EVENT_TABLE()
 frmPassword::frmPassword(wxFrame *parent, pgObject *obj)
 {
     wxWindowBase::SetFont(settings->GetSystemFont());
-    LoadResource(parent, wxT("frmPassword")); 
+    LoadResource(parent, wxT("frmPassword"));
     RestorePosition();
 
     server = obj->GetServer();
@@ -56,17 +56,19 @@ void frmPassword::OnHelp(wxCommandEvent &ev)
 }
 
 
-void frmPassword::OnOK(wxCommandEvent& event)
+void frmPassword::OnOK(wxCommandEvent &event)
 {
 
     // Is the old password right?
-    if (txtCurrent->GetValue() != server->GetPassword()) {
+    if (txtCurrent->GetValue() != server->GetPassword())
+    {
         wxLogError(__("Incorrect password!"));
         return;
     }
 
     // Did we confirm the password OK?
-    if (txtNew->GetValue() != txtConfirm->GetValue()) {
+    if (txtNew->GetValue() != txtConfirm->GetValue())
+    {
         wxLogError(__("Passwords do not match!"));
         return;
     }
@@ -84,7 +86,7 @@ void frmPassword::OnOK(wxCommandEvent& event)
 }
 
 
-void frmPassword::OnCancel(wxCommandEvent& event)
+void frmPassword::OnCancel(wxCommandEvent &event)
 {
     Destroy();
 }
@@ -98,7 +100,7 @@ passwordFactory::passwordFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuTool
 
 wxWindow *passwordFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmPassword *frm=new frmPassword((pgFrame*)form, obj);
+    frmPassword *frm = new frmPassword((pgFrame *)form, obj);
     frm->Show();
     return 0;
 }

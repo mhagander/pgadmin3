@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -13,7 +13,7 @@
 //	class frmDebugger
 //
 //  frmDebugger manages the user interface for the workstation. This class
-//  manages the toolbar, menu, status bar, and top-level windows.  
+//  manages the toolbar, menu, status bar, and top-level windows.
 //
 //	This class also defines event handlers for a number of high-level events
 //	(such as window sizing and layout, and creation of new windows).
@@ -52,7 +52,7 @@ enum
     MENU_ID_TOGGLE_BREAK,               // Set/Unset breakpoint
     MENU_ID_CLEAR_ALL_BREAK,            // Clear all breakpoints
     MENU_ID_CONTINUE,                   // Continue
-    MENU_ID_STEP_OVER,                  // Step over    
+    MENU_ID_STEP_OVER,                  // Step over
     MENU_ID_STEP_INTO,                  // Step into
     MENU_ID_STOP,                       // Stop debugging
 
@@ -99,16 +99,19 @@ class dlgDirectDbg;
 class wxSizeReportCtrl;
 
 class frmDebugger : public pgFrame
-{    
+{
     DECLARE_CLASS( frmDebugger )
 
-  public:
+public:
     frmDebugger(frmMain *parent, const wxString &title);
     virtual ~frmDebugger();
 
-    dlgDirectDbg   *addDirectDbg( const dbgConnProp & connProp );       // Create a new direct-debugging window
-    ctlCodeWindow  *addDebug( const dbgConnProp & props );              // Create a new debugger window
-    wxStatusBar   *getStatusBar() { return( m_statusBar ); }            // Returns pointer to the status bar
+    dlgDirectDbg   *addDirectDbg( const dbgConnProp &connProp );        // Create a new direct-debugging window
+    ctlCodeWindow  *addDebug( const dbgConnProp &props );               // Create a new debugger window
+    wxStatusBar   *getStatusBar()
+    {
+        return( m_statusBar );    // Returns pointer to the status bar
+    }
 
     wxMenuBar     *m_menuBar;       // Menu bar
     ctlMenuToolbar     *m_toolBar;       // Frames' toolbar
@@ -119,7 +122,7 @@ class frmDebugger : public pgFrame
     ctlCodeWindow   *m_standaloneDebugger;      // Standalone debugger window
     dlgDirectDbg    *m_standaloneDirectDbg;     // Standalone direct debugger
 
-  private:
+private:
     wxStatusBar    *m_statusBar;    // Frame's status bar
 
     wxMenuBar    *setupMenuBar( void );
@@ -130,24 +133,24 @@ class frmDebugger : public pgFrame
 
     DECLARE_EVENT_TABLE()
 
-    void OnExecute( wxCommandEvent & event );
-    void OnDebugCommand( wxCommandEvent & event );
-    void OnSelectFrame( wxCommandEvent & event );
-    void OnMarginClick( wxStyledTextEvent & event );    // Set/clear breakpoint on margin click
-    void OnPositionStc( wxStyledTextEvent & event ); 
-    void OnVarChange( wxGridEvent & event ); 
-    void OnClose( wxCloseEvent & event );
-    void OnExit( wxCommandEvent & event );
-	void OnSize( wxSizeEvent & event );
-    void OnEraseBackground(wxEraseEvent& event);
-    void OnHelp(wxCommandEvent& event);
-    void OnContents(wxCommandEvent& event);
+    void OnExecute( wxCommandEvent &event );
+    void OnDebugCommand( wxCommandEvent &event );
+    void OnSelectFrame( wxCommandEvent &event );
+    void OnMarginClick( wxStyledTextEvent &event );     // Set/clear breakpoint on margin click
+    void OnPositionStc( wxStyledTextEvent &event );
+    void OnVarChange( wxGridEvent &event );
+    void OnClose( wxCloseEvent &event );
+    void OnExit( wxCommandEvent &event );
+    void OnSize( wxSizeEvent &event );
+    void OnEraseBackground(wxEraseEvent &event);
+    void OnHelp(wxCommandEvent &event);
+    void OnContents(wxCommandEvent &event);
 
-    void OnToggleToolBar(wxCommandEvent& event);
-    void OnToggleStackPane(wxCommandEvent& event);
-    void OnToggleOutputPane(wxCommandEvent& event);
-    void OnAuiUpdate(wxAuiManagerEvent& event);
-    void OnDefaultView(wxCommandEvent& event);
+    void OnToggleToolBar(wxCommandEvent &event);
+    void OnToggleStackPane(wxCommandEvent &event);
+    void OnToggleOutputPane(wxCommandEvent &event);
+    void OnAuiUpdate(wxAuiManagerEvent &event);
+    void OnDefaultView(wxCommandEvent &event);
 
 };
 

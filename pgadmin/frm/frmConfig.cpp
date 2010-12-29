@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -49,28 +49,28 @@ BEGIN_EVENT_TABLE(frmConfig, pgFrame)
     EVT_MENU(MNU_SAVE,                      frmConfig::OnSave)
     EVT_MENU(MNU_SAVEAS,                    frmConfig::OnSaveAs)
     EVT_MENU(MNU_EXECUTE,                   frmConfig::OnExecute)
-	EVT_MENU(MNU_HELP,						frmConfig::OnHelp)
+    EVT_MENU(MNU_HELP,						frmConfig::OnHelp)
     EVT_MENU(MNU_HINT,                      frmConfig::OnHint)
 END_EVENT_TABLE()
 
 
-wxImageList *configImageList=0;
+wxImageList *configImageList = 0;
 
-frmConfig::frmConfig(frmMain *parent, const wxString& title, pgConn *_conn)
-: pgFrame(parent, title)
+frmConfig::frmConfig(frmMain *parent, const wxString &title, pgConn *_conn)
+    : pgFrame(parent, title)
 {
     mainForm = parent;
-    conn=_conn;
+    conn = _conn;
     SetStatusBarPane(-1);
 }
 
 
-frmConfig::frmConfig(const wxString& title, const wxString &configFile)
-: pgFrame(NULL, title)
+frmConfig::frmConfig(const wxString &title, const wxString &configFile)
+    : pgFrame(NULL, title)
 {
     mainForm = 0;
-    conn=0;
-    
+    conn = 0;
+
     lastPath = configFile;
     SetStatusBarPane(-1);
 }
@@ -91,7 +91,7 @@ void frmConfig::InitFrame(const wxChar *frameName)
 
     if (!configImageList)
     {
-  	    configImageList = new wxImageList(16, 16, true, 2);
+        configImageList = new wxImageList(16, 16, true, 2);
         configImageList->Add(wxIcon(unchecked_xpm));
         configImageList->Add(wxIcon(checked_xpm));
     }
@@ -105,7 +105,7 @@ void frmConfig::InitFrame(const wxChar *frameName)
 
     fileMenu = new wxMenu();
     editMenu = new wxMenu();
-    helpMenu=new wxMenu();
+    helpMenu = new wxMenu();
     recentFileMenu = new wxMenu();
 
     fileMenu->Append(MNU_OPEN, _("&Open...\tCtrl-O"),   _("Open a query file"));
@@ -119,7 +119,7 @@ void frmConfig::InitFrame(const wxChar *frameName)
     fileMenu->AppendSeparator();
     toolBar->AddSeparator();
 
-        // File Menu
+    // File Menu
 
     fileMenu->Append(MNU_EXECUTE, _("Reload server"),   _("Reload Server to apply configuration changes."));
     toolBar->AddTool(MNU_EXECUTE, _("Reload server"), wxBitmap(query_execute_xpm), _("Reload Server to apply configuration changes."), wxITEM_NORMAL);
@@ -132,9 +132,9 @@ void frmConfig::InitFrame(const wxChar *frameName)
 
     editMenu->Append(MNU_UNDO, _("&Undo\tCtrl-Z"), _("Undo last action"), wxITEM_NORMAL);
     toolBar->AddTool(MNU_UNDO, _("Undo"), wxBitmap(edit_undo_xpm), _("Undo last action"), wxITEM_NORMAL);
-	editMenu->AppendSeparator();
-	editMenu->Append(MNU_DELETE, _("&Delete\tDEL"), _("Delete current row"), wxITEM_NORMAL);
-	toolBar->AddTool(MNU_DELETE, _("Delete"), wxBitmap(delete_xpm), _("Delete current row"), wxITEM_NORMAL);
+    editMenu->AppendSeparator();
+    editMenu->Append(MNU_DELETE, _("&Delete\tDEL"), _("Delete current row"), wxITEM_NORMAL);
+    toolBar->AddTool(MNU_DELETE, _("Delete"), wxBitmap(delete_xpm), _("Delete current row"), wxITEM_NORMAL);
 
     toolBar->AddSeparator();
 
@@ -147,8 +147,8 @@ void frmConfig::InitFrame(const wxChar *frameName)
     helpMenu->AppendSeparator();
 
     new bugReportFactory(menuFactories, helpMenu, 0);
-    aboutFactory *af=new aboutFactory(menuFactories, helpMenu, 0);
-    
+    aboutFactory *af = new aboutFactory(menuFactories, helpMenu, 0);
+
     menuBar = new wxMenuBar();
     menuBar->Append(fileMenu, _("&File"));
     menuBar->Append(editMenu, _("&Edit"));
@@ -158,8 +158,8 @@ void frmConfig::InitFrame(const wxChar *frameName)
 #ifdef __WXMAC__
     wxApp::s_macAboutMenuItemId = af->GetId();
 #else
-	(void)af;
-#endif 
+    (void)af;
+#endif
 
     menuFactories->RegisterMenu(this, wxCommandEventHandler(pgFrame::OnAction));
     menuFactories->CheckMenu(0, menuBar, toolBar);
@@ -198,7 +198,7 @@ void frmConfig::InitFrame(const wxChar *frameName)
         toolBar->EnableTool(MNU_EXECUTE, false);
     }
 
-SetToolBar(toolBar);
+    SetToolBar(toolBar);
     statusBar = CreateStatusBar();
 }
 
@@ -215,7 +215,7 @@ void frmConfig::DoOpen(const wxString &fn)
 }
 
 
-void frmConfig::OnClose(wxCloseEvent& event)
+void frmConfig::OnClose(wxCloseEvent &event)
 {
     if (CheckChanged(event.CanVeto()) && event.CanVeto())
     {
@@ -225,27 +225,27 @@ void frmConfig::OnClose(wxCloseEvent& event)
     Destroy();
 }
 
-void frmConfig::OnHelp(wxCommandEvent& event)
+void frmConfig::OnHelp(wxCommandEvent &event)
 {
-	DisplayHelp(GetHelpPage(), HELP_POSTGRESQL);
+    DisplayHelp(GetHelpPage(), HELP_POSTGRESQL);
 }
 
-void frmConfig::OnHint(wxCommandEvent& event)
+void frmConfig::OnHint(wxCommandEvent &event)
 {
     DisplayHint(true);
 }
 
 
-void frmConfig::OnBugreport(wxCommandEvent& event)
+void frmConfig::OnBugreport(wxCommandEvent &event)
 {
     DisplayHelp(wxT("bugreport"), HELP_PGADMIN);
 }
 
 
-void frmConfig::OnExecute(wxCommandEvent& event)
+void frmConfig::OnExecute(wxCommandEvent &event)
 {
     wxMessageDialog dlg(this, _("Are you sure you want trigger the server to reload its configuration?"),
-                _("Reload server configuration"), wxICON_EXCLAMATION | wxYES_NO |wxNO_DEFAULT);
+                        _("Reload server configuration"), wxICON_EXCLAMATION | wxYES_NO | wxNO_DEFAULT);
     if (dlg.ShowModal() == wxID_YES)
     {
         if (conn->ExecuteVoid(wxT("SELECT pg_reload_conf()")))
@@ -255,22 +255,22 @@ void frmConfig::OnExecute(wxCommandEvent& event)
 }
 
 
-void frmConfig::OnOpen(wxCommandEvent& event)
+void frmConfig::OnOpen(wxCommandEvent &event)
 {
     if (CheckChanged(true))
         return;
 
 #ifdef __WXMSW__
-    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""), 
-        _("Configuration files (*.conf)|*.conf|All files (*.*)|*.*"), wxFD_OPEN);
+    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""),
+                     _("Configuration files (*.conf)|*.conf|All files (*.*)|*.*"), wxFD_OPEN);
 #else
-    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""), 
-        _("Configuration files (*.conf)|*.conf|All files (*)|*"), wxFD_OPEN);
+    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""),
+                     _("Configuration files (*.conf)|*.conf|All files (*)|*"), wxFD_OPEN);
 #endif
 
     if (dlg.ShowModal() == wxID_OK)
     {
-        lastFilename=dlg.GetFilename();
+        lastFilename = dlg.GetFilename();
         lastDir = dlg.GetDirectory();
         lastPath = dlg.GetPath();
         OpenLastFile();
@@ -280,7 +280,7 @@ void frmConfig::OnOpen(wxCommandEvent& event)
 
 
 
-void frmConfig::OnSave(wxCommandEvent& event)
+void frmConfig::OnSave(wxCommandEvent &event)
 {
     if (!fileMenu->IsEnabled(MNU_SAVE))
         return;
@@ -288,7 +288,7 @@ void frmConfig::OnSave(wxCommandEvent& event)
     if (conn)
     {
         wxMessageDialog msg(this, _("If a malformed configuration is written to the server, it might show problems when restarting or reloading.\nAre you sure the configuration is correct?"),
-            _("Writing configuration file to server"), wxICON_EXCLAMATION|wxYES_NO|wxNO_DEFAULT);
+                            _("Writing configuration file to server"), wxICON_EXCLAMATION | wxYES_NO | wxNO_DEFAULT);
 
         if (msg.ShowModal() != wxID_YES)
             return;
@@ -297,18 +297,18 @@ void frmConfig::OnSave(wxCommandEvent& event)
 }
 
 
-void frmConfig::OnSaveAs(wxCommandEvent& event)
+void frmConfig::OnSaveAs(wxCommandEvent &event)
 {
 #ifdef __WXMSW__
-    wxFileDialog *dlg=new wxFileDialog(this, _("Save configuration file as"), lastDir, lastFilename, 
-        _("Configuration files (*.conf)|*.conf|All files (*.*)|*.*"), wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+    wxFileDialog *dlg = new wxFileDialog(this, _("Save configuration file as"), lastDir, lastFilename,
+                                         _("Configuration files (*.conf)|*.conf|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #else
-    wxFileDialog *dlg=new wxFileDialog(this, _("Save configuration file as"), lastDir, lastFilename, 
-        _("Configuration files (*.conf)|*.conf|All files (*)|*"), wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+    wxFileDialog *dlg = new wxFileDialog(this, _("Save configuration file as"), lastDir, lastFilename,
+                                         _("Configuration files (*.conf)|*.conf|All files (*)|*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #endif
     if (dlg->ShowModal() == wxID_OK)
     {
-        lastFilename=dlg->GetFilename();
+        lastFilename = dlg->GetFilename();
         lastDir = dlg->GetDirectory();
         lastPath = dlg->GetPath();
 
@@ -348,10 +348,10 @@ bool frmConfig::CheckChanged(bool canVeto)
 {
     if (changed && settings->GetAskSaveConfirmation())
     {
-        wxMessageDialog msg(this, _("The configuration is modified.\nDo you want to save changes?"), 
-            GetTitle(), 
-                    wxYES_NO|wxNO_DEFAULT|wxICON_EXCLAMATION|
-                    (canVeto ? wxCANCEL : 0));
+        wxMessageDialog msg(this, _("The configuration is modified.\nDo you want to save changes?"),
+                            GetTitle(),
+                            wxYES_NO | wxNO_DEFAULT | wxICON_EXCLAMATION |
+                            (canVeto ? wxCANCEL : 0));
 
         switch (msg.ShowModal())
         {
@@ -369,7 +369,7 @@ bool frmConfig::CheckChanged(bool canVeto)
 
 bool frmConfig::DoWriteFile(const wxChar *str, pgConn *conn)
 {
-    bool done=false;
+    bool done = false;
 
     wxString buffer;
     if (filetype != wxTextFileType_Unix)
@@ -380,12 +380,12 @@ bool frmConfig::DoWriteFile(const wxChar *str, pgConn *conn)
     if (conn)
     {
         done = conn->ExecuteVoid(
-            wxT("SELECT pg_file_unlink('") + serverFileName + wxT(".bak');\n")
-            wxT("SELECT pg_file_write('")  + serverFileName + wxT(".tmp', ") 
-                                           + conn->qtDbString(str) + wxT(", false);\n")
-            wxT("SELECT pg_file_rename('") + serverFileName + wxT(".tmp', '") 
-                                           + serverFileName + wxT("', '") 
-                                           + serverFileName + wxT(".bak');"));
+                   wxT("SELECT pg_file_unlink('") + serverFileName + wxT(".bak');\n")
+                   wxT("SELECT pg_file_write('")  + serverFileName + wxT(".tmp', ")
+                   + conn->qtDbString(str) + wxT(", false);\n")
+                   wxT("SELECT pg_file_rename('") + serverFileName + wxT(".tmp', '")
+                   + serverFileName + wxT("', '")
+                   + serverFileName + wxT(".bak');"));
         if (!done)
             conn->ExecuteVoid(
                 wxT("SELECT pg_file_unlink('") + serverFileName + wxT(".tmp')"));
@@ -400,7 +400,7 @@ bool frmConfig::DoWriteFile(const wxChar *str, pgConn *conn)
 #endif
             file.Write(str);
             file.Close();
-            done=true;
+            done = true;
         }
     }
 
@@ -417,7 +417,7 @@ bool frmConfig::DoWriteFile(const wxChar *str, pgConn *conn)
 
 void frmConfig::DisplayHint(bool force)
 {
-    wxString str=GetHintString();
+    wxString str = GetHintString();
     if (str.IsEmpty())
     {
         if (!force)
@@ -431,15 +431,15 @@ void frmConfig::DisplayHint(bool force)
 
 frmConfig *frmConfig ::Create(const wxString &title, const wxString &configFile, tryMode mode)
 {
-    frmConfig *frm=0;
+    frmConfig *frm = 0;
     if (wxFile::Exists(configFile))
     {
-        if (mode == HBAFILE ||configFile.Right(11) == wxT("pg_hba.conf"))
+        if (mode == HBAFILE || configFile.Right(11) == wxT("pg_hba.conf"))
             frm = new frmHbaConfig(title, configFile);
         else if (mode == MAINFILE || configFile.Right(15) == wxT("postgresql.conf"))
             frm = new frmMainConfig(title, configFile);
-		else if (mode == PGPASSFILE || configFile.Right(11) == wxT("pgpass.conf") || configFile.Right(7) == wxT(".pgpass"))
-			frm = new frmPgpassConfig(title, configFile);
+        else if (mode == PGPASSFILE || configFile.Right(11) == wxT("pgpass.conf") || configFile.Right(7) == wxT(".pgpass"))
+            frm = new frmPgpassConfig(title, configFile);
 
         // unknown config file!
     }

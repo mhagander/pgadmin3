@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -35,7 +35,7 @@ WX_DEFINE_OBJARRAY(pgPassConfigLineArray);
 
 BEGIN_EVENT_TABLE(frmPgpassConfig, frmConfig)
     EVT_MENU(MNU_UNDO,                      frmPgpassConfig::OnUndo)
-	EVT_MENU(MNU_DELETE,					frmPgpassConfig::OnDelete)
+    EVT_MENU(MNU_DELETE,					frmPgpassConfig::OnDelete)
     EVT_MENU(MNU_CONTENTS,                  frmPgpassConfig::OnContents)
     EVT_LIST_ITEM_ACTIVATED(CTL_CFGVIEW,     frmPgpassConfig::OnEditSetting)
     EVT_LIST_ITEM_SELECTED(CTL_CFGVIEW,     frmPgpassConfig::OnSelectSetting)
@@ -43,31 +43,31 @@ END_EVENT_TABLE()
 
 #define CACE_TITLE _("Client Access Configuration Editor")
 
-frmPgpassConfig::frmPgpassConfig(const wxString& title, const wxString &configFile)
-: frmConfig(title + wxT(" - ") + _("Client Access Configuration Editor"), configFile)
+frmPgpassConfig::frmPgpassConfig(const wxString &title, const wxString &configFile)
+    : frmConfig(title + wxT(" - ") + _("Client Access Configuration Editor"), configFile)
 {
     Init();
 
     OpenLastFile();
 
-	helpMenu->Enable(MNU_HINT, false);
-	toolBar->EnableTool(MNU_HINT, false);
+    helpMenu->Enable(MNU_HINT, false);
+    toolBar->EnableTool(MNU_HINT, false);
 }
 
 frmPgpassConfig::frmPgpassConfig(frmMain *parent)
-: frmConfig(parent, CACE_TITLE, 0)
+    : frmConfig(parent, CACE_TITLE, 0)
 {
-	Init();
+    Init();
 
-	lastPath = sysSettings::GetConfigFile(sysSettings::PGPASS);
-	wxFile f;
-	if (!f.Exists(lastPath))
-		f.Create(lastPath, false, wxS_DEFAULT);
-	
-	OpenLastFile();
+    lastPath = sysSettings::GetConfigFile(sysSettings::PGPASS);
+    wxFile f;
+    if (!f.Exists(lastPath))
+        f.Create(lastPath, false, wxS_DEFAULT);
 
-	helpMenu->Enable(MNU_HINT, false);
-	toolBar->EnableTool(MNU_HINT, false);
+    OpenLastFile();
+
+    helpMenu->Enable(MNU_HINT, false);
+    toolBar->EnableTool(MNU_HINT, false);
 }
 
 frmPgpassConfig::~frmPgpassConfig()
@@ -86,28 +86,28 @@ void frmPgpassConfig::Init()
     listEdit = new ctlListView(this, CTL_CFGVIEW, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER);
     listEdit->SetImageList(configImageList, wxIMAGE_LIST_SMALL);
 
-	listEdit->AddColumn(_("Host"), 50);
-	listEdit->AddColumn(_("Port"), 30);
-	listEdit->AddColumn(_("Database"), 80);
-	listEdit->AddColumn(_("Username"), 80);
-	listEdit->AddColumn(_("Password"), 80);
+    listEdit->AddColumn(_("Host"), 50);
+    listEdit->AddColumn(_("Port"), 30);
+    listEdit->AddColumn(_("Database"), 80);
+    listEdit->AddColumn(_("Username"), 80);
+    listEdit->AddColumn(_("Password"), 80);
 
-	editMenu->Enable(MNU_DELETE, false);
-	toolBar->EnableTool(MNU_DELETE, false);
+    editMenu->Enable(MNU_DELETE, false);
+    toolBar->EnableTool(MNU_DELETE, false);
 }
 
-void frmPgpassConfig::OnSelectSetting(wxListEvent& event)
+void frmPgpassConfig::OnSelectSetting(wxListEvent &event)
 {
     // Enable delete because an item has been selected
     if (event.GetIndex() != listEdit->GetItemCount() - 1)
     {
-    editMenu->Enable(MNU_DELETE, true);
-    toolBar->EnableTool(MNU_DELETE, true);
+        editMenu->Enable(MNU_DELETE, true);
+        toolBar->EnableTool(MNU_DELETE, true);
     }
     else
     {
-    editMenu->Enable(MNU_DELETE, false);
-    toolBar->EnableTool(MNU_DELETE, false);
+        editMenu->Enable(MNU_DELETE, false);
+        toolBar->EnableTool(MNU_DELETE, false);
     }
 
     // Disable undo because we don't want to undo the wrong line.
@@ -136,7 +136,7 @@ void frmPgpassConfig::DisplayFile(const wxString &str)
 
     while (strtok.HasMoreTokens())
     {
-        pgPassConfigLine *line=new pgPassConfigLine(strtok.GetNextToken());
+        pgPassConfigLine *line = new pgPassConfigLine(strtok.GetNextToken());
         lines.Add(line);
     }
 
@@ -144,23 +144,23 @@ void frmPgpassConfig::DisplayFile(const wxString &str)
 
     size_t i;
 
-    for (i=0 ; i < lines.GetCount() ; i++)
+    for (i = 0 ; i < lines.GetCount() ; i++)
     {
         pgPassConfigLine &line = lines.Item(i);
-        int imgIndex=0;
+        int imgIndex = 0;
         if (!line.isComment)
             imgIndex = 1;
-        long pos=listEdit->AppendItem(imgIndex, line.hostname);
+        long pos = listEdit->AppendItem(imgIndex, line.hostname);
 
-		listEdit->SetItem(pos, 1, line.port);
-		listEdit->SetItem(pos, 2, line.database);
-		listEdit->SetItem(pos, 3, line.username);
-		listEdit->SetItem(pos, 4, line.password.IsEmpty() ? wxT(""):wxT("*********"));
-		line.item = pos;
+        listEdit->SetItem(pos, 1, line.port);
+        listEdit->SetItem(pos, 2, line.database);
+        listEdit->SetItem(pos, 3, line.username);
+        listEdit->SetItem(pos, 4, line.password.IsEmpty() ? wxT("") : wxT("*********"));
+        line.item = pos;
     }
-    if (!i || !lines.Item(i-1).text.IsEmpty())
+    if (!i || !lines.Item(i - 1).text.IsEmpty())
     {
-        pgPassConfigLine *line=new pgPassConfigLine();
+        pgPassConfigLine *line = new pgPassConfigLine();
         lines.Add(line);
         line->item = listEdit->AppendItem(0, wxEmptyString);
     }
@@ -171,19 +171,19 @@ void frmPgpassConfig::WriteFile(pgConn *conn)
 {
     wxString str;
     size_t i;
-    for (i=0 ; i < lines.GetCount()-1 ; i++)
+    for (i = 0 ; i < lines.GetCount() - 1 ; i++)
         str.Append(lines.Item(i).GetText() + wxT("\n"));
 
     if (DoWriteFile(str, NULL))
     {
-        changed=false;
+        changed = false;
         fileMenu->Enable(MNU_SAVE, false);
         editMenu->Enable(MNU_UNDO, false);
         toolBar->EnableTool(MNU_SAVE, false);
         toolBar->EnableTool(MNU_UNDO, false);
 
-		// make intermediate change current
-        for (i=0 ; i < lines.GetCount() ; i++)
+        // make intermediate change current
+        for (i = 0 ; i < lines.GetCount() ; i++)
             lines.Item(i).Init(lines.Item(i).GetText());
     }
 }
@@ -198,25 +198,25 @@ wxString frmPgpassConfig::GetHintString()
 
 wxString frmPgpassConfig::GetHelpPage() const
 {
-    wxString page= wxT("libpq-pgpass");
-;
+    wxString page = wxT("libpq-pgpass");
+    ;
     return page;
 }
 
 
-void frmPgpassConfig::OnContents(wxCommandEvent& event)
+void frmPgpassConfig::OnContents(wxCommandEvent &event)
 {
     DisplayHelp(wxT("index"), HELP_PGADMIN);
 }
 
 
-void frmPgpassConfig::OnUndo(wxCommandEvent& ev)
+void frmPgpassConfig::OnUndo(wxCommandEvent &ev)
 {
-    int pos=listEdit->GetSelection();
+    int pos = listEdit->GetSelection();
     if (pos >= 0)
     {
         size_t i;
-        for (i=0 ; i < lines.GetCount() ; i++)
+        for (i = 0 ; i < lines.GetCount() ; i++)
         {
             pgPassConfigLine &line = lines.Item(i);
 
@@ -232,53 +232,53 @@ void frmPgpassConfig::OnUndo(wxCommandEvent& ev)
 
 void frmPgpassConfig::OnDelete(wxCommandEvent &event)
 {
-	bool found = false;
-	int pos = listEdit->GetSelection();
-	if (pos >= 0)
-	{
-		listEdit->DeleteCurrentItem();
-		size_t i;
-		for (i=0; i < lines.GetCount(); i++)
-		{
-			if (lines.Item(i).item == pos)
-			{
-				lines.RemoveAt(i);
-				changed = true;
+    bool found = false;
+    int pos = listEdit->GetSelection();
+    if (pos >= 0)
+    {
+        listEdit->DeleteCurrentItem();
+        size_t i;
+        for (i = 0; i < lines.GetCount(); i++)
+        {
+            if (lines.Item(i).item == pos)
+            {
+                lines.RemoveAt(i);
+                changed = true;
                 fileMenu->Enable(MNU_SAVE, true);
                 editMenu->Enable(MNU_UNDO, false);
                 editMenu->Enable(MNU_DELETE, false);
                 toolBar->EnableTool(MNU_SAVE, true);
                 toolBar->EnableTool(MNU_UNDO, false);
                 toolBar->EnableTool(MNU_DELETE, false);
-				found = true;
-				break;
-			}
-		}
-		if (found) 
-		{
-			/* Renumber all positions */
-			for (i=0; i < lines.GetCount(); i++)
-			{
-				if (lines.Item(i).item > pos)
-					lines.Item(i).item--;
-			}
-		}
-	}
+                found = true;
+                break;
+            }
+        }
+        if (found)
+        {
+            /* Renumber all positions */
+            for (i = 0; i < lines.GetCount(); i++)
+            {
+                if (lines.Item(i).item > pos)
+                    lines.Item(i).item--;
+            }
+        }
+    }
 }
 
 void frmPgpassConfig::UpdateDisplay(pgPassConfigLine &line)
 {
-    long pos=line.item;
+    long pos = line.item;
     listEdit->SetItemImage(pos, (line.isComment ? 0 : 1));
-	listEdit->SetItem(pos, 0, line.hostname);
-	listEdit->SetItem(pos, 1, line.port);
-	listEdit->SetItem(pos, 2, line.database);
-	listEdit->SetItem(pos, 3, line.username);
-	listEdit->SetItem(pos, 4, line.password.IsEmpty() ? wxT(""):wxT("*********"));
+    listEdit->SetItem(pos, 0, line.hostname);
+    listEdit->SetItem(pos, 1, line.port);
+    listEdit->SetItem(pos, 2, line.database);
+    listEdit->SetItem(pos, 3, line.username);
+    listEdit->SetItem(pos, 4, line.password.IsEmpty() ? wxT("") : wxT("*********"));
 }
 
 
-void frmPgpassConfig::OnEditSetting(wxListEvent& event)
+void frmPgpassConfig::OnEditSetting(wxListEvent &event)
 {
     long pos = event.GetIndex();
     if (pos < 0)
@@ -286,12 +286,12 @@ void frmPgpassConfig::OnEditSetting(wxListEvent& event)
 
     size_t i;
 
-    for (i=0 ; i < lines.GetCount() ; i++)
+    for (i = 0 ; i < lines.GetCount() ; i++)
     {
         if (lines.Item(i).item == pos)
         {
             pgPassConfigLine &line = lines.Item(i);
-            bool isLastLine = (i == lines.GetCount()-1 && line.isComment && line.text.IsEmpty());
+            bool isLastLine = (i == lines.GetCount() - 1 && line.isComment && line.text.IsEmpty());
 
             dlgPgpassConfig dlg(this, &line);
             if (dlg.Go() == wxID_OK)
@@ -300,12 +300,12 @@ void frmPgpassConfig::OnEditSetting(wxListEvent& event)
 
                 if (isLastLine)
                 {
-                    long pos=listEdit->AppendItem(0, wxEmptyString);
-                    pgPassConfigLine *line=new pgPassConfigLine();
+                    long pos = listEdit->AppendItem(0, wxEmptyString);
+                    pgPassConfigLine *line = new pgPassConfigLine();
                     line->item = pos;
                     lines.Add(line);
                 }
-                changed=true;
+                changed = true;
                 fileMenu->Enable(MNU_SAVE, true);
                 editMenu->Enable(MNU_UNDO, true);
                 toolBar->EnableTool(MNU_SAVE, true);
@@ -322,14 +322,14 @@ pgpassConfigFileFactory::pgpassConfigFileFactory(menuFactoryList *list, wxMenu *
 #ifdef WIN32
     mnu->Append(id, _("Open pgpass.conf"), _("Open configuration editor with pgpass.conf."));
 #else
-	mnu->Append(id, _("Open .pgpass"), _("Open configuration editor with .pgpass"));
+    mnu->Append(id, _("Open .pgpass"), _("Open configuration editor with .pgpass"));
 #endif
 }
 
 
 wxWindow *pgpassConfigFileFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-	frmConfig *dlg = new frmPgpassConfig(form);
+    frmConfig *dlg = new frmPgpassConfig(form);
     dlg->Go();
     return dlg;
 }

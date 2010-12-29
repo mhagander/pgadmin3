@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgRole.h - Role property 
+// dlgRole.h - Role property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,7 @@ class pgRole;
 class dlgRole : public dlgProperty
 {
 public:
-    dlgRole(pgaFactory *factory, frmMain *frame, pgRole *node=0, bool chkLogin=false);
+    dlgRole(pgaFactory *factory, frmMain *frame, pgRole *node = 0, bool chkLogin = false);
 
     void CheckChange();
     wxString GetSql();

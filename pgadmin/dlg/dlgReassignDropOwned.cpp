@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -37,16 +37,16 @@ END_EVENT_TABLE()
 
 
 dlgReassignDropOwned::dlgReassignDropOwned(frmMain *win, pgConn *conn,
-  pgRole *role, wxString dbrestriction)
+        pgRole *role, wxString dbrestriction)
 {
-	wxString query;
+    wxString query;
 
-	connection=conn;
-	parent=win;
-	
-	wxWindowBase::SetFont(settings->GetSystemFont());
+    connection = conn;
+    parent = win;
+
+    wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(win, wxT("dlgReassignDropOwned"));
-    
+
     cbRoles->Clear();
     query = wxT("SELECT rolname FROM pg_roles WHERE rolname<>") + conn->qtDbString(role->GetName()) + wxT(" ORDER BY rolname");
     pgSetIterator roles(connection, query);
@@ -56,7 +56,7 @@ dlgReassignDropOwned::dlgReassignDropOwned(frmMain *win, pgConn *conn,
     }
     cbRoles->SetSelection(0);
     cbRoles->Enable(cbRoles->GetStrings().Count() > 0);
-	
+
     cbDatabases->Clear();
     query = wxT("SELECT DISTINCT datname FROM pg_database WHERE datallowconn");
     if (!dbrestriction.IsEmpty())
@@ -79,13 +79,13 @@ dlgReassignDropOwned::~dlgReassignDropOwned()
 }
 
 
-void dlgReassignDropOwned::OnOK(wxCommandEvent& ev)
+void dlgReassignDropOwned::OnOK(wxCommandEvent &ev)
 {
     EndModal(wxID_OK);
 }
 
 
-void dlgReassignDropOwned::OnCancel(wxCommandEvent& ev)
+void dlgReassignDropOwned::OnCancel(wxCommandEvent &ev)
 {
     EndModal(wxID_CANCEL);
 }
@@ -97,15 +97,15 @@ void dlgReassignDropOwned::OnChange(wxCommandEvent &ev)
 
 wxString dlgReassignDropOwned::GetDatabase()
 {
-	return cbDatabases->GetValue();
+    return cbDatabases->GetValue();
 }
 
 wxString dlgReassignDropOwned::GetRole()
 {
-	return cbRoles->GetValue();
+    return cbRoles->GetValue();
 }
 
 bool dlgReassignDropOwned::IsReassign()
 {
-	return rbReassignTo->GetValue();
+    return rbReassignTo->GetValue();
 }

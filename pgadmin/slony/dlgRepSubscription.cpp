@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -40,14 +40,14 @@ END_EVENT_TABLE();
 
 dlgProperty *slSubscriptionFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgRepSubscription(this, frame, (slSubscription*)node, (slSet*)parent);
+    return new dlgRepSubscription(this, frame, (slSubscription *)node, (slSet *)parent);
 }
 
 dlgRepSubscription::dlgRepSubscription(pgaFactory *f, frmMain *frame, slSubscription *sub, slSet *s)
-: dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepSubscription"))
+    : dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepSubscription"))
 {
-    subscription=sub;
-    set=s;
+    subscription = sub;
+    set = s;
 }
 
 
@@ -92,19 +92,19 @@ int dlgRepSubscription::Go(bool modal)
     else
     {
         pgSet *sets = connection->ExecuteSet(
-            wxT("SELECT no_id, no_comment\n")
-            wxT("  FROM ") + cluster->GetSchemaPrefix() + wxT("sl_node\n") 
-            wxT(" WHERE no_active AND no_id <> ") + NumToStr(cluster->GetLocalNodeID()));
+                          wxT("SELECT no_id, no_comment\n")
+                          wxT("  FROM ") + cluster->GetSchemaPrefix() + wxT("sl_node\n")
+                          wxT(" WHERE no_active AND no_id <> ") + NumToStr(cluster->GetLocalNodeID()));
 
         if (sets)
         {
             while (!sets->Eof())
             {
                 cbProvider->Append(IdAndName(sets->GetLong(wxT("no_id")), sets->GetVal(wxT("no_comment"))),
-                    (void*)sets->GetLong(wxT("no_id")));
+                                   (void *)sets->GetLong(wxT("no_id")));
 
                 if (subscription && sets->GetLong(wxT("no_id")) == subscription->GetProviderId())
-                    cbProvider->SetSelection(cbProvider->GetCount()-1);
+                    cbProvider->SetSelection(cbProvider->GetCount() - 1);
                 sets->MoveNext();
             }
             delete sets;
@@ -121,9 +121,9 @@ int dlgRepSubscription::Go(bool modal)
 
 pgObject *dlgRepSubscription::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=subscriptionFactory.CreateObjects(collection, 0,
-         wxT(" WHERE set_id = ") + NumToStr(set->GetSlId()) +
-         wxT("   AND sub_receiver = ") + NumToStr(cluster->GetLocalNodeID()));
+    pgObject *obj = subscriptionFactory.CreateObjects(collection, 0,
+                    wxT(" WHERE set_id = ") + NumToStr(set->GetSlId()) +
+                    wxT("   AND sub_receiver = ") + NumToStr(cluster->GetLocalNodeID()));
 
     return obj;
 }
@@ -136,11 +136,11 @@ void dlgRepSubscription::CheckChange()
         int sel = cbProvider->GetCurrentSelection();
 
         EnableOK(sel >= 0 && (chkForward->GetValue() != subscription->GetForward()
-            ||   (long)cbProvider->GetClientData(sel) != subscription->GetProviderId()));
+                              ||   (long)cbProvider->GetClientData(sel) != subscription->GetProviderId()));
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
 
         EnableOK(enable);
     }
@@ -153,21 +153,21 @@ wxString dlgRepSubscription::GetSql()
     wxString sql;
 
     sql = wxT("SELECT ") + cluster->GetSchemaPrefix() + wxT("subscribeset(")
-        + NumToStr(set->GetSlId()) + wxT(", ");
+          + NumToStr(set->GetSlId()) + wxT(", ");
 
     if (cluster && cluster->ClusterMinimumVersion(1, 1))
     {
         // Actually, provider and receiver are exchanged here.
-        sql +=NumToStr(cluster->GetLocalNodeID()) + wxT(", ")
-            + NumToStr((long)cbProvider->GetClientData(cbProvider->GetCurrentSelection()));
+        sql += NumToStr(cluster->GetLocalNodeID()) + wxT(", ")
+               + NumToStr((long)cbProvider->GetClientData(cbProvider->GetCurrentSelection()));
     }
     else
     {
-        sql +=NumToStr((long)cbProvider->GetClientData(cbProvider->GetCurrentSelection())) + wxT(", ")
-            + NumToStr(cluster->GetLocalNodeID());
+        sql += NumToStr((long)cbProvider->GetClientData(cbProvider->GetCurrentSelection())) + wxT(", ")
+               + NumToStr(cluster->GetLocalNodeID());
     }
     sql += wxT(", ")
-        + BoolToStr(chkForward->GetValue()) + wxT(");");
+           + BoolToStr(chkForward->GetValue()) + wxT(");");
 
     return sql;
 }

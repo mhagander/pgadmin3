@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -46,11 +46,11 @@ END_EVENT_TABLE()
 #define txtPassword         CTRL_TEXT("txtPassword")
 #define txtRePassword       CTRL_TEXT("txtRePassword")
 
-dlgPgpassConfig::dlgPgpassConfig(pgFrame *parent, pgPassConfigLine *_line) : 
-DialogWithHelp((frmMain*)parent)
+dlgPgpassConfig::dlgPgpassConfig(pgFrame *parent, pgPassConfigLine *_line) :
+    DialogWithHelp((frmMain *)parent)
 {
     wxWindowBase::SetFont(settings->GetSystemFont());
-    LoadResource((wxWindow*)parent, wxT("dlgPgpassConfig"));
+    LoadResource((wxWindow *)parent, wxT("dlgPgpassConfig"));
 
     userAdding = databaseAdding = false;
 
@@ -60,12 +60,12 @@ DialogWithHelp((frmMain*)parent)
     line = _line;
 
     chkEnabled->SetValue(!line->isComment);
-	txtHostname->SetValue(line->hostname);
-	txtPort->SetValue(line->port);
-	txtDatabase->SetValue(line->database);
-	txtUsername->SetValue(line->username);
-	txtPassword->SetValue(line->password);
-	txtRePassword->SetValue(line->password);
+    txtHostname->SetValue(line->hostname);
+    txtPort->SetValue(line->port);
+    txtDatabase->SetValue(line->database);
+    txtUsername->SetValue(line->username);
+    txtPassword->SetValue(line->password);
+    txtRePassword->SetValue(line->password);
     btnOK->Disable();
 
 }
@@ -83,36 +83,36 @@ wxString dlgPgpassConfig::GetHelpPage() const
 }
 
 
-void dlgPgpassConfig::OnChange(wxCommandEvent& ev)
+void dlgPgpassConfig::OnChange(wxCommandEvent &ev)
 {
-	/* Add any required validation rules here */
-        wxString passwd=txtPassword->GetValue();
-        wxString repasswd=txtRePassword->GetValue();
-        if (passwd.IsEmpty()||(passwd.Length() >1))
-        {
-            if (!passwd.compare(repasswd))
-                btnOK->Enable();
-        }
+    /* Add any required validation rules here */
+    wxString passwd = txtPassword->GetValue();
+    wxString repasswd = txtRePassword->GetValue();
+    if (passwd.IsEmpty() || (passwd.Length() > 1))
+    {
+        if (!passwd.compare(repasswd))
+            btnOK->Enable();
+    }
 }
 
 
-void dlgPgpassConfig::OnOK(wxCommandEvent& ev)
+void dlgPgpassConfig::OnOK(wxCommandEvent &ev)
 {
 #ifdef __WXGTK__
     if (!btnOK->IsEnabled())
         return;
 #endif
-	line->isComment = !chkEnabled->GetValue();
-	line->hostname = txtHostname->GetValue();
-	line->port = txtPort->GetValue();
-	line->database = txtDatabase->GetValue();
-	line->username = txtUsername->GetValue();
-	line->password = txtPassword->GetValue();
+    line->isComment = !chkEnabled->GetValue();
+    line->hostname = txtHostname->GetValue();
+    line->port = txtPort->GetValue();
+    line->database = txtDatabase->GetValue();
+    line->username = txtUsername->GetValue();
+    line->password = txtPassword->GetValue();
     EndModal(wxID_OK);
 }
 
 
-void dlgPgpassConfig::OnCancel(wxCommandEvent& ev)
+void dlgPgpassConfig::OnCancel(wxCommandEvent &ev)
 {
     EndModal(wxID_CANCEL);
 }

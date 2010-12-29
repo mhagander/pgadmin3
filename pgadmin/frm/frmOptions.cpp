@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -86,8 +86,8 @@
 #define chkSQLUseSystemForegroundColour  CTRL_CHECKBOX("chkSQLUseSystemForegroundColour")
 #define pickerSQLBackgroundColour        CTRL_COLOURPICKER("pickerSQLBackgroundColour")
 #define pickerSQLForegroundColour        CTRL_COLOURPICKER("pickerSQLForegroundColour")
-#define stSQLCustomBackgroundColour      CTRL_STATIC("stSQLCustomBackgroundColour") 
-#define stSQLCustomForegroundColour      CTRL_STATIC("stSQLCustomForegroundColour") 
+#define stSQLCustomBackgroundColour      CTRL_STATIC("stSQLCustomBackgroundColour")
+#define stSQLCustomForegroundColour      CTRL_STATIC("stSQLCustomForegroundColour")
 #define pickerSQLMarginBackgroundColour  CTRL_COLOURPICKER("pickerSQLMarginBackgroundColour")
 #define pickerSQLColour1            CTRL_COLOURPICKER("pickerSQLColour1")
 #define pickerSQLColour2            CTRL_COLOURPICKER("pickerSQLColour2")
@@ -106,8 +106,8 @@ BEGIN_EVENT_TABLE(frmOptions, pgDialog)
     EVT_BUTTON (XRCID("btnDefault"),                              frmOptions::OnDefault)
     EVT_CHECKBOX(XRCID("chkSuppressHints"),                       frmOptions::OnSuppressHints)
     EVT_CHECKBOX(XRCID("chkResetHints"),                          frmOptions::OnResetHints)
-	EVT_CHECKBOX(XRCID("chkSQLUseSystemBackgroundColour"),        frmOptions::OnChangeSQLUseCustomColour)
-	EVT_CHECKBOX(XRCID("chkSQLUseSystemForegroundColour"),        frmOptions::OnChangeSQLUseCustomColour)
+    EVT_CHECKBOX(XRCID("chkSQLUseSystemBackgroundColour"),        frmOptions::OnChangeSQLUseCustomColour)
+    EVT_CHECKBOX(XRCID("chkSQLUseSystemForegroundColour"),        frmOptions::OnChangeSQLUseCustomColour)
     EVT_BUTTON (wxID_OK,                                          frmOptions::OnOK)
     EVT_BUTTON (wxID_HELP,                                        frmOptions::OnHelp)
     EVT_BUTTON (wxID_CANCEL,                                      frmOptions::OnCancel)
@@ -116,7 +116,7 @@ END_EVENT_TABLE()
 
 
 //----------------------------------------------------------------------------
-// wxRichTextFontDialog: a substitute for wxFontDialog, which is broken on 
+// wxRichTextFontDialog: a substitute for wxFontDialog, which is broken on
 // Mac OS X Snow Leopard
 //----------------------------------------------------------------------------
 
@@ -129,25 +129,45 @@ END_EVENT_TABLE()
 class wxRichTextFontDialog: public wxFontDialogBase
 {
 public:
-    wxRichTextFontDialog() : wxFontDialogBase() { Init(); /* must be
-														   Create()d later */ }
+    wxRichTextFontDialog() : wxFontDialogBase()
+    {
+        Init(); /* must be
+														   Create()d later */
+    }
     wxRichTextFontDialog(wxWindow *parent)
-	: wxFontDialogBase(parent) { Init(); Create(parent); }
-    wxRichTextFontDialog(wxWindow *parent, const wxFontData& data)
-	: wxFontDialogBase(parent, data) { Init(); Create(parent, data); }
-	
-    void Init() { m_title = _("Font"); }
-	
+        : wxFontDialogBase(parent)
+    {
+        Init();
+        Create(parent);
+    }
+    wxRichTextFontDialog(wxWindow *parent, const wxFontData &data)
+        : wxFontDialogBase(parent, data)
+    {
+        Init();
+        Create(parent, data);
+    }
+
+    void Init()
+    {
+        m_title = _("Font");
+    }
+
     virtual int ShowModal();
-	
-    virtual void SetTitle( const wxString& title) { m_title = title; }
-    virtual wxString GetTitle() const { return m_title; }
-	
+
+    virtual void SetTitle( const wxString &title)
+    {
+        m_title = title;
+    }
+    virtual wxString GetTitle() const
+    {
+        return m_title;
+    }
+
 protected:
     wxString    m_title;
-	
+
     DECLARE_DYNAMIC_CLASS_NO_COPY(wxRichTextFontDialog)
-	
+
 };
 
 IMPLEMENT_DYNAMIC_CLASS(wxRichTextFontDialog, wxDialog)
@@ -157,27 +177,27 @@ int wxRichTextFontDialog::ShowModal()
     wxTextAttrEx attr;
     if (m_fontData.GetInitialFont().Ok())
         attr.SetFont(m_fontData.GetInitialFont());
-	
+
     if (m_fontData.GetColour().Ok())
         attr.SetTextColour(m_fontData.GetColour());
-	
+
     wxRichTextFormattingDialog formatDlg(wxRICHTEXT_FORMAT_FONT,
-										 GetParent(), GetTitle());
+                                         GetParent(), GetTitle());
     formatDlg.SetAttributes(attr);
-	
+
     if (formatDlg.ShowModal() == wxID_OK)
     {
         wxTextAttrEx attr(formatDlg.GetAttributes());
-		
+
         m_fontData.SetChosenFont(attr.GetFont());
         m_fontData.SetColour(attr.GetTextColour());
-		
+
         return wxID_OK;
     }
     else
         return wxID_CANCEL;
-	
-} 
+
+}
 
 #endif
 
@@ -185,9 +205,9 @@ int wxRichTextFontDialog::ShowModal()
 
 frmOptions::frmOptions(frmMain *parent)
 {
-    mainForm=parent;
+    mainForm = parent;
     wxWindowBase::SetFont(settings->GetSystemFont());
-    LoadResource(parent, wxT("frmOptions")); 
+    LoadResource(parent, wxT("frmOptions"));
 
     // Icon
     SetIcon(wxIcon(properties_xpm));
@@ -207,7 +227,7 @@ frmOptions::frmOptions(frmMain *parent)
     txtIndent->SetValidator(numval);
     txtHistoryMaxQueries->SetValidator(numval);
     txtHistoryMaxQuerySize->SetValidator(numval);
-    
+
     pickerLogfile->SetPath(settings->GetLogFile());
     radLoglevel->SetSelection(settings->GetLogLevel());
     txtMaxRows->SetValue(NumToStr(settings->GetMaxRows()));
@@ -235,7 +255,7 @@ frmOptions::frmOptions(frmMain *parent)
     txtEdbHelpPath->SetValue(settings->GetEdbHelpPath());
     txtGpHelpPath->SetValue(settings->GetGpHelpPath());
     txtSlonyHelpPath->SetValue(settings->GetSlonyHelpPath());
-    
+
     txtSystemSchemas->SetValue(settings->GetSystemSchemas());
     chkUnicodeFile->SetValue(settings->GetUnicodeFile());
     chkWriteBOM->SetValue(settings->GetWriteBOM());
@@ -259,27 +279,27 @@ frmOptions::frmOptions(frmMain *parent)
     txtHistoryMaxQueries->SetValue(NumToStr(settings->GetHistoryMaxQueries()));
     txtHistoryMaxQuerySize->SetValue(NumToStr(settings->GetHistoryMaxQuerySize()));
 
-	chkSQLUseSystemBackgroundColour->SetValue(settings->GetSQLBoxUseSystemBackground());
-	chkSQLUseSystemForegroundColour->SetValue(settings->GetSQLBoxUseSystemForeground());
-	UpdateColourControls();
+    chkSQLUseSystemBackgroundColour->SetValue(settings->GetSQLBoxUseSystemBackground());
+    chkSQLUseSystemForegroundColour->SetValue(settings->GetSQLBoxUseSystemForeground());
+    UpdateColourControls();
 
-	pickerSQLColour1->SetColour(settings->GetSQLBoxColour(1));
-	pickerSQLColour2->SetColour(settings->GetSQLBoxColour(2));
-	pickerSQLColour3->SetColour(settings->GetSQLBoxColour(3));
-	pickerSQLColour4->SetColour(settings->GetSQLBoxColour(4));
-	pickerSQLColour5->SetColour(settings->GetSQLBoxColour(5));
-	pickerSQLColour6->SetColour(settings->GetSQLBoxColour(6));
-	pickerSQLColour7->SetColour(settings->GetSQLBoxColour(7));
-	pickerSQLColour10->SetColour(settings->GetSQLBoxColour(10));
-	pickerSQLColour11->SetColour(settings->GetSQLBoxColour(11));
+    pickerSQLColour1->SetColour(settings->GetSQLBoxColour(1));
+    pickerSQLColour2->SetColour(settings->GetSQLBoxColour(2));
+    pickerSQLColour3->SetColour(settings->GetSQLBoxColour(3));
+    pickerSQLColour4->SetColour(settings->GetSQLBoxColour(4));
+    pickerSQLColour5->SetColour(settings->GetSQLBoxColour(5));
+    pickerSQLColour6->SetColour(settings->GetSQLBoxColour(6));
+    pickerSQLColour7->SetColour(settings->GetSQLBoxColour(7));
+    pickerSQLColour10->SetColour(settings->GetSQLBoxColour(10));
+    pickerSQLColour11->SetColour(settings->GetSQLBoxColour(11));
 
-	chkKeywordsInUppercase->SetValue(settings->GetSQLKeywordsInUppercase());
+    chkKeywordsInUppercase->SetValue(settings->GetSQLKeywordsInUppercase());
 
     cbLanguage->Append(_("Default"));
-    int sel=0;
-    wxLanguage langId=settings->GetCanonicalLanguage();
+    int sel = 0;
+    wxLanguage langId = settings->GetCanonicalLanguage();
 
-    int langCount=existingLangs.GetCount();
+    int langCount = existingLangs.GetCount();
     if (langCount)
     {
         int langNo;
@@ -288,9 +308,9 @@ frmOptions::frmOptions(frmMain *parent)
         {
             langInfo = wxLocale::GetLanguageInfo(existingLangs.Item(langNo));
             cbLanguage->Append(wxT("(") + langInfo->CanonicalName + wxT(") ")
-                + existingLangNames.Item(langNo));
+                               + existingLangNames.Item(langNo));
             if (langId == langInfo->Language)
-                sel=langNo+1;
+                sel = langNo + 1;
         }
     }
     cbLanguage->SetSelection(sel);
@@ -331,7 +351,7 @@ frmOptions::frmOptions(frmMain *parent)
     lstDisplay->Append(_("Types"));
     lstDisplay->Append(_("Views"));
 
-    for (unsigned int x=0; x < lstDisplay->GetCount(); x++)
+    for (unsigned int x = 0; x < lstDisplay->GetCount(); x++)
         lstDisplay->Check(x, settings->GetDisplayOption(lstDisplay->GetString(x)));
 
     chkSystemObjects->SetValue(settings->GetShowSystemObjects());
@@ -348,15 +368,15 @@ frmOptions::~frmOptions()
 
 void frmOptions::OnHelp(wxCommandEvent &ev)
 {
-    long page=nbOptions->GetSelection();
-    DisplayHelp(wxT("options-tab") + NumToStr(page+1L), HELP_PGADMIN);
+    long page = nbOptions->GetSelection();
+    DisplayHelp(wxT("options-tab") + NumToStr(page + 1L), HELP_PGADMIN);
 }
 
 void frmOptions::OnDefault(wxCommandEvent &ev)
 {
     // Reset the display options to the defaults.
     // Clear them all first
-    for (unsigned int x=0; x < lstDisplay->GetCount(); x++)
+    for (unsigned int x = 0; x < lstDisplay->GetCount(); x++)
         lstDisplay->Check(x, settings->GetDisplayOption(lstDisplay->GetString(x), true));
 }
 
@@ -375,35 +395,35 @@ void frmOptions::OnResetHints(wxCommandEvent &ev)
 
 void frmOptions::UpdateColourControls()
 {
-	if (chkSQLUseSystemBackgroundColour->GetValue())
-	{
-		pickerSQLBackgroundColour->Enable(false);
-		pickerSQLBackgroundColour->SetColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-		stSQLCustomBackgroundColour->Enable(false);
-	}
-	else
-	{
-		pickerSQLBackgroundColour->Enable(true);
-		pickerSQLBackgroundColour->SetColour(settings->GetSQLBoxColourBackground());
-		stSQLCustomBackgroundColour->Enable(true);
-	}
+    if (chkSQLUseSystemBackgroundColour->GetValue())
+    {
+        pickerSQLBackgroundColour->Enable(false);
+        pickerSQLBackgroundColour->SetColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+        stSQLCustomBackgroundColour->Enable(false);
+    }
+    else
+    {
+        pickerSQLBackgroundColour->Enable(true);
+        pickerSQLBackgroundColour->SetColour(settings->GetSQLBoxColourBackground());
+        stSQLCustomBackgroundColour->Enable(true);
+    }
 
-	if (chkSQLUseSystemForegroundColour->GetValue())
-	{
-		pickerSQLForegroundColour->Enable(false);
-		pickerSQLForegroundColour->SetColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-		stSQLCustomForegroundColour->Enable(false);
-	}
-	else
-	{
-		pickerSQLForegroundColour->Enable(true);
-		pickerSQLForegroundColour->SetColour(settings->GetSQLBoxColourForeground());
-		stSQLCustomForegroundColour->Enable(true);
-	}
+    if (chkSQLUseSystemForegroundColour->GetValue())
+    {
+        pickerSQLForegroundColour->Enable(false);
+        pickerSQLForegroundColour->SetColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+        stSQLCustomForegroundColour->Enable(false);
+    }
+    else
+    {
+        pickerSQLForegroundColour->Enable(true);
+        pickerSQLForegroundColour->SetColour(settings->GetSQLBoxColourForeground());
+        stSQLCustomForegroundColour->Enable(true);
+    }
 
-	pickerSQLCaretColour->SetColour(settings->GetSQLColourCaret());
+    pickerSQLCaretColour->SetColour(settings->GetSQLColourCaret());
 
-	pickerSQLMarginBackgroundColour->SetColour(settings->GetSQLMarginBackgroundColour());
+    pickerSQLMarginBackgroundColour->SetColour(settings->GetSQLMarginBackgroundColour());
 }
 
 void frmOptions::OnChangeSQLUseCustomColour(wxCommandEvent &ev)
@@ -420,9 +440,9 @@ void frmOptions::OnOK(wxCommandEvent &ev)
     if (!pickerPostgresqlPath->GetPath().IsEmpty() && !isPgApp(pickerPostgresqlPath->GetPath() + wxT("/pg_dump")))
 #endif
     {
-        wxMessageBox(_("The PostgreSQL bin path specified is not valid or does not contain a PostgreSQL pg_dump executable.\n\nPlease select another directory, or leave the path blank."), _("Error"), wxICON_ERROR); 
+        wxMessageBox(_("The PostgreSQL bin path specified is not valid or does not contain a PostgreSQL pg_dump executable.\n\nPlease select another directory, or leave the path blank."), _("Error"), wxICON_ERROR);
         return;
-    }   
+    }
 
 #ifdef __WXMSW__
     if (!pickerEnterprisedbPath->GetPath().IsEmpty() && !isEdbApp(pickerEnterprisedbPath->GetPath() + wxT("\\pg_dump.exe")))
@@ -430,7 +450,7 @@ void frmOptions::OnOK(wxCommandEvent &ev)
     if (!pickerEnterprisedbPath->GetPath().IsEmpty() && !isEdbApp(pickerEnterprisedbPath->GetPath() + wxT("/pg_dump")))
 #endif
     {
-        wxMessageBox(_("The EnterpriseDB bin path specified is not valid or does not contain an EnterpriseDB pg_dump executable.\n\nPlease select another directory, or leave the path blank."), _("Error"), wxICON_ERROR); 
+        wxMessageBox(_("The EnterpriseDB bin path specified is not valid or does not contain an EnterpriseDB pg_dump executable.\n\nPlease select another directory, or leave the path blank."), _("Error"), wxICON_ERROR);
         return;
     }
 
@@ -440,7 +460,7 @@ void frmOptions::OnOK(wxCommandEvent &ev)
     if (!pickerGPDBPath->GetPath().IsEmpty() && !isGpApp(pickerGPDBPath->GetPath() + wxT("/pg_dump")))
 #endif
     {
-        wxMessageBox(_("The Greenplum bin path specified is not valid or does not contain a Greenplum pg_dump executable.\n\nPlease select another directory, or leave the path blank."), _("Error"), wxICON_ERROR); 
+        wxMessageBox(_("The Greenplum bin path specified is not valid or does not contain a Greenplum pg_dump executable.\n\nPlease select another directory, or leave the path blank."), _("Error"), wxICON_ERROR);
         return;
     }
 
@@ -484,28 +504,29 @@ void frmOptions::OnOK(wxCommandEvent &ev)
 
     // Loglevel
     wxString logInfo = radLoglevel->GetStringSelection();
-    wxLogInfo(wxT("Setting loglevel to: %s"),logInfo.c_str());
+    wxLogInfo(wxT("Setting loglevel to: %s"), logInfo.c_str());
     int sel = radLoglevel->GetSelection();
 
-    switch(sel) {
+    switch(sel)
+    {
         case(0):
-          settings->SetLogLevel(LOG_NONE);
-          break;
+            settings->SetLogLevel(LOG_NONE);
+            break;
         case(1):
-          settings->SetLogLevel(LOG_ERRORS);
-          break;
+            settings->SetLogLevel(LOG_ERRORS);
+            break;
         case(2):
-          settings->SetLogLevel(LOG_NOTICE);
-          break;
+            settings->SetLogLevel(LOG_NOTICE);
+            break;
         case(3):
-          settings->SetLogLevel(LOG_SQL);
-          break;
+            settings->SetLogLevel(LOG_SQL);
+            break;
         case(4):
-          settings->SetLogLevel(LOG_DEBUG);
-          break;
+            settings->SetLogLevel(LOG_DEBUG);
+            break;
         default:
-          settings->SetLogLevel(LOG_ERRORS);
-          break;
+            settings->SetLogLevel(LOG_ERRORS);
+            break;
     }
 
     // Query parameter
@@ -522,7 +543,7 @@ void frmOptions::OnOK(wxCommandEvent &ev)
     settings->SetCopyQuoteChar(cbCopyQuoteChar->GetValue());
     settings->SetHistoryMaxQueries(StrToLong(txtHistoryMaxQueries->GetValue()));
     settings->SetHistoryMaxQuerySize(StrToLong(txtHistoryMaxQuerySize->GetValue()));
- 
+
     wxString copySeparator = cbCopySeparator->GetValue();
     if (copySeparator == _("Tab"))
         copySeparator = wxT("\t");
@@ -606,7 +627,7 @@ void frmOptions::OnOK(wxCommandEvent &ev)
 
     // Save the display options
     int changed = false;
-    for (unsigned int x=0; x < lstDisplay->GetCount(); x++)
+    for (unsigned int x = 0; x < lstDisplay->GetCount(); x++)
     {
         if (lstDisplay->IsChecked(x) != settings->GetDisplayOption(lstDisplay->GetString(x)))
         {
@@ -643,32 +664,32 @@ void frmOptions::OnOK(wxCommandEvent &ev)
     settings->SetMacrosFile(pickerMacrosFile->GetPath());
     settings->SetHistoryFile(pickerHistoryFile->GetPath());
 
-	// Change SQL Syntax colours
-	if (settings->GetSQLBoxUseSystemBackground() != chkSQLUseSystemBackgroundColour->GetValue())
-	{
-		changed = true;
-		settings->SetSQLBoxUseSystemBackground(chkSQLUseSystemBackgroundColour->GetValue());
-	}
-	
-	if (settings->GetSQLBoxUseSystemForeground() != chkSQLUseSystemForegroundColour->GetValue())
-	{
-		changed = true;
-		settings->SetSQLBoxUseSystemForeground(chkSQLUseSystemForegroundColour->GetValue());
-	}
-	
-	if (!settings->GetSQLBoxUseSystemBackground())
-	{
-		if (pickerSQLBackgroundColour->GetColourString() != settings->GetSQLBoxColourBackground())
-			changed = true;
-		settings->SetSQLBoxColourBackground(pickerSQLBackgroundColour->GetColourString());
-	}
+    // Change SQL Syntax colours
+    if (settings->GetSQLBoxUseSystemBackground() != chkSQLUseSystemBackgroundColour->GetValue())
+    {
+        changed = true;
+        settings->SetSQLBoxUseSystemBackground(chkSQLUseSystemBackgroundColour->GetValue());
+    }
 
-	if (!settings->GetSQLBoxUseSystemForeground())
-	{
-		if (pickerSQLForegroundColour->GetColourString() != settings->GetSQLBoxColourForeground())
-			changed = true;
-		settings->SetSQLBoxColourForeground(pickerSQLForegroundColour->GetColourString());
-	}
+    if (settings->GetSQLBoxUseSystemForeground() != chkSQLUseSystemForegroundColour->GetValue())
+    {
+        changed = true;
+        settings->SetSQLBoxUseSystemForeground(chkSQLUseSystemForegroundColour->GetValue());
+    }
+
+    if (!settings->GetSQLBoxUseSystemBackground())
+    {
+        if (pickerSQLBackgroundColour->GetColourString() != settings->GetSQLBoxColourBackground())
+            changed = true;
+        settings->SetSQLBoxColourBackground(pickerSQLBackgroundColour->GetColourString());
+    }
+
+    if (!settings->GetSQLBoxUseSystemForeground())
+    {
+        if (pickerSQLForegroundColour->GetColourString() != settings->GetSQLBoxColourForeground())
+            changed = true;
+        settings->SetSQLBoxColourForeground(pickerSQLForegroundColour->GetColourString());
+    }
 
     if (pickerSQLMarginBackgroundColour->GetColourString() != settings->GetSQLMarginBackgroundColour())
         changed = true;
@@ -706,15 +727,15 @@ void frmOptions::OnOK(wxCommandEvent &ev)
         changed = true;
     settings->SetSQLBoxColour(11, pickerSQLColour11->GetColourString());
 
-	if (settings->GetSQLKeywordsInUppercase() != chkKeywordsInUppercase->GetValue())
-	{
-		changed = true;
-		settings->SetSQLKeywordsInUppercase(chkKeywordsInUppercase->GetValue());
-	}
-	
+    if (settings->GetSQLKeywordsInUppercase() != chkKeywordsInUppercase->GetValue())
+    {
+        changed = true;
+        settings->SetSQLKeywordsInUppercase(chkKeywordsInUppercase->GetValue());
+    }
+
     // Change the language last, as it will affect our tests for changes
     // in the display object types.
-    int langNo=cbLanguage->GetCurrentSelection();
+    int langNo = cbLanguage->GetCurrentSelection();
     if (langNo >= 0)
     {
         wxLanguage langId;
@@ -722,7 +743,7 @@ void frmOptions::OnOK(wxCommandEvent &ev)
             langId = wxLANGUAGE_DEFAULT;
         else
         {
-            const wxLanguageInfo *langInfo=wxLocale::GetLanguageInfo(existingLangs.Item(langNo-1));
+            const wxLanguageInfo *langInfo = wxLocale::GetLanguageInfo(existingLangs.Item(langNo - 1));
             langId = (wxLanguage) langInfo->Language;
         }
 
@@ -752,13 +773,13 @@ optionsFactory::optionsFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolba
 
 wxWindow *optionsFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmOptions *frm=new frmOptions(form);
+    frmOptions *frm = new frmOptions(form);
     frm->Show();
     return 0;
 }
 
 // Enable/disable the copy quote option as required.
-void frmOptions::OnChangeCopyQuote(wxCommandEvent& WXUNUSED(ev))
+void frmOptions::OnChangeCopyQuote(wxCommandEvent &WXUNUSED(ev))
 {
     if (cbCopyQuote->GetValue() == _("None"))
         cbCopyQuoteChar->Disable();

@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// ctlCodeWindow.cpp - debugger 
+// ctlCodeWindow.cpp - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -31,19 +31,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 // NOTES:
 //
-//    1) In this class, we update the user interface in a lazy fashion. Instead of 
+//    1) In this class, we update the user interface in a lazy fashion. Instead of
 //  updating the variable list, call stack, and breakpoint markers every time
 //  the target pauses, we wait for an idle period and then query the proxy for
-//  the variable list, call stack, and breakpoint list. That way, the debugger 
+//  the variable list, call stack, and breakpoint list. That way, the debugger
 //    doesn't bog down when you hit the 'step over' or 'step into' key repeatedly.
 //
-//    Lazy updating is a multi-step operation.  When the target pauses (which 
+//    Lazy updating is a multi-step operation.  When the target pauses (which
 //  means that a call to pldbg_continue(), pldbg_step_over(), or pldbg_step_into()
-//    has just returned), we update the source code window and then set a flag 
+//    has just returned), we update the source code window and then set a flag
 //    (m_updateVars) that tells us to update the variable window during the next
 //    idle period.  As soon as OnIdle() is called, we update the variable window,
-//    turn off the m_updateVars flag, and turn on the next flag (m_updateStack) 
-//  to force the stack window to update itself during the next idle period.  
+//    turn off the m_updateVars flag, and turn on the next flag (m_updateStack)
+//  to force the stack window to update itself during the next idle period.
 //    After the stack window updates itself, it turns on m_updateBreakpoints() to
 //  force the breakpoint markers to refresh.
 //
@@ -56,50 +56,50 @@
 //  All of the result-set related event names start with 'RESULT_ID_' and each
 //  event is handled by an event handler function whose name starts with 'Result'.
 //  For example, when we queue a query to retrieve the source code for a function,
-//  we tell dbgPgThread to send us a RESULT_ID_GET_SOURCE event when the query 
+//  we tell dbgPgThread to send us a RESULT_ID_GET_SOURCE event when the query
 //    completes and we handle that event in a function named ResultSource.
 
 IMPLEMENT_CLASS(ctlCodeWindow,  pgFrame)
 
 BEGIN_EVENT_TABLE(ctlCodeWindow , pgFrame)
-  EVT_MENU(MENU_ID_TOGGLE_BREAK,            ctlCodeWindow::OnCommand)
-  EVT_MENU(MENU_ID_CLEAR_ALL_BREAK,         ctlCodeWindow::OnCommand)
+    EVT_MENU(MENU_ID_TOGGLE_BREAK,            ctlCodeWindow::OnCommand)
+    EVT_MENU(MENU_ID_CLEAR_ALL_BREAK,         ctlCodeWindow::OnCommand)
 
-  EVT_MENU(MENU_ID_CONTINUE,                ctlCodeWindow::OnCommand)
-  EVT_MENU(MENU_ID_STEP_OVER,               ctlCodeWindow::OnCommand)
-  EVT_MENU(MENU_ID_STEP_INTO,               ctlCodeWindow::OnCommand)
-  EVT_MENU(MENU_ID_STOP,                    ctlCodeWindow::OnCommand)
+    EVT_MENU(MENU_ID_CONTINUE,                ctlCodeWindow::OnCommand)
+    EVT_MENU(MENU_ID_STEP_OVER,               ctlCodeWindow::OnCommand)
+    EVT_MENU(MENU_ID_STEP_INTO,               ctlCodeWindow::OnCommand)
+    EVT_MENU(MENU_ID_STOP,                    ctlCodeWindow::OnCommand)
 
-  EVT_IDLE(ctlCodeWindow::OnIdle)
+    EVT_IDLE(ctlCodeWindow::OnIdle)
 
-  EVT_BUTTON(MENU_ID_NOTICE_RECEIVED,       ctlCodeWindow::OnNoticeReceived)
+    EVT_BUTTON(MENU_ID_NOTICE_RECEIVED,       ctlCodeWindow::OnNoticeReceived)
 
-  EVT_LISTBOX(wxID_ANY,                     ctlCodeWindow::OnSelectFrame)
-  EVT_GRID_CELL_CHANGE(                     ctlCodeWindow::OnVarChange)
-  EVT_STC_MARGINCLICK(wxID_ANY,             ctlCodeWindow::OnMarginClick)
-  EVT_STC_UPDATEUI(wxID_ANY,                ctlCodeWindow::OnPositionStc)
+    EVT_LISTBOX(wxID_ANY,                     ctlCodeWindow::OnSelectFrame)
+    EVT_GRID_CELL_CHANGE(                     ctlCodeWindow::OnVarChange)
+    EVT_STC_MARGINCLICK(wxID_ANY,             ctlCodeWindow::OnMarginClick)
+    EVT_STC_UPDATEUI(wxID_ANY,                ctlCodeWindow::OnPositionStc)
 
-  EVT_MENU(RESULT_ID_ATTACH_TO_PORT,        ctlCodeWindow::ResultPortAttach)
-  EVT_MENU(RESULT_ID_BREAKPOINT,            ctlCodeWindow::ResultBreakpoint)
-  EVT_MENU(RESULT_ID_GET_VARS,              ctlCodeWindow::ResultVarList)
-  EVT_MENU(RESULT_ID_GET_STACK,             ctlCodeWindow::ResultStack)
-  EVT_MENU(RESULT_ID_GET_BREAKPOINTS,       ctlCodeWindow::ResultBreakpoints)
-  EVT_MENU(RESULT_ID_GET_SOURCE,            ctlCodeWindow::ResultSource)
-  EVT_MENU(RESULT_ID_NEW_BREAKPOINT,        ctlCodeWindow::ResultNewBreakpoint)
-  EVT_MENU(RESULT_ID_NEW_BREAKPOINT_WAIT,   ctlCodeWindow::ResultNewBreakpointWait)
-  EVT_MENU(RESULT_ID_DEL_BREAKPOINT,        ctlCodeWindow::ResultDeletedBreakpoint)
-  EVT_MENU(RESULT_ID_DEPOSIT_VALUE,         ctlCodeWindow::ResultDepositValue)
-  EVT_MENU(RESULT_ID_ABORT_TARGET,          ctlCodeWindow::ResultAbortTarget)
-  EVT_MENU(RESULT_ID_ADD_BREAKPOINT,        ctlCodeWindow::ResultAddBreakpoint)
-  EVT_MENU(RESULT_ID_LAST_BREAKPOINT,       ctlCodeWindow::ResultLastBreakpoint)
-  EVT_MENU(RESULT_ID_LISTENER_CREATED,      ctlCodeWindow::ResultListenerCreated)
-  EVT_MENU(RESULT_ID_TARGET_READY,          ctlCodeWindow::ResultTargetReady)
+    EVT_MENU(RESULT_ID_ATTACH_TO_PORT,        ctlCodeWindow::ResultPortAttach)
+    EVT_MENU(RESULT_ID_BREAKPOINT,            ctlCodeWindow::ResultBreakpoint)
+    EVT_MENU(RESULT_ID_GET_VARS,              ctlCodeWindow::ResultVarList)
+    EVT_MENU(RESULT_ID_GET_STACK,             ctlCodeWindow::ResultStack)
+    EVT_MENU(RESULT_ID_GET_BREAKPOINTS,       ctlCodeWindow::ResultBreakpoints)
+    EVT_MENU(RESULT_ID_GET_SOURCE,            ctlCodeWindow::ResultSource)
+    EVT_MENU(RESULT_ID_NEW_BREAKPOINT,        ctlCodeWindow::ResultNewBreakpoint)
+    EVT_MENU(RESULT_ID_NEW_BREAKPOINT_WAIT,   ctlCodeWindow::ResultNewBreakpointWait)
+    EVT_MENU(RESULT_ID_DEL_BREAKPOINT,        ctlCodeWindow::ResultDeletedBreakpoint)
+    EVT_MENU(RESULT_ID_DEPOSIT_VALUE,         ctlCodeWindow::ResultDepositValue)
+    EVT_MENU(RESULT_ID_ABORT_TARGET,          ctlCodeWindow::ResultAbortTarget)
+    EVT_MENU(RESULT_ID_ADD_BREAKPOINT,        ctlCodeWindow::ResultAddBreakpoint)
+    EVT_MENU(RESULT_ID_LAST_BREAKPOINT,       ctlCodeWindow::ResultLastBreakpoint)
+    EVT_MENU(RESULT_ID_LISTENER_CREATED,      ctlCodeWindow::ResultListenerCreated)
+    EVT_MENU(RESULT_ID_TARGET_READY,          ctlCodeWindow::ResultTargetReady)
 
-  EVT_TIMER(wxID_ANY,                       ctlCodeWindow::OnTimer)
+    EVT_TIMER(wxID_ANY,                       ctlCodeWindow::OnTimer)
 END_EVENT_TABLE()
 
 ////////////////////////////////////////////////////////////////////////////////
-// Static data members 
+// Static data members
 ////////////////////////////////////////////////////////////////////////////////
 wxString ctlCodeWindow::m_commandAttach(wxT("SELECT * FROM pldbg_attach_to_port(%s)"));
 wxString ctlCodeWindow::m_commandWaitForBreakpoint( wxT( "SELECT * FROM pldbg_wait_for_breakpoint(%s)"));
@@ -116,7 +116,7 @@ wxString ctlCodeWindow::m_commandSetBreakpointV2(wxT("SELECT * FROM pldbg_set_br
 wxString ctlCodeWindow::m_commandClearBreakpointV1(wxT("SELECT * FROM pldbg_drop_breakpoint(%s,%s,%s,%d)"));
 wxString ctlCodeWindow::m_commandClearBreakpointV2(wxT("SELECT * FROM pldbg_drop_breakpoint(%s,%s,%d)"));
 wxString ctlCodeWindow::m_commandSelectFrame(wxT("SELECT * FROM pldbg_select_frame(%s,%d)"));
-wxString ctlCodeWindow::m_commandDepositValue(wxT("SELECT * FROM pldbg_deposit_value(%s,'%s',%d,'%s')"));               
+wxString ctlCodeWindow::m_commandDepositValue(wxT("SELECT * FROM pldbg_deposit_value(%s,'%s',%d,'%s')"));
 wxString ctlCodeWindow::m_commandAbortTarget(wxT("SELECT * FROM pldbg_abort_target(%s)"));
 wxString ctlCodeWindow::m_commandAddBreakpointEDB(wxT("SELECT * FROM pldbg_set_global_breakpoint(%s, %s, %s, %s, %s)"));
 wxString ctlCodeWindow::m_commandAddBreakpointPG(wxT("SELECT * FROM pldbg_set_global_breakpoint(%s, %s, %s, %s)"));
@@ -129,18 +129,18 @@ wxString ctlCodeWindow::m_commandWaitForTarget(wxT("SELECT * FROM pldbg_wait_for
 //
 //    This class implements the debugger window.  The constructor expects a string
 //  that contains a TCP port number - the constructor connects to the debugger
-//  server waiting at that port.  
+//  server waiting at that port.
 //
 //  A ctlCodeWindow object creates (and manages) a toolbar and handles toolbar
 //  and keystroke messages. The input messages are treated as debugger commands.
 //
 //    The m_view member is a ctlSQLBox that displays the code for the PL
-//  function that you're debugging.  The m_currentLineNumber member tracks the current 
+//  function that you're debugging.  The m_currentLineNumber member tracks the current
 //  line (that is, the line about to execute).  We use hilight the current line.
-//  If m_currentLineNumber is -1, there is no current line.  
+//  If m_currentLineNumber is -1, there is no current line.
 
-ctlCodeWindow::ctlCodeWindow( frmDebugger *parent, wxWindowID id, const dbgConnProp & connProps )
-    :pgFrame(NULL, wxEmptyString),
+ctlCodeWindow::ctlCodeWindow( frmDebugger *parent, wxWindowID id, const dbgConnProp &connProps )
+    : pgFrame(NULL, wxEmptyString),
       m_debugPort(connProps.m_debugPort),
       m_parent(parent),
       m_currentLineNumber(-1),
@@ -150,8 +150,8 @@ ctlCodeWindow::ctlCodeWindow( frmDebugger *parent, wxWindowID id, const dbgConnP
       m_progressBar(NULL),
       m_timer(this)
 {
-      m_targetComplete = false;
-      m_targetAborted = false;
+    m_targetComplete = false;
+    m_targetAborted = false;
 
     wxWindowBase::SetFont(settings->GetSystemFont());
 
@@ -165,8 +165,8 @@ ctlCodeWindow::ctlCodeWindow( frmDebugger *parent, wxWindowID id, const dbgConnP
     m_view->MarkerDefine( MARKER_BREAKPOINT, wxSTC_MARK_CIRCLEPLUS, *wxRED, *wxRED );
 
     m_view->SetMarginWidth(1, 16);
-	m_view->SetMarginType(1, wxSTC_MARGIN_SYMBOL);
-	
+    m_view->SetMarginType(1, wxSTC_MARGIN_SYMBOL);
+
     // Make sure that the text control tells us when the user clicks in the left margin
     m_view->SetMarginSensitive( 0, true );
     m_view->SetMarginSensitive( 1, true );
@@ -178,9 +178,9 @@ ctlCodeWindow::ctlCodeWindow( frmDebugger *parent, wxWindowID id, const dbgConnP
     // We create a ctlCodeWindow when a dbgPgThread intercepts a PLDBGBREAK NOTICE
     // generated by the PostgreSQL server.   The NOTICE contains a TCP port number
     // and we connect to that port here.
-    m_parent->manager.AddPane(m_view, wxAuiPaneInfo().Name(wxT("sourcePane")).Caption(_("Source pane")).Center().CaptionVisible(false).CloseButton(false).MinSize(wxSize(200,100)).BestSize(wxSize(350,200)));
-    m_parent->manager.AddPane(m_stackWindow, wxAuiPaneInfo().Name(wxT("stackPane")).Caption(_("Stack pane")).Right().MinSize(wxSize(100,100)).BestSize(wxSize(250,200)));
-    m_parent->manager.AddPane(m_tabWindow, wxAuiPaneInfo().Name(wxT("outputPane")).Caption(_("Output pane")).Bottom().MinSize(wxSize(200,100)).BestSize(wxSize(550,300)));
+    m_parent->manager.AddPane(m_view, wxAuiPaneInfo().Name(wxT("sourcePane")).Caption(_("Source pane")).Center().CaptionVisible(false).CloseButton(false).MinSize(wxSize(200, 100)).BestSize(wxSize(350, 200)));
+    m_parent->manager.AddPane(m_stackWindow, wxAuiPaneInfo().Name(wxT("stackPane")).Caption(_("Stack pane")).Right().MinSize(wxSize(100, 100)).BestSize(wxSize(250, 200)));
+    m_parent->manager.AddPane(m_tabWindow, wxAuiPaneInfo().Name(wxT("outputPane")).Caption(_("Output pane")).Bottom().MinSize(wxSize(200, 100)).BestSize(wxSize(550, 300)));
 
     // Now (re)load the layout
     wxString perspective;
@@ -203,7 +203,7 @@ ctlCodeWindow::ctlCodeWindow( frmDebugger *parent, wxWindowID id, const dbgConnP
     m_parent->manager.Update();
 
     // The wsDbgConn constructor connects to the given host+port and
-    // and sends events to us whenever a string arrives from the 
+    // and sends events to us whenever a string arrives from the
     // debugger server.
 
     m_parent->getStatusBar()->SetStatusText( _( "Connecting to debugger" ), 1 );
@@ -223,7 +223,7 @@ ctlCodeWindow::ctlCodeWindow( frmDebugger *parent, wxWindowID id, const dbgConnP
     enableTools();
 }
 
-void ctlCodeWindow::OnClose(wxCloseEvent& event)
+void ctlCodeWindow::OnClose(wxCloseEvent &event)
 {
     if (event.CanVeto() && !m_targetAborted && !m_targetComplete)
     {
@@ -267,42 +267,42 @@ void ctlCodeWindow::OnClose(wxCloseEvent& event)
     event.Skip();
 }
 
-////////////////////////////////////////////////////////////////////////////////      
-// OnMarginClick()      
-//      
-//  This event handler is called when the user clicks in the margin to the left      
-//  of a line of source code. We use the margin to display breakpoint indicators      
-//  so it makes sense that if you click on an breakpoint indicator, we will clear      
-//  that breakpoint.  If you click on a spot that does not contain a breakpoint      
-//  indicator (but it's still in the margin), we create a new breakpoint at that      
-//  line.      
-      
-void ctlCodeWindow::OnMarginClick( wxStyledTextEvent& event )      
-{      
-    int lineNumber = m_view->LineFromPosition(event.GetPosition());      
-      
+////////////////////////////////////////////////////////////////////////////////
+// OnMarginClick()
+//
+//  This event handler is called when the user clicks in the margin to the left
+//  of a line of source code. We use the margin to display breakpoint indicators
+//  so it makes sense that if you click on an breakpoint indicator, we will clear
+//  that breakpoint.  If you click on a spot that does not contain a breakpoint
+//  indicator (but it's still in the margin), we create a new breakpoint at that
+//  line.
+
+void ctlCodeWindow::OnMarginClick( wxStyledTextEvent &event )
+{
+    int lineNumber = m_view->LineFromPosition(event.GetPosition());
+
     if (!lineNumber)
         return;
 
-    // If we already have a breakpoint at the clickpoint, disable it, otherwise      
-    // create a new breakpoint.      
-      
-    if(m_view->MarkerGet(lineNumber) &MARKERINDEX_TO_MARKERMASK(MARKER_BREAKPOINT))      
-        clearBreakpoint(lineNumber, true);      
-    else      
-        setBreakpoint(lineNumber);      
+    // If we already have a breakpoint at the clickpoint, disable it, otherwise
+    // create a new breakpoint.
+
+    if(m_view->MarkerGet(lineNumber) &MARKERINDEX_TO_MARKERMASK(MARKER_BREAKPOINT))
+        clearBreakpoint(lineNumber, true);
+    else
+        setBreakpoint(lineNumber);
 }
 
-////////////////////////////////////////////////////////////////////////////////      
-// OnPositionStc()      
-//      
+////////////////////////////////////////////////////////////////////////////////
+// OnPositionStc()
+//
 //  Update the current line number etc in the status bar.
-      
-void ctlCodeWindow::OnPositionStc( wxStyledTextEvent& event )      
-{      
+
+void ctlCodeWindow::OnPositionStc( wxStyledTextEvent &event )
+{
     wxString pos;
     pos.Printf(_("Ln %d Col %d Ch %d"), m_view->LineFromPosition(m_view->GetCurrentPos()) + 1, m_view->GetColumn(m_view->GetCurrentPos()) + 1, m_view->GetCurrentPos() + 1);
-    m_parent->getStatusBar()->SetStatusText(pos, 2);  
+    m_parent->getStatusBar()->SetStatusText(pos, 2);
 }
 
 
@@ -316,7 +316,7 @@ void ctlCodeWindow::startLocalDebugging()
 {
     m_sessionType = SESSION_TYPE_DIRECT;
 
-      m_dbgConn->startCommand( wxString::Format( m_commandAttach, m_debugPort.c_str()), GetEventHandler(), RESULT_ID_ATTACH_TO_PORT );
+    m_dbgConn->startCommand( wxString::Format( m_commandAttach, m_debugPort.c_str()), GetEventHandler(), RESULT_ID_ATTACH_TO_PORT );
 }
 
 void ctlCodeWindow::resumeLocalDebugging()
@@ -327,11 +327,11 @@ void ctlCodeWindow::resumeLocalDebugging()
     //    1) The previous target may have run to completion, in which case we are already
     //       waiting for the target to hit a breakpoint
     //
-    //    2) The user aborted the previous target, in which case we are NOT waiting for 
+    //    2) The user aborted the previous target, in which case we are NOT waiting for
     //       a breakpoint and we'd better tell the proxy to wait
     //
-    // We use the m_targetAborted flag to figure out which of the two states were are 
-    // in. If m_targetAborted is false, our proxy is already waiting for the target 
+    // We use the m_targetAborted flag to figure out which of the two states were are
+    // in. If m_targetAborted is false, our proxy is already waiting for the target
     // to hit a breakpoint so we don't have to do anything here.  If m_targetAborted
     // is true, the proxy is waiting for another command from us - send it a waitForBreakpoint
     // request
@@ -344,7 +344,7 @@ void ctlCodeWindow::resumeLocalDebugging()
     if( m_targetAborted )
     {
         m_targetAborted = false;
-        m_dbgConn->startCommand( wxString::Format( m_commandWaitForBreakpoint, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );        
+        m_dbgConn->startCommand( wxString::Format( m_commandWaitForBreakpoint, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );
     }
 }
 
@@ -381,7 +381,7 @@ void ctlCodeWindow::setTools(bool enable)
     wxMenu *m = m_parent->m_debugMenu;
 
     // We may find that our toolbar has disappeared during application shutdown -
-    // It seems a little strange that OnActivate() is called during shutdown, but 
+    // It seems a little strange that OnActivate() is called during shutdown, but
     // that does seem to happen on Win32 hosts.
 
     if (t)
@@ -418,13 +418,13 @@ void ctlCodeWindow::setTools(bool enable)
 //  don't bother updating the variable list, call stack, or breakpoint markers
 //  until the user pauses for a moment.
 
-void ctlCodeWindow::OnIdle( wxIdleEvent & event )
+void ctlCodeWindow::OnIdle( wxIdleEvent &event )
 {
     if (m_targetAborted)
         return;
 
     if( m_updateVars )
-    {    
+    {
         m_updateVars = false;
         m_dbgConn->startCommand( wxString::Format( m_commandGetVars, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_GET_VARS );
         return;
@@ -433,10 +433,10 @@ void ctlCodeWindow::OnIdle( wxIdleEvent & event )
     if( m_updateStack )
     {
         m_updateStack = false;
-        m_dbgConn->startCommand( wxString::Format( m_commandGetStack, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_GET_STACK );        
+        m_dbgConn->startCommand( wxString::Format( m_commandGetStack, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_GET_STACK );
         return;
     }
-    
+
     if( m_updateBreakpoints )
     {
         m_updateBreakpoints = false;
@@ -450,23 +450,23 @@ void ctlCodeWindow::OnIdle( wxIdleEvent & event )
 // ResultPortAttach()
 //
 //    This event handler is called when the result set of an earlier query arrives
-//  from the proxy. In this case, the result set is generated by a call to 
-//  pldbg_attach_to_port(). If the query succeeded, our proxy is connected to 
+//  from the proxy. In this case, the result set is generated by a call to
+//  pldbg_attach_to_port(). If the query succeeded, our proxy is connected to
 //  the debugger server running inside of the target process. At that point,
-//  we have to wait for the target process to wait for a breakpoint so we 
+//  we have to wait for the target process to wait for a breakpoint so we
 //  queue up another query (a call to pldbg_wait_for_breakpoint()).
 
-void ctlCodeWindow::ResultPortAttach( wxCommandEvent & event )
+void ctlCodeWindow::ResultPortAttach( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( result.getCommandStatus() == PGRES_TUPLES_OK )
     {
         m_parent->getStatusBar()->SetStatusText( _( "Connected to debugger" ), 1 );
 
         m_sessionHandle = result.getString( 0 );
-        
-        m_dbgConn->startCommand( wxString::Format( m_commandWaitForBreakpoint, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );        
+
+        m_dbgConn->startCommand( wxString::Format( m_commandWaitForBreakpoint, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );
     }
     else
     {
@@ -486,9 +486,9 @@ void ctlCodeWindow::ResultPortAttach( wxCommandEvent & event )
 //    In any case, we schedule an update of the user interface for the next idle
 //  period by calling updateUI().
 
-void ctlCodeWindow::ResultBreakpoint( wxCommandEvent & event )
+void ctlCodeWindow::ResultBreakpoint( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -504,23 +504,23 @@ void ctlCodeWindow::ResultBreakpoint( wxCommandEvent & event )
 
             m_focusFuncOid    = result.getString(wxT("func"));
 
-            // The result set contains one tuple: 
+            // The result set contains one tuple:
             //    packageOID, functionOID, linenumber
-            m_parent->getStatusBar()->SetStatusText(wxString::Format(_( "Paused at line %d"), atoi(result.getString(wxT("linenumber")).ToAscii()) - 1), 1);    
+            m_parent->getStatusBar()->SetStatusText(wxString::Format(_( "Paused at line %d"), atoi(result.getString(wxT("linenumber")).ToAscii()) - 1), 1);
             updateUI(result);
 
             /* break point markup line number */
             unhilightCurrentLine();
 
             int current_line = atoi(result.getString( wxT("linenumber")).ToAscii()) - 1;
-            if ( current_line < 0) 
+            if ( current_line < 0)
                 current_line = 1;
             m_currentLineNumber = current_line;
 
-            m_view->SetAnchor(m_view->PositionFromLine(!current_line ? 0 : current_line -1));
-            m_view->SetCurrentPos(m_view->PositionFromLine(!current_line ? 0 : current_line -1));
-            m_view->MarkerAdd(current_line -1, MARKER_CURRENT);
-            m_view->MarkerAdd(current_line -1, MARKER_CURRENT_BG);
+            m_view->SetAnchor(m_view->PositionFromLine(!current_line ? 0 : current_line - 1));
+            m_view->SetCurrentPos(m_view->PositionFromLine(!current_line ? 0 : current_line - 1));
+            m_view->MarkerAdd(current_line - 1, MARKER_CURRENT);
+            m_view->MarkerAdd(current_line - 1, MARKER_CURRENT_BG);
             m_view->EnsureCaretVisible();
             enableTools();
 
@@ -528,7 +528,7 @@ void ctlCodeWindow::ResultBreakpoint( wxCommandEvent & event )
         else if(result.getCommandStatus() == PGRES_FATAL_ERROR)
         {
             if (!m_targetAborted)
-            { 
+            {
                 // We were waiting for a breakpoint (because we just sent a step into, step over, or continue request) and
                 // the proxy sent us an error instead.  Presumably, the target process exited before reaching a breakpoint.
                 //
@@ -536,7 +536,7 @@ void ctlCodeWindow::ResultBreakpoint( wxCommandEvent & event )
 
                 if( m_breakpoints.GetCount())
                 {
-                    m_dbgConn->startCommand( wxString::Format(m_commandWaitForTarget, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_TARGET_READY);        
+                    m_dbgConn->startCommand( wxString::Format(m_commandWaitForTarget, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_TARGET_READY);
 
                     m_parent->getStatusBar()->SetStatusText(_("Waiting for a target"), 1 );
                     m_parent->getStatusBar()->SetStatusText(wxT(""), 2 );
@@ -559,7 +559,7 @@ void ctlCodeWindow::launchWaitingDialog()
     else
     {
         m_progressBar = new wxProgressDialog(_( "Waiting for target" ), wxString::Format( _( "Waiting for breakpoint in %s" ), m_targetName.c_str()), 100, m_parent, wxPD_SMOOTH | wxPD_CAN_ABORT | wxPD_ELAPSED_TIME );
-        
+
         m_timer.Start( 100 );    // 10 clock ticks per second
     }
 }
@@ -567,15 +567,15 @@ void ctlCodeWindow::launchWaitingDialog()
 ////////////////////////////////////////////////////////////////////////////////
 // ResultVarList()
 //
-//    This event handler is called when the proxy finishes sending us a list of 
+//    This event handler is called when the proxy finishes sending us a list of
 //  variables (in response to an earlier call to pldbg_get_variables()).
 //
 //    We extract the variable names, types, and values from the result set and
 //    add them to the variable (and parameter) windows.
 
-void ctlCodeWindow::ResultVarList( wxCommandEvent & event )
+void ctlCodeWindow::ResultVarList( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -604,7 +604,7 @@ void ctlCodeWindow::ResultVarList( wxCommandEvent & event )
             }
         }
 
-        // Update the next part of the user interface 
+        // Update the next part of the user interface
         m_updateStack = true;
     }
 }
@@ -619,9 +619,9 @@ void ctlCodeWindow::ResultVarList( wxCommandEvent & event )
 //    For each frame, the proxy sends us the function name, line number, and
 //  a string that holds the name and value of each argument.
 
-void ctlCodeWindow::ResultStack( wxCommandEvent & event )
+void ctlCodeWindow::ResultStack( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -631,15 +631,15 @@ void ctlCodeWindow::ResultStack( wxCommandEvent & event )
         {
             // The result set contains one tuple per frame:
             //        package, function, linenumber, args
-        
+
             wxArrayString    stack;
 
             for(int row = 0; row < result.getRowCount(); ++row)
                 stack.Add(wxString::Format(wxT( "%s(%s)@%s" ), result.getString(wxT("targetName"), row ).c_str(), result.getString(wxT("args"), row).c_str(), result.getString(wxT("linenumber"), row).c_str()));
-        
+
             getStackWindow()->clear();
             getStackWindow()->setStack( stack );
-                                         
+
         }
 
         m_updateBreakpoints = true;
@@ -649,15 +649,15 @@ void ctlCodeWindow::ResultStack( wxCommandEvent & event )
 ////////////////////////////////////////////////////////////////////////////////
 // ResultBreakpoints()
 //
-//    This event handler is called when the proxy finishes sending us a list of 
+//    This event handler is called when the proxy finishes sending us a list of
 //  breakpoints (in response to an earlier SHOW BREAKPOINTS command).
 //
 //    We clear out the old breakpoint markers and then display a new marker
 //    for each breakpoint defined in the current function.
 
-void ctlCodeWindow::ResultBreakpoints(wxCommandEvent & event)
+void ctlCodeWindow::ResultBreakpoints(wxCommandEvent &event)
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost(result))
         closeConnection();
@@ -684,13 +684,13 @@ void ctlCodeWindow::ResultBreakpoints(wxCommandEvent & event)
 //    This event handler is called when the proxy finishes sending us the source
 //    code for a function (in response to an earlier call to pldbg_get_source()).
 //
-//    We keep a client-side cache of source code listings to avoid an extra 
-//  round trip for each step. In this function, we add the source code to 
+//    We keep a client-side cache of source code listings to avoid an extra
+//  round trip for each step. In this function, we add the source code to
 //  the cache and then display the source code in the source window.
 
-void ctlCodeWindow::ResultSource(wxCommandEvent & event)
+void ctlCodeWindow::ResultSource(wxCommandEvent &event)
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if(connectionLost(result))
         closeConnection();
@@ -714,9 +714,9 @@ void ctlCodeWindow::ResultSource(wxCommandEvent & event)
 //    If the DROP BREAKPOINT command succeeded, we display a mesasge in the
 //  status bar.
 
-void ctlCodeWindow::ResultDeletedBreakpoint( wxCommandEvent & event )
+void ctlCodeWindow::ResultDeletedBreakpoint( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -725,7 +725,7 @@ void ctlCodeWindow::ResultDeletedBreakpoint( wxCommandEvent & event )
         if( result.getBool( 0 ))
         {
             m_updateBreakpoints = true;
-            m_parent->getStatusBar()->SetStatusText( _( "Breakpoint dropped" ), 1 );        
+            m_parent->getStatusBar()->SetStatusText( _( "Breakpoint dropped" ), 1 );
         }
     }
 }
@@ -738,9 +738,9 @@ void ctlCodeWindow::ResultDeletedBreakpoint( wxCommandEvent & event )
 //
 //    We schedule a refresh of our breakpoint markers for the next idle period.
 
-void ctlCodeWindow::ResultNewBreakpoint( wxCommandEvent & event )
+void ctlCodeWindow::ResultNewBreakpoint( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -751,9 +751,9 @@ void ctlCodeWindow::ResultNewBreakpoint( wxCommandEvent & event )
     }
 }
 
-void ctlCodeWindow::ResultNewBreakpointWait( wxCommandEvent & event )
+void ctlCodeWindow::ResultNewBreakpointWait( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -762,7 +762,7 @@ void ctlCodeWindow::ResultNewBreakpointWait( wxCommandEvent & event )
     else
     {
         setTools(false);
-        m_dbgConn->startCommand( wxString::Format( m_commandWaitForTarget, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_TARGET_READY );        
+        m_dbgConn->startCommand( wxString::Format( m_commandWaitForTarget, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_TARGET_READY );
 
         launchWaitingDialog();
     }
@@ -775,9 +775,9 @@ void ctlCodeWindow::ResultNewBreakpointWait( wxCommandEvent & event )
 //
 //    We schedule a refresh of our variable window(s) for the next idle period.
 
-void ctlCodeWindow::ResultDepositValue( wxCommandEvent & event )
+void ctlCodeWindow::ResultDepositValue( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -785,7 +785,7 @@ void ctlCodeWindow::ResultDepositValue( wxCommandEvent & event )
     {
         if( result.getBool( 0 ))
         {
-            m_parent->getStatusBar()->SetStatusText( _( "Value changed" ), 1 );        
+            m_parent->getStatusBar()->SetStatusText( _( "Value changed" ), 1 );
             m_updateVars = true;
         }
         else
@@ -798,13 +798,13 @@ void ctlCodeWindow::ResultDepositValue( wxCommandEvent & event )
 ////////////////////////////////////////////////////////////////////////////////
 // ResultAbortTarget()
 //
-//    This event handler is called when the proxy completes an 'abort target' 
+//    This event handler is called when the proxy completes an 'abort target'
 //  operation (in response to an earlier call to pldbg_abort_target()).
 //
 
-void ctlCodeWindow::ResultAbortTarget( wxCommandEvent & event )
+void ctlCodeWindow::ResultAbortTarget( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -817,7 +817,7 @@ void ctlCodeWindow::ResultAbortTarget( wxCommandEvent & event )
             // for a breakpoint.
             m_targetAborted = true;
 
-            m_parent->getStatusBar()->SetStatusText( _( "Execution Canceled" ), 1 );        
+            m_parent->getStatusBar()->SetStatusText( _( "Execution Canceled" ), 1 );
 
             // Remove the current-line indicator
             unhilightCurrentLine();
@@ -840,7 +840,7 @@ void ctlCodeWindow::ResultAbortTarget( wxCommandEvent & event )
 //  fatal error is... fatal.  We should probably PQstatus() if we get a fatal
 //    error.
 
-bool ctlCodeWindow::connectionLost( dbgResultset & resultSet )
+bool ctlCodeWindow::connectionLost( dbgResultset &resultSet )
 {
     if (!m_dbgConn)
         return true;
@@ -851,7 +851,7 @@ bool ctlCodeWindow::connectionLost( dbgResultset & resultSet )
         return true;
 }
 
-bool ctlCodeWindow::gotFatalError( dbgResultset & resultSet )
+bool ctlCodeWindow::gotFatalError( dbgResultset &resultSet )
 {
     if( resultSet.getCommandStatus() == PGRES_FATAL_ERROR )
         return( true );
@@ -871,8 +871,8 @@ void ctlCodeWindow::popupError(dbgResultset &resultSet)
 // closeConnection()
 //
 //    This member function closes the connection to the debugger and changes the
-//  user interface to let the user know what just happened. In particular, we 
-//    remove the breakpoint markers (they may be obsolete) and disable the 
+//  user interface to let the user know what just happened. In particular, we
+//    remove the breakpoint markers (they may be obsolete) and disable the
 //    debugger-related tools on the toolbar.
 
 void ctlCodeWindow::closeConnection()
@@ -881,9 +881,9 @@ void ctlCodeWindow::closeConnection()
     if (m_dbgConn)
         m_dbgConn->Close();
     m_dbgConn = NULL;
- 
+
     // Let the user know what happened
-    m_parent->getStatusBar()->SetStatusText( _( "Debugger connection terminated (session complete)" ), 1 );        
+    m_parent->getStatusBar()->SetStatusText( _( "Debugger connection terminated (session complete)" ), 1 );
 
     // Remove the current-line indicator
     unhilightCurrentLine();
@@ -896,12 +896,12 @@ void ctlCodeWindow::closeConnection()
 // updateSourceCode()
 //
 //    This function is invoked whenever the target process pauses (either because
-//    it reached a breakpoint or because it just completed a step over/into).  In 
-//  this function, we update the source code window. 
+//    it reached a breakpoint or because it just completed a step over/into).  In
+//  this function, we update the source code window.
 //
 //    The caller gives us a result set (that had better contain a breakpoint tuple)
 //    that gives us the OID of the function that we're paused in.  We search our
-//    cache for the source code for that function. If we don't already have the 
+//    cache for the source code for that function. If we don't already have the
 //    source code for the function, we send a request for the code to the proxy and
 //    (asynchronously) wait for the result set (ResultSource() is called when the
 //    result set arrives). If we have the required source code (in the cache), we
@@ -935,14 +935,14 @@ void ctlCodeWindow::updateSourceCode(dbgResultset &breakpoint)
 // updateUI()
 //
 //    This function is called each time the target pauses (either because it reached
-//  a breakpoint or because it just completed a step over/into). We update some 
+//  a breakpoint or because it just completed a step over/into). We update some
 //    parts of the user interface in a lazy fashion so that we remain responsive if
 //  the user repeatedly hits the step over/into key.  updateUI() turns off the lazy
-//  update flags and the updates the source code window - when the source code 
-//  refresh completes, we schedule a variable refresh for the next idle period. 
+//  update flags and the updates the source code window - when the source code
+//  refresh completes, we schedule a variable refresh for the next idle period.
 //    When the variable refresh completes, it schedules a stack refresh...
 
-void ctlCodeWindow::updateUI(dbgResultset & breakpoint)
+void ctlCodeWindow::updateUI(dbgResultset &breakpoint)
 {
     // Arrange for the lazy parts of our UI to be updated
     // during the next IDLE time
@@ -972,16 +972,16 @@ void ctlCodeWindow::clearBreakpointMarkers()
 //
 //    A ctlCodeWindow can display the source code for many different functions (if
 //  you step from one function into another function, the same ctlCodeWindow will
-//  display the source code for each function). 
+//  display the source code for each function).
 //
 //    To avoid constantly re-sending the source code for each function over the
-//  network we keep a cache (m_sourceCodeMap) of the source code for each 
+//  network we keep a cache (m_sourceCodeMap) of the source code for each
 //  function that we've seen. The cache is indexed by function OID.  We keep
 //  track of the transaction and command ID for each function too so we know
 //  when our cached copy becomes stale.
-//  
-//  This function searches the cache for an entry that matches the given 
-//  function ID.  Note that we simply return true or false to indicate 
+//
+//  This function searches the cache for an entry that matches the given
+//  function ID.  Note that we simply return true or false to indicate
 //  whether the function exists in the cache - to retreive the actual source
 //  code for a function, call getSource()
 
@@ -1017,8 +1017,8 @@ void ctlCodeWindow::cacheSource(const wxString &packageOID, const wxString &func
 ////////////////////////////////////////////////////////////////////////////////
 // getSource()
 //
-//    This function retrieves the source code for a given function from the 
-//  PostgreSQL server. We don't actually wait for completionm, we just 
+//    This function retrieves the source code for a given function from the
+//  PostgreSQL server. We don't actually wait for completionm, we just
 //  schedule the request.
 
 void ctlCodeWindow::getSource(const wxString &packageOID, const wxString &funcOID)
@@ -1040,7 +1040,7 @@ void ctlCodeWindow::displaySource(const wxString &packageOID, const wxString &fu
 {
 
     // We're about to display the source code for the target, give the keyboard
-    // focus to the view (so that function keys will work).  This seems like a 
+    // focus to the view (so that function keys will work).  This seems like a
     // reasonable point in time to grab the focus since we're just doing something
     // rather visual.
     m_view->SetFocus();
@@ -1058,7 +1058,7 @@ void ctlCodeWindow::displaySource(const wxString &packageOID, const wxString &fu
 
         if( getPkgVarWindow( false ))
             getPkgVarWindow( false )->delVar();
-        
+
         m_displayedFuncOid       = funcOID;
         m_displayedPackageOid = packageOID;
 
@@ -1070,7 +1070,7 @@ void ctlCodeWindow::displaySource(const wxString &packageOID, const wxString &fu
         // Strip the leading blank line from the source as it looks ugly
         wxString src = codeCache.getSource();
         src.Replace(wxT("\r"), wxT(""));
- 
+
         if (src.StartsWith(wxT("\n")))
             src = src.AfterFirst('\n');
 
@@ -1080,7 +1080,7 @@ void ctlCodeWindow::displaySource(const wxString &packageOID, const wxString &fu
         m_view->SetReadOnly(true);
     }
 
-    // Clear the current-line indicator 
+    // Clear the current-line indicator
     int lineNo = m_view->MarkerNext(0, MARKERINDEX_TO_MARKERMASK( MARKER_CURRENT));
     int current_line = m_currentLineNumber;
 
@@ -1091,7 +1091,7 @@ void ctlCodeWindow::displaySource(const wxString &packageOID, const wxString &fu
     }
 
     // Adjustment of the next position
-    if (current_line >= 1) 
+    if (current_line >= 1)
         current_line--;
 
     // Add the current-line indicator to the current line of code
@@ -1099,7 +1099,7 @@ void ctlCodeWindow::displaySource(const wxString &packageOID, const wxString &fu
     m_view->MarkerAdd(current_line, MARKER_CURRENT_BG);
 
     // Scroll the source code listing (if required) to make sure
-    // that this line of code is visible 
+    // that this line of code is visible
     //
     // (note: we set the anchor and the caret to the same position to avoid
     // creating a selection region)
@@ -1128,7 +1128,7 @@ int ctlCodeWindow::getLineNo( )
 //     This event handler is called when the user clicks a button in the debugger
 //    toolbar.
 
-void ctlCodeWindow::OnCommand( wxCommandEvent & event )
+void ctlCodeWindow::OnCommand( wxCommandEvent &event )
 {
 
     switch( event.GetId())
@@ -1147,16 +1147,16 @@ void ctlCodeWindow::OnCommand( wxCommandEvent & event )
         case MENU_ID_CLEAR_ALL_BREAK:
         {
             // The user wants to clear all the breakpoint
-             clearAllBreakpoints();
-             break;
-        }    
+            clearAllBreakpoints();
+            break;
+        }
 
         case MENU_ID_CONTINUE:
         {
             // The user wants to continue execution (as opposed to
-            // single-stepping through the code).  Unhilite all 
+            // single-stepping through the code).  Unhilite all
             // variables and tell the debugger server to continue.
-            m_dbgConn->startCommand( wxString::Format( m_commandContinue, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );        
+            m_dbgConn->startCommand( wxString::Format( m_commandContinue, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );
             m_parent->getStatusBar()->SetStatusText( _( "Waiting for target (continue)..." ), 1 );
             unhilightCurrentLine();
             disableTools();
@@ -1168,7 +1168,7 @@ void ctlCodeWindow::OnCommand( wxCommandEvent & event )
             // The user wants to step-over a function invocation (or
             // just single-step). Unhilite all variables and tell the
             // debugger server to step-over
-            m_dbgConn->startCommand( wxString::Format( m_commandStepOver, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );        
+            m_dbgConn->startCommand( wxString::Format( m_commandStepOver, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );
             m_parent->getStatusBar()->SetStatusText( _( "Waiting for target (step over)..." ), 1 );
             unhilightCurrentLine();
             disableTools();
@@ -1180,7 +1180,7 @@ void ctlCodeWindow::OnCommand( wxCommandEvent & event )
             // The user wants to step-into a function invocation (or
             // just single-step). Unhilite all variables and tell the
             // debugger server to step-into
-            m_dbgConn->startCommand( wxString::Format( m_commandStepInto, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );        
+            m_dbgConn->startCommand( wxString::Format( m_commandStepInto, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );
             m_parent->getStatusBar()->SetStatusText( _( "Waiting for target (step into)..." ), 1 );
             unhilightCurrentLine();
             disableTools();
@@ -1201,13 +1201,13 @@ void ctlCodeWindow::OnCommand( wxCommandEvent & event )
     }
 }
 
-void ctlCodeWindow::OnNoticeReceived( wxCommandEvent & event )
-{   
+void ctlCodeWindow::OnNoticeReceived( wxCommandEvent &event )
+{
     getMessageWindow()->AppendText( event.GetString());
     m_tabWindow->selectTab( ID_MSG_PAGE );
 }
 
-void ctlCodeWindow::OnResultSet( PGresult * result )
+void ctlCodeWindow::OnResultSet( PGresult *result )
 {
     getResultWindow()->fillGrid( result );
 }
@@ -1243,7 +1243,7 @@ void ctlCodeWindow::clearBreakpoint( int lineNumber, bool requestUpdate )
         m_dbgConn->startCommand(wxString::Format(m_commandClearBreakpointV2, m_sessionHandle.c_str(), m_displayedFuncOid.c_str(), lineNumber + 1), GetEventHandler(), RESULT_ID_NEW_BREAKPOINT);
 
     if (requestUpdate)
-        m_updateBreakpoints = true;   
+        m_updateBreakpoints = true;
 }
 
 void ctlCodeWindow::clearAllBreakpoints()
@@ -1269,26 +1269,26 @@ void ctlCodeWindow::stopDebugging()
 //
 //  This event handler is called when the user clicks on a frame in the stack-
 //  trace window.  We ask the debugger server to switch to that frame, update
-//  the breakpoint markers, and send a list of variables that are in-scope in 
-//  the selected frame. 
+//  the breakpoint markers, and send a list of variables that are in-scope in
+//  the selected frame.
 //
 //  Note: when the debugger server sees a '^' command, it automatically sends
 //        is a "current-statement-location" message and we'll update the source
 //        code listing when we receive that message.
 //
 
-void ctlCodeWindow::OnSelectFrame( wxCommandEvent & event )
+void ctlCodeWindow::OnSelectFrame( wxCommandEvent &event )
 {
-	if( event.GetSelection() != -1 )
-	{
+    if( event.GetSelection() != -1 )
+    {
         if (!m_targetComplete && !m_targetAborted)
-            m_dbgConn->startCommand( wxString::Format( m_commandSelectFrame, m_sessionHandle.c_str(), event.GetSelection()), GetEventHandler(), RESULT_ID_BREAKPOINT );        
+            m_dbgConn->startCommand( wxString::Format( m_commandSelectFrame, m_sessionHandle.c_str(), event.GetSelection()), GetEventHandler(), RESULT_ID_BREAKPOINT );
     }
 }
 
-void ctlCodeWindow::OnVarChange( wxGridEvent & event )
+void ctlCodeWindow::OnVarChange( wxGridEvent &event )
 {
-    ctlVarWindow      *  window;
+    ctlVarWindow        *window;
 
     if( event.GetId() == ID_PARAMGRID )
         window = getParamWindow( false );
@@ -1296,14 +1296,14 @@ void ctlCodeWindow::OnVarChange( wxGridEvent & event )
         window = getVarWindow( false );
     else
         window = getPkgVarWindow( false );
-            
+
     wxString varName  = window->getVarName( event.GetRow());
     wxString varValue = window->getVarValue( event.GetRow());
 
     if( event.GetId() == ID_PKGVARGRID )
         varName.Prepend( wxT( "@" ));
 
-    m_dbgConn->startCommand( wxString::Format( m_commandDepositValue, m_sessionHandle.c_str(), varName.c_str(), -1, varValue.c_str()), GetEventHandler(), RESULT_ID_DEPOSIT_VALUE );        
+    m_dbgConn->startCommand( wxString::Format( m_commandDepositValue, m_sessionHandle.c_str(), varName.c_str(), -1, varValue.c_str()), GetEventHandler(), RESULT_ID_DEPOSIT_VALUE );
 
 
 }
@@ -1319,16 +1319,16 @@ void ctlCodeWindow::startGlobalDebugging( )
 // ResultListenerCreated()
 //
 //    This event handler is called when the result set of an earlier query arrives
-//  from the proxy. In this case, the result set is generated by a call to 
-//  pldbg_create_listener(). If the query succeeded, our proxy has created a 
+//  from the proxy. In this case, the result set is generated by a call to
+//  pldbg_create_listener(). If the query succeeded, our proxy has created a
 //  global listener that's listening for a debugger target.  At this point, the
 //  listener is *not* waiting for a target, it's just created the socket.
 //  Now we'll issue another query (to the proxy) that will force it to wait
 //  for a debugger target.
 
-void ctlCodeWindow::ResultListenerCreated( wxCommandEvent & event )
+void ctlCodeWindow::ResultListenerCreated( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -1343,26 +1343,26 @@ void ctlCodeWindow::ResultListenerCreated( wxCommandEvent & event )
         // Now create any global breakpoints that the user requested.
         // We start by asking the server to resolve the breakpoint name
         // into an OID (or a pair of OID's if the target is defined in a
-        // package).  As each (targetInfo) result arrives, we add a 
+        // package).  As each (targetInfo) result arrives, we add a
         // breakpoint at the resulting OID.
 
         unsigned int    index = 1;
 
-        for( dbgBreakPointList::Node * node = m_breakpoints.GetFirst(); node; node = node->GetNext(), ++index )
+        for( dbgBreakPointList::Node *node = m_breakpoints.GetFirst(); node; node = node->GetNext(), ++index )
         {
-            dbgBreakPoint * breakpoint = node->GetData();
+            dbgBreakPoint *breakpoint = node->GetData();
 
             if( index < m_breakpoints.GetCount())
                 addBreakpoint( breakpoint, RESULT_ID_ADD_BREAKPOINT );
             else
                 addBreakpoint( breakpoint, RESULT_ID_LAST_BREAKPOINT );
-        }    
+        }
     }
 }
 
-void ctlCodeWindow::ResultTargetReady(  wxCommandEvent & event )
+void ctlCodeWindow::ResultTargetReady(  wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if(m_progressBar)
     {
@@ -1376,34 +1376,42 @@ void ctlCodeWindow::ResultTargetReady(  wxCommandEvent & event )
     else
     {
         setTools(true);
-        m_dbgConn->startCommand( wxString::Format( m_commandWaitForBreakpoint, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );        
+        m_dbgConn->startCommand( wxString::Format( m_commandWaitForBreakpoint, m_sessionHandle.c_str()), GetEventHandler(), RESULT_ID_BREAKPOINT );
     }
 }
 
-void ctlCodeWindow::addBreakpoint( dbgBreakPoint * breakpoint, wxEventType nextStep )
+void ctlCodeWindow::addBreakpoint( dbgBreakPoint *breakpoint, wxEventType nextStep )
 {
     // The user want's to add a (global) breakpoint on a function, procedure, oid, or trigger
     //
-    // First, ask the proxy to resolve the target name into an OID (or two OID's if the 
+    // First, ask the proxy to resolve the target name into an OID (or two OID's if the
     // target happens to reside in a package).  When the target info arrives, we'll get a
     // RESULT_ID_ADD_BREAKPOINT message.
 
-    char    targetType=0;
+    char    targetType = 0;
 
     switch( breakpoint->getTargetType())
     {
-        case dbgBreakPoint::FUNCTION:  targetType = 'f'; break;
-        case dbgBreakPoint::PROCEDURE: targetType = 'p'; break;
-        case dbgBreakPoint::OID:       targetType = 'o'; break;
-        case dbgBreakPoint::TRIGGER:   targetType = 't'; break;
+        case dbgBreakPoint::FUNCTION:
+            targetType = 'f';
+            break;
+        case dbgBreakPoint::PROCEDURE:
+            targetType = 'p';
+            break;
+        case dbgBreakPoint::OID:
+            targetType = 'o';
+            break;
+        case dbgBreakPoint::TRIGGER:
+            targetType = 't';
+            break;
     }
 
     m_dbgConn->startCommand( wxString::Format( m_commandGetTargetInfo, breakpoint->getTargetProcess().c_str(), breakpoint->getTarget().c_str(), targetType ), GetEventHandler(), nextStep );
 }
 
-void ctlCodeWindow::ResultAddBreakpoint( wxCommandEvent & event )
+void ctlCodeWindow::ResultAddBreakpoint( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -1423,9 +1431,9 @@ void ctlCodeWindow::ResultAddBreakpoint( wxCommandEvent & event )
     }
 }
 
-void ctlCodeWindow::ResultLastBreakpoint( wxCommandEvent & event )
+void ctlCodeWindow::ResultLastBreakpoint( wxCommandEvent &event )
 {
-    dbgResultset  result((PGresult *)event.GetClientData()); 
+    dbgResultset  result((PGresult *)event.GetClientData());
 
     if( connectionLost( result ))
         closeConnection();
@@ -1452,14 +1460,14 @@ void ctlCodeWindow::ResultLastBreakpoint( wxCommandEvent & event )
 //  caller typically populates this list before calling startDebugging() - we
 //  set a breakpoint for each member of the list
 
-dbgBreakPointList & ctlCodeWindow::getBreakpointList()
-{ 
-    return( m_breakpoints ); 
+dbgBreakPointList &ctlCodeWindow::getBreakpointList()
+{
+    return( m_breakpoints );
 }
 
 void ctlCodeWindow::unhilightCurrentLine()
 {
-    
+
     int    lineNo = m_view->MarkerNext( 0, MARKERINDEX_TO_MARKERMASK( MARKER_CURRENT ));
 
     if( lineNo != -1 )
@@ -1467,10 +1475,10 @@ void ctlCodeWindow::unhilightCurrentLine()
         m_view->MarkerDelete( lineNo, MARKER_CURRENT );
         m_view->MarkerDelete( lineNo, MARKER_CURRENT_BG );
     }
-    
+
 }
 
-void ctlCodeWindow::OnTimer( wxTimerEvent & event )
+void ctlCodeWindow::OnTimer( wxTimerEvent &event )
 {
     if( m_progressBar )
     {
@@ -1497,11 +1505,11 @@ void ctlCodeWindow::OnTimer( wxTimerEvent & event )
 ////////////////////////////////////////////////////////////////////////////////
 // wsCodeCache constructor
 //
-//    Each entry in our code cache (ctlCodeWindow::m_sourceCodeMap) is an object 
-//  of class wsCodeCache. 
+//    Each entry in our code cache (ctlCodeWindow::m_sourceCodeMap) is an object
+//  of class wsCodeCache.
 
 wsCodeCache::wsCodeCache(const wxString &packageOID, const wxString &funcOID, const wxString &source, const wxString &signature)
-  : m_packageOID(packageOID), m_funcOID(funcOID), m_sourceCode(source), m_signature(signature)
+    : m_packageOID(packageOID), m_funcOID(funcOID), m_sourceCode(source), m_signature(signature)
 {
 }
 

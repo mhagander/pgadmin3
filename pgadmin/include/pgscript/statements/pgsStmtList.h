@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,31 +21,31 @@ class pgsStmtList : public pgsStmt
 
 private:
 
-	pgsListStmt m_stmt_list;
-	
-	pgsOutputStream & m_cout;
-	
-public:
-	
-	static bool m_exception_thrown;
+    pgsListStmt m_stmt_list;
+
+    pgsOutputStream &m_cout;
 
 public:
 
-	pgsStmtList(pgsOutputStream & cout, pgsThread * app = 0);
-	
-	virtual ~pgsStmtList();
+    static bool m_exception_thrown;
 
-	virtual void eval(pgsVarMap & vars) const;
+public:
 
-	void insert_front(pgsStmt * stmt);
+    pgsStmtList(pgsOutputStream &cout, pgsThread *app = 0);
 
-	void insert_back(pgsStmt * stmt);
+    virtual ~pgsStmtList();
+
+    virtual void eval(pgsVarMap &vars) const;
+
+    void insert_front(pgsStmt *stmt);
+
+    void insert_back(pgsStmt *stmt);
 
 private:
 
-	pgsStmtList(const pgsStmtList & that);
+    pgsStmtList(const pgsStmtList &that);
 
-	pgsStmtList & operator=(const pgsStmtList & that);
+    pgsStmtList &operator=(const pgsStmtList &that);
 
 };
 

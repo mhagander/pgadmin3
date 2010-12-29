@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,8 +22,8 @@
 class ctlCheckTreeView : public wxTreeCtrl
 {
 public:
-    ctlCheckTreeView(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTR_HAS_BUTTONS);
-    bool IsChecked(const wxTreeItemId& node);
+    ctlCheckTreeView(wxWindow *parent, wxWindowID id, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long style = wxTR_HAS_BUTTONS);
+    bool IsChecked(const wxTreeItemId &node);
 
 private:
     void OnLeftClick(wxMouseEvent &evt);

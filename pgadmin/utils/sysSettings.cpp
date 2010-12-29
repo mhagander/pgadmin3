@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -29,20 +29,20 @@
 #include "utils/sysLogger.h"
 #include "utils/misc.h"
 
-sysSettings::sysSettings(const wxString& name) : wxConfig(name)
+sysSettings::sysSettings(const wxString &name) : wxConfig(name)
 {
-	// Open the default settings file
-	defaultSettings = NULL;
-	if (!settingsIni.IsEmpty())
-	{
-	    wxFileInputStream fst(settingsIni);
+    // Open the default settings file
+    defaultSettings = NULL;
+    if (!settingsIni.IsEmpty())
+    {
+        wxFileInputStream fst(settingsIni);
         defaultSettings = new wxFileConfig(fst);
-    }	
+    }
 
     // Convert settings from pre-1.5
     long i, serverCount;
     Read(wxT("Servers/Count"), &serverCount, 0L);
-    for (i=1 ; i <= serverCount ; i++)
+    for (i = 1 ; i <= serverCount ; i++)
     {
         if (moveStringValue(wxT("Servers/Database%d"), wxT("Servers/%d/Database"), i))
         {
@@ -65,37 +65,37 @@ bool sysSettings::GetDisplayOption(const wxString &objtype, bool GetDefault)
     bool retval, def = true;
     wxString engtype;
 
-    if (objtype == _("Databases")) 
+    if (objtype == _("Databases"))
         engtype = wxT("Databases");
-    else if (objtype == _("Tablespaces")) 
+    else if (objtype == _("Tablespaces"))
         engtype = wxT("Tablespaces");
-    else if (objtype == _("pgAgent Jobs")) 
+    else if (objtype == _("pgAgent Jobs"))
         engtype = wxT("pgAgent Jobs");
-    else if (objtype == _("Groups/group Roles")) 
+    else if (objtype == _("Groups/group Roles"))
         engtype = wxT("Groups-login Roles");
-    else if (objtype == _("Users/login Roles")) 
+    else if (objtype == _("Users/login Roles"))
         engtype = wxT("Users-login Roles");
     else if (objtype == _("Resource Queues"))
         engtype = wxT("Resource Queues");
-    else if (objtype == _("Catalogs")) 
+    else if (objtype == _("Catalogs"))
         engtype = wxT("Catalogs");
-    else if (objtype == _("Casts")) 
+    else if (objtype == _("Casts"))
     {
         engtype = wxT("Casts");
         def = false;
     }
-    else if (objtype == _("Languages")) 
+    else if (objtype == _("Languages"))
     {
         engtype = wxT("Languages");
         def = false;
     }
-    else if (objtype == _("Synonyms")) 
+    else if (objtype == _("Synonyms"))
         engtype = wxT("Synonyms");
-    else if (objtype == _("Schemas")) 
+    else if (objtype == _("Schemas"))
         engtype = wxT("Schemas");
-    else if (objtype == _("Slony-I Clusters")) 
+    else if (objtype == _("Slony-I Clusters"))
         engtype = wxT("Slony-I Clusters");
-    else if (objtype == _("Aggregates")) 
+    else if (objtype == _("Aggregates"))
     {
         engtype = wxT("Aggregates");
         def = false;
@@ -105,49 +105,49 @@ bool sysSettings::GetDisplayOption(const wxString &objtype, bool GetDefault)
         engtype = wxT("Conversions");
         def = false;
     }
-    else if (objtype == _("Domains")) 
+    else if (objtype == _("Domains"))
         engtype = wxT("Domains");
-    else if (objtype == _("Functions")) 
+    else if (objtype == _("Functions"))
         engtype = wxT("Functions");
-    else if (objtype == _("Trigger Functions")) 
+    else if (objtype == _("Trigger Functions"))
         engtype = wxT("Trigger Functions");
-    else if (objtype == _("Packages")) 
+    else if (objtype == _("Packages"))
         engtype = wxT("Packages");
-    else if (objtype == _("Procedures")) 
+    else if (objtype == _("Procedures"))
         engtype = wxT("Procedures");
-    else if (objtype == _("Operators")) 
+    else if (objtype == _("Operators"))
     {
         engtype = wxT("Operators");
         def = false;
     }
-    else if (objtype == _("Operator Classes")) 
+    else if (objtype == _("Operator Classes"))
     {
         engtype = wxT("Operator Classes");
         def = false;
     }
-    else if (objtype == _("Operator Families")) 
+    else if (objtype == _("Operator Families"))
     {
         engtype = wxT("Operator Families");
         def = false;
     }
-    else if (objtype == _("Sequences")) 
+    else if (objtype == _("Sequences"))
         engtype = wxT("Sequences");
-    else if (objtype == _("Tables")) 
+    else if (objtype == _("Tables"))
         engtype = wxT("Tables");
-    else if (objtype == _("FTS Configurations")) 
+    else if (objtype == _("FTS Configurations"))
         engtype = wxT("FTS Configurations");
-    else if (objtype == _("FTS Dictionaries")) 
+    else if (objtype == _("FTS Dictionaries"))
         engtype = wxT("FTS Dictionaries");
-    else if (objtype == _("FTS Parsers")) 
+    else if (objtype == _("FTS Parsers"))
         engtype = wxT("FTS Parsers");
-    else if (objtype == _("FTS Templates")) 
+    else if (objtype == _("FTS Templates"))
         engtype = wxT("FTS Templates");
-    else if (objtype == _("Types")) 
+    else if (objtype == _("Types"))
     {
         engtype = wxT("Types");
         def = false;
     }
-    else if (objtype == _("Views")) 
+    else if (objtype == _("Views"))
         engtype = wxT("Views");
     else if (objtype == _("External Tables"))
         engtype = wxT("External Tables");
@@ -155,7 +155,7 @@ bool sysSettings::GetDisplayOption(const wxString &objtype, bool GetDefault)
     // If we just want the default, return it.
     if (GetDefault)
         return def;
- 
+
     // Otherwise get the reg value.
     Read(wxT("Display/") + engtype, &retval, def);
     return retval;
@@ -210,8 +210,8 @@ bool sysSettings::moveStringValue(const wxChar *oldKey, const wxChar *newKey, in
     }
     else
     {
-        k1=oldKey;
-        k2=newKey;
+        k1 = oldKey;
+        k2 = newKey;
     }
 
     if (!Exists(k2) && Exists(k1))
@@ -238,8 +238,8 @@ bool sysSettings::moveLongValue(const wxChar *oldKey, const wxChar *newKey, int 
     }
     else
     {
-        k1=oldKey;
-        k2=newKey;
+        k1 = oldKey;
+        k2 = newKey;
     }
 
     if (!Exists(k2) && Exists(k1))
@@ -255,78 +255,78 @@ bool sysSettings::moveLongValue(const wxChar *oldKey, const wxChar *newKey, int 
 }
 
 // Read a string value
-bool sysSettings::Read(const wxString& key, wxString* str, const wxString& defaultVal) const
-{ 
+bool sysSettings::Read(const wxString &key, wxString *str, const wxString &defaultVal) const
+{
     wxString actualDefault = defaultVal;
 
-    // Get the default from the defaults file, in preference 
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
         defaultSettings->Read(key, &actualDefault, defaultVal);
 
-    return wxConfig::Read(key, str, actualDefault); 
+    return wxConfig::Read(key, str, actualDefault);
 }
 
 // Return a string value
-wxString sysSettings::Read(const wxString& key, const wxString &defaultVal) const
-{ 
+wxString sysSettings::Read(const wxString &key, const wxString &defaultVal) const
+{
     wxString actualDefault = defaultVal;
 
-    // Get the default from the defaults file, in preference 
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
         defaultSettings->Read(key, &actualDefault, defaultVal);
 
-    return wxConfig::Read(key, actualDefault); 
+    return wxConfig::Read(key, actualDefault);
 }
 
 // Read an int value
-bool sysSettings::Read(const wxString& key, int* i, int defaultVal) const
-{ 
+bool sysSettings::Read(const wxString &key, int *i, int defaultVal) const
+{
     int actualDefault = defaultVal;
-    
-    // Get the default from the defaults file, in preference 
+
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
         defaultSettings->Read(key, &actualDefault, defaultVal);
 
-    return wxConfig::Read(key, i, actualDefault); 
+    return wxConfig::Read(key, i, actualDefault);
 }
 
 // Read a long value
-bool sysSettings::Read(const wxString& key, long* l, long defaultVal) const
-{ 
+bool sysSettings::Read(const wxString &key, long *l, long defaultVal) const
+{
     long actualDefault = defaultVal;
-    
-    // Get the default from the defaults file, in preference 
+
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
         defaultSettings->Read(key, &actualDefault, defaultVal);
 
-    return wxConfig::Read(key, l, actualDefault); 
+    return wxConfig::Read(key, l, actualDefault);
 }
 
 
 // Return a long value
-long sysSettings::Read(const wxString& key, long defaultVal) const
-{ 
+long sysSettings::Read(const wxString &key, long defaultVal) const
+{
     long actualDefault = defaultVal;
-    
-    // Get the default from the defaults file, in preference 
+
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
         defaultSettings->Read(key, &actualDefault, defaultVal);
 
-    return wxConfig::Read(key, actualDefault); 
+    return wxConfig::Read(key, actualDefault);
 }
 
 // Read a boolean value
-bool sysSettings::Read(const wxString& key, bool *val, bool defaultVal) const
+bool sysSettings::Read(const wxString &key, bool *val, bool defaultVal) const
 {
     wxString actualDefault = BoolToStr(defaultVal);
     wxString str;
 
-    // Get the default from the defaults file, in preference 
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
         defaultSettings->Read(key, &actualDefault, BoolToStr(defaultVal));
@@ -337,11 +337,11 @@ bool sysSettings::Read(const wxString& key, bool *val, bool defaultVal) const
 }
 
 // Read a point value
-wxPoint sysSettings::Read(const wxString& key, const wxPoint &defaultVal) const
+wxPoint sysSettings::Read(const wxString &key, const wxPoint &defaultVal) const
 {
     wxPoint actualDefault = defaultVal;
 
-    // Get the default from the defaults file, in preference 
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
     {
@@ -349,16 +349,16 @@ wxPoint sysSettings::Read(const wxString& key, const wxPoint &defaultVal) const
         actualDefault.y = defaultSettings->Read(key + wxT("/Top"), defaultVal.y);
     }
 
-    return wxPoint(wxConfig::Read(key + wxT("/Left"), actualDefault.x), 
+    return wxPoint(wxConfig::Read(key + wxT("/Left"), actualDefault.x),
                    wxConfig::Read(key + wxT("/Top"), actualDefault.y));
 }
 
 // Read a size value
-wxSize sysSettings::Read(const wxString& key, const wxSize &defaultVal) const
+wxSize sysSettings::Read(const wxString &key, const wxSize &defaultVal) const
 {
     wxSize actualDefault = defaultVal;
 
-    // Get the default from the defaults file, in preference 
+    // Get the default from the defaults file, in preference
     // to the hardcoded value
     if (defaultSettings)
     {
@@ -366,7 +366,7 @@ wxSize sysSettings::Read(const wxString& key, const wxSize &defaultVal) const
         actualDefault.y = defaultSettings->Read(key + wxT("/Height"), defaultVal.y);
     }
 
-    return wxSize(wxConfig::Read(key + wxT("/Width"), actualDefault.x), 
+    return wxSize(wxConfig::Read(key + wxT("/Width"), actualDefault.x),
                   wxConfig::Read(key + wxT("/Height"), actualDefault.y));
 }
 
@@ -379,18 +379,18 @@ bool sysSettings::Write(const wxString &key, bool value)
 // Write a point value
 bool sysSettings::Write(const wxString &key, const wxPoint &value)
 {
-    bool rc=wxConfig::Write(key + wxT("/Left"), value.x);
+    bool rc = wxConfig::Write(key + wxT("/Left"), value.x);
     if (rc)
-        rc=wxConfig::Write(key + wxT("/Top"), value.y);
+        rc = wxConfig::Write(key + wxT("/Top"), value.y);
     return rc;
 }
 
 // Write a size value
 bool sysSettings::Write(const wxString &key, const wxSize &value)
 {
-    bool rc=wxConfig::Write(key + wxT("/Width"), value.x);
+    bool rc = wxConfig::Write(key + wxT("/Width"), value.x);
     if (rc)
-        rc=wxConfig::Write(key + wxT("/Height"), value.y);
+        rc = wxConfig::Write(key + wxT("/Height"), value.y);
     return rc;
 }
 
@@ -409,7 +409,7 @@ wxString sysSettings::GetLogFile()
 #endif
 
     wxString deflog;
-    
+
 #ifdef __WXMSW__
     homedrive = getenv("HOMEDRIVE");
     homedir = getenv("HOMEPATH");
@@ -419,9 +419,9 @@ wxString sysSettings::GetLogFile()
 
     if (!homedir)
         deflog = wxT("pgadmin.log");
-    else 
+    else
     {
-        
+
 #ifdef __WXMSW__
         wxStandardPaths paths;
         deflog = paths.GetDocumentsDir();
@@ -652,7 +652,7 @@ wxString sysSettings::GetCanonicalLanguageName()
     const wxLanguageInfo *langInfo;
 
     langInfo = wxLocale::GetLanguageInfo(Read(wxT("LanguageId"), wxLANGUAGE_UNKNOWN));
-    
+
     if (langInfo)
         return langInfo->CanonicalName;
 
@@ -687,23 +687,23 @@ wxString sysSettings::GetConfigFile(configFileName cfgname)
     if (cfgname == PGPASS)
     {
         wxStandardPaths stdp;
-        wxString fname=stdp.GetUserConfigDir();
+        wxString fname = stdp.GetUserConfigDir();
 #ifdef WIN32
         fname += wxT("\\postgresql");
         if (!wxDirExists(fname))
             wxMkdir(fname);
         switch(cfgname)
         {
-        case PGPASS:
-            fname += wxT("\\pgpass.conf");
-            break;
+            case PGPASS:
+                fname += wxT("\\pgpass.conf");
+                break;
         }
 #else
         switch(cfgname)
         {
-        case PGPASS:
-            fname += wxT("/.pgpass");
-            break;
+            case PGPASS:
+                fname += wxT("/.pgpass");
+                break;
         }
 #endif
         return fname;
@@ -715,7 +715,7 @@ wxString sysSettings::GetConfigFile(configFileName cfgname)
 wxString sysSettings::GetFavouritesFile()
 {
     wxString s, tmp;
-    
+
     wxStandardPaths stdp;
     tmp = stdp.GetUserConfigDir();
 #ifdef WIN32
@@ -728,7 +728,7 @@ wxString sysSettings::GetFavouritesFile()
 #endif
 
     Read(wxT("FavouritesFile"), &s, tmp);
-    
+
     return s;
 }
 
@@ -736,7 +736,7 @@ wxString sysSettings::GetFavouritesFile()
 wxString sysSettings::GetMacrosFile()
 {
     wxString s, tmp;
-    
+
     wxStandardPaths stdp;
     tmp = stdp.GetUserConfigDir();
 #ifdef WIN32
@@ -749,7 +749,7 @@ wxString sysSettings::GetMacrosFile()
 #endif
 
     Read(wxT("MacrosFile"), &s, tmp);
-    
+
     return s;
 }
 
@@ -757,7 +757,7 @@ wxString sysSettings::GetMacrosFile()
 wxString sysSettings::GetHistoryFile()
 {
     wxString s, tmp;
-            
+
     wxStandardPaths stdp;
     tmp = stdp.GetUserConfigDir();
 #ifdef WIN32

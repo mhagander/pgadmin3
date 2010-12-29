@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -28,8 +28,16 @@
 class RemoteConn
 {
 public:
-    RemoteConn(long id, const wxString str, pgConn *c) { connInfo=str; nodeID=id; conn=c; }
-    ~RemoteConn() { if (conn) delete conn; }
+    RemoteConn(long id, const wxString str, pgConn *c)
+    {
+        connInfo = str;
+        nodeID = id;
+        conn = c;
+    }
+    ~RemoteConn()
+    {
+        if (conn) delete conn;
+    }
 
     wxString connInfo;
     pgConn *conn;
@@ -39,15 +47,15 @@ public:
 
 WX_DEFINE_OBJARRAY(RemoteConnArray);
 
-slCluster::slCluster(const wxString& newName)
-: pgDatabaseObject(slClusterFactory, newName)
+slCluster::slCluster(const wxString &newName)
+    : pgDatabaseObject(slClusterFactory, newName)
 {
-    localNode=0;
+    localNode = 0;
 }
 
 wxMenu *slCluster::GetNewMenu()
 {
-    wxMenu *menu=pgObject::GetNewMenu();
+    wxMenu *menu = pgObject::GetNewMenu();
 
 //    if (GetCreatePrivilege())
     {
@@ -61,8 +69,8 @@ wxMenu *slCluster::GetNewMenu()
 bool slCluster::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(
-        wxT("SELECT ") + GetSchemaPrefix() + wxT("uninstallnode();\n")
-        wxT("DROP SCHEMA ") + qtIdent(wxT("_") + GetName()) + wxT(" CASCADE;"));
+               wxT("SELECT ") + GetSchemaPrefix() + wxT("uninstallnode();\n")
+               wxT("DROP SCHEMA ") + qtIdent(wxT("_") + GetName()) + wxT(" CASCADE;"));
 }
 
 
@@ -78,13 +86,13 @@ wxString slCluster::GetSql(ctlTree *browser)
 
 slNode *slCluster::GetLocalNode(ctlTree *browser)
 {
-    pgCollection *nodes=browser->FindCollection(nodeFactory, GetId());
+    pgCollection *nodes = browser->FindCollection(nodeFactory, GetId());
     if (nodes)
     {
         slNode *node;
 
         treeObjectIterator ni(browser, nodes);
-        while ((node=(slNode*)ni.GetNextObject()) != 0)
+        while ((node = (slNode *)ni.GetNextObject()) != 0)
         {
             if (node->GetSlId() == GetLocalNodeID())
                 return node;
@@ -101,7 +109,7 @@ pgConn *slCluster::GetNodeConn(frmMain *form, long nodeId, bool create)
     if (nodeId == GetLocalNodeID())
         return GetDatabase()->GetConnection();
 
-    for (i=0 ; i < remoteConns.GetCount() ; i++)
+    for (i = 0 ; i < remoteConns.GetCount() ; i++)
     {
         if (remoteConns[i].nodeID == nodeId)
             return remoteConns[i].conn;
@@ -109,23 +117,23 @@ pgConn *slCluster::GetNodeConn(frmMain *form, long nodeId, bool create)
 
     if (create && adminNodeID >= 0)
     {
-        wxString connstr=GetDatabase()->ExecuteScalar(
-            wxT("SELECT pa_conninfo FROM ") + GetSchemaPrefix() + wxT("sl_path\n")
-            wxT(" WHERE pa_server = ") + NumToStr(nodeId) +
-            wxT("   AND pa_client = ") + NumToStr(adminNodeID));
+        wxString connstr = GetDatabase()->ExecuteScalar(
+                               wxT("SELECT pa_conninfo FROM ") + GetSchemaPrefix() + wxT("sl_path\n")
+                               wxT(" WHERE pa_server = ") + NumToStr(nodeId) +
+                               wxT("   AND pa_client = ") + NumToStr(adminNodeID));
 
         if (!connstr.IsEmpty())
         {
             // check for server registration
             wxTreeItemId servers = GetId();
-            pgObject *obj=this;
+            pgObject *obj = this;
             while (obj && obj != form->GetServerCollection())
             {
                 servers = form->GetBrowser()->GetItemParent(servers);
-                if (servers)            
+                if (servers)
                     obj = form->GetBrowser()->GetObject(servers);
             }
-            
+
             wxCookieType cookie;
 
             wxStringTokenizer strtok(connstr, wxT(" "), wxTOKEN_RET_EMPTY);
@@ -143,7 +151,7 @@ pgConn *slCluster::GetNodeConn(frmMain *form, long nodeId, bool create)
                         lastToken += wxT(" ");
                     lastToken += str;
                 }
-                else 
+                else
                 {
                     if (!lastToken.IsEmpty())
                         tokens.Add(lastToken);
@@ -156,10 +164,10 @@ pgConn *slCluster::GetNodeConn(frmMain *form, long nodeId, bool create)
             size_t i;
 
             wxString host, dbname;
-            int port=5432;
-            for (i=0 ; i < tokens.GetCount() ; i++)
+            int port = 5432;
+            for (i = 0 ; i < tokens.GetCount() ; i++)
             {
-                str=tokens[i].BeforeFirst('=');
+                str = tokens[i].BeforeFirst('=');
                 if (str == wxT("host"))
                     host = tokens[i].AfterFirst('=');
                 else if (str == wxT("dbname"))
@@ -171,10 +179,10 @@ pgConn *slCluster::GetNodeConn(frmMain *form, long nodeId, bool create)
             if (host.IsEmpty() || dbname.IsEmpty())
                 return NULL;
 
-            wxTreeItemId serverItem=form->GetBrowser()->GetFirstChild(servers, cookie);        
+            wxTreeItemId serverItem = form->GetBrowser()->GetFirstChild(servers, cookie);
             while (serverItem)
             {
-                pgServer *server = (pgServer*)form->GetBrowser()->GetObject(serverItem);
+                pgServer *server = (pgServer *)form->GetBrowser()->GetObject(serverItem);
                 if (server && server->IsCreatedBy(serverFactory))
                 {
                     if (server->GetName() == host && server->GetPort() == port)
@@ -207,17 +215,17 @@ pgConn *slCluster::GetNodeConn(frmMain *form, long nodeId, bool create)
 
 bool slCluster::ClusterMinimumVersion(int major, int minor)
 {
-    long ma=StrToLong(clusterVersion);
-    long mi=StrToLong(clusterVersion.AfterFirst('.'));
+    long ma = StrToLong(clusterVersion);
+    long mi = StrToLong(clusterVersion.AfterFirst('.'));
     return ma > major || (ma == major && mi >= minor);
 }
 
 
 long slCluster::GetSlonPid()
 {
-    long slonPid=StrToLong(GetConnection()->ExecuteScalar(
-        wxT("SELECT listenerpid FROM pg_listener WHERE relname = ")
-            + qtDbString(wxT("_") + GetName() + wxT("_Event"))));
+    long slonPid = StrToLong(GetConnection()->ExecuteScalar(
+                                 wxT("SELECT listenerpid FROM pg_listener WHERE relname = ")
+                                 + qtDbString(wxT("_") + GetName() + wxT("_Event"))));
     return slonPid;
 }
 
@@ -226,15 +234,15 @@ void slCluster::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pro
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
         pgSet *set;
 
-        set=GetDatabase()->ExecuteSet(
-            wxT("SELECT no_id, no_comment, ") + GetSchemaPrefix() + wxT("slonyversion() AS version\n")
-            wxT("  FROM ") + GetSchemaPrefix() + wxT("sl_local_node_id\n")
-            wxT("  JOIN ") + GetSchemaPrefix() + wxT("sl_node ON no_id = last_value"));
+        set = GetDatabase()->ExecuteSet(
+                  wxT("SELECT no_id, no_comment, ") + GetSchemaPrefix() + wxT("slonyversion() AS version\n")
+                  wxT("  FROM ") + GetSchemaPrefix() + wxT("sl_local_node_id\n")
+                  wxT("  JOIN ") + GetSchemaPrefix() + wxT("sl_node ON no_id = last_value"));
         if (set)
         {
             iSetClusterVersion(set->GetVal(wxT("version")));
@@ -251,12 +259,12 @@ void slCluster::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pro
         if (adminNodeID == -1L)
         {
             sql +=  wxT("  JOIN ") + GetSchemaPrefix() + wxT("sl_path ON no_id = pa_client\n")
-                    wxT(" WHERE pa_server = ") + NumToStr(localNodeID) + 
+                    wxT(" WHERE pa_server = ") + NumToStr(localNodeID) +
                     wxT("   AND pa_conninfo LIKE ") + qtDbString(wxT("%host=") + GetServer()->GetName() + wxT("%")) +
                     wxT("   AND pa_conninfo LIKE ") + qtDbString(wxT("%dbname=") + GetDatabase()->GetName() + wxT("%"));
         }
         else
-            sql += wxT(" WHERE no_id = ") + NumToStr(adminNodeID); 
+            sql += wxT(" WHERE no_id = ") + NumToStr(adminNodeID);
 
 
         set = GetDatabase()->ExecuteSet(sql);
@@ -285,7 +293,7 @@ void slCluster::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pro
         properties->AppendItem(_("Name"), GetName());
         properties->AppendItem(_("Local node ID"), GetLocalNodeID());
         properties->AppendItem(_("Local node"), GetLocalNodeName());
-        
+
         if (GetAdminNodeID() == -1L)
             properties->AppendItem(_("Admin node"), _("<none>"));
         else
@@ -294,7 +302,7 @@ void slCluster::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pro
             properties->AppendItem(_("Admin node"), GetAdminNodeName());
         }
 
-        long slonPid=GetSlonPid();
+        long slonPid = GetSlonPid();
         if (slonPid)
             properties->AppendItem(wxT("Slon PID"), slonPid);
         else
@@ -310,8 +318,8 @@ void slCluster::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pro
 
 pgObject *slCluster::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *cluster=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *cluster = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         cluster = slClusterFactory.CreateObjects(coll, 0, wxT(" WHERE nsp.oid=") + GetOidStr() + wxT("\n"));
 
@@ -322,15 +330,15 @@ pgObject *slCluster::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgaSlClusterFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restriction)
 {
-    slCluster *cluster=0;
+    slCluster *cluster = 0;
 
     pgSet *clusters = coll->GetDatabase()->ExecuteSet(
-        wxT("SELECT nsp.oid, substr(nspname, 2) as clustername, nspname, pg_get_userbyid(nspowner) AS namespaceowner, description\n")
-        wxT("  FROM pg_namespace nsp\n")
-        wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=nsp.oid\n")
-        wxT("  JOIN pg_proc pro ON pronamespace=nsp.oid AND proname = 'slonyversion'\n")
-         + restriction +
-        wxT(" ORDER BY nspname"));
+                          wxT("SELECT nsp.oid, substr(nspname, 2) as clustername, nspname, pg_get_userbyid(nspowner) AS namespaceowner, description\n")
+                          wxT("  FROM pg_namespace nsp\n")
+                          wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=nsp.oid\n")
+                          wxT("  JOIN pg_proc pro ON pronamespace=nsp.oid AND proname = 'slonyversion'\n")
+                          + restriction +
+                          wxT(" ORDER BY nspname"));
 
     if (clusters)
     {
@@ -346,19 +354,19 @@ pgObject *pgaSlClusterFactory::CreateObjects(pgCollection *coll, ctlTree *browse
             if (browser)
             {
                 browser->AppendObject(coll, cluster);
-				clusters->MoveNext();
+                clusters->MoveNext();
             }
             else
                 break;
         }
 
-		delete clusters;
+        delete clusters;
     }
     return cluster;
 }
 
 
-    
+
 pgObject *slCluster::ReadObjects(pgCollection *coll, ctlTree *browser)
 {
     // Get the clusters
@@ -370,29 +378,29 @@ pgObject *slCluster::ReadObjects(pgCollection *coll, ctlTree *browser)
 #include "images/slcluster.xpm"
 #include "images/slclusters.xpm"
 
-pgaSlClusterFactory::pgaSlClusterFactory() 
-: pgDatabaseObjFactory(__("Slony-I cluster"), __("New Slony-I cluster..."), __("Create new Slony-I Replication Cluster"), slcluster_xpm)
+pgaSlClusterFactory::pgaSlClusterFactory()
+    : pgDatabaseObjFactory(__("Slony-I cluster"), __("New Slony-I cluster..."), __("Create new Slony-I Replication Cluster"), slcluster_xpm)
 {
 //    metaType = SLM_CLUSTER;
 }
 
 
 slObject::slObject(slCluster *cl, pgaFactory &factory, const wxString &newName)
-: pgDatabaseObject(factory, newName)
+    : pgDatabaseObject(factory, newName)
 {
     cluster = cl;
     iSetDatabase(cl->GetDatabase());
 }
 
 slObjCollection::slObjCollection(pgaFactory *factory, slCluster *_cluster)
-: pgDatabaseObjCollection(factory, _cluster->GetDatabase())
+    : pgDatabaseObjCollection(factory, _cluster->GetDatabase())
 {
     cluster = _cluster;
 }
 
 pgCollection *slObjFactory::CreateCollection(pgObject *obj)
 {
-    return new slObjCollection(GetCollectionFactory(), (slCluster*)obj);
+    return new slObjCollection(GetCollectionFactory(), (slCluster *)obj);
 }
 
 
@@ -415,30 +423,30 @@ slonyRestartFactory::slonyRestartFactory(menuFactoryList *list, wxMenu *mnu, ctl
 
 wxWindow *slonyRestartFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    slCluster *cluster=(slCluster*)obj;
+    slCluster *cluster = (slCluster *)obj;
 
-    wxString notifyName=cluster->GetDatabase()->ExecuteScalar(
-        wxT("SELECT relname FROM pg_listener")
-        wxT(" WHERE relname=") + cluster->GetDatabase()->GetConnection()->qtDbString(wxT("_") + cluster->GetName() + wxT("_Restart")));
+    wxString notifyName = cluster->GetDatabase()->ExecuteScalar(
+                              wxT("SELECT relname FROM pg_listener")
+                              wxT(" WHERE relname=") + cluster->GetDatabase()->GetConnection()->qtDbString(wxT("_") + cluster->GetName() + wxT("_Restart")));
 
     if (notifyName.IsEmpty())
     {
         wxMessageDialog dlg(form, wxString::Format(_("Node \"%s\" not running"), cluster->GetLocalNodeName().c_str()),
-              _("Can't restart node"), wxICON_EXCLAMATION|wxOK);
+                            _("Can't restart node"), wxICON_EXCLAMATION | wxOK);
         dlg.ShowModal();
         form->CheckAlive();
 
         return 0;
     }
 
-    wxMessageDialog dlg(form, wxString::Format(_("Restart node \"%s\"?"), 
-        cluster->GetLocalNodeName().c_str()), _("Restart node"), wxICON_EXCLAMATION|wxYES_NO|wxNO_DEFAULT);
+    wxMessageDialog dlg(form, wxString::Format(_("Restart node \"%s\"?"),
+                        cluster->GetLocalNodeName().c_str()), _("Restart node"), wxICON_EXCLAMATION | wxYES_NO | wxNO_DEFAULT);
 
     if (dlg.ShowModal() != wxID_YES)
         return 0;
 
     if (!cluster->GetDatabase()->ExecuteVoid(
-        wxT("NOTIFY ") + qtIdent(notifyName)))
+                wxT("NOTIFY ") + qtIdent(notifyName)))
         form->CheckAlive();
 
     return 0;
@@ -453,7 +461,7 @@ slonyUpgradeFactory::slonyUpgradeFactory(menuFactoryList *list, wxMenu *mnu, ctl
 
 wxWindow *slonyUpgradeFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    dlgProperty *dlg=new dlgRepClusterUpgrade(&slClusterFactory, form, (slCluster*)obj);
+    dlgProperty *dlg = new dlgRepClusterUpgrade(&slClusterFactory, form, (slCluster *)obj);
     dlg->InitDialog(form, obj);
     dlg->CreateAdditionalPages();
     dlg->Go(false);

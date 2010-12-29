@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -28,27 +28,27 @@ pgDatatype::pgDatatype(const wxString &nsp, const wxString &typname, bool isDup,
     // Above 7.4, format_type also sends the schema name if it's not included
     // in the search_path, so we need to skip it in the typname
     if (typname.Contains(schema + wxT("\".")))
-        name = typname.Mid(schema.Len()+3); // "+2" because of the two double quotes
+        name = typname.Mid(schema.Len() + 3); // "+2" because of the two double quotes
     else if (typname.Contains(schema + wxT(".")))
-        name = typname.Mid(schema.Len()+1);
+        name = typname.Mid(schema.Len() + 1);
     else
         name = typname;
 
     if (name.StartsWith(wxT("_")))
     {
         if (!numdims)
-           numdims=1;
-        name=name.Mid(1);
+            numdims = 1;
+        name = name.Mid(1);
     }
-	if (name.Right(2) == wxT("[]"))
-	{
-		if (!numdims)
-			numdims=1;
-		name=name.Left(name.Len()-2);
-	}
+    if (name.Right(2) == wxT("[]"))
+    {
+        if (!numdims)
+            numdims = 1;
+        name = name.Left(name.Len() - 2);
+    }
 
     if (name.StartsWith(wxT("\"")) && name.EndsWith(wxT("\"")))
-        name = name.Mid(1, name.Len()-2);
+        name = name.Mid(1, name.Len() - 2);
 
     if (numdims > 0)
     {
@@ -61,49 +61,49 @@ pgDatatype::pgDatatype(const wxString &nsp, const wxString &typname, bool isDup,
         length = wxT("(");
         if (name == wxT("numeric"))
         {
-            len=(typmod-4L) >> 16L;
-            prec=(typmod-4) & 0xffff;
+            len = (typmod - 4L) >> 16L;
+            prec = (typmod - 4) & 0xffff;
             length += NumToStr(len);
             if (prec)
                 length += wxT(",") + NumToStr(prec);
         }
         else if (name == wxT("time") || name == wxT("timetz")
-              || name == wxT("time without time zone") || name == wxT("time with time zone")
-              || name == wxT("timestamp") || name == wxT("timestamptz")
-              || name == wxT("timestamp without time zone") || name == wxT("timestamp with time zone")
-              || name == wxT("bit") || name == wxT("bit varying") || name == wxT("varbit"))
+                 || name == wxT("time without time zone") || name == wxT("time with time zone")
+                 || name == wxT("timestamp") || name == wxT("timestamptz")
+                 || name == wxT("timestamp without time zone") || name == wxT("timestamp with time zone")
+                 || name == wxT("bit") || name == wxT("bit varying") || name == wxT("varbit"))
         {
-            prec=0;
-            len=typmod;
+            prec = 0;
+            len = typmod;
             length += NumToStr(len);
         }
         else if (name == wxT("interval"))
         {
-            prec=0;
-            len=(typmod & 0xffff);
+            prec = 0;
+            len = (typmod & 0xffff);
             length += NumToStr(len);
         }
         else if (name == wxT("date"))
         {
-            len=prec=0;
+            len = prec = 0;
             length = wxT(""); /* Clear Length */
         }
-        else 
+        else
         {
-            prec=0;
-            len=typmod-4L;
+            prec = 0;
+            len = typmod - 4L;
             length += NumToStr(len);
         }
-	
+
         if (length.Length() > 0)
-	        length += wxT(")");
+            length += wxT(")");
     }
     else
-        len=prec=0;
+        len = prec = 0;
 }
 
 // Return the full name of the type, with dimension and array qualifiers
-wxString pgDatatype::FullName() const 
+wxString pgDatatype::FullName() const
 {
     if (name == wxT("time with time zone"))
         return wxT("time") + length + wxT(" with time zone") + array;
@@ -118,7 +118,7 @@ wxString pgDatatype::FullName() const
 }
 
 // Return the quoted full name of the type, with dimension and array qualifiers
-wxString pgDatatype::QuotedFullName() const 
+wxString pgDatatype::QuotedFullName() const
 {
     if (name == wxT("time with time zone"))
         return wxT("time") + length + wxT(" with time zone") + array;
@@ -146,9 +146,9 @@ wxString pgDatatype::GetSchemaPrefix(pgDatabase *db) const
 
 wxString pgDatatype::GetQuotedSchemaPrefix(pgDatabase *db) const
 {
-    wxString str=GetSchemaPrefix(db);
+    wxString str = GetSchemaPrefix(db);
     if (!str.IsEmpty())
-        return qtIdent(str.Left(str.Length()-1)) + wxT(".");
+        return qtIdent(str.Left(str.Length() - 1)) + wxT(".");
     return str;
 }
 
@@ -159,19 +159,19 @@ long pgDatatype::GetTypmod(const wxString &name, const wxString &len, const wxSt
         return -1;
     if (name == wxT("numeric"))
     {
-        return (((long)StrToLong(len) << 16) + StrToLong(prec)) +4;
+        return (((long)StrToLong(len) << 16) + StrToLong(prec)) + 4;
     }
     else if (name == wxT("time") || name == wxT("timetz")
-          || name == wxT("time without time zone") || name == wxT("time with time zone")
-          || name == wxT("timestamp") || name == wxT("timestamptz")
-          || name == wxT("timestamp without time zone") || name == wxT("timestamp with time zone")
-          || name == wxT("interval")  || name == wxT("bit") || name == wxT("bit varying") || name == wxT("varbit"))
+             || name == wxT("time without time zone") || name == wxT("time with time zone")
+             || name == wxT("timestamp") || name == wxT("timestamptz")
+             || name == wxT("timestamp without time zone") || name == wxT("timestamp with time zone")
+             || name == wxT("interval")  || name == wxT("bit") || name == wxT("bit varying") || name == wxT("varbit"))
     {
         return StrToLong(len);
     }
     else
     {
-        return StrToLong(len)+4;
+        return StrToLong(len) + 4;
     }
 }
 
@@ -184,7 +184,7 @@ DatatypeReader::DatatypeReader(pgDatabase *db, const wxString &condition)
 
 DatatypeReader::DatatypeReader(pgDatabase *db, bool withDomains)
 {
-    wxString condition=wxT("typisdefined AND typtype ");
+    wxString condition = wxT("typisdefined AND typtype ");
     if (withDomains)
         condition += wxT("IN ('b', 'c', 'd', 'e')");
     else
@@ -199,14 +199,14 @@ DatatypeReader::DatatypeReader(pgDatabase *db, bool withDomains)
 
 void DatatypeReader::init(pgDatabase *db, const wxString &condition)
 {
-    database=db;
-    set=db->GetConnection()->ExecuteSet(
-        wxT("SELECT format_type(t.oid,NULL) AS typname, CASE WHEN typelem > 0 THEN typelem ELSE t.oid END as elemoid, typlen, typtype, t.oid, nspname,\n")
-        wxT("       (SELECT COUNT(1) FROM pg_type t2 WHERE t2.typname = t.typname) > 1 AS isdup\n")
-        wxT("  FROM pg_type t\n")
-        wxT("  JOIN pg_namespace nsp ON typnamespace=nsp.oid\n")
-        wxT(" WHERE (NOT (typname = 'unknown' AND nspname = 'pg_catalog')) AND ") + condition + wxT("\n")
-        wxT("  ORDER BY typtype != 'd', t.typelem > 0, 1"));
+    database = db;
+    set = db->GetConnection()->ExecuteSet(
+              wxT("SELECT format_type(t.oid,NULL) AS typname, CASE WHEN typelem > 0 THEN typelem ELSE t.oid END as elemoid, typlen, typtype, t.oid, nspname,\n")
+              wxT("       (SELECT COUNT(1) FROM pg_type t2 WHERE t2.typname = t.typname) > 1 AS isdup\n")
+              wxT("  FROM pg_type t\n")
+              wxT("  JOIN pg_namespace nsp ON typnamespace=nsp.oid\n")
+              wxT(" WHERE (NOT (typname = 'unknown' AND nspname = 'pg_catalog')) AND ") + condition + wxT("\n")
+              wxT("  ORDER BY typtype != 'd', t.typelem > 0, 1"));
 }
 
 

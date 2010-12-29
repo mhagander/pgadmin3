@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -41,15 +41,15 @@ END_EVENT_TABLE();
 
 dlgProperty *slSlTableFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgRepTable(this, frame, (slTable*)node, (slSet*)parent);
+    return new dlgRepTable(this, frame, (slTable *)node, (slSet *)parent);
 }
 
 
 dlgRepTable::dlgRepTable(pgaFactory *f, frmMain *frame, slTable *node, slSet *s)
-: dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepTable"))
+    : dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepTable"))
 {
-    table=node;
-    set=s;
+    table = node;
+    set = s;
 }
 
 
@@ -66,7 +66,7 @@ int dlgRepTable::Go(bool modal)
     if (table)
     {
         // edit mode
-        cbTable->Append(table->GetName(), (void*)0);
+        cbTable->Append(table->GetName(), (void *)0);
         cbTable->SetSelection(0);
         cbIndex->Append(table->GetIndexName());
         cbIndex->SetSelection(0);
@@ -81,9 +81,9 @@ int dlgRepTable::Go(bool modal)
         LoadTrigger(table->GetOid());
 
         size_t i;
-        for (i=0 ; i < table->GetTriggers().GetCount() ; i++)
+        for (i = 0 ; i < table->GetTriggers().GetCount() ; i++)
         {
-            int sel=chkTrigger->FindString(table->GetTriggers()[i]);
+            int sel = chkTrigger->FindString(table->GetTriggers()[i]);
             if (sel >= 0)
                 chkTrigger->Check(sel);
         }
@@ -96,21 +96,21 @@ int dlgRepTable::Go(bool modal)
         if (!settings->GetShowSystemObjects())
             restriction = wxT("\n   AND ") + connection->SystemNamespaceRestriction(wxT("nspname"));
 
-        pgSet *tabs=connection->ExecuteSet(
-            wxT("SELECT DISTINCT cl.oid, nspname, relname\n")
-            wxT("  FROM pg_class cl\n")
-            wxT("  JOIN pg_namespace nsp ON relnamespace=nsp.oid\n")
-            wxT("  JOIN pg_index on indrelid=cl.oid AND indisunique\n")
-            wxT("  LEFT JOIN ") + cluster->GetSchemaPrefix() + wxT("sl_table t ON t.tab_reloid=cl.oid\n")
-            wxT("  WHERE t.tab_id IS NULL AND cl.relkind = 'r'") + restriction + wxT("\n")
-            wxT(" ORDER BY nspname, relname")
-            );
+        pgSet *tabs = connection->ExecuteSet(
+                          wxT("SELECT DISTINCT cl.oid, nspname, relname\n")
+                          wxT("  FROM pg_class cl\n")
+                          wxT("  JOIN pg_namespace nsp ON relnamespace=nsp.oid\n")
+                          wxT("  JOIN pg_index on indrelid=cl.oid AND indisunique\n")
+                          wxT("  LEFT JOIN ") + cluster->GetSchemaPrefix() + wxT("sl_table t ON t.tab_reloid=cl.oid\n")
+                          wxT("  WHERE t.tab_id IS NULL AND cl.relkind = 'r'") + restriction + wxT("\n")
+                          wxT(" ORDER BY nspname, relname")
+                      );
 
         if (tabs)
         {
             while (!tabs->Eof())
             {
-                cbTable->Append(tabs->GetVal(wxT("nspname")) + wxT(".") + tabs->GetVal(wxT("relname")), (void*)tabs->GetOid(wxT("oid")));
+                cbTable->Append(tabs->GetVal(wxT("nspname")) + wxT(".") + tabs->GetVal(wxT("relname")), (void *)tabs->GetOid(wxT("oid")));
                 tabs->MoveNext();
             }
             delete tabs;
@@ -123,8 +123,8 @@ int dlgRepTable::Go(bool modal)
 
 pgObject *dlgRepTable::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=slTableFactory.CreateObjects(collection, 0,
-         wxT(" WHERE tab_reloid = ") + NumToStr((OID)cbTable->GetClientData(cbTable->GetGuessedSelection())));
+    pgObject *obj = slTableFactory.CreateObjects(collection, 0,
+                    wxT(" WHERE tab_reloid = ") + NumToStr((OID)cbTable->GetClientData(cbTable->GetGuessedSelection())));
 
     return obj;
 }
@@ -140,21 +140,21 @@ void dlgRepTable::OnChangeTableSel(wxCommandEvent &ev)
 
 void dlgRepTable::OnChangeTable(wxCommandEvent &ev)
 {
-    int sel=cbTable->GetGuessedSelection();
+    int sel = cbTable->GetGuessedSelection();
 
     cbIndex->Clear();
     chkTrigger->Clear();
 
     if (sel >= 0)
     {
-        OID relid=(OID)cbTable->GetClientData(sel);
+        OID relid = (OID)cbTable->GetClientData(sel);
 
-        pgSet *idx=connection->ExecuteSet(
-            wxT("SELECT relname\n")
-            wxT("  FROM pg_index JOIN pg_class cl ON cl.oid=indexrelid\n")
-            wxT(" WHERE indrelid=") + NumToStr(relid) + wxT("\n")
-            wxT(" ORDER BY NOT indisprimary, relname")
-            );
+        pgSet *idx = connection->ExecuteSet(
+                         wxT("SELECT relname\n")
+                         wxT("  FROM pg_index JOIN pg_class cl ON cl.oid=indexrelid\n")
+                         wxT(" WHERE indrelid=") + NumToStr(relid) + wxT("\n")
+                         wxT(" ORDER BY NOT indisprimary, relname")
+                     );
         if (idx)
         {
             while (!idx->Eof())
@@ -177,17 +177,17 @@ void dlgRepTable::OnChangeTable(wxCommandEvent &ev)
 void dlgRepTable::LoadTrigger(OID relid)
 {
     wxString sql = wxT("SELECT tgname FROM pg_trigger\n")
-        wxT("  JOIN pg_proc pr ON pr.oid=tgfoid\n")
-        wxT("  JOIN pg_namespace ns ON ns.oid=pronamespace\n")
-        wxT(" WHERE tgrelid=") + NumToStr(relid);
+                   wxT("  JOIN pg_proc pr ON pr.oid=tgfoid\n")
+                   wxT("  JOIN pg_namespace ns ON ns.oid=pronamespace\n")
+                   wxT(" WHERE tgrelid=") + NumToStr(relid);
     if (connection->BackendMinimumVersion(8, 5))
         sql += wxT("   AND tgconstraint=0\n");
     else
         sql += wxT("   AND NOT tgisconstraint\n");
     sql += wxT("   AND nspname <> ") + qtDbString(wxT("_") + set->GetCluster()->GetName()) + wxT("\n")
-        wxT(" ORDER BY tgname");
+           wxT(" ORDER BY tgname");
 
-    pgSet *trg=connection->ExecuteSet(sql);
+    pgSet *trg = connection->ExecuteSet(sql);
 
     if (trg)
     {
@@ -204,12 +204,12 @@ void dlgRepTable::CheckChange()
 {
     if (table)
     {
-        bool tgChanged=false;
+        bool tgChanged = false;
 
         unsigned int i;
-        int cnt=0;
+        int cnt = 0;
 
-        for (i=0 ; !tgChanged && i < chkTrigger->GetCount() ; i++)
+        for (i = 0 ; !tgChanged && i < chkTrigger->GetCount() ; i++)
         {
             if (chkTrigger->IsChecked(i))
             {
@@ -220,13 +220,13 @@ void dlgRepTable::CheckChange()
             }
         }
 
-        EnableOK(tgChanged 
-            || (int)table->GetTriggers().GetCount() != cnt 
-            || txtComment->GetValue() != table->GetComment());
+        EnableOK(tgChanged
+                 || (int)table->GetTriggers().GetCount() != cnt
+                 || txtComment->GetValue() != table->GetComment());
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, cbTable->GetGuessedSelection() >= 0, _("Please select table to replicate."));
         CheckValid(enable, cbIndex->GetCurrentSelection() >= 0, _("Please select index."));
 
@@ -239,12 +239,12 @@ void dlgRepTable::CheckChange()
 wxString dlgRepTable::GetSql()
 {
     wxString sql;
-    wxString id=txtID->GetValue();;
+    wxString id = txtID->GetValue();;
 
     wxArrayString newTriggers;
 
     unsigned int i;
-    for (i=0 ; i < chkTrigger->GetCount() ; i++)
+    for (i = 0 ; i < chkTrigger->GetCount() ; i++)
     {
         if (chkTrigger->IsChecked(i))
             newTriggers.Add(chkTrigger->GetString(i));
@@ -256,10 +256,10 @@ wxString dlgRepTable::GetSql()
 
         wxArrayString oldTriggers = table->GetTriggers();
 
-        i=oldTriggers.GetCount();
+        i = oldTriggers.GetCount();
         while (i--)
         {
-            int j=newTriggers.Index(oldTriggers[i]);
+            int j = newTriggers.Index(oldTriggers[i]);
             if (j >= 0)
             {
                 newTriggers.RemoveAt(j);
@@ -268,18 +268,18 @@ wxString dlgRepTable::GetSql()
         }
 
         // these triggers have been deleted
-        for (i=0 ; i < (unsigned int)oldTriggers.GetCount() ; i++)
+        for (i = 0 ; i < (unsigned int)oldTriggers.GetCount() ; i++)
         {
             sql += wxT("SELECT ") + cluster->GetSchemaPrefix() + wxT("droptrigger(")
-                +  id + wxT(", ")
-                +  qtDbString(oldTriggers[i]) + wxT(");\n");
+                   +  id + wxT(", ")
+                   +  qtDbString(oldTriggers[i]) + wxT(");\n");
         }
     }
     else
     {
         // create mode
         sql = wxT("SELECT ") + cluster->GetSchemaPrefix() + wxT("setaddtable(")
-            + NumToStr(set->GetSlId()) + wxT(", ");
+              + NumToStr(set->GetSlId()) + wxT(", ");
 
         if (StrToLong(id) > 0)
         {
@@ -293,24 +293,24 @@ wxString dlgRepTable::GetSql()
             id = wxT("(SELECT tab_id FROM ") + cluster->GetSchemaPrefix() + wxT("sl_table\n")
                  wxT("   JOIN pg_class cl ON cl.oid=tab_reloid\n")
                  wxT("   JOIN pg_namespace nsp ON nsp.oid=relnamespace\n")
-                 wxT("  WHERE tab_set = ") + NumToStr(set->GetSlId()) + 
+                 wxT("  WHERE tab_set = ") + NumToStr(set->GetSlId()) +
                  wxT("    AND nspname ||'.' || relname = ") + qtDbString(cbTable->GetGuessedStringSelection()) +
                  wxT(")");
 
         }
         sql += wxT(", ") + qtDbString(cbTable->GetGuessedStringSelection())
-            +  wxT(", ") + qtDbString(cbIndex->GetStringSelection())
-            +  wxT(", ") + qtDbString(txtComment->GetValue())
-            + wxT(");\n");
+               +  wxT(", ") + qtDbString(cbIndex->GetStringSelection())
+               +  wxT(", ") + qtDbString(txtComment->GetValue())
+               + wxT(");\n");
     }
 
-    
+
     // these triggers have been added
-    for (i=0 ; i < (unsigned int)newTriggers.GetCount() ; i++)
+    for (i = 0 ; i < (unsigned int)newTriggers.GetCount() ; i++)
     {
         sql += wxT("SELECT ") + cluster->GetSchemaPrefix() + wxT("storetrigger(")
-            +  id + wxT(", ")
-            +  qtDbString(newTriggers[i]) + wxT(");\n");
+               +  id + wxT(", ")
+               +  qtDbString(newTriggers[i]) + wxT(");\n");
     }
 
     return sql;

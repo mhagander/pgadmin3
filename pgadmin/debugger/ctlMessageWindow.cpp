@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// ctlMessageWindow.cpp - debugger 
+// ctlMessageWindow.cpp - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -25,9 +25,9 @@ IMPLEMENT_CLASS( ctlMessageWindow, wxTextCtrl )
 //  Initialize the grid control and clear it out....
 //
 
-ctlMessageWindow::ctlMessageWindow( wxWindow * parent, wxWindowID id )
+ctlMessageWindow::ctlMessageWindow( wxWindow *parent, wxWindowID id )
     : wxTextCtrl( parent, wxID_ANY, wxT(""), wxPoint(0, 0), wxSize(0, 0),
-                               wxTE_MULTILINE | wxTE_READONLY)
+                  wxTE_MULTILINE | wxTE_READONLY)
 {
     SetFont(settings->GetSQLFont());
 }
@@ -35,7 +35,7 @@ ctlMessageWindow::ctlMessageWindow( wxWindow * parent, wxWindowID id )
 ////////////////////////////////////////////////////////////////////////////////
 // addMessage()
 //
-//    Adds the message in the 'DBMS Messages' window.  
+//    Adds the message in the 'DBMS Messages' window.
 //
 
 void ctlMessageWindow::addMessage( wxString message )
@@ -49,7 +49,7 @@ void ctlMessageWindow::addMessage( wxString message )
 //    Removes the given message from the 'DBMS Messages' window.
 //
 
-void ctlMessageWindow::delMessage( const char * name )
+void ctlMessageWindow::delMessage( const char *name )
 {
     SetValue(wxT(""));
 }

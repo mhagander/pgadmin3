@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,18 +22,18 @@
 #include "frm/frmMain.h"
 
 
-slPath::slPath(slNode *n, const wxString& newName)
-: slNodeObject(n, pathFactory, newName)
+slPath::slPath(slNode *n, const wxString &newName)
+    : slNodeObject(n, pathFactory, newName)
 {
 }
 
 bool slPath::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(
-              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() 
-            + wxT("droppath(") + NumToStr(GetSlId()) 
-            + wxT(", ") + NumToStr(GetNode()->GetSlId())
-            + wxT(");\n"));
+               wxT("SELECT ") + GetCluster()->GetSchemaPrefix()
+               + wxT("droppath(") + NumToStr(GetSlId())
+               + wxT(", ") + NumToStr(GetNode()->GetSlId())
+               + wxT(");\n"));
 }
 
 
@@ -42,12 +42,12 @@ wxString slPath::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Register path to node ") + GetName() + wxT(".\n\n")
-              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() 
-                    + wxT("storepath(") + NumToStr(GetSlId()) 
-                    + wxT(", ") + NumToStr(GetNode()->GetSlId())
-                    + wxT(", ") + qtDbString(GetConnInfo())
-                    + wxT(", ") + NumToStr(GetConnRetry())
-                    + wxT(");\n");
+              wxT("SELECT ") + GetCluster()->GetSchemaPrefix()
+              + wxT("storepath(") + NumToStr(GetSlId())
+              + wxT(", ") + NumToStr(GetNode()->GetSlId())
+              + wxT(", ") + qtDbString(GetConnInfo())
+              + wxT(", ") + NumToStr(GetConnRetry())
+              + wxT(");\n");
     }
     return sql;
 }
@@ -57,7 +57,7 @@ void slPath::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
     }
@@ -78,13 +78,13 @@ void slPath::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 
 pgObject *slPath::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *path=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *path = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
-        path = pathFactory.CreateObjects(coll, 0, 
-            wxT(" WHERE pa_server=") + NumToStr(GetSlId()) + 
-            wxT("   AND pa_client=") + NumToStr(GetNode()->GetSlId()) +
-            wxT("\n"));
+        path = pathFactory.CreateObjects(coll, 0,
+                                         wxT(" WHERE pa_server=") + NumToStr(GetSlId()) +
+                                         wxT("   AND pa_client=") + NumToStr(GetNode()->GetSlId()) +
+                                         wxT("\n"));
 
     return path;
 }
@@ -93,8 +93,8 @@ pgObject *slPath::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *slPathFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restr)
 {
-    slNodeObjCollection *collection=(slNodeObjCollection*)coll;
-    slPath *path=0;
+    slNodeObjCollection *collection = (slNodeObjCollection *)coll;
+    slPath *path = 0;
     wxString restriction;
     if (restr.IsEmpty())
         restriction = wxT(" WHERE pa_client = ") + NumToStr(collection->GetSlId());
@@ -102,11 +102,11 @@ pgObject *slPathFactory::CreateObjects(pgCollection *coll, ctlTree *browser, con
         restriction = restr;
 
     pgSet *paths = collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT pa_client, pa_server, pa_conninfo, pa_connretry, no_comment\n")
-        wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_path\n")
-        wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_node on no_id=pa_server\n")
-         + restriction +
-        wxT(" ORDER BY pa_server"));
+                       wxT("SELECT pa_client, pa_server, pa_conninfo, pa_connretry, no_comment\n")
+                       wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_path\n")
+                       wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_node on no_id=pa_server\n")
+                       + restriction +
+                       wxT(" ORDER BY pa_server"));
 
     if (paths)
     {
@@ -120,13 +120,13 @@ pgObject *slPathFactory::CreateObjects(pgCollection *coll, ctlTree *browser, con
             if (browser)
             {
                 browser->AppendObject(collection, path);
-				paths->MoveNext();
+                paths->MoveNext();
             }
             else
                 break;
         }
 
-		delete paths;
+        delete paths;
     }
     return path;
 }
@@ -137,8 +137,8 @@ pgObject *slPathFactory::CreateObjects(pgCollection *coll, ctlTree *browser, con
 #include "images/slpath.xpm"
 #include "images/slpaths.xpm"
 
-slPathFactory::slPathFactory() 
-: slNodeObjFactory(__("Path"), __("New Path"), __("Create a new Path."), slpath_xpm)
+slPathFactory::slPathFactory()
+    : slNodeObjFactory(__("Path"), __("New Path"), __("Create a new Path."), slpath_xpm)
 {
     metaType = SLM_PATH;
 }

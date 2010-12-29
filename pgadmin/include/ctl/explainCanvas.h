@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -33,7 +33,7 @@ public:
     void ShowPopup(ExplainShape *s);
     void SetExplainString(const wxString &str);
     void Clear();
-    void SaveAsImage(const wxString& fileName, wxBitmapType imageType);
+    void SaveAsImage(const wxString &fileName, wxBitmapType imageType);
 
 private:
 
@@ -45,25 +45,41 @@ private:
 class ExplainShape : public wxBitmapShape
 {
 public:
-    ExplainShape(const char *bmp[], const wxString &description, long tokenNo=-1, long detailNo=-1);
-    static ExplainShape *Create(long level, ExplainShape *last, const wxString &str); 
+    ExplainShape(const char *bmp[], const wxString &description, long tokenNo = -1, long detailNo = -1);
+    static ExplainShape *Create(long level, ExplainShape *last, const wxString &str);
 
-    void SetCondition(const wxString &str) { if (condition.Length()==0) condition = str; else condition += wxT(" ") + str; }
-    long GetLevel() { return level; }
+    void SetCondition(const wxString &str)
+    {
+        if (condition.Length() == 0) condition = str;
+        else condition += wxT(" ") + str;
+    }
+    long GetLevel()
+    {
+        return level;
+    }
     wxRealPoint GetStartPoint();
     wxRealPoint GetEndPoint(int kidNo);
-    int GetKidno() { return kidNo; }
+    int GetKidno()
+    {
+        return kidNo;
+    }
 
-    ExplainShape *GetUpper() { return upperShape; }
-    double GetAverageCost() { return (costHigh - costLow) / 2 + costLow; }
+    ExplainShape *GetUpper()
+    {
+        return upperShape;
+    }
+    double GetAverageCost()
+    {
+        return (costHigh - costLow) / 2 + costLow;
+    }
 
 protected:
-    void OnDraw(wxDC& dc);
+    void OnDraw(wxDC &dc);
     void OnLeftClick(double x, double y, int keys = 0, int attachment = 0);
 
     ExplainShape *upperShape;
 
-    void SetLabel(const wxString &str, int tokenNo=-1, int detailNo=-1);
+    void SetLabel(const wxString &str, int tokenNo = -1, int detailNo = -1);
 
     long level;
     wxString description, detail, condition, label;
@@ -82,11 +98,11 @@ protected:
 class ExplainLine : public wxLineShape
 {
 public:
-    ExplainLine(ExplainShape *from, ExplainShape *to, double weight=0);
+    ExplainLine(ExplainShape *from, ExplainShape *to, double weight = 0);
 
 private:
     int width;
-    void OnDraw(wxDC& dc);
+    void OnDraw(wxDC &dc);
 };
 
 

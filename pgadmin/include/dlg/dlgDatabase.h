@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgDatabase.h - Database property 
+// dlgDatabase.h - Database property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -54,9 +54,9 @@ private:
     void OnOK(wxCommandEvent &ev);
 
     void SetupVarEditor(int var);
-    bool executeDDLSql(const wxString& strSql);
+    bool executeDDLSql(const wxString &strSql);
 
-	bool dirtyVars;
+    bool dirtyVars;
 
     DECLARE_EVENT_TABLE()
 

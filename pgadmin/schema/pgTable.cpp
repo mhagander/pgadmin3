@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -31,19 +31,19 @@
 
 // App headers
 
-pgTable::pgTable(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, tableFactory, newName)
+pgTable::pgTable(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, tableFactory, newName)
 {
-    inheritedTableCount=0;
+    inheritedTableCount = 0;
     rowsCounted = false;
     showExtendedStatistics = false;
     distributionIsRandom = false;
 }
 
-pgTable::pgTable(pgSchema *newSchema, pgaFactory &newFactory, const wxString& newName)
-: pgSchemaObject(newSchema, newFactory, newName)
+pgTable::pgTable(pgSchema *newSchema, pgaFactory &newFactory, const wxString &newName)
+    : pgSchemaObject(newSchema, newFactory, newName)
 {
-    inheritedTableCount=0;
+    inheritedTableCount = 0;
     rowsCounted = false;
     showExtendedStatistics = false;
     distributionIsRandom = false;
@@ -57,7 +57,7 @@ pgTable::~pgTable()
 wxString pgTable::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -70,11 +70,11 @@ wxString pgTable::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop table \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop table \"%s\"?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop table cascaded?");
@@ -138,7 +138,7 @@ int pgTable::GetIconId()
 
 wxMenu *pgTable::GetNewMenu()
 {
-    wxMenu *menu=pgObject::GetNewMenu();
+    wxMenu *menu = pgObject::GetNewMenu();
     if (schema->GetCreatePrivilege())
     {
         columnFactory.AppendMenu(menu);
@@ -165,20 +165,20 @@ wxMenu *pgTable::GetNewMenu()
 
 int pgTable::GetReplicationStatus(ctlTree *browser, wxString *clusterName, long *setId)
 {
-    wxArrayString clusters=GetDatabase()->GetSlonyClusters(browser);
+    wxArrayString clusters = GetDatabase()->GetSlonyClusters(browser);
 
-    bool isSubscribed=false;
+    bool isSubscribed = false;
 
     size_t i;
-    for (i=0 ; i < clusters.GetCount() ; i++)
+    for (i = 0 ; i < clusters.GetCount() ; i++)
     {
-        wxString nsp=qtIdent(wxT("_") + clusters.Item(i));
+        wxString nsp = qtIdent(wxT("_") + clusters.Item(i));
 
         pgSetIterator sets(GetConnection(),
-            wxT("SELECT tab_set, sub_provider, ") + nsp + wxT(".getlocalnodeid(") + qtDbString(wxT("_") + clusters.Item(i)) + wxT(") AS localnode\n")
-            wxT("  FROM ") + nsp + wxT(".sl_table\n")
-            wxT("  LEFT JOIN ") + nsp + wxT(".sl_subscribe ON sub_set=tab_set\n")
-            wxT(" WHERE tab_reloid = ") + GetOidStr());
+                           wxT("SELECT tab_set, sub_provider, ") + nsp + wxT(".getlocalnodeid(") + qtDbString(wxT("_") + clusters.Item(i)) + wxT(") AS localnode\n")
+                           wxT("  FROM ") + nsp + wxT(".sl_table\n")
+                           wxT("  LEFT JOIN ") + nsp + wxT(".sl_subscribe ON sub_set=tab_set\n")
+                           wxT(" WHERE tab_reloid = ") + GetOidStr());
 
         if (sets.RowsLeft())
         {
@@ -189,13 +189,13 @@ int pgTable::GetReplicationStatus(ctlTree *browser, wxString *clusterName, long 
             if (isSubscribed)
                 return REPLICATIONSTATUS_MULTIPLY_PUBLISHED;
 
-            long provider=sets.GetLong(wxT("sub_provider"));
+            long provider = sets.GetLong(wxT("sub_provider"));
             if (provider)
             {
                 if (provider != sets.GetLong(wxT("localnode")))
                     return REPLICATIONSTATUS_REPLICATED;
 
-                isSubscribed=true;
+                isSubscribed = true;
 
             }
         }
@@ -208,7 +208,7 @@ int pgTable::GetReplicationStatus(ctlTree *browser, wxString *clusterName, long 
 
 
 wxString pgTable::GetHelpPage(bool forCreate) const
-{ 
+{
     if (forCreate)
         return wxT("pg/sql-createtable");
     else
@@ -237,8 +237,8 @@ bool pgTable::Truncate(bool cascaded)
 bool pgTable::ResetStats()
 {
     wxString sql = wxT("SELECT pg_stat_reset_single_table_counters(")
-      + NumToStr(this->GetOid())
-      + wxT(")");
+                   + NumToStr(this->GetOid())
+                   + wxT(")");
     return GetDatabase()->ExecuteVoid(sql);
 }
 
@@ -247,7 +247,7 @@ void pgTable::AppendStuff(wxString &sql, ctlTree *browser, pgaFactory &factory)
 {
     wxString tmp;
 
-    pgCollection *collection=browser->FindCollection(factory, GetId());
+    pgCollection *collection = browser->FindCollection(factory, GetId());
     if (collection)
     {
         tmp += wxT("\n");
@@ -269,7 +269,7 @@ void pgTable::AppendStuff(wxString &sql, ctlTree *browser, pgaFactory &factory)
 
 void pgTable::AppendStuffNoSql(wxString &sql, ctlTree *browser, pgaFactory &factory)
 {
-    pgCollection *collection=browser->FindCollection(factory, GetId());
+    pgCollection *collection = browser->FindCollection(factory, GetId());
     if (collection)
     {
         collection->ShowTreeDetail(browser);
@@ -299,34 +299,34 @@ wxString pgTable::GetSql(ctlTree *browser)
         // make sure all kids are appended
         ShowTreeDetail(browser);
         sql = wxT("-- Table: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP TABLE ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE TABLE ") + GetQuotedFullIdentifier();
+              + wxT("-- DROP TABLE ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE TABLE ") + GetQuotedFullIdentifier();
 
         // of type (9.0 material)
         if (ofTypeOid > 0)
             sql += wxT("\nOF ") + qtIdent(ofType);
 
         // Get a count of the constraints.
-        int consCount=0;
-        pgCollection *constraints=browser->FindCollection(primaryKeyFactory, GetId());
+        int consCount = 0;
+        pgCollection *constraints = browser->FindCollection(primaryKeyFactory, GetId());
         if (constraints)
             consCount = browser->GetChildrenCount(constraints->GetId());
 
         // Get the columns
-        pgCollection *columns=browser->FindCollection(columnFactory, GetId());
+        pgCollection *columns = browser->FindCollection(columnFactory, GetId());
         if (columns)
         {
             columns->ShowTreeDetail(browser);
             treeObjectIterator colIt1(browser, columns);
             treeObjectIterator colIt2(browser, columns);
 
-            
-            int lastRealCol=0;
-            int currentCol=0;
+
+            int lastRealCol = 0;
+            int currentCol = 0;
             pgColumn *column;
 
             // Iterate the columns to find the last 'real' one
-            while ((column = (pgColumn*)colIt1.GetNextObject()) != 0)
+            while ((column = (pgColumn *)colIt1.GetNextObject()) != 0)
             {
                 currentCol++;
 
@@ -335,8 +335,8 @@ wxString pgTable::GetSql(ctlTree *browser)
             }
 
             // Now build the actual column list
-            int colCount=0;
-            while ((column = (pgColumn*)colIt2.GetNextObject()) != 0)
+            int colCount = 0;
+            while ((column = (pgColumn *)colIt2.GetNextObject()) != 0)
             {
                 column->ShowTreeDetail(browser);
                 if (column->GetColNumber() > 0)
@@ -357,7 +357,7 @@ wxString pgTable::GetSql(ctlTree *browser)
                         if (!column->GetIsLocal())
                         {
                             cols_sql += wxString::Format(wxT("-- %s "), _("Inherited"))
-                                     + wxT("from table ") +  column->GetInheritedTableName() + wxT(":");
+                                        + wxT("from table ") +  column->GetInheritedTableName() + wxT(":");
                             showparens = true;
                         }
                     }
@@ -367,20 +367,20 @@ wxString pgTable::GetSql(ctlTree *browser)
                         if (column->GetDefinition().Length() == 0)
                         {
                             cols_sql += wxString::Format(wxT("-- %s "), _("Inherited"))
-                                     + wxT("from type ") +  ofType + wxT(": ")
-                                     + column->GetQuotedIdentifier();
+                                        + wxT("from type ") +  ofType + wxT(": ")
+                                        + column->GetQuotedIdentifier();
                         }
                         else
                         {
                             cols_sql += wxT("  ") + column->GetQuotedIdentifier() + wxT(" WITH OPTIONS ")
-                                     + column->GetDefinition();
+                                        + column->GetDefinition();
                             showparens = true;
                         }
                     }
                     else
                     {
                         cols_sql += wxT("  ") + column->GetQuotedIdentifier() + wxT(" ")
-                                 + column->GetDefinition();
+                                    + column->GetDefinition();
                         showparens = true;
                     }
 
@@ -413,8 +413,8 @@ wxString pgTable::GetSql(ctlTree *browser)
             treeObjectIterator consIt(browser, constraints);
 
             pgObject *data;
-            
-            while ((data=consIt.GetNextObject()) != 0)
+
+            while ((data = consIt.GetNextObject()) != 0)
             {
                 data->ShowTreeDetail(browser);
 
@@ -423,28 +423,28 @@ wxString pgTable::GetSql(ctlTree *browser)
                 if (!prevComment.IsEmpty())
                     cols_sql += wxT(" -- ") + firstLineOnly(prevComment);
 
-                cols_sql += wxT("\n  CONSTRAINT ") + data->GetQuotedIdentifier() 
-                         + wxT(" ") + data->GetTypeName().Upper() 
-                         + wxT(" ") ;
+                cols_sql += wxT("\n  CONSTRAINT ") + data->GetQuotedIdentifier()
+                            + wxT(" ") + data->GetTypeName().Upper()
+                            + wxT(" ") ;
 
                 prevComment = data->GetComment();
                 if (!data->GetComment().IsEmpty())
-                    conDetails += wxT("COMMENT ON CONSTRAINT ") + data->GetQuotedIdentifier() + 
-                                  wxT(" ON ") + GetQuotedFullIdentifier() + 
+                    conDetails += wxT("COMMENT ON CONSTRAINT ") + data->GetQuotedIdentifier() +
+                                  wxT(" ON ") + GetQuotedFullIdentifier() +
                                   wxT(" IS ") + qtDbString(data->GetComment()) + wxT(";\n");
-            
+
                 switch (data->GetMetaType())
                 {
                     case PGM_PRIMARYKEY:
                     case PGM_UNIQUE:
                     case PGM_EXCLUDE:
-                        cols_sql += ((pgIndexConstraint*)data)->GetDefinition();
+                        cols_sql += ((pgIndexConstraint *)data)->GetDefinition();
                         break;
                     case PGM_FOREIGNKEY:
-                        cols_sql += ((pgForeignKey*)data)->GetDefinition();
+                        cols_sql += ((pgForeignKey *)data)->GetDefinition();
                         break;
                     case PGM_CHECK:
-                        cols_sql += wxT("(") + ((pgCheck*)data)->GetDefinition() + wxT(")");
+                        cols_sql += wxT("(") + ((pgCheck *)data)->GetDefinition() + wxT(")");
                         break;
                 }
             }
@@ -587,12 +587,12 @@ wxString pgTable::GetSql(ctlTree *browser)
 
         if (GetConnection()->GetIsGreenplum())
         {
-            // Add Greenplum DISTRIBUTED BY 
+            // Add Greenplum DISTRIBUTED BY
             if (distributionIsRandom)
             {
                 sql += wxT("\nDISTRIBUTED RANDOMLY");
             }
-            else if (GetDistributionColNumbers().Length()==0)
+            else if (GetDistributionColNumbers().Length() == 0)
             {
                 // catalog table or other non-distributed table
             }
@@ -604,11 +604,11 @@ wxString pgTable::GetSql(ctlTree *browser)
                 wxString distributionColumns;
                 while (collist.HasMoreTokens())
                 {
-                    cn=collist.GetNextToken();
-                    pgSet *set=ExecuteSet(
-                        wxT("SELECT attname\n")
-                        wxT("  FROM pg_attribute\n")
-                        wxT(" WHERE attrelid=") + GetOidStr() + wxT(" AND attnum IN (") + cn + wxT(")"));
+                    cn = collist.GetNextToken();
+                    pgSet *set = ExecuteSet(
+                                     wxT("SELECT attname\n")
+                                     wxT("  FROM pg_attribute\n")
+                                     wxT(" WHERE attrelid=") + GetOidStr() + wxT(" AND attnum IN (") + cn + wxT(")"));
                     if (set)
                     {
                         if (!distributionColumns.IsNull())
@@ -625,29 +625,29 @@ wxString pgTable::GetSql(ctlTree *browser)
 
                 sql += wxT(")");
             }
-        
+
             if (GetIsPartitioned())
-                if (GetConnection()->BackendMinimumVersion(8,2,9) && GetConnection()->GetIsGreenplum())
+                if (GetConnection()->BackendMinimumVersion(8, 2, 9) && GetConnection()->GetIsGreenplum())
                     if (GetPartitionDef().Length() == 0)
-                {
-                    wxString query = wxT("SELECT pg_get_partition_def(");
-                    query += GetOidStr();
-                    query += wxT(", true) ");
-                    wxString partition_def = GetDatabase()->ExecuteScalar(query);
-                    iSetPartitionDef(partition_def);
-                    // pg_get_partition_def() doesn't work on partitions
-                    if (GetPartitionDef().Length() == 0)
-                        iSetPartitionDef(wxT("-- This partition has subpartitions"));
-                }
+                    {
+                        wxString query = wxT("SELECT pg_get_partition_def(");
+                        query += GetOidStr();
+                        query += wxT(", true) ");
+                        wxString partition_def = GetDatabase()->ExecuteScalar(query);
+                        iSetPartitionDef(partition_def);
+                        // pg_get_partition_def() doesn't work on partitions
+                        if (GetPartitionDef().Length() == 0)
+                            iSetPartitionDef(wxT("-- This partition has subpartitions"));
+                    }
             if (partitionDef.Length() > 0)
                 sql += wxT("\n") + partitionDef + wxT("\n");
-        
+
 
         }
 
 
         sql += wxT(";\n")
-            + GetOwnerSql(7, 3);
+               + GetOwnerSql(7, 3);
 
         if (GetConnection()->BackendMinimumVersion(8, 2))
             sql += GetGrant(wxT("arwdxt"));
@@ -667,7 +667,7 @@ wxString pgTable::GetSql(ctlTree *browser)
         {
             sql += columnPrivileges + wxT("\n");
         }
-        
+
         AppendStuff(sql, browser, indexFactory);
         AppendStuff(sql, browser, ruleFactory);
         AppendStuff(sql, browser, triggerFactory);
@@ -689,29 +689,29 @@ wxString pgTable::GetCoveringIndex(ctlTree *browser, const wxString &collist)
     // delivers the name of the index which covers the named columns
     wxCookieType cookie;
 
-    wxTreeItemId collItem=browser->GetFirstChild(GetId(), cookie);
+    wxTreeItemId collItem = browser->GetFirstChild(GetId(), cookie);
     while (collItem)
     {
-        pgObject *data=browser->GetObject(collItem);
+        pgObject *data = browser->GetObject(collItem);
         if (data && data->IsCollection() && (data->GetMetaType() == PGM_CONSTRAINT || data->GetMetaType() == PGM_INDEX))
         {
             wxCookieType cookie2;
-            wxTreeItemId item=browser->GetFirstChild(collItem, cookie2);
+            wxTreeItemId item = browser->GetFirstChild(collItem, cookie2);
             while (item)
             {
-                pgIndex *index=(pgIndex*)browser->GetObject(item);
+                pgIndex *index = (pgIndex *)browser->GetObject(item);
                 if (index && (index->GetMetaType() == PGM_INDEX || index->GetMetaType() == PGM_PRIMARYKEY
-                           || index->GetMetaType() == PGM_UNIQUE || index->GetMetaType() == PGM_EXCLUDE))
+                              || index->GetMetaType() == PGM_UNIQUE || index->GetMetaType() == PGM_EXCLUDE))
                 {
                     index->ShowTreeDetail(browser);
-                    if (collist == index->GetColumns() || 
-                        collist + wxT(",") == index->GetColumns().Left(collist.Length()+1))
+                    if (collist == index->GetColumns() ||
+                            collist + wxT(",") == index->GetColumns().Left(collist.Length() + 1))
                         return index->GetName();
                 }
-                item=browser->GetNextChild(collItem, cookie2);
+                item = browser->GetNextChild(collItem, cookie2);
             }
         }
-        collItem=browser->GetNextChild(GetId(), cookie);
+        collItem = browser->GetNextChild(GetId(), cookie);
     }
 
     return wxEmptyString;
@@ -722,16 +722,16 @@ wxString pgTable::GetCols(ctlTree *browser, size_t indent, wxString &QMs, bool w
 {
     wxString sql;
     wxString line;
-    
-    int colcount=0;
-    pgCollection *columns=browser->FindCollection(columnFactory, GetId());
+
+    int colcount = 0;
+    pgCollection *columns = browser->FindCollection(columnFactory, GetId());
     if (columns)
     {
         columns->ShowTreeDetail(browser);
         treeObjectIterator colIt(browser, columns);
 
         pgColumn *column;
-        while ((column = (pgColumn*)colIt.GetNextObject()) != 0)
+        while ((column = (pgColumn *)colIt.GetNextObject()) != 0)
         {
             column->ShowTreeDetail(browser);
             if (column->GetColNumber() > 0)
@@ -771,20 +771,20 @@ wxString pgTable::GetCols(ctlTree *browser, size_t indent, wxString &QMs, bool w
 
 pgCollection *pgTable::GetColumnCollection(ctlTree *browser)
 {
-    pgCollection *columns=browser->FindCollection(columnFactory, GetId());
+    pgCollection *columns = browser->FindCollection(columnFactory, GetId());
     return columns;
 }
 
 pgCollection *pgTable::GetConstraintCollection(ctlTree *browser)
 {
-    pgCollection *constraints=browser->FindCollection(constraintFactory, GetId());
+    pgCollection *constraints = browser->FindCollection(constraintFactory, GetId());
     return constraints;
 }
 
 wxString pgTable::GetSelectSql(ctlTree *browser)
 {
     wxString qms;
-    wxString sql=
+    wxString sql =
         wxT("SELECT ") + GetCols(browser, 7, qms, false) + wxT("\n")
         wxT("  FROM ") + GetQuotedFullIdentifier() + wxT(";\n");
     return sql;
@@ -794,7 +794,7 @@ wxString pgTable::GetSelectSql(ctlTree *browser)
 wxString pgTable::GetInsertSql(ctlTree *browser)
 {
     wxString qms;
-    wxString sql = 
+    wxString sql =
         wxT("INSERT INTO ") + GetQuotedFullIdentifier() + wxT("(\n")
         wxT("            ") + GetCols(browser, 12, qms, false) + wxT(")\n")
         wxT("    VALUES (") + qms + wxT(");\n");
@@ -805,7 +805,7 @@ wxString pgTable::GetInsertSql(ctlTree *browser)
 wxString pgTable::GetUpdateSql(ctlTree *browser)
 {
     wxString qms;
-    wxString sql = 
+    wxString sql =
         wxT("UPDATE ") + GetQuotedFullIdentifier() + wxT("\n")
         wxT("   SET ") + GetCols(browser, 7, qms, true) + wxT("\n")
         wxT(" WHERE <condition>;\n");
@@ -815,7 +815,7 @@ wxString pgTable::GetUpdateSql(ctlTree *browser)
 wxString pgTable::GetDeleteSql(ctlTree *browser)
 {
     wxString qms;
-    wxString sql = 
+    wxString sql =
         wxT("DELETE FROM ") + GetQuotedFullIdentifier() + wxT("\n")
         wxT(" WHERE <condition>;\n");
     return sql;
@@ -824,12 +824,12 @@ wxString pgTable::GetDeleteSql(ctlTree *browser)
 bool pgTable::EnableTriggers(const bool b)
 {
     wxString sql = wxT("ALTER TABLE ") + GetQuotedFullIdentifier() + wxT(" ");
-    
+
     if (!b)
         sql += wxT("DISABLE");
     else
         sql += wxT("ENABLE");
-        
+
     sql += wxT(" TRIGGER ALL");
 
     return GetDatabase()->ExecuteVoid(sql);
@@ -850,17 +850,17 @@ void pgTable::UpdateRows()
 void pgTable::UpdateInheritance()
 {
     // not checked so far
-    pgSet *props=ExecuteSet(
-        wxT("SELECT c.oid, c.relname , nspname\n")
-        wxT("  FROM pg_inherits i\n")
-        wxT("  JOIN pg_class c ON c.oid = i.inhparent\n")
-        wxT("  JOIN pg_namespace n ON n.oid=c.relnamespace\n")
-        wxT(" WHERE i.inhrelid = ") +GetOidStr() + wxT("\n")
-        wxT(" ORDER BY inhseqno"));
+    pgSet *props = ExecuteSet(
+                       wxT("SELECT c.oid, c.relname , nspname\n")
+                       wxT("  FROM pg_inherits i\n")
+                       wxT("  JOIN pg_class c ON c.oid = i.inhparent\n")
+                       wxT("  JOIN pg_namespace n ON n.oid=c.relnamespace\n")
+                       wxT(" WHERE i.inhrelid = ") + GetOidStr() + wxT("\n")
+                       wxT(" ORDER BY inhseqno"));
     if (props)
     {
-        inheritedTableCount=0;
-        inheritedTables=wxT("");
+        inheritedTableCount = 0;
+        inheritedTables = wxT("");
         while (!props->Eof())
         {
             if (inheritedTableCount)
@@ -870,9 +870,9 @@ void pgTable::UpdateInheritance()
             }
             inheritedTables += props->GetVal(wxT("relname"));
             quotedInheritedTables += GetQuotedSchemaPrefix(props->GetVal(wxT("nspname")))
-                    + qtIdent(props->GetVal(wxT("relname")));
+                                     + qtIdent(props->GetVal(wxT("relname")));
             quotedInheritedTablesList.Add(GetQuotedSchemaPrefix(props->GetVal(wxT("nspname")))
-                    + qtIdent(props->GetVal(wxT("relname"))));
+                                          + qtIdent(props->GetVal(wxT("relname"))));
             inheritedTablesOidList.Add(props->GetVal(wxT("oid")));
             props->MoveNext();
             inheritedTableCount++;
@@ -889,7 +889,7 @@ void pgTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
 
@@ -901,9 +901,9 @@ void pgTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
         browser->AppendCollection(this, indexFactory);
         browser->AppendCollection(this, ruleFactory);
         browser->AppendCollection(this, triggerFactory);
-  
+
         if (GetConnection() != 0 && GetConnection()->GetIsGreenplum() && GetIsPartitioned())
-             browser->AppendCollection(this, partitionFactory);
+            browser->AppendCollection(this, partitionFactory);
 
 
         // convert list of columns numbers to column names
@@ -912,11 +912,11 @@ void pgTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 
         while (collist.HasMoreTokens())
         {
-            cn=collist.GetNextToken();
-            pgSet *set=ExecuteSet(
-                wxT("SELECT attname\n")
-                wxT("  FROM pg_attribute\n")
-                wxT(" WHERE attrelid=") + GetOidStr() + wxT(" AND attnum IN (") + cn + wxT(")"));
+            cn = collist.GetNextToken();
+            pgSet *set = ExecuteSet(
+                             wxT("SELECT attname\n")
+                             wxT("  FROM pg_attribute\n")
+                             wxT(" WHERE attrelid=") + GetOidStr() + wxT(" AND attnum IN (") + cn + wxT(")"));
             if (set)
             {
                 if (!primaryKey.IsNull())
@@ -943,9 +943,9 @@ void pgTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
         properties->AppendItem(_("Name"), GetName());
         if (GetConnection() != 0 && GetConnection()->GetIsGreenplum())
         {
-            gpPartition * p = dynamic_cast<gpPartition *>(this);
+            gpPartition *p = dynamic_cast<gpPartition *>(this);
             if (p != 0)
-                properties->AppendItem(_("Partition Name"), p->GetPartitionName());   
+                properties->AppendItem(_("Partition Name"), p->GetPartitionName());
         }
         properties->AppendItem(_("OID"), GetOid());
         properties->AppendItem(_("Owner"), GetOwner());
@@ -971,7 +971,7 @@ void pgTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 
         long setId;
         wxString clusterName;
-        long repStat=GetReplicationStatus(browser, &clusterName, &setId);
+        long repStat = GetReplicationStatus(browser, &clusterName, &setId);
 
         wxString clusterInfo;
         clusterInfo.Printf(_("Cluster \"%s\", set %ld"), clusterName.c_str(), setId);
@@ -1009,53 +1009,53 @@ void pgTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
             {
                 properties->AppendItem(_("Table auto-vacuum enabled?"), GetAutoVacuumEnabled() == 1 ? _("Yes") : _("No"));
             }
-			if (!GetAutoVacuumVacuumThreshold().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum VACUUM base threshold"), GetAutoVacuumVacuumThreshold());
-			if (!GetAutoVacuumVacuumScaleFactor().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum VACUUM scale factor"), GetAutoVacuumVacuumScaleFactor());
-			if (!GetAutoVacuumAnalyzeThreshold().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum ANALYZE base threshold"), GetAutoVacuumAnalyzeThreshold());
-			if (!GetAutoVacuumAnalyzeScaleFactor().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum ANALYZE scale factor"), GetAutoVacuumAnalyzeScaleFactor());
-			if (!GetAutoVacuumVacuumCostDelay().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum VACUUM cost delay"), GetAutoVacuumVacuumCostDelay());
-			if (!GetAutoVacuumVacuumCostLimit().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum VACUUM cost limit"), GetAutoVacuumVacuumCostLimit());
-			if (!GetAutoVacuumFreezeMinAge().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum FREEZE minimum age"), GetAutoVacuumFreezeMinAge());
-			if (!GetAutoVacuumFreezeMaxAge().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum FREEZE maximum age"), GetAutoVacuumFreezeMaxAge());
-			if (!GetAutoVacuumFreezeTableAge().IsEmpty())
-				properties->AppendItem(_("Table auto-vacuum FREEZE table age"), GetAutoVacuumFreezeTableAge());
+            if (!GetAutoVacuumVacuumThreshold().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum VACUUM base threshold"), GetAutoVacuumVacuumThreshold());
+            if (!GetAutoVacuumVacuumScaleFactor().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum VACUUM scale factor"), GetAutoVacuumVacuumScaleFactor());
+            if (!GetAutoVacuumAnalyzeThreshold().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum ANALYZE base threshold"), GetAutoVacuumAnalyzeThreshold());
+            if (!GetAutoVacuumAnalyzeScaleFactor().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum ANALYZE scale factor"), GetAutoVacuumAnalyzeScaleFactor());
+            if (!GetAutoVacuumVacuumCostDelay().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum VACUUM cost delay"), GetAutoVacuumVacuumCostDelay());
+            if (!GetAutoVacuumVacuumCostLimit().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum VACUUM cost limit"), GetAutoVacuumVacuumCostLimit());
+            if (!GetAutoVacuumFreezeMinAge().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum FREEZE minimum age"), GetAutoVacuumFreezeMinAge());
+            if (!GetAutoVacuumFreezeMaxAge().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum FREEZE maximum age"), GetAutoVacuumFreezeMaxAge());
+            if (!GetAutoVacuumFreezeTableAge().IsEmpty())
+                properties->AppendItem(_("Table auto-vacuum FREEZE table age"), GetAutoVacuumFreezeTableAge());
         }
 
         /* Custom TOAST-TABLE AutoVacuum Settings */
         if (GetConnection()->BackendMinimumVersion(8, 4) &&
-            GetHasToastTable() &&
-            GetToastCustomAutoVacuumEnabled())
+                GetHasToastTable() &&
+                GetToastCustomAutoVacuumEnabled())
         {
-			if (GetToastAutoVacuumEnabled() != 2)
+            if (GetToastAutoVacuumEnabled() != 2)
             {
                 properties->AppendItem(_("Toast auto-vacuum enabled?"), GetToastAutoVacuumEnabled() == 1 ? _("Yes") : _("No"));
             }
-			if (!GetToastAutoVacuumVacuumThreshold().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum VACUUM base threshold"), GetToastAutoVacuumVacuumThreshold());
-			if (!GetToastAutoVacuumVacuumScaleFactor().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum VACUUM scale factor"), GetToastAutoVacuumVacuumScaleFactor());
-			if (!GetToastAutoVacuumAnalyzeThreshold().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum ANALYZE base threshold"), GetToastAutoVacuumAnalyzeThreshold());
-			if (!GetToastAutoVacuumAnalyzeScaleFactor().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum ANALYZE scale factor"), GetToastAutoVacuumAnalyzeScaleFactor());
-			if (!GetToastAutoVacuumVacuumCostDelay().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum VACUUM cost delay"), GetToastAutoVacuumVacuumCostDelay());
-			if (!GetToastAutoVacuumVacuumCostLimit().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum VACUUM cost limit"), GetToastAutoVacuumVacuumCostLimit());
-			if (!GetToastAutoVacuumFreezeMinAge().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum FREEZE minimum age"), GetToastAutoVacuumFreezeMinAge());
-			if (!GetToastAutoVacuumFreezeMaxAge().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum FREEZE maximum age"), GetToastAutoVacuumFreezeMaxAge());
-			if (!GetToastAutoVacuumFreezeTableAge().IsEmpty())
-				properties->AppendItem(_("Toast auto-vacuum FREEZE table age"), GetToastAutoVacuumFreezeTableAge());
+            if (!GetToastAutoVacuumVacuumThreshold().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum VACUUM base threshold"), GetToastAutoVacuumVacuumThreshold());
+            if (!GetToastAutoVacuumVacuumScaleFactor().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum VACUUM scale factor"), GetToastAutoVacuumVacuumScaleFactor());
+            if (!GetToastAutoVacuumAnalyzeThreshold().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum ANALYZE base threshold"), GetToastAutoVacuumAnalyzeThreshold());
+            if (!GetToastAutoVacuumAnalyzeScaleFactor().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum ANALYZE scale factor"), GetToastAutoVacuumAnalyzeScaleFactor());
+            if (!GetToastAutoVacuumVacuumCostDelay().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum VACUUM cost delay"), GetToastAutoVacuumVacuumCostDelay());
+            if (!GetToastAutoVacuumVacuumCostLimit().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum VACUUM cost limit"), GetToastAutoVacuumVacuumCostLimit());
+            if (!GetToastAutoVacuumFreezeMinAge().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum FREEZE minimum age"), GetToastAutoVacuumFreezeMinAge());
+            if (!GetToastAutoVacuumFreezeMaxAge().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum FREEZE maximum age"), GetToastAutoVacuumFreezeMaxAge());
+            if (!GetToastAutoVacuumFreezeTableAge().IsEmpty())
+                properties->AppendItem(_("Toast auto-vacuum FREEZE table age"), GetToastAutoVacuumFreezeTableAge());
         }
         properties->AppendItem(_("Comment"), firstLineOnly(GetComment()));
 
@@ -1075,7 +1075,7 @@ bool pgTable::GetCanHint()
 
 bool pgTable::GetVacuumHint()
 {
-    bool canHint=false;
+    bool canHint = false;
 
     if (rowsCounted)
     {
@@ -1083,9 +1083,9 @@ bool pgTable::GetVacuumHint()
             canHint = (rows >= 20);
         else
         {
-            double rowsDbl=(wxLongLong_t)rows.GetValue();
-            double quot=rowsDbl *10. / estimatedRows;
-            canHint = ((quot > 12 || quot < 8) && (rowsDbl < estimatedRows-20. || rowsDbl > estimatedRows+20.));
+            double rowsDbl = (wxLongLong_t)rows.GetValue();
+            double quot = rowsDbl * 10. / estimatedRows;
+            canHint = ((quot > 12 || quot < 8) && (rowsDbl < estimatedRows - 20. || rowsDbl > estimatedRows + 20.));
         }
     }
     else if (estimatedRows == 1000)
@@ -1100,7 +1100,7 @@ void pgTable::ShowHint(frmMain *form, bool force)
 {
     hintShown = true;
     int rc;
-    
+
     if (force)
     {
         wxArrayString hints;
@@ -1109,14 +1109,14 @@ void pgTable::ShowHint(frmMain *form, bool force)
         if (primaryKey.IsEmpty())
             hints.Add(HINT_PRIMARYKEY);
 
-        rc=frmHint::ShowHint(form, hints, GetFullIdentifier(), force);
+        rc = frmHint::ShowHint(form, hints, GetFullIdentifier(), force);
     }
     else
-        rc=frmHint::ShowHint(form, HINT_VACUUM, GetFullIdentifier(), force);
+        rc = frmHint::ShowHint(form, HINT_VACUUM, GetFullIdentifier(), force);
 
     if (rc == HINT_RC_FIX)
     {
-        frmMaintenance *frm=new frmMaintenance(form, this);
+        frmMaintenance *frm = new frmMaintenance(form, this);
         frm->Go();
     }
 }
@@ -1126,10 +1126,10 @@ void pgTable::ShowHint(frmMain *form, bool force)
 
 pgObject *pgTable::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgTable *table=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgTable *table = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
-        table = (pgTable*)tableFactory.CreateObjects(coll, 0, wxT("\n   AND rel.oid=") + GetOidStr());
+        table = (pgTable *)tableFactory.CreateObjects(coll, 0, wxT("\n   AND rel.oid=") + GetOidStr());
 
     return table;
 }
@@ -1142,7 +1142,7 @@ bool pgTable::HasPgstattuple()
 
 void pgTable::iSetTriggersEnabled(ctlTree *browser, bool enable)
 {
-    pgCollection *triggers=browser->FindCollection(triggerFactory, GetId());
+    pgCollection *triggers = browser->FindCollection(triggerFactory, GetId());
     if (triggers)
     {
         triggers->ShowTreeDetail(browser);
@@ -1160,15 +1160,15 @@ void pgTable::iSetTriggersEnabled(ctlTree *browser, bool enable)
 
 
 pgTableCollection::pgTableCollection(pgaFactory *factory, pgSchema *sch)
-: pgSchemaObjCollection(factory, sch)
+    : pgSchemaObjCollection(factory, sch)
 {
 }
 
-    
+
 wxString pgTableCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -1190,7 +1190,7 @@ wxString pgTableCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Tables list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -1199,7 +1199,7 @@ void pgTableCollection::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
     wxLogInfo(wxT("Displaying statistics for tables on %s"), GetSchema()->GetIdentifier().c_str());
 
-    bool hasSize=GetConnection()->HasFeature(FEATURE_SIZE);
+    bool hasSize = GetConnection()->HasFeature(FEATURE_SIZE);
 
     // Add the statistics view columns
     statistics->ClearAll();
@@ -1230,7 +1230,7 @@ void pgTableCollection::ShowStatistics(frmMain *form, ctlListView *statistics)
     if (hasSize)
         statistics->AddColumn(_("Size"));
 
-    wxString sql=wxT("SELECT st.relname, n_tup_ins, n_tup_upd, n_tup_del");
+    wxString sql = wxT("SELECT st.relname, n_tup_ins, n_tup_upd, n_tup_del");
     if (GetConnection()->BackendMinimumVersion(8, 3))
         sql += wxT(", n_tup_hot_upd, n_live_tup, n_dead_tup");
     if (GetConnection()->BackendMinimumVersion(8, 2))
@@ -1241,17 +1241,17 @@ void pgTableCollection::ShowStatistics(frmMain *form, ctlListView *statistics)
         sql += wxT(", pg_size_pretty(pg_relation_size(st.relid)")
                wxT(" + CASE WHEN cl.reltoastrelid = 0 THEN 0 ELSE pg_relation_size(cl.reltoastrelid) + COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0) END")
                wxT(" + COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=st.relid)::int8, 0)) AS size");
-    
+
     sql += wxT("\n  FROM pg_stat_all_tables st")
            wxT("  JOIN pg_class cl on cl.oid=st.relid\n")
            wxT(" WHERE schemaname = ") + qtDbString(GetSchema()->GetName())
-        +  wxT("\n ORDER BY relname");
-        
+           +  wxT("\n ORDER BY relname");
+
     pgSet *stats = GetDatabase()->ExecuteSet(sql);
 
     if (stats)
     {
-        long pos=0;
+        long pos = 0;
         int i;
         while (!stats->Eof())
         {
@@ -1299,21 +1299,21 @@ void pgTable::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
     wxString sql =
         wxT("SELECT seq_scan AS ") + qtIdent(_("Sequential Scans")) +
-             wxT(", seq_tup_read AS ") + qtIdent(_("Sequential Tuples Read")) +
-             wxT(", idx_scan AS ") + qtIdent(_("Index Scans")) +
-             wxT(", idx_tup_fetch AS ") + qtIdent(_("Index Tuples Fetched"))+
-             wxT(", n_tup_ins AS ") + qtIdent(_("Tuples Inserted"))+
-             wxT(", n_tup_upd AS ") + qtIdent(_("Tuples Updated"))+
-             wxT(", n_tup_del AS ") + qtIdent(_("Tuples Deleted"));
-             
+        wxT(", seq_tup_read AS ") + qtIdent(_("Sequential Tuples Read")) +
+        wxT(", idx_scan AS ") + qtIdent(_("Index Scans")) +
+        wxT(", idx_tup_fetch AS ") + qtIdent(_("Index Tuples Fetched")) +
+        wxT(", n_tup_ins AS ") + qtIdent(_("Tuples Inserted")) +
+        wxT(", n_tup_upd AS ") + qtIdent(_("Tuples Updated")) +
+        wxT(", n_tup_del AS ") + qtIdent(_("Tuples Deleted"));
+
     if (GetConnection()->BackendMinimumVersion(8, 3))
     {
         sql +=
-             wxT(", n_tup_hot_upd AS ") + qtIdent(_("Tuples HOT Updated"))+
-             wxT(", n_live_tup AS ") + qtIdent(_("Live Tuples"))+
-             wxT(", n_dead_tup AS ") + qtIdent(_("Dead Tuples"));
+            wxT(", n_tup_hot_upd AS ") + qtIdent(_("Tuples HOT Updated")) +
+            wxT(", n_live_tup AS ") + qtIdent(_("Live Tuples")) +
+            wxT(", n_dead_tup AS ") + qtIdent(_("Dead Tuples"));
     }
-    
+
     sql +=   wxT(", heap_blks_read AS ") + qtIdent(_("Heap Blocks Read")) +
              wxT(", heap_blks_hit AS ") + qtIdent(_("Heap Blocks Hit")) +
              wxT(", idx_blks_read AS ") + qtIdent(_("Index Blocks Read")) +
@@ -1326,26 +1326,26 @@ void pgTable::ShowStatistics(frmMain *form, ctlListView *statistics)
     if (GetConnection()->BackendMinimumVersion(8, 2))
     {
         sql +=
-             wxT(", last_vacuum AS ") + qtIdent(_("Last Vacuum")) +
-             wxT(", last_autovacuum AS ") + qtIdent(_("Last Autovacuum")) +
-             wxT(", last_analyze AS ") + qtIdent(_("Last Analyze")) +
-             wxT(", last_autoanalyze AS ") + qtIdent(_("Last Autoanalyze"));
+            wxT(", last_vacuum AS ") + qtIdent(_("Last Vacuum")) +
+            wxT(", last_autovacuum AS ") + qtIdent(_("Last Autovacuum")) +
+            wxT(", last_analyze AS ") + qtIdent(_("Last Analyze")) +
+            wxT(", last_autoanalyze AS ") + qtIdent(_("Last Autoanalyze"));
     }
-    
+
     if (GetConnection()->BackendMinimumVersion(9, 1))
     {
         sql +=
-             wxT(", vacuum_count AS ") + qtIdent(_("Vacuum counter")) +
-             wxT(", autovacuum_count AS ") + qtIdent(_("Autovacuum counter")) +
-             wxT(", analyze_count AS ") + qtIdent(_("Analyze counter")) +
-             wxT(", autoanalyze_count AS ") + qtIdent(_("Autoanalyze counter"));
+            wxT(", vacuum_count AS ") + qtIdent(_("Vacuum counter")) +
+            wxT(", autovacuum_count AS ") + qtIdent(_("Autovacuum counter")) +
+            wxT(", analyze_count AS ") + qtIdent(_("Analyze counter")) +
+            wxT(", autoanalyze_count AS ") + qtIdent(_("Autoanalyze counter"));
     }
 
     if (GetConnection()->HasFeature(FEATURE_SIZE))
     {
         sql += wxT(", pg_size_pretty(pg_relation_size(stat.relid)) AS ") + qtIdent(_("Table Size"))
-            +  wxT(", CASE WHEN cl.reltoastrelid = 0 THEN ") + qtDbString(_("none")) + wxT(" ELSE pg_size_pretty(pg_relation_size(cl.reltoastrelid)+ COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0)) END AS ") + qtIdent(_("Toast Table Size"))
-            +  wxT(", pg_size_pretty(COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=stat.relid)::int8, 0)) AS ") + qtIdent(_("Indexes Size"));
+               +  wxT(", CASE WHEN cl.reltoastrelid = 0 THEN ") + qtDbString(_("none")) + wxT(" ELSE pg_size_pretty(pg_relation_size(cl.reltoastrelid)+ COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0)) END AS ") + qtIdent(_("Toast Table Size"))
+               +  wxT(", pg_size_pretty(COALESCE((SELECT SUM(pg_relation_size(indexrelid)) FROM pg_index WHERE indrelid=stat.relid)::int8, 0)) AS ") + qtIdent(_("Indexes Size"));
     }
 
     if (showExtendedStatistics)
@@ -1367,9 +1367,9 @@ void pgTable::ShowStatistics(frmMain *form, ctlListView *statistics)
                wxT("  FROM pg_stat_all_tables stat");
     }
     sql +=  wxT("\n")
-        wxT("  JOIN pg_statio_all_tables statio ON stat.relid = statio.relid\n")
-        wxT("  JOIN pg_class cl ON cl.oid=stat.relid\n")
-        wxT(" WHERE stat.relid = ") + GetOidStr();
+            wxT("  JOIN pg_statio_all_tables statio ON stat.relid = statio.relid\n")
+            wxT("  JOIN pg_class cl ON cl.oid=stat.relid\n")
+            wxT(" WHERE stat.relid = ") + GetOidStr();
 
 
     DisplayStatistics(statistics, sql);
@@ -1379,11 +1379,11 @@ void pgTable::ShowStatistics(frmMain *form, ctlListView *statistics)
 pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
     wxString query;
-    pgTable *table=0;
+    pgTable *table = 0;
 
     // Greenplum returns reltuples and relpages as tuples per segmentDB and pages per segmentDB,
     // so we need to multiply them by the number of segmentDBs to get reasonable values.
-    long gp_segments =1;
+    long gp_segments = 1;
     if (collection->GetConnection()->GetIsGreenplum())
     {
         query = wxT("SELECT count(*) AS gp_segments from pg_catalog.gp_configuration where definedprimary = 't' and content >= 0");
@@ -1395,12 +1395,12 @@ pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *brows
     pgSet *tables;
     if (collection->GetConnection()->BackendMinimumVersion(8, 0))
     {
-        query= wxT("SELECT rel.oid, relname, rel.reltablespace AS spcoid, spcname, pg_get_userbyid(relowner) AS relowner, relacl, relhasoids, ")
-                    wxT("relhassubclass, reltuples, description, conname, conkey,\n")
-            wxT("       EXISTS(select 1 FROM pg_trigger\n")
-            wxT("                       JOIN pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'\n")
-            wxT("                       JOIN pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'\n")
-            wxT("                     WHERE tgrelid=rel.oid) AS isrepl\n");
+        query = wxT("SELECT rel.oid, relname, rel.reltablespace AS spcoid, spcname, pg_get_userbyid(relowner) AS relowner, relacl, relhasoids, ")
+                wxT("relhassubclass, reltuples, description, conname, conkey,\n")
+                wxT("       EXISTS(select 1 FROM pg_trigger\n")
+                wxT("                       JOIN pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'\n")
+                wxT("                       JOIN pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'\n")
+                wxT("                     WHERE tgrelid=rel.oid) AS isrepl\n");
         if (collection->GetConnection()->BackendMinimumVersion(8, 2))
             query += wxT(", substring(array_to_string(rel.reloptions, ',') from 'fillfactor=([0-9]*)') AS fillfactor \n");
         if (collection->GetConnection()->GetIsGreenplum())
@@ -1434,9 +1434,9 @@ pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *brows
             query += wxT(", reloftype, typname\n");
 
         query += wxT("  FROM pg_class rel\n")
-            wxT("  LEFT OUTER JOIN pg_tablespace ta on ta.oid=rel.reltablespace\n")
-            wxT("  LEFT OUTER JOIN pg_description des ON (des.objoid=rel.oid AND des.objsubid=0)\n")
-            wxT("  LEFT OUTER JOIN pg_constraint c ON c.conrelid=rel.oid AND c.contype='p'\n");
+                 wxT("  LEFT OUTER JOIN pg_tablespace ta on ta.oid=rel.reltablespace\n")
+                 wxT("  LEFT OUTER JOIN pg_description des ON (des.objoid=rel.oid AND des.objsubid=0)\n")
+                 wxT("  LEFT OUTER JOIN pg_constraint c ON c.conrelid=rel.oid AND c.contype='p'\n");
         if (collection->GetConnection()->GetIsGreenplum())
         {
             query += wxT("  LEFT OUTER JOIN gp_distribution_policy gpd ON gpd.localoid=rel.oid\n");
@@ -1454,25 +1454,25 @@ pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *brows
         if (collection->GetConnection()->GetIsGreenplum() && collection->GetConnection()->BackendMinimumVersion(8, 2, 9))
             query += wxT("AND rel.relstorage <> 'x' AND rel.oid NOT IN (select parchildrelid from pg_partition_rule)");
 
-        query += restriction + 
-            wxT(" ORDER BY relname");
+        query += restriction +
+                 wxT(" ORDER BY relname");
     }
     else
     {
-        query= wxT("SELECT rel.oid, relname, pg_get_userbyid(relowner) AS relowner, relacl, relhasoids, ")
-                    wxT("relhassubclass, reltuples, description, conname, conkey,\n")
-            wxT("       EXISTS(select 1 FROM pg_trigger\n")
-            wxT("                       JOIN pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'\n")
-            wxT("                       JOIN pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'\n")
-            wxT("                     WHERE tgrelid=rel.oid) AS isrepl\n")
-            wxT("  FROM pg_class rel\n")
-            wxT("  LEFT OUTER JOIN pg_description des ON (des.objoid=rel.oid AND des.objsubid=0)\n")
-            wxT("  LEFT OUTER JOIN pg_constraint c ON c.conrelid=rel.oid AND c.contype='p'\n")
-            wxT(" WHERE relkind IN ('r','s','t') AND relnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n")
-            + restriction + 
-            wxT(" ORDER BY relname");
+        query = wxT("SELECT rel.oid, relname, pg_get_userbyid(relowner) AS relowner, relacl, relhasoids, ")
+                wxT("relhassubclass, reltuples, description, conname, conkey,\n")
+                wxT("       EXISTS(select 1 FROM pg_trigger\n")
+                wxT("                       JOIN pg_proc pt ON pt.oid=tgfoid AND pt.proname='logtrigger'\n")
+                wxT("                       JOIN pg_proc pc ON pc.pronamespace=pt.pronamespace AND pc.proname='slonyversion'\n")
+                wxT("                     WHERE tgrelid=rel.oid) AS isrepl\n")
+                wxT("  FROM pg_class rel\n")
+                wxT("  LEFT OUTER JOIN pg_description des ON (des.objoid=rel.oid AND des.objsubid=0)\n")
+                wxT("  LEFT OUTER JOIN pg_constraint c ON c.conrelid=rel.oid AND c.contype='p'\n")
+                wxT(" WHERE relkind IN ('r','s','t') AND relnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n")
+                + restriction +
+                wxT(" ORDER BY relname");
     }
-    tables= collection->GetDatabase()->ExecuteSet(query);
+    tables = collection->GetDatabase()->ExecuteSet(query);
     if (tables)
     {
         while (!tables->Eof())
@@ -1507,13 +1507,14 @@ pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *brows
             table->iSetComment(tables->GetVal(wxT("description")));
             table->iSetHasOids(tables->GetBool(wxT("relhasoids")));
             table->iSetEstimatedRows(tables->GetDouble(wxT("reltuples")) * gp_segments);
-            if (collection->GetConnection()->BackendMinimumVersion(8, 2)) {
+            if (collection->GetConnection()->BackendMinimumVersion(8, 2))
+            {
                 table->iSetFillFactor(tables->GetVal(wxT("fillfactor")));
             }
             if (collection->GetConnection()->BackendMinimumVersion(8, 4))
             {
                 table->iSetRelOptions(tables->GetVal(wxT("reloptions")));
-                if (table->GetCustomAutoVacuumEnabled()) 
+                if (table->GetCustomAutoVacuumEnabled())
                 {
                     if (tables->GetVal(wxT("autovacuum_enabled")).IsEmpty())
                         table->iSetAutoVacuumEnabled(2);
@@ -1535,21 +1536,21 @@ pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *brows
                 if (table->GetHasToastTable())
                 {
                     pgSet *set = collection->GetDatabase()->ExecuteSet(
-                      wxT("SELECT \n")
-                      wxT("  substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)') AS autovacuum_enabled \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_scale_factor=([0-9]*[.][0-9]*)') AS autovacuum_vacuum_scale_factor \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_analyze_threshold=([0-9]*)') AS autovacuum_analyze_threshold \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_analyze_scale_factor=([0-9]*[.][0-9]*)') AS autovacuum_analyze_scale_factor \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_cost_delay=([0-9]*)') AS autovacuum_vacuum_cost_delay \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_cost_limit=([0-9]*)') AS autovacuum_vacuum_cost_limit \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_freeze_min_age=([0-9]*)') AS autovacuum_freeze_min_age \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_freeze_max_age=([0-9]*)') AS autovacuum_freeze_max_age \n")
-                      wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS autovacuum_freeze_table_age \n")
-                      wxT(", rel.reloptions AS reloptions \n")
-                      wxT("FROM pg_catalog.pg_class rel \n")
-                      wxT("WHERE rel.oid=(SELECT org_tbl.reltoastrelid FROM pg_catalog.pg_class org_tbl WHERE org_tbl.oid=")
-                      + table->GetOidStr() + wxT(")"));
+                                     wxT("SELECT \n")
+                                     wxT("  substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)') AS autovacuum_enabled \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_scale_factor=([0-9]*[.][0-9]*)') AS autovacuum_vacuum_scale_factor \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_analyze_threshold=([0-9]*)') AS autovacuum_analyze_threshold \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_analyze_scale_factor=([0-9]*[.][0-9]*)') AS autovacuum_analyze_scale_factor \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_cost_delay=([0-9]*)') AS autovacuum_vacuum_cost_delay \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_cost_limit=([0-9]*)') AS autovacuum_vacuum_cost_limit \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_freeze_min_age=([0-9]*)') AS autovacuum_freeze_min_age \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_freeze_max_age=([0-9]*)') AS autovacuum_freeze_max_age \n")
+                                     wxT(", substring(array_to_string(rel.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS autovacuum_freeze_table_age \n")
+                                     wxT(", rel.reloptions AS reloptions \n")
+                                     wxT("FROM pg_catalog.pg_class rel \n")
+                                     wxT("WHERE rel.oid=(SELECT org_tbl.reltoastrelid FROM pg_catalog.pg_class org_tbl WHERE org_tbl.oid=")
+                                     + table->GetOidStr() + wxT(")"));
                     if (set)
                     {
                         table->iSetToastRelOptions(set->GetVal(wxT("reloptions")));
@@ -1580,15 +1581,15 @@ pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *brows
             table->iSetHasSubclass(tables->GetBool(wxT("relhassubclass")));
             table->iSetPrimaryKeyName(tables->GetVal(wxT("conname")));
             table->iSetIsReplicated(tables->GetBool(wxT("isrepl")));
-            wxString cn=tables->GetVal(wxT("conkey"));
-            cn=cn.Mid(1, cn.Length()-2);
+            wxString cn = tables->GetVal(wxT("conkey"));
+            cn = cn.Mid(1, cn.Length() - 2);
             table->iSetPrimaryKeyColNumbers(cn);
 
             if (collection->GetConnection()->GetIsGreenplum())
             {
-                Oid lo=tables->GetOid(wxT("localoid"));
-                wxString db=tables->GetVal(wxT("attrnums"));
-                db=db.Mid(1, db.Length()-2);
+                Oid lo = tables->GetOid(wxT("localoid"));
+                wxString db = tables->GetVal(wxT("attrnums"));
+                db = db.Mid(1, db.Length() - 2);
                 table->iSetDistributionColNumbers(db);
                 if (lo > 0 && db.Length() == 0)
                     table->iSetDistributionIsRandom();
@@ -1601,12 +1602,12 @@ pgObject *pgTableFactory::CreateObjects(pgCollection *collection, ctlTree *brows
 
                 table->iSetPartitionDef(wxT(""));
                 table->iSetIsPartitioned(false);
-                
-                if (collection->GetConnection()->BackendMinimumVersion(8,2,9))
+
+                if (collection->GetConnection()->BackendMinimumVersion(8, 2, 9))
                 {
                     table->iSetIsPartitioned(tables->GetBool(wxT("ispartitioned")));
                 }
-                         
+
             }
 
             if (browser)
@@ -1639,8 +1640,8 @@ bool pgTableObjCollection::CanCreate()
 #include "images/table-sm.xpm"
 #include "images/tables.xpm"
 
-pgTableFactory::pgTableFactory() 
-: pgSchemaObjFactory(__("Table"), __("New Table..."), __("Create a new Table."), table_xpm, table_sm_xpm)
+pgTableFactory::pgTableFactory()
+    : pgSchemaObjFactory(__("Table"), __("New Table..."), __("Create a new Table."), table_xpm, table_sm_xpm)
 {
     metaType = PGM_TABLE;
     if (WantSmallIcon())
@@ -1651,7 +1652,7 @@ pgTableFactory::pgTableFactory()
 
 pgCollection *pgTableFactory::CreateCollection(pgObject *obj)
 {
-    return new pgTableCollection(GetCollectionFactory(), (pgSchema*)obj);
+    return new pgTableCollection(GetCollectionFactory(), (pgSchema *)obj);
 }
 
 pgTableFactory tableFactory;
@@ -1660,7 +1661,7 @@ static pgaCollectionFactory cf(&tableFactory, __("Tables"), tables_xpm);
 
 pgCollection *pgTableObjFactory::CreateCollection(pgObject *obj)
 {
-    return new pgTableObjCollection(GetCollectionFactory(), (pgTable*)obj);
+    return new pgTableObjCollection(GetCollectionFactory(), (pgTable *)obj);
 }
 
 
@@ -1674,9 +1675,9 @@ wxWindow *countRowsFactory::StartDialog(frmMain *form, pgObject *obj)
 {
     form->StartMsg(_("Counting rows"));
 
-    ((pgTable*)obj)->UpdateRows();
-    
-    wxTreeItemId item=form->GetBrowser()->GetSelection();
+    ((pgTable *)obj)->UpdateRows();
+
+    wxTreeItemId item = form->GetBrowser()->GetSelection();
     if (obj == form->GetBrowser()->GetObject(item))
         obj->ShowTreeDetail(form->GetBrowser(), 0, form->GetProperties());
 
@@ -1700,15 +1701,15 @@ executePgstattupleFactory::executePgstattupleFactory(menuFactoryList *list, wxMe
 
 wxWindow *executePgstattupleFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    if (!((pgTable*)obj)->GetShowExtendedStatistics())
+    if (!((pgTable *)obj)->GetShowExtendedStatistics())
     {
-        ((pgTable*)obj)->iSetShowExtendedStatistics(true);
-        wxTreeItemId item=form->GetBrowser()->GetSelection();
+        ((pgTable *)obj)->iSetShowExtendedStatistics(true);
+        wxTreeItemId item = form->GetBrowser()->GetSelection();
         if (obj == form->GetBrowser()->GetObject(item))
             form->SelectStatisticsTab();
     }
     else
-        ((pgTable*)obj)->iSetShowExtendedStatistics(false);
+        ((pgTable *)obj)->iSetShowExtendedStatistics(false);
 
     form->GetMenuFactories()->CheckMenu(obj, form->GetMenuBar(), (ctlMenuToolbar *)form->GetToolBar());
 
@@ -1718,12 +1719,12 @@ wxWindow *executePgstattupleFactory::StartDialog(frmMain *form, pgObject *obj)
 
 bool executePgstattupleFactory::CheckEnable(pgObject *obj)
 {
-    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable*)obj)->HasPgstattuple();
+    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable *)obj)->HasPgstattuple();
 }
 
 bool executePgstattupleFactory::CheckChecked(pgObject *obj)
 {
-    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable*)obj)->GetShowExtendedStatistics();
+    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable *)obj)->GetShowExtendedStatistics();
 }
 
 disableAllTriggersFactory::disableAllTriggersFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar) : contextActionFactory(list)
@@ -1736,12 +1737,12 @@ wxWindow *disableAllTriggersFactory::StartDialog(frmMain *form, pgObject *obj)
 {
     if (wxMessageBox(_("Are you sure you wish to disable all triggers on this table?"), _("Disable triggers"), wxYES_NO) == wxNO)
         return 0;
-    
-    if (!((pgTable*)obj)->EnableTriggers(false))
+
+    if (!((pgTable *)obj)->EnableTriggers(false))
         return 0;
 
     ((pgTable *)obj)->iSetTriggersEnabled(form->GetBrowser(), false);
-    
+
     return 0;
 }
 
@@ -1749,8 +1750,8 @@ wxWindow *disableAllTriggersFactory::StartDialog(frmMain *form, pgObject *obj)
 bool disableAllTriggersFactory::CheckEnable(pgObject *obj)
 {
     return obj && obj->IsCreatedBy(tableFactory) && obj->CanEdit()
-               && (obj->GetOwner() == obj->GetConnection()->GetUser() || obj->GetServer()->GetSuperUser())
-               && ((pgTable*)obj)->GetConnection()->BackendMinimumVersion(8, 1);
+           && (obj->GetOwner() == obj->GetConnection()->GetUser() || obj->GetServer()->GetSuperUser())
+           && ((pgTable *)obj)->GetConnection()->BackendMinimumVersion(8, 1);
 }
 
 enableAllTriggersFactory::enableAllTriggersFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar) : contextActionFactory(list)
@@ -1763,8 +1764,8 @@ wxWindow *enableAllTriggersFactory::StartDialog(frmMain *form, pgObject *obj)
 {
     if (wxMessageBox(_("Are you sure you wish to enable all triggers on this table?"), _("Enable triggers"), wxYES_NO) == wxNO)
         return 0;
-    
-    if (!((pgTable*)obj)->EnableTriggers(true))
+
+    if (!((pgTable *)obj)->EnableTriggers(true))
         return 0;
 
     ((pgTable *)obj)->iSetTriggersEnabled(form->GetBrowser(), true);
@@ -1776,8 +1777,8 @@ wxWindow *enableAllTriggersFactory::StartDialog(frmMain *form, pgObject *obj)
 bool enableAllTriggersFactory::CheckEnable(pgObject *obj)
 {
     return obj && obj->IsCreatedBy(tableFactory) && obj->CanEdit()
-               && (obj->GetOwner() == obj->GetConnection()->GetUser() || obj->GetServer()->GetSuperUser())
-               && ((pgTable*)obj)->GetConnection()->BackendMinimumVersion(8, 1);
+           && (obj->GetOwner() == obj->GetConnection()->GetUser() || obj->GetServer()->GetSuperUser())
+           && ((pgTable *)obj)->GetConnection()->BackendMinimumVersion(8, 1);
 }
 
 truncateFactory::truncateFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar) : contextActionFactory(list)
@@ -1791,9 +1792,9 @@ wxWindow *truncateFactory::StartDialog(frmMain *form, pgObject *obj)
     if (wxMessageBox(_("Are you sure you wish to truncate this table?\n\nWARNING: This action will delete ALL data in the table!"), _("Truncate table"), wxYES_NO) == wxNO)
         return 0;
 
-    ((pgTable*)obj)->Truncate(false);
-    ((pgTable*)obj)->UpdateRows();
-    wxTreeItemId item=form->GetBrowser()->GetSelection();
+    ((pgTable *)obj)->Truncate(false);
+    ((pgTable *)obj)->UpdateRows();
+    wxTreeItemId item = form->GetBrowser()->GetSelection();
     if (obj == form->GetBrowser()->GetObject(item))
         obj->ShowTreeDetail(form->GetBrowser(), 0, form->GetProperties());
 
@@ -1818,9 +1819,9 @@ wxWindow *truncateCascadedFactory::StartDialog(frmMain *form, pgObject *obj)
     if (wxMessageBox(_("Are you sure you wish to truncate this table and all tables that have foreign key references to this table?\n\nWARNING: This action will delete ALL data in the tables!"), _("Truncate table cascaded"), wxYES_NO) == wxNO)
         return 0;
 
-    ((pgTable*)obj)->Truncate(true);
-    ((pgTable*)obj)->UpdateRows();
-    wxTreeItemId item=form->GetBrowser()->GetSelection();
+    ((pgTable *)obj)->Truncate(true);
+    ((pgTable *)obj)->UpdateRows();
+    wxTreeItemId item = form->GetBrowser()->GetSelection();
     if (obj == form->GetBrowser()->GetObject(item))
         obj->ShowTreeDetail(form->GetBrowser(), 0, form->GetProperties());
 
@@ -1830,7 +1831,7 @@ wxWindow *truncateCascadedFactory::StartDialog(frmMain *form, pgObject *obj)
 
 bool truncateCascadedFactory::CheckEnable(pgObject *obj)
 {
-    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable*)obj)->GetConnection()->BackendMinimumVersion(8, 2);
+    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable *)obj)->GetConnection()->BackendMinimumVersion(8, 2);
 }
 
 
@@ -1845,8 +1846,8 @@ wxWindow *resetTableStatsFactory::StartDialog(frmMain *form, pgObject *obj)
     if (wxMessageBox(_("Are you sure you wish to reset statistics of this table?"), _("Reset statistics"), wxYES_NO) == wxNO)
         return 0;
 
-    ((pgTable*)obj)->ResetStats();
-    ((pgTable*)obj)->ShowStatistics(form, form->GetStatistics());
+    ((pgTable *)obj)->ResetStats();
+    ((pgTable *)obj)->ShowStatistics(form, form->GetStatistics());
 
     return 0;
 }
@@ -1854,5 +1855,5 @@ wxWindow *resetTableStatsFactory::StartDialog(frmMain *form, pgObject *obj)
 
 bool resetTableStatsFactory::CheckEnable(pgObject *obj)
 {
-    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable*)obj)->GetConnection()->BackendMinimumVersion(9, 0);
+    return obj && obj->IsCreatedBy(tableFactory) && ((pgTable *)obj)->GetConnection()->BackendMinimumVersion(9, 0);
 }

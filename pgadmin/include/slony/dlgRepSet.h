@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,12 +23,18 @@ class dlgRepSet : public dlgRepProperty
 public:
     dlgRepSet(pgaFactory *factory, frmMain *frame, slSet *set, slCluster *c);
     int Go(bool modal);
-    wxString GetHelpPage() const { return wxT("slony-set"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("slony-set");
+    }
 
     void CheckChange();
     wxString GetSql();
     pgObject *CreateObject(pgCollection *collection);
-    pgObject *GetObject() { return (pgObject*)set; }
+    pgObject *GetObject()
+    {
+        return (pgObject *)set;
+    }
 
 private:
     slSet *set;
@@ -42,12 +48,21 @@ class dlgRepSetMerge : public dlgRepProperty
 public:
     dlgRepSetMerge(pgaFactory *factory, frmMain *frame, slSet *set);
     int Go(bool modal);
-    wxString GetHelpPage() const { return wxT("slony-functions"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("slony-functions");
+    }
 
     void CheckChange();
     wxString GetSql();
-    pgObject *GetObject() { return (pgObject*)set; }
-    pgObject *CreateObject(pgCollection *collection) { return 0; }
+    pgObject *GetObject()
+    {
+        return (pgObject *)set;
+    }
+    pgObject *CreateObject(pgCollection *collection)
+    {
+        return 0;
+    }
 
 private:
     slSet *set;
@@ -60,12 +75,21 @@ class dlgRepSetMove : public dlgRepProperty
 public:
     dlgRepSetMove(pgaFactory *f, frmMain *frame, slSet *set);
     int Go(bool modal);
-    wxString GetHelpPage() const { return wxT("slony-functions"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("slony-functions");
+    }
 
     void CheckChange();
     wxString GetSql();
-    pgObject *GetObject() { return (pgObject*)set; }
-    pgObject *CreateObject(pgCollection *collection) { return 0; }
+    pgObject *GetObject()
+    {
+        return (pgObject *)set;
+    }
+    pgObject *CreateObject(pgCollection *collection)
+    {
+        return 0;
+    }
 
 private:
     slSet *set;

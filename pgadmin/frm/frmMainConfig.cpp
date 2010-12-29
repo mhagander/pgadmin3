@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -45,7 +45,7 @@ END_EVENT_TABLE()
 
 
 frmMainConfig::frmMainConfig(frmMain *parent, pgServer *server)
-: frmConfig(parent, BCE_TITLE, 0)
+    : frmConfig(parent, BCE_TITLE, 0)
 {
     wxString applicationname = appearanceFactory->GetLongAppName() + _(" - Configuration Editor");
     if (server)
@@ -62,13 +62,13 @@ frmMainConfig::frmMainConfig(frmMain *parent, pgServer *server)
 
         wxString txt;
         txt.Printf(_(" - %s on %s (%s:%d)"),
-                serverFileName.c_str(), server->GetDescription().c_str(), 
-                server->GetName().c_str(), server->GetPort());
+                   serverFileName.c_str(), server->GetDescription().c_str(),
+                   server->GetName().c_str(), server->GetPort());
         SetTitle(BCE_TITLE + txt);
 
         wxString str;
         str = conn->ExecuteScalar(wxT("SELECT pg_file_read('") + serverFileName + wxT("', 0, ")
-                    wxT("pg_file_length('") + serverFileName + wxT("'))"));
+                                  wxT("pg_file_length('") + serverFileName + wxT("'))"));
 
         DisplayFile(str);
 
@@ -77,8 +77,8 @@ frmMainConfig::frmMainConfig(frmMain *parent, pgServer *server)
 }
 
 
-frmMainConfig::frmMainConfig(const wxString& title, const wxString &configFile)
-: frmConfig(title + wxT(" - ") + _("Backend Configuration Editor"), configFile)
+frmMainConfig::frmMainConfig(const wxString &title, const wxString &configFile)
+    : frmConfig(title + wxT(" - ") + _("Backend Configuration Editor"), configFile)
 {
     InitForm();
     Init();
@@ -126,7 +126,7 @@ void frmMainConfig::Init(pgSettingReader *reader)
     while (item);
 
     editMenu->Enable(MNU_DELETE, false);
-    toolBar->EnableTool(MNU_DELETE,false);
+    toolBar->EnableTool(MNU_DELETE, false);
 }
 
 
@@ -165,7 +165,7 @@ void frmMainConfig::Init()
 void frmMainConfig::InitForm()
 {
     appearanceFactory->SetIcons(this);
- 
+
     InitFrame(wxT("frmMainConfig"));
     RestorePosition(50, 50, 600, 600, 300, 200);
 
@@ -180,7 +180,7 @@ void frmMainConfig::InitForm()
     cfgList->AddColumn(_("Comment"), 400);
 }
 
-void frmMainConfig::OnSelectSetting(wxListEvent& event)
+void frmMainConfig::OnSelectSetting(wxListEvent &event)
 {
 
     // Disable undo because we don't want to undo the wrong line.
@@ -188,9 +188,9 @@ void frmMainConfig::OnSelectSetting(wxListEvent& event)
     toolBar->EnableTool(MNU_UNDO, false);
 }
 
-void frmMainConfig::OnEditSetting(wxListEvent& event)
+void frmMainConfig::OnEditSetting(wxListEvent &event)
 {
-    wxString name=cfgList->GetText(event.GetIndex());
+    wxString name = cfgList->GetText(event.GetIndex());
     if (!name.IsEmpty())
     {
         pgSettingItem *item = options[name];
@@ -205,20 +205,20 @@ void frmMainConfig::OnEditSetting(wxListEvent& event)
         }
         else
         {
-            changed=true;
+            changed = true;
             fileMenu->Enable(MNU_SAVE, true);
             editMenu->Enable(MNU_UNDO, true);
             toolBar->EnableTool(MNU_SAVE, true);
             toolBar->EnableTool(MNU_UNDO, true);
 
-            
+
         }
         UpdateLine(event.GetIndex());
     }
 }
 
 
-void frmMainConfig::OnContents(wxCommandEvent& event)
+void frmMainConfig::OnContents(wxCommandEvent &event)
 {
     DisplayHelp(wxT("index"), HELP_PGADMIN);
 }
@@ -228,15 +228,15 @@ wxString frmMainConfig::GetHelpPage() const
 {
     wxString page;
     if (page.IsEmpty())
-        page=wxT("runtime-config");
+        page = wxT("runtime-config");
 
     return page;
 }
 
 
-void frmMainConfig::OnUndo(wxCommandEvent& ev)
+void frmMainConfig::OnUndo(wxCommandEvent &ev)
 {
-    wxString name=cfgList->GetText(cfgList->GetSelection());
+    wxString name = cfgList->GetText(cfgList->GetSelection());
     if (!name.IsEmpty())
     {
         pgSettingItem *item = options[name];
@@ -254,18 +254,18 @@ void frmMainConfig::OnUndo(wxCommandEvent& ev)
 
 void frmMainConfig::UpdateLine(int pos)
 {
-    wxString name=cfgList->GetText(pos);
+    wxString name = cfgList->GetText(pos);
     if (!name.IsEmpty())
     {
         pgSettingItem *item = options[name];
         wxASSERT(name);
 
-        pgConfigLine *line=item->newLine;
+        pgConfigLine *line = item->newLine;
         if (!line)
             line = item->orgLine;
 
         wxString value, comment;
-        int imgIndex=0;
+        int imgIndex = 0;
         if (line)
         {
             value = line->value;
@@ -291,10 +291,10 @@ void frmMainConfig::WriteFile(pgConn *conn)
     size_t i;
 
     wxString str;
-    for (i=0 ; i < lines.GetCount() ; i++)
+    for (i = 0 ; i < lines.GetCount() ; i++)
         str.Append(lines.Item(i).GetNewText() + wxT("\n"));
 
-    for (i=0 ; i < (size_t)cfgList->GetItemCount() ; i++)
+    for (i = 0 ; i < (size_t)cfgList->GetItemCount() ; i++)
     {
         pgSettingItem *item = options[cfgList->GetText(i)];
 
@@ -305,14 +305,14 @@ void frmMainConfig::WriteFile(pgConn *conn)
 
     if (DoWriteFile(str, conn))
     {
-        changed=false;
+        changed = false;
         fileMenu->Enable(MNU_SAVE, false);
         editMenu->Enable(MNU_UNDO, false);
         toolBar->EnableTool(MNU_SAVE, false);
         toolBar->EnableTool(MNU_UNDO, false);
 
         size_t i;
-        for (i=0 ; i < (size_t)cfgList->GetItemCount() ; i++)
+        for (i = 0 ; i < (size_t)cfgList->GetItemCount() ; i++)
         {
             pgSettingItem *item = options[cfgList->GetText(i)];
 
@@ -335,7 +335,7 @@ void frmMainConfig::WriteFile(pgConn *conn)
         }
 
 
-        for (i=0 ; i < lines.GetCount() ; i++)
+        for (i = 0 ; i < lines.GetCount() ; i++)
         {
             pgConfigOrgLine &line = lines.Item(i);
             if (line.item && line.item->newLine)
@@ -356,7 +356,7 @@ void frmMainConfig::DisplayFile(const wxString &str)
 
     filetype = wxTextFileType_Unix;
     wxStringTokenizer strtok;
-    wxArrayString *unknownCategory=0;
+    wxArrayString *unknownCategory = 0;
 
     if (str.Find('\r') >= 0)
     {
@@ -372,18 +372,18 @@ void frmMainConfig::DisplayFile(const wxString &str)
 
     while (strtok.HasMoreTokens())
     {
-        pgConfigOrgLine *line=new pgConfigOrgLine(strtok.GetNextToken());
+        pgConfigOrgLine *line = new pgConfigOrgLine(strtok.GetNextToken());
         lines.Add(line);
 
         // identify option
-        bool isComment=false;
-        const wxChar *p=line->text.c_str();
+        bool isComment = false;
+        const wxChar *p = line->text.c_str();
 
         // identify keywords
         while (*p && wxStrchr(wxT("# \n"), *p))
         {
             if (*p == '#')
-                isComment=true;
+                isComment = true;
             p++;
         }
 
@@ -392,13 +392,13 @@ void frmMainConfig::DisplayFile(const wxString &str)
 
         line->isComment = isComment;
 
-        const wxChar *p2=p;
+        const wxChar *p2 = p;
         while (*p2 && *p2 != '#' && *p2 != ' ' && *p2 != '\t' && *p2 != '=')
             p2++;
 
         if (p2 != p)
         {
-            wxString keyword=line->text.Mid(p-line->text.c_str(), p2-p);
+            wxString keyword = line->text.Mid(p - line->text.c_str(), p2 - p);
 
             pgSettingItemHashmap::iterator it = options.find(keyword);
 
@@ -442,11 +442,11 @@ void frmMainConfig::DisplayFile(const wxString &str)
             while (*p2 && wxStrchr(wxT(" \t"), *p2))
                 p2++;
 
-            wxChar quoteChar=0;
+            wxChar quoteChar = 0;
             if (wxStrchr(wxT("'\""), *p2))
                 quoteChar = *p2++;
 
-            const wxChar *p3=p2;
+            const wxChar *p3 = p2;
             while (*p3)
             {
                 if (*p3 == quoteChar || (!quoteChar && wxStrchr(wxT(" \t#"), *p3)))
@@ -455,15 +455,15 @@ void frmMainConfig::DisplayFile(const wxString &str)
             }
             if (p2 != p3)
             {
-                line->value = line->text.Mid(p2-line->text.c_str(), p3-p2);
+                line->value = line->text.Mid(p2 - line->text.c_str(), p3 - p2);
                 if (quoteChar)
                     p3++;
 
-                const wxChar *p4=p3;
+                const wxChar *p4 = p3;
                 while (*p4 && wxStrchr(wxT(" \t#"), *p4))
                     p4++;
 
-                line->commentIndent = line->text.Mid(p3-line->text.c_str(), p4-p3);
+                line->commentIndent = line->text.Mid(p3 - line->text.c_str(), p4 - p3);
                 line->comment = p4;
             }
         }
@@ -472,7 +472,7 @@ void frmMainConfig::DisplayFile(const wxString &str)
     cfgList->DeleteAllItems();
 
     // we want to show options ordered by category/name
-    // category might be localized, and we want a distinct category ordering 
+    // category might be localized, and we want a distinct category ordering
 
     FillList(wxT("listen_addresses"));          // Connections and Authentication / Connection Settings
     FillList(wxT("authentication_timeout"));    // Connections and Authentication / Security and Authentication
@@ -503,11 +503,11 @@ void frmMainConfig::DisplayFile(const wxString &str)
     FillList(wxT("hba_file"));                  // Ungrouped
 
 
-    // for all we didn't get 
+    // for all we didn't get
     while (!categories.empty())
     {
         pgCategoryHashmap::iterator it = categories.begin();
-        wxString missed=it->first;
+        wxString missed = it->first;
         FillList(it->second);
         categories.erase(it);
     }
@@ -527,7 +527,7 @@ void frmMainConfig::FillList(const wxString &categoryMember, const wxString &alt
     {
         FillList(categories[categoryItem->category]);
         categories.erase(categoryItem->category);
-    }    
+    }
 }
 
 
@@ -536,23 +536,23 @@ void frmMainConfig::FillList(wxArrayString *category)
     if (category)
     {
         size_t i;
-        for (i=0 ; i < category->GetCount() ; i++)
+        for (i = 0 ; i < category->GetCount() ; i++)
         {
             pgSettingItem *item = options[category->Item(i)];
             wxASSERT(item);
 
             wxString value;
             wxString comment;
-            int imgIndex=0;
+            int imgIndex = 0;
             if (item->orgLine)
             {
                 if (!item->orgLine->isComment)
-                    imgIndex=1;
+                    imgIndex = 1;
                 value = item->orgLine->value;
                 comment = item->orgLine->comment;
                 comment.Replace(wxT("\t"), wxT(" "));
             }
-            long pos=cfgList->AppendItem(imgIndex, item->name, value);
+            long pos = cfgList->AppendItem(imgIndex, item->name, value);
             if (conn)
             {
                 cfgList->SetItem(pos, 2, item->value);
@@ -574,7 +574,7 @@ enum
 };
 
 
-const wxChar *hintString[]=
+const wxChar *hintString[] =
 {
     _("The PostgreSQL server engine is currently configured to listen for local connections only.\nYou might want to check \"listen_addresses\" to enable accessing the server over the network too."),
     _("The autovacuum backend process is not running.\nIt is recommended to enable it by setting 'track_counts' and 'autovacuum' to 'on' in PostgreSQL 8.3 and above or 'stats_start_collector', 'stats_row_level' and 'autovacuum' to 'on' in earlier versions.")
@@ -585,10 +585,10 @@ wxString frmMainConfig::GetHintString()
 {
     wxArrayInt hints;
     size_t i;
-    int autovacuum=0;
-    bool autovacuumPresent=false;
+    int autovacuum = 0;
+    bool autovacuumPresent = false;
 
-    for (i=0 ; i < (size_t)cfgList->GetItemCount() ; i++)
+    for (i = 0 ; i < (size_t)cfgList->GetItemCount() ; i++)
     {
         pgSettingItem *item = options[cfgList->GetText(i)];
 
@@ -616,7 +616,7 @@ wxString frmMainConfig::GetHintString()
             {
                 // Double increment, because track_counts in 8.3 is worth both previous options.
                 if (StrToBool(value))
-                    autovacuum=autovacuum+2;
+                    autovacuum = autovacuum + 2;
             }
         }
     }
@@ -625,7 +625,7 @@ wxString frmMainConfig::GetHintString()
         hints.Add(HINT_AUTOVACUUM_CFG);
 
     wxString str;
-    for (i=0 ; i < hints.GetCount() ; i++)
+    for (i = 0 ; i < hints.GetCount() ; i++)
     {
         if (i)
             str.Append(wxT("\n\n"));
@@ -635,23 +635,23 @@ wxString frmMainConfig::GetHintString()
     return str;
 }
 
-void frmMainConfig::OnOpen(wxCommandEvent& event)
+void frmMainConfig::OnOpen(wxCommandEvent &event)
 {
     if (CheckChanged(true))
         return;
 
 #ifdef __WXMSW__
-    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""), 
-        _("Configuration files (*.conf)|*.conf|All files (*.*)|*.*"), wxFD_OPEN);
+    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""),
+                     _("Configuration files (*.conf)|*.conf|All files (*.*)|*.*"), wxFD_OPEN);
 #else
-    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""), 
-        _("Configuration files (*.conf)|*.conf|All files (*)|*"), wxFD_OPEN);
+    wxFileDialog dlg(this, _("Open configuration file"), lastDir, wxT(""),
+                     _("Configuration files (*.conf)|*.conf|All files (*)|*"), wxFD_OPEN);
 #endif
     if (dlg.ShowModal() == wxID_OK)
     {
         Init();
 
-        lastFilename=dlg.GetFilename();
+        lastFilename = dlg.GetFilename();
         lastDir = dlg.GetDirectory();
         lastPath = dlg.GetPath();
         OpenLastFile();
@@ -667,10 +667,10 @@ mainConfigFactory::mainConfigFactory(menuFactoryList *list, wxMenu *mnu, ctlMenu
 
 wxWindow *mainConfigFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    pgServer *server=obj->GetServer();
+    pgServer *server = obj->GetServer();
     if (server)
     {
-        frmConfig *frm= new frmMainConfig(form, server);
+        frmConfig *frm = new frmMainConfig(form, server);
         frm->Go();
         return frm;
     }
@@ -682,10 +682,10 @@ bool mainConfigFactory::CheckEnable(pgObject *obj)
 {
     if (obj)
     {
-        pgServer *server=obj->GetServer();
+        pgServer *server = obj->GetServer();
         if (server)
         {
-            pgConn *conn=server->GetConnection();
+            pgConn *conn = server->GetConnection();
             return conn && server->GetSuperUser() &&  conn->HasFeature(FEATURE_FILEREAD);
         }
     }

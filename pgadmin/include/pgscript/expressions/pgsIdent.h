@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,27 +19,27 @@ class pgsIdent : public pgsExpression
 
 protected:
 
-	wxString m_name;
+    wxString m_name;
 
 public:
 
-	pgsIdent(const wxString & name);
+    pgsIdent(const wxString &name);
 
-	virtual ~pgsIdent();
+    virtual ~pgsIdent();
 
-	/* pgsIdent(const pgsIdent & that); */
+    /* pgsIdent(const pgsIdent & that); */
 
-	/* pgsIdent & operator=(const pgsIdent & that); */
+    /* pgsIdent & operator=(const pgsIdent & that); */
 
-	virtual pgsExpression * clone() const;
-	
-	virtual wxString value() const;
+    virtual pgsExpression *clone() const;
 
-	virtual pgsOperand eval(pgsVarMap & vars) const;
-	
+    virtual wxString value() const;
+
+    virtual pgsOperand eval(pgsVarMap &vars) const;
+
 public:
-	
-	static const wxString m_now;
+
+    static const wxString m_now;
 
 };
 

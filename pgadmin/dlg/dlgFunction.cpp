@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -114,18 +114,18 @@ dlgProperty *pgFunctionFactory::CreateDialog(frmMain *frame, pgObject *node, pgO
     if (parent->GetMetaType() == PGM_TRIGGER)
         sch = parent->GetSchema();
     else
-        sch = (pgSchema*)parent;
+        sch = (pgSchema *)parent;
 
-    return new dlgFunction(this, frame, (pgFunction*)node, sch);
+    return new dlgFunction(this, frame, (pgFunction *)node, sch);
 }
 
 
 dlgFunction::dlgFunction(pgaFactory *f, frmMain *frame, pgFunction *node, pgSchema *sch)
-: dlgSecurityProperty(f, frame, node, wxT("dlgFunction"), wxT("EXECUTE"), "X"),
-  isEdbWrapped( false )
+    : dlgSecurityProperty(f, frame, node, wxT("dlgFunction"), wxT("EXECUTE"), "X"),
+      isEdbWrapped( false )
 {
-    schema=sch;
-    function=node;
+    schema = sch;
+    function = node;
     isProcedure = false;
 
     txtArguments->Disable();
@@ -150,11 +150,11 @@ dlgFunction::dlgFunction(pgaFactory *f, frmMain *frame, pgFunction *node, pgSche
 
 dlgProperty *pgProcedureFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgProcedure(this, frame, (pgFunction*)node, (pgSchema*)parent);
+    return new dlgProcedure(this, frame, (pgFunction *)node, (pgSchema *)parent);
 }
 
 dlgProcedure::dlgProcedure(pgaFactory *f, frmMain *frame, pgFunction *node, pgSchema *sch)
-: dlgFunction(f, frame, node, sch)
+    : dlgFunction(f, frame, node, sch)
 {
     isProcedure = true;
 }
@@ -238,16 +238,16 @@ int dlgFunction::Go(bool modal)
         }
     }
 
-    pgSet *lang=connection->ExecuteSet(wxT("SELECT lanname FROM pg_language"));
+    pgSet *lang = connection->ExecuteSet(wxT("SELECT lanname FROM pg_language"));
     if (lang)
     {
         while (!lang->Eof())
         {
-            wxString language=lang->GetVal(0);
+            wxString language = lang->GetVal(0);
             if (factory == &triggerFunctionFactory)
             {
                 if (language.IsSameAs(wxT("SQL"), false) ||
-                    language.IsSameAs(wxT("edbspl"), false))
+                        language.IsSameAs(wxT("edbspl"), false))
                 {
                     lang->MoveNext();
                     continue;
@@ -262,14 +262,14 @@ int dlgFunction::Go(bool modal)
     if (connection->BackendMinimumVersion(8, 3))
     {
         pgSet *set;
-        set=connection->ExecuteSet(wxT("SELECT name, vartype, min_val, max_val\n")
-                wxT("  FROM pg_settings WHERE context in ('user', 'superuser')"));
+        set = connection->ExecuteSet(wxT("SELECT name, vartype, min_val, max_val\n")
+                                     wxT("  FROM pg_settings WHERE context in ('user', 'superuser')"));
         if (set)
         {
             while (!set->Eof())
             {
                 cbVarname->Append(set->GetVal(0));
-                varInfo.Add(set->GetVal(wxT("vartype")) + wxT(" ") + 
+                varInfo.Add(set->GetVal(wxT("vartype")) + wxT(" ") +
                             set->GetVal(wxT("min_val")) + wxT(" ") +
                             set->GetVal(wxT("max_val")));
                 set->MoveNext();
@@ -301,7 +301,7 @@ int dlgFunction::Go(bool modal)
             wxArrayString argModes = function->GetArgModesArray();
             wxArrayString argDefs  = function->GetArgDefsArray();
 
-            for (unsigned int i=0; i<argTypes.Count(); i++)
+            for (unsigned int i = 0; i < argTypes.Count(); i++)
             {
                 if (argModes[i] != wxT("TABLE"))
                 {
@@ -322,8 +322,8 @@ int dlgFunction::Go(bool modal)
 
         chkSetof->SetValue(function->GetReturnAsSet());
         chkStrict->SetValue(function->GetIsStrict());
-		if (connection->BackendMinimumVersion(8, 4))
-	        chkWindow->SetValue(function->GetIsWindow());
+        if (connection->BackendMinimumVersion(8, 4))
+            chkWindow->SetValue(function->GetIsWindow());
         chkSecureDefiner->SetValue(function->GetSecureDefiner());
 
         if (function->GetLanguage().IsSameAs(wxT("C"), false))
@@ -352,7 +352,7 @@ int dlgFunction::Go(bool modal)
         size_t index;
         for (index = 0 ; index < function->GetConfigList().GetCount() ; index++)
         {
-            wxString item=function->GetConfigList().Item(index);
+            wxString item = function->GetConfigList().Item(index);
             lstVariables->AppendItem(0, item.BeforeFirst('='), item.AfterFirst('='));
         }
 
@@ -362,7 +362,7 @@ int dlgFunction::Go(bool modal)
         // Editing paramter for wrapped functions is not allowed
         // It will anyway throw an error, if we try to edit the paramter list
         if ( connection->GetIsEdb() &&
-             function->GetSource().Trim(false).StartsWith( wxT( "$__EDBwrapped__$" )))
+                function->GetSource().Trim(false).StartsWith( wxT( "$__EDBwrapped__$" )))
         {
             isEdbWrapped = true;
             cbDatatype->Disable();
@@ -382,13 +382,13 @@ int dlgFunction::Go(bool modal)
         wxString restrict;
         // create mode
         restrict = wxT("(typtype IN ('b', 'c', 'd', 'p') AND typname NOT IN ('any', 'trigger', 'language_handler'))");
-        if (!settings->GetShowSystemObjects()) 
+        if (!settings->GetShowSystemObjects())
             restrict += wxT(" AND nspname NOT LIKE 'pg_toast%' AND nspname NOT LIKE 'pg_temp%'");
 
         DatatypeReader tr(database, restrict);
         while (tr.HasMore())
         {
-            pgDatatype dt=tr.GetDatatype();
+            pgDatatype dt = tr.GetDatatype();
 
             typOids.Add(tr.GetOidStr());
             types.Add(dt.QuotedFullName());
@@ -408,12 +408,12 @@ int dlgFunction::Go(bool modal)
             lstArguments->Disable();
             cbDatatype->Disable();
             txtArgName->Disable();
-            sel=cbLanguage->FindString(wxT("c"));
+            sel = cbLanguage->FindString(wxT("c"));
         }
         else if (isProcedure)
-            sel=cbLanguage->FindString(wxT("edbspl"));
+            sel = cbLanguage->FindString(wxT("edbspl"));
         else
-            sel=cbLanguage->FindString(wxT("sql"));
+            sel = cbLanguage->FindString(wxT("sql"));
 
         if (sel >= 0)
             cbLanguage->SetSelection(sel);
@@ -430,9 +430,9 @@ int dlgFunction::Go(bool modal)
 void dlgFunction::OnChangeSize(wxSizeEvent &ev)
 {
     lstArguments->SetSize(wxDefaultCoord, wxDefaultCoord,
-        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
+                          ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
     lstVariables->SetSize(wxDefaultCoord, wxDefaultCoord,
-        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
+                          ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
     dlgSecurityProperty::OnChangeSize(ev);
 }
 #endif
@@ -440,7 +440,7 @@ void dlgFunction::OnChangeSize(wxSizeEvent &ev)
 
 void dlgFunction::OnVarnameSelChange(wxCommandEvent &ev)
 {
-    int sel=cbVarname->GuessSelection(ev);
+    int sel = cbVarname->GuessSelection(ev);
 
     SetupVarEditor(sel);
 }
@@ -450,7 +450,7 @@ void dlgFunction::SetupVarEditor(int var)
     if (var >= 0 && varInfo.Count() > 0)
     {
         wxStringTokenizer vals(varInfo.Item(var));
-        wxString typ=vals.GetNextToken();
+        wxString typ = vals.GetNextToken();
 
         if (typ == wxT("bool"))
         {
@@ -473,10 +473,10 @@ void dlgFunction::SetupVarEditor(int var)
 
 void dlgFunction::OnVarSelChange(wxListEvent &ev)
 {
-    long pos=lstVariables->GetSelection();
+    long pos = lstVariables->GetSelection();
     if (pos >= 0)
     {
-        wxString value=lstVariables->GetText(pos, 1);
+        wxString value = lstVariables->GetText(pos, 1);
         cbVarname->SetValue(lstVariables->GetText(pos));
 
 
@@ -494,7 +494,7 @@ void dlgFunction::OnVarSelChange(wxListEvent &ev)
 
 void dlgFunction::OnVarAdd(wxCommandEvent &ev)
 {
-    wxString name=cbVarname->GetValue();
+    wxString name = cbVarname->GetValue();
     wxString value;
     if (chkValue->IsShown())
         value = chkValue->GetValue() ? wxT("on") : wxT("off");
@@ -506,7 +506,7 @@ void dlgFunction::OnVarAdd(wxCommandEvent &ev)
 
     if (!name.IsEmpty())
     {
-        long pos=lstVariables->FindItem(-1, name);
+        long pos = lstVariables->FindItem(-1, name);
         if (pos < 0)
         {
             pos = lstVariables->GetItemCount();
@@ -529,25 +529,25 @@ void dlgFunction::OnVarRemove(wxCommandEvent &ev)
 
 pgObject *dlgFunction::CreateObject(pgCollection *collection)
 {
-    wxString sql=wxT(" WHERE proname=") + qtDbString(GetName()) +
-        wxT("\n   AND pronamespace=") + schema->GetOidStr();
+    wxString sql = wxT(" WHERE proname=") + qtDbString(GetName()) +
+                   wxT("\n   AND pronamespace=") + schema->GetOidStr();
 
     long argCount;
-    for (argCount=0 ; argCount < (int)argOids.GetCount() ; argCount++)
+    for (argCount = 0 ; argCount < (int)argOids.GetCount() ; argCount++)
         sql += wxT("\n   AND proargtypes[") + NumToStr(argCount) + wxT("] = ") + argOids.Item(argCount);
 
     sql += wxT("\n   AND proargtypes[") + NumToStr(argCount) + wxT("] = 0\n");
 
-    pgObject *obj=functionFactory.AppendFunctions(collection, collection->GetSchema(), 0, sql);
+    pgObject *obj = functionFactory.AppendFunctions(collection, collection->GetSchema(), 0, sql);
     return obj;
 }
 
 
 void dlgFunction::CheckChange()
 {
-    wxString name=GetName();
-    bool isC=cbLanguage->GetValue().IsSameAs(wxT("C"), false);
-    bool enable=true, didChange=true;
+    wxString name = GetName();
+    bool isC = cbLanguage->GetValue().IsSameAs(wxT("C"), false);
+    bool enable = true, didChange = true;
 
     CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
     if (!isProcedure)
@@ -558,7 +558,7 @@ void dlgFunction::CheckChange()
 
     if (isC)
     {
-        wxString objfile=txtObjectFile->GetValue();
+        wxString objfile = txtObjectFile->GetValue();
         CheckValid(enable, !objfile.IsEmpty() && objfile != TXTOBJ_LIB, _("Please specify object library."));
     }
     else
@@ -578,23 +578,23 @@ void dlgFunction::CheckChange()
 
 bool dlgFunction::IsUpToDate()
 {
-	if (function && !function->IsUpToDate())
-		return false;
-	else
-		return true;
+    if (function && !function->IsUpToDate())
+        return false;
+    else
+        return true;
 }
-  
+
 void dlgFunction::OnApply(wxCommandEvent &ev)
 {
     dlgProperty::OnApply(ev);
 
     wxString sql = wxT("SELECT xmin FROM pg_proc WHERE oid = ") + function->GetOidStr();
-	function->iSetXid(StrToOid(connection->ExecuteScalar(sql)));
+    function->iSetXid(StrToOid(connection->ExecuteScalar(sql)));
 }
 
 void dlgFunction::OnSelChangeLanguage(wxCommandEvent &ev)
 {
-    bool isC=(cbLanguage->GetValue().IsSameAs(wxT("C"), false));
+    bool isC = (cbLanguage->GetValue().IsSameAs(wxT("C"), false));
 
     stObjectFile->Show(isC);
     txtObjectFile->Show(isC);
@@ -610,7 +610,7 @@ void dlgFunction::OnSelChangeLanguage(wxCommandEvent &ev)
 
 void dlgFunction::OnSelChangeArg(wxListEvent &ev)
 {
-    int row=lstArguments->GetSelection();
+    int row = lstArguments->GetSelection();
     if (row >= 0)
     {
         cbDatatype->SetValue(lstArguments->GetText(row, 0));
@@ -663,11 +663,11 @@ void dlgFunction::OnSelChangeType(wxCommandEvent &ev)
 
 void dlgFunction::OnChangeArgName(wxCommandEvent &ev)
 {
-    int argNameRow=-1;
+    int argNameRow = -1;
     if (!txtArgName->GetValue().IsEmpty())
         argNameRow = lstArguments->FindItem(-1, txtArgName->GetValue());
 
-    int pos=lstArguments->GetSelection();
+    int pos = lstArguments->GetSelection();
 
     bool typeValid = (function != 0 || cbDatatype->GetGuessedSelection() >= 0);
 
@@ -702,14 +702,14 @@ void dlgFunction::OnChangeArgMode(wxCommandEvent &ev)
 
 void dlgFunction::OnChangeArg(wxCommandEvent &ev)
 {
-    if (GetSelectedDirection() == wxT("VARIADIC") && 
-        !cbDatatype->GetValue().EndsWith(wxT("[]")))
+    if (GetSelectedDirection() == wxT("VARIADIC") &&
+            !cbDatatype->GetValue().EndsWith(wxT("[]")))
     {
         wxLogError(_("Only array types can be VARIADIC."));
         return;
     }
 
-    int row=lstArguments->GetSelection();
+    int row = lstArguments->GetSelection();
 
     if (row >= 0)
     {
@@ -730,8 +730,8 @@ void dlgFunction::OnChangeArg(wxCommandEvent &ev)
 
 void dlgFunction::OnAddArg(wxCommandEvent &ev)
 {
-    if (GetSelectedDirection() == wxT("VARIADIC") && 
-        !cbDatatype->GetValue().EndsWith(wxT("[]")))
+    if (GetSelectedDirection() == wxT("VARIADIC") &&
+            !cbDatatype->GetValue().EndsWith(wxT("[]")))
     {
         wxLogError(_("Only array types can be VARIADIC."));
         return;
@@ -749,7 +749,7 @@ void dlgFunction::OnAddArg(wxCommandEvent &ev)
 
 void dlgFunction::OnRemoveArg(wxCommandEvent &ev)
 {
-    unsigned int sel=lstArguments->GetSelection();
+    unsigned int sel = lstArguments->GetSelection();
     argOids.RemoveAt(sel);
     lstArguments->DeleteItem(sel);
     btnRemove->Disable();
@@ -781,8 +781,8 @@ wxString dlgFunction::GetArgs(const bool withNames, const bool inOnly)
 {
     wxString args;
     bool isEdbspl = cbLanguage->GetValue() == wxT("edbspl");
- 
-    for (int i=0; i < lstArguments->GetItemCount(); i++)
+
+    for (int i = 0; i < lstArguments->GetItemCount(); i++)
     {
         if (!isEdbspl && inOnly && lstArguments->GetText(i, 1) == wxT("OUT"))
             continue;
@@ -801,7 +801,7 @@ wxString dlgFunction::GetArgs(const bool withNames, const bool inOnly)
                 if (lstArguments->GetText(i, 1) != wxEmptyString)
                     args += lstArguments->GetText(i, 1) + wxT(" ");
             }
-                
+
             args += lstArguments->GetText(i, 0);
         }
         else
@@ -819,7 +819,7 @@ wxString dlgFunction::GetArgs(const bool withNames, const bool inOnly)
             args += lstArguments->GetText(i, 0);
         }
         if (isBackendMinVer84 && !lstArguments->GetText(i, 3).IsEmpty())
-           args += wxT(" DEFAULT ") + lstArguments->GetText(i, 3);
+            args += wxT(" DEFAULT ") + lstArguments->GetText(i, 3);
     }
 
     return args;
@@ -829,29 +829,29 @@ wxString dlgFunction::GetArgs(const bool withNames, const bool inOnly)
 wxString dlgFunction::GetSql()
 {
     wxString sql;
-    wxString name=GetName();
+    wxString name = GetName();
     wxString objType;
     if (isProcedure)
         objType = wxT("PROCEDURE ");
     else
         objType = wxT("FUNCTION ");
 
-    bool isC=cbLanguage->GetValue().IsSameAs(wxT("C"), false);
+    bool isC = cbLanguage->GetValue().IsSameAs(wxT("C"), false);
     bool didChange = !function
-		|| cbLanguage->GetValue() != function->GetLanguage()
-        || cbVolatility->GetValue() != function->GetVolatility()
-        || chkSecureDefiner->GetValue() != function->GetSecureDefiner()
-        || chkStrict->GetValue() != function->GetIsStrict()
-        || cbOwner->GetValue() != function->GetOwner()
-        || GetArgs() != function->GetArgListWithNames()
-        || (isC && (txtObjectFile->GetValue() != function->GetBin() || txtLinkSymbol->GetValue() != function->GetSource()))
-        || (!isC && txtSqlBox->GetText() != function->GetSource());
+                     || cbLanguage->GetValue() != function->GetLanguage()
+                     || cbVolatility->GetValue() != function->GetVolatility()
+                     || chkSecureDefiner->GetValue() != function->GetSecureDefiner()
+                     || chkStrict->GetValue() != function->GetIsStrict()
+                     || cbOwner->GetValue() != function->GetOwner()
+                     || GetArgs() != function->GetArgListWithNames()
+                     || (isC && (txtObjectFile->GetValue() != function->GetBin() || txtLinkSymbol->GetValue() != function->GetSource()))
+                     || (!isC && txtSqlBox->GetText() != function->GetSource());
 
     if (connection->BackendMinimumVersion(8, 3))
     {
         didChange = (didChange ||
-            txtCost->GetValue() != NumToStr(function->GetCost()) ||
-            (chkSetof->GetValue() && txtRows->GetValue() != NumToStr(function->GetRows())));
+                     txtCost->GetValue() != NumToStr(function->GetCost()) ||
+                     (chkSetof->GetValue() && txtRows->GetValue() != NumToStr(function->GetRows())));
     }
 
     if (function)
@@ -860,14 +860,14 @@ wxString dlgFunction::GetSql()
         if (name != function->GetName())
         {
             if (!isProcedure)
-                sql = wxT("ALTER FUNCTION ") + function->GetQuotedFullIdentifier() 
-                                             + wxT("(") + function->GetArgSigList() + wxT(")")
-                                             + wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
+                sql = wxT("ALTER FUNCTION ") + function->GetQuotedFullIdentifier()
+                      + wxT("(") + function->GetArgSigList() + wxT(")")
+                      + wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
             else
-                sql = wxT("ALTER PROCEDURE ") + function->GetQuotedFullIdentifier() 
-                    + wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
+                sql = wxT("ALTER PROCEDURE ") + function->GetQuotedFullIdentifier()
+                      + wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
         }
- 
+
         if (didChange)
             sql += wxT("CREATE OR REPLACE ") + objType;
     }
@@ -885,8 +885,8 @@ wxString dlgFunction::GetSql()
         }
         else
         {
-            sql += schema->GetQuotedPrefix() + qtIdent(GetName()) 
-                + wxT("(") + GetArgs() + wxT(")");
+            sql += schema->GetQuotedPrefix() + qtIdent(GetName())
+                   + wxT("(") + GetArgs() + wxT(")");
         }
 
         if (!isProcedure)
@@ -950,20 +950,20 @@ wxString dlgFunction::GetSql()
         }
     }
 
-    name = schema->GetQuotedPrefix() + qtIdent(name) 
-         + wxT("(") + GetArgs(false, true) + wxT(")");
+    name = schema->GetQuotedPrefix() + qtIdent(name)
+           + wxT("(") + GetArgs(false, true) + wxT(")");
 
     if (function)
     {
         if (cbOwner->GetValue() != function->GetOwner())
             sql += wxT("ALTER FUNCTION ") + name
-                +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue())
-                + wxT(";\n");    
+                   +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue())
+                   + wxT(";\n");
     }
     else
     {
         if (cbOwner->GetCurrentSelection() > 0)
-            AppendOwnerNew(sql,wxT("FUNCTION ") + name);
+            AppendOwnerNew(sql, wxT("FUNCTION ") + name);
     }
 
     if (isProcedure)
@@ -979,51 +979,51 @@ wxString dlgFunction::GetSql()
                 vars.Add(function->GetConfigList().Item(index));
         }
 
-        int cnt=lstVariables->GetItemCount();
+        int cnt = lstVariables->GetItemCount();
         int pos;
 
         // check for changed or added vars
-        for (pos=0 ; pos < cnt ; pos++)
+        for (pos = 0 ; pos < cnt ; pos++)
         {
-            wxString newVar=lstVariables->GetText(pos);
-            wxString newVal=lstVariables->GetText(pos, 1);
+            wxString newVar = lstVariables->GetText(pos);
+            wxString newVal = lstVariables->GetText(pos, 1);
 
             wxString oldVal;
 
-            for (index=0 ; index < vars.GetCount() ; index++)
+            for (index = 0 ; index < vars.GetCount() ; index++)
             {
-                wxString var=vars.Item(index);
+                wxString var = vars.Item(index);
                 if (var.BeforeFirst('=').IsSameAs(newVar, false))
                 {
-                    oldVal = var.Mid(newVar.Length()+1);
+                    oldVal = var.Mid(newVar.Length() + 1);
                     vars.RemoveAt(index);
                     break;
                 }
             }
-			
+
             // Reset the vars if they've changed, or the function definition has
             // changed, which will remove them all :-(
-            if ((oldVal != newVal) || didChange)  
+            if ((oldVal != newVal) || didChange)
             {
                 if (newVar != wxT("search_path") && newVar != wxT("temp_tablespaces"))
                     sql += wxT("ALTER FUNCTION ") + name
-                        +  wxT(" SET ") + newVar
-                        +  wxT("='") + newVal
-                        +  wxT("';\n");
+                           +  wxT(" SET ") + newVar
+                           +  wxT("='") + newVal
+                           +  wxT("';\n");
                 else
                     sql += wxT("ALTER FUNCTION ") + name
-                        +  wxT(" SET ") + newVar
-                        +  wxT("=") + newVal
-                        +  wxT(";\n");
+                           +  wxT(" SET ") + newVar
+                           +  wxT("=") + newVal
+                           +  wxT(";\n");
             }
         }
-        
+
         // check for removed vars
-        for (pos=0 ; pos < (int)vars.GetCount() ; pos++)
+        for (pos = 0 ; pos < (int)vars.GetCount() ; pos++)
         {
             sql += wxT("ALTER FUNCTION ") + name
-                +  wxT(" RESET ") + vars.Item(pos).BeforeFirst('=')
-                + wxT(";\n");
+                   +  wxT(" RESET ") + vars.Item(pos).BeforeFirst('=')
+                   + wxT(";\n");
         }
 
         sql += GetGrant(wxT("X"), wxT("FUNCTION ") + name);

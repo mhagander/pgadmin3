@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,7 +21,7 @@
 
 gqbCollection::gqbCollection(gqbCollectionBase *collectionBase)
 {
-    collection=collectionBase;
+    collection = collectionBase;
 }
 
 
@@ -44,12 +44,12 @@ void gqbCollection::removeItem(gqbObject *item)
 }
 
 
-gqbIteratorBase* gqbCollection::createIterator()
+gqbIteratorBase *gqbCollection::createIterator()
 {
     return collection->createIterator();
 }
 
-gqbIteratorBase* gqbCollection::createDownIterator()
+gqbIteratorBase *gqbCollection::createDownIterator()
 {
     return collection->createDownIterator();
 }
@@ -67,7 +67,7 @@ bool gqbCollection::existsObject(gqbObject *item)
 }
 
 
-gqbObject* gqbCollection::getItemAt(int index)
+gqbObject *gqbCollection::getItemAt(int index)
 {
     return collection->getItemAt(index);
 }
@@ -94,5 +94,5 @@ int gqbCollection::getIndex(gqbObject *item)
 
 void gqbCollection::insertAtIndex(gqbObject *item, int index)
 {
-    collection->insertAtIndex(item,index);
+    collection->insertAtIndex(item, index);
 }

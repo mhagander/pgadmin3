@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,7 +25,7 @@ BEGIN_EVENT_TABLE(ctlTree, wxTreeCtrl)
 END_EVENT_TABLE()
 
 
-wxTreeItemId ctlTree::FindItem(const wxTreeItemId& idParent, const wxString& prefixOrig)
+wxTreeItemId ctlTree::FindItem(const wxTreeItemId &idParent, const wxString &prefixOrig)
 {
     // match is case insensitive as this is more convenient to the user: having
     // to press Shift-letter to go to the item starting with a capital letter
@@ -45,37 +45,39 @@ wxTreeItemId ctlTree::FindItem(const wxTreeItemId& idParent, const wxString& pre
             id = GetFirstChild(id, cookie);
         else
         {
-             // Try a sibling of this or ancestor instead
-             wxTreeItemId p = id;
-             wxTreeItemId toFind;
-             do
-             {
-                  toFind = GetNextSibling(p);
-                  p = GetItemParent(p);
-             } while (p.IsOk() && !toFind.IsOk());
-             id = toFind;
+            // Try a sibling of this or ancestor instead
+            wxTreeItemId p = id;
+            wxTreeItemId toFind;
+            do
+            {
+                toFind = GetNextSibling(p);
+                p = GetItemParent(p);
+            }
+            while (p.IsOk() && !toFind.IsOk());
+            id = toFind;
         }
     }
 
     // look for the item starting with the given prefix after it
     while ( id.IsOk() &&
             ( ( GetItemText(id) == wxT("Dummy") && !GetItemData(id) ) ||
-             !GetItemText(id).Lower().StartsWith(prefix) ))
+              !GetItemText(id).Lower().StartsWith(prefix) ))
     {
         wxCookieType cookie;
         if ( HasChildren(id) )
             id = GetFirstChild(id, cookie);
         else
         {
-             // Try a sibling of this or ancestor instead
-             wxTreeItemId p = id;
-             wxTreeItemId toFind;
-             do
-             {
-                  toFind = GetNextSibling(p);
-                  p = GetItemParent(p);
-             } while (p.IsOk() && !toFind.IsOk());
-             id = toFind;
+            // Try a sibling of this or ancestor instead
+            wxTreeItemId p = id;
+            wxTreeItemId toFind;
+            do
+            {
+                toFind = GetNextSibling(p);
+                p = GetItemParent(p);
+            }
+            while (p.IsOk() && !toFind.IsOk());
+            id = toFind;
         }
     }
 
@@ -92,15 +94,16 @@ wxTreeItemId ctlTree::FindItem(const wxTreeItemId& idParent, const wxString& pre
                 id = GetFirstChild(id, cookie);
             else
             {
-                 // Try a sibling of this or ancestor instead
-                 wxTreeItemId p = id;
-                 wxTreeItemId toFind;
-                 do
-                 {
-                      toFind = GetNextSibling(p);
-                      p = GetItemParent(p);
-                 } while (p.IsOk() && !toFind.IsOk());
-                 id = toFind;
+                // Try a sibling of this or ancestor instead
+                wxTreeItemId p = id;
+                wxTreeItemId toFind;
+                do
+                {
+                    toFind = GetNextSibling(p);
+                    p = GetItemParent(p);
+                }
+                while (p.IsOk() && !toFind.IsOk());
+                id = toFind;
             }
         }
 
@@ -114,15 +117,16 @@ wxTreeItemId ctlTree::FindItem(const wxTreeItemId& idParent, const wxString& pre
                 id = GetFirstChild(id, cookie);
             else
             {
-                 // Try a sibling of this or ancestor instead
-                 wxTreeItemId p = id;
-                 wxTreeItemId toFind;
-                 do
-                 {
-                      toFind = GetNextSibling(p);
-                      p = GetItemParent(p);
-                 } while (p.IsOk() && !toFind.IsOk());
-                 id = toFind;
+                // Try a sibling of this or ancestor instead
+                wxTreeItemId p = id;
+                wxTreeItemId toFind;
+                do
+                {
+                    toFind = GetNextSibling(p);
+                    p = GetItemParent(p);
+                }
+                while (p.IsOk() && !toFind.IsOk());
+                id = toFind;
             }
         }
         // If we haven't found the item, id.IsOk() will be false, as per
@@ -132,13 +136,13 @@ wxTreeItemId ctlTree::FindItem(const wxTreeItemId& idParent, const wxString& pre
     return id;
 }
 
-void ctlTree::OnChar(wxKeyEvent& event)
+void ctlTree::OnChar(wxKeyEvent &event)
 {
     int keyCode = event.GetKeyCode();
     if ( !event.HasModifiers() &&
-         ((keyCode >= '0' && keyCode <= '9') ||
-          (keyCode >= 'a' && keyCode <= 'z') ||
-          (keyCode >= 'A' && keyCode <= 'Z')))
+            ((keyCode >= '0' && keyCode <= '9') ||
+             (keyCode >= 'a' && keyCode <= 'z') ||
+             (keyCode >= 'A' && keyCode <= 'Z')))
     {
         wxTreeItemId currItem = GetSelection();
 
@@ -172,8 +176,8 @@ void ctlTree::OnChar(wxKeyEvent& event)
     }
 }
 
-ctlTree::ctlTree(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
-: wxTreeCtrl(parent, id, pos, size, style), m_findTimer(NULL)
+ctlTree::ctlTree(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
+    : wxTreeCtrl(parent, id, pos, size, style), m_findTimer(NULL)
 {
 }
 
@@ -188,7 +192,7 @@ ctlTree::~ctlTree()
 void ctlTree::RemoveDummyChild(pgObject *obj)
 {
     wxCookieType cookie;
-    wxTreeItemId childItem=GetFirstChild(obj->GetId(), cookie);
+    wxTreeItemId childItem = GetFirstChild(obj->GetId(), cookie);
     if (childItem && !GetItemData(childItem))
     {
         // The child was a dummy item, which will be replaced by the following ShowTreeDetail by true items
@@ -200,45 +204,45 @@ void ctlTree::RemoveDummyChild(pgObject *obj)
 pgObject *ctlTree::GetObject(wxTreeItemId id)
 {
     if (id)
-        return (pgObject*)GetItemData(id);
+        return (pgObject *)GetItemData(id);
     return 0;
 }
 
 
 pgCollection *ctlTree::GetParentCollection(wxTreeItemId id)
 {
-    pgCollection *coll=(pgCollection*)GetParentObject(id);
+    pgCollection *coll = (pgCollection *)GetParentObject(id);
     if (coll && coll->IsCollection())
         return coll;
     return 0;
 }
 
 
-void ctlTree::SetItemImage(const wxTreeItemId& item, int image, wxTreeItemIcon which)
+void ctlTree::SetItemImage(const wxTreeItemId &item, int image, wxTreeItemIcon which)
 {
     wxTreeCtrl::SetItemImage(item, image, which);
-    
+
     wxTreeItemData *data = GetItemData(item);
 
     // Set the item colour
     if (data)
     {
-       if (((pgObject *)data)->GetMetaType() == PGM_SERVER)
-       {
-           if (!((pgServer *)data)->GetColour().IsEmpty())
-               SetItemBackgroundColour(item, wxColour(((pgServer *)data)->GetColour()));
-       }
-       else if (((pgObject *)data)->GetServer())
-       {
-           if (!((pgObject *)data)->GetServer()->GetColour().IsEmpty())
-               SetItemBackgroundColour(item, wxColour(((pgObject *)data)->GetServer()->GetColour()));
-       }
+        if (((pgObject *)data)->GetMetaType() == PGM_SERVER)
+        {
+            if (!((pgServer *)data)->GetColour().IsEmpty())
+                SetItemBackgroundColour(item, wxColour(((pgServer *)data)->GetColour()));
+        }
+        else if (((pgObject *)data)->GetServer())
+        {
+            if (!((pgObject *)data)->GetServer()->GetColour().IsEmpty())
+                SetItemBackgroundColour(item, wxColour(((pgObject *)data)->GetServer()->GetColour()));
+        }
     }
 }
 
-wxTreeItemId ctlTree::AppendItem(const wxTreeItemId& parent, const wxString& text, int image, int selImage, wxTreeItemData* data)
+wxTreeItemId ctlTree::AppendItem(const wxTreeItemId &parent, const wxString &text, int image, int selImage, wxTreeItemData *data)
 {
-    wxTreeItemId itm = wxTreeCtrl::AppendItem(parent, text, image, selImage, data); 
+    wxTreeItemId itm = wxTreeCtrl::AppendItem(parent, text, image, selImage, data);
 
     // Set the item colour
     if (data)
@@ -279,7 +283,7 @@ wxTreeItemId ctlTree::AppendObject(pgObject *parent, pgObject *object)
 
 pgCollection *ctlTree::AppendCollection(pgObject *parent, pgaFactory &factory)
 {
-    pgCollection *collection=factory.CreateCollection(parent);
+    pgCollection *collection = factory.CreateCollection(parent);
     AppendObject(parent, collection);
     return collection;
 }
@@ -291,7 +295,7 @@ pgObject *ctlTree::FindObject(pgaFactory &factory, wxTreeItemId parent)
     wxTreeItemId item = GetFirstChild(parent, cookie);
     while (item)
     {
-        pgObject *obj=(pgObject*)GetItemData(item);
+        pgObject *obj = (pgObject *)GetItemData(item);
         if (obj && obj->IsCreatedBy(factory))
             return obj;
         item = GetNextChild(parent, cookie);
@@ -302,11 +306,11 @@ pgObject *ctlTree::FindObject(pgaFactory &factory, wxTreeItemId parent)
 
 pgCollection *ctlTree::FindCollection(pgaFactory &factory, wxTreeItemId parent)
 {
-    pgaFactory *cf=factory.GetCollectionFactory();
+    pgaFactory *cf = factory.GetCollectionFactory();
     if (!cf)
         return 0;
 
-    pgCollection *collection=(pgCollection*)FindObject(*cf, parent);
+    pgCollection *collection = (pgCollection *)FindObject(*cf, parent);
 
     if (!collection || !collection->IsCollection())
         return 0;
@@ -318,14 +322,14 @@ pgCollection *ctlTree::FindCollection(pgaFactory &factory, wxTreeItemId parent)
 
 treeObjectIterator::treeObjectIterator(ctlTree *brow, pgObject *obj)
 {
-    browser=brow;
-    object=obj;
+    browser = brow;
+    object = obj;
 }
 
 
 pgObject *treeObjectIterator::GetNextObject()
 {
-    if (!object ||!browser)
+    if (!object || !browser)
         return 0;
 
     if (!lastItem)
@@ -336,7 +340,7 @@ pgObject *treeObjectIterator::GetNextObject()
     if (lastItem)
         return browser->GetObject(lastItem);
     else
-        object=0;
+        object = 0;
 
     return 0;
 }

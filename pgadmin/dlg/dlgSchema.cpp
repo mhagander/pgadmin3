@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -26,13 +26,13 @@ END_EVENT_TABLE();
 
 dlgProperty *pgSchemaBaseFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgSchema(this, frame, (pgSchema*)node);
+    return new dlgSchema(this, frame, (pgSchema *)node);
 }
 
 dlgSchema::dlgSchema(pgaFactory *f, frmMain *frame, pgSchema *node)
-: dlgDefaultSecurityProperty(f, frame, node, wxT("dlgSchema"), wxT("USAGE,CREATE"), "UC")
+    : dlgDefaultSecurityProperty(f, frame, node, wxT("dlgSchema"), wxT("USAGE,CREATE"), "UC")
 {
-    schema=node;
+    schema = node;
 }
 
 
@@ -81,9 +81,9 @@ int dlgSchema::Go(bool modal)
 
 pgObject *dlgSchema::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgObject *obj=schemaFactory.CreateObjects(collection, 0, wxT(" WHERE nspname=") + qtDbString(name) + wxT("\n"));
+    pgObject *obj = schemaFactory.CreateObjects(collection, 0, wxT(" WHERE nspname=") + qtDbString(name) + wxT("\n"));
     return obj;
 }
 
@@ -102,16 +102,16 @@ void dlgSchema::OnChangeSize(wxSizeEvent &ev)
 
 void dlgSchema::CheckChange()
 {
-    wxString name=GetName();
+    wxString name = GetName();
     if (schema)
     {
         EnableOK(name != schema->GetName() || txtComment->GetValue() != schema->GetComment()
-            || cbOwner->GetValue() != schema->GetOwner());
+                 || cbOwner->GetValue() != schema->GetOwner());
     }
     else
     {
 
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
 
         EnableOK(enable);

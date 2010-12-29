@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,7 +23,10 @@ class dlgRepSubscription : public dlgRepProperty
 public:
     dlgRepSubscription(pgaFactory *factory, frmMain *frame, slSubscription *sub, slSet *s);
     int Go(bool modal);
-    wxString GetHelpPage() const { return wxT("slony-set#subscription"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("slony-set#subscription");
+    }
 
     void CheckChange();
     wxString GetSql();

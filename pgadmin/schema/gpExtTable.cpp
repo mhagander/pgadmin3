@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -20,8 +20,8 @@
 #include "frm/frmHint.h"
 
 
-gpExtTable::gpExtTable(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, extTableFactory, newName)
+gpExtTable::gpExtTable(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, extTableFactory, newName)
 {
 }
 
@@ -32,7 +32,7 @@ gpExtTable::~gpExtTable()
 wxString gpExtTable::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -45,11 +45,11 @@ wxString gpExtTable::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop external table \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop external table \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop external table cascaded?");
@@ -101,7 +101,7 @@ bool gpExtTable::IsUpToDate()
 
 wxMenu *gpExtTable::GetNewMenu()
 {
-    wxMenu *menu=pgObject::GetNewMenu();
+    wxMenu *menu = pgObject::GetNewMenu();
     if (schema->GetCreatePrivilege())
         schemaFactory.AppendMenu(menu);
 
@@ -126,72 +126,72 @@ wxString gpExtTable::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- External Table: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP EXTERNAL TABLE ") + GetQuotedFullIdentifier() + wxT(";\n\n");
-            /* Now get required information from pg_exttable */
-    if (GetDatabase()->BackendMinimumVersion(8, 2, 5))
-    {
-        q += wxT(
-            "SELECT x.location, x.fmttype, x.fmtopts, x.command, ")
-            wxT("x.rejectlimit, x.rejectlimittype,")
-            wxT("(SELECT relname ")
-            wxT("FROM pg_class ")
-            wxT("WHERE Oid=x.fmterrtbl) AS errtblname, ")
-            wxT("pg_catalog.pg_encoding_to_char(x.encoding) ")
-            wxT("FROM pg_catalog.pg_exttable x, pg_catalog.pg_class c ")
-            wxT("WHERE x.reloid = c.oid AND c.oid = ") + GetOidStr();
-    }
-    else
-    {
-        /* not SREH and encoding colums yet */
-        q += wxT(
-            "SELECT x.location, x.fmttype, x.fmtopts, x.command, ")
-            wxT("-1 as rejectlimit, null as rejectlimittype,")
-            wxT("null as errtblname, ")
-            wxT("null as encoding ")
-            wxT("FROM pg_catalog.pg_exttable x, pg_catalog.pg_class c ")
-            wxT("WHERE x.reloid = c.oid AND c.oid = ") + GetOidStr();
-             
-    }
+              + wxT("-- DROP EXTERNAL TABLE ") + GetQuotedFullIdentifier() + wxT(";\n\n");
+        /* Now get required information from pg_exttable */
+        if (GetDatabase()->BackendMinimumVersion(8, 2, 5))
+        {
+            q += wxT(
+                     "SELECT x.location, x.fmttype, x.fmtopts, x.command, ")
+                 wxT("x.rejectlimit, x.rejectlimittype,")
+                 wxT("(SELECT relname ")
+                 wxT("FROM pg_class ")
+                 wxT("WHERE Oid=x.fmterrtbl) AS errtblname, ")
+                 wxT("pg_catalog.pg_encoding_to_char(x.encoding) ")
+                 wxT("FROM pg_catalog.pg_exttable x, pg_catalog.pg_class c ")
+                 wxT("WHERE x.reloid = c.oid AND c.oid = ") + GetOidStr();
+        }
+        else
+        {
+            /* not SREH and encoding colums yet */
+            q += wxT(
+                     "SELECT x.location, x.fmttype, x.fmtopts, x.command, ")
+                 wxT("-1 as rejectlimit, null as rejectlimittype,")
+                 wxT("null as errtblname, ")
+                 wxT("null as encoding ")
+                 wxT("FROM pg_catalog.pg_exttable x, pg_catalog.pg_class c ")
+                 wxT("WHERE x.reloid = c.oid AND c.oid = ") + GetOidStr();
 
-    pgSet *extTable= GetDatabase()->ExecuteSet(q);
+        }
 
-    wxString locations = extTable->GetVal(0);
-    wxString fmttype = extTable->GetVal(1);
-    wxString fmtopts = extTable->GetVal(2);
-    wxString command = extTable->GetVal(3);
-    wxString rejlim = extTable->GetVal(4);
-    wxString rejlimtype = extTable->GetVal(5);
-    wxString errtblname = extTable->GetVal(6);
-    wxString extencoding = extTable->GetVal(7);
+        pgSet *extTable = GetDatabase()->ExecuteSet(q);
 
- 
-    if ((command.Length() > 0) ||
-        (locations.Mid(1,4) ==  wxT("http")))
-    {
-        sql += wxT("CREATE EXTERNAL WEB TABLE ") +
-             GetQuotedFullIdentifier() + wxT("\n(\n");
-    }
-    else
-    {
-        sql += wxT("CREATE EXTERNAL TABLE ") +
-             GetQuotedFullIdentifier() + wxT("\n(\n");
-    }
+        wxString locations = extTable->GetVal(0);
+        wxString fmttype = extTable->GetVal(1);
+        wxString fmtopts = extTable->GetVal(2);
+        wxString command = extTable->GetVal(3);
+        wxString rejlim = extTable->GetVal(4);
+        wxString rejlimtype = extTable->GetVal(5);
+        wxString errtblname = extTable->GetVal(6);
+        wxString extencoding = extTable->GetVal(7);
+
+
+        if ((command.Length() > 0) ||
+                (locations.Mid(1, 4) ==  wxT("http")))
+        {
+            sql += wxT("CREATE EXTERNAL WEB TABLE ") +
+                   GetQuotedFullIdentifier() + wxT("\n(\n");
+        }
+        else
+        {
+            sql += wxT("CREATE EXTERNAL TABLE ") +
+                   GetQuotedFullIdentifier() + wxT("\n(\n");
+        }
 
         // Get the columns
-        pgCollection *columns=browser->FindCollection(columnFactory, GetId());
+        pgCollection *columns = browser->FindCollection(columnFactory, GetId());
         if (columns)
         {
             columns->ShowTreeDetail(browser);
             treeObjectIterator colIt1(browser, columns);
             treeObjectIterator colIt2(browser, columns);
 
-            
-            int lastRealCol=0;
-            int currentCol=0;
+
+            int lastRealCol = 0;
+            int currentCol = 0;
             pgColumn *column;
 
             // Iterate the columns to find the last 'real' one
-            while ((column = (pgColumn*)colIt1.GetNextObject()) != 0)
+            while ((column = (pgColumn *)colIt1.GetNextObject()) != 0)
             {
                 currentCol++;
 
@@ -200,8 +200,8 @@ wxString gpExtTable::GetSql(ctlTree *browser)
             }
 
             // Now build the actual column list
-            int colCount=0;
-            while ((column = (pgColumn*)colIt2.GetNextObject()) != 0)
+            int colCount = 0;
+            while ((column = (pgColumn *)colIt2.GetNextObject()) != 0)
             {
                 column->ShowTreeDetail(browser);
                 if (column->GetColNumber() > 0)
@@ -217,15 +217,15 @@ wxString gpExtTable::GetSql(ctlTree *browser)
                         sql += wxT("\n");
                     }
 
-                   /* if (column->GetInheritedCount() > 0)
-                    {
-                        if (!column->GetIsLocal())
-                            sql += wxString::Format(wxT("-- %s "), _("Inherited"))
-                                + wxT("from table ") +  column->GetInheritedTableName() + wxT(":");
-                    }*/
+                    /* if (column->GetInheritedCount() > 0)
+                     {
+                         if (!column->GetIsLocal())
+                             sql += wxString::Format(wxT("-- %s "), _("Inherited"))
+                                 + wxT("from table ") +  column->GetInheritedTableName() + wxT(":");
+                     }*/
 
                     sql += wxT("  ") + column->GetQuotedIdentifier() + wxT(" ")
-                        + column->GetDefinition();
+                           + column->GetDefinition();
 
                     prevComment = column->GetComment();
 
@@ -244,135 +244,135 @@ wxString gpExtTable::GetSql(ctlTree *browser)
 
         sql += wxT("\n)\n");
 
-    if(command.Length() > 0)
-    {
-
-        wxString on_clause = locations;
-
-        /* remove curly braces */
-        on_clause = locations.Mid(1,locations.Length()-2);
-    
-
-        /* add EXECUTE clause */
-        sql += wxT(" EXECUTE E'");
-        for (size_t i = 0; i < command.Length(); i++)
+        if(command.Length() > 0)
         {
-            if (command[i] == wxT('\\')) sql += wxT('\\');
-            if (command[i] == wxT('\'')) sql += wxT('\'');
-            sql +=	command[i];
-        }
-        sql += wxT("' ");
-         
- 
-        /* add ON clause */
-        wxString temp;
-    
-        if(on_clause.StartsWith(wxT("HOST:"),&temp))
-        {
-            sql += wxT("ON HOST '") + temp + wxT("'");
-        }
-        else if(on_clause.StartsWith(wxT("PER_HOST"),&temp))
-            sql += wxT("ON HOST ");
-        else if(on_clause.StartsWith(wxT("MASTER_ONLY"),&temp))
-            sql += wxT("ON MASTER ");
-        else if(on_clause.StartsWith(wxT("SEGMENT_ID:"),&temp))
-            sql += wxT("ON SEGMENT ") + temp + wxT(" ");
-        else if(on_clause.StartsWith(wxT("TOTAL_SEGS:"),&temp))
-            sql += wxT("ON  ") + temp + wxT(" ");
-        else if(on_clause.StartsWith(wxT("ALL_SEGMENTS"),&temp))
-            sql += wxT("ON ALL ");
-        else
-            sql += on_clause;
 
-        sql += wxT("\n ");
+            wxString on_clause = locations;
 
-    }
-    else
-    {
- 
-        /* add LOCATION clause */
- 
-        locations = locations.Mid(1,locations.Length()-2);
-        wxStringTokenizer locs(locations, wxT(","));
-        wxString token;
-        token = locs.GetNextToken();
-        sql += wxT(" LOCATION (\n    '");
-        sql += token;
-        sql += wxT("'");
-        while (locs.HasMoreTokens())
-        {
-            sql += wxT(",\n    '");
-            sql += locs.GetNextToken();
-            sql += wxT("'");
-        }
-        sql += wxT("\n)\n ");
- 
-    }
+            /* remove curly braces */
+            on_clause = locations.Mid(1, locations.Length() - 2);
 
-    /* add FORMAT clause */
-    sql += wxT("FORMAT '");
-    sql +=	fmttype[0] == 't' ? wxT("text") : wxT("csv");
-    sql += wxT("'");
-    sql += wxT(" (");
-    for (size_t i = 0; i < fmtopts.Length(); i++)
-    {
-        if (fmtopts[i] == wxT('\\')) sql += wxT('\\');
-        sql +=	fmtopts[i];
-    }
-    sql += wxT(")\n");
 
-    if (GetDatabase()->BackendMinimumVersion(8, 2))
-    {
-        /* add ENCODING clause */
-        sql += wxT("ENCODING '");
-        sql += extencoding ;
-        sql += wxT("'");
-
-        /* add Single Row Error Handling clause (if any) */
-        if(rejlim.Length() > 0)
-        {
-            sql += wxT("\n");
-
-            /*
-            * NOTE: error tables get automatically generated if don't exist.
-            * therefore we must be sure that this statment will be dumped after
-            * the error relation CREATE is dumped, so that we won't try to
-            * create it twice. For now we rely on the fact that we pick dumpable
-            * objects sorted by OID, and error table oid *should* always be less
-            * than its external table oid (could that not be true sometimes?)
-            */
-            if(errtblname.Length() > 0)
+            /* add EXECUTE clause */
+            sql += wxT(" EXECUTE E'");
+            for (size_t i = 0; i < command.Length(); i++)
             {
-                sql += wxT("LOG ERRORS INTO "); 
-                sql += errtblname;
-                sql += wxT(" ");
+                if (command[i] == wxT('\\')) sql += wxT('\\');
+                if (command[i] == wxT('\'')) sql += wxT('\'');
+                sql +=	command[i];
             }
+            sql += wxT("' ");
 
-            /* reject limit */
-            sql += wxT("SEGMENT REJECT LIMIT ");
-            sql += rejlim;
 
-            /* reject limit type */
-            if(rejlimtype[0] == 'r')
-                sql += wxT(" ROWS");
+            /* add ON clause */
+            wxString temp;
+
+            if(on_clause.StartsWith(wxT("HOST:"), &temp))
+            {
+                sql += wxT("ON HOST '") + temp + wxT("'");
+            }
+            else if(on_clause.StartsWith(wxT("PER_HOST"), &temp))
+                sql += wxT("ON HOST ");
+            else if(on_clause.StartsWith(wxT("MASTER_ONLY"), &temp))
+                sql += wxT("ON MASTER ");
+            else if(on_clause.StartsWith(wxT("SEGMENT_ID:"), &temp))
+                sql += wxT("ON SEGMENT ") + temp + wxT(" ");
+            else if(on_clause.StartsWith(wxT("TOTAL_SEGS:"), &temp))
+                sql += wxT("ON  ") + temp + wxT(" ");
+            else if(on_clause.StartsWith(wxT("ALL_SEGMENTS"), &temp))
+                sql += wxT("ON ALL ");
             else
-                sql += wxT(" PERCENT");
+                sql += on_clause;
+
+            sql += wxT("\n ");
+
         }
-    }
- 
+        else
+        {
+
+            /* add LOCATION clause */
+
+            locations = locations.Mid(1, locations.Length() - 2);
+            wxStringTokenizer locs(locations, wxT(","));
+            wxString token;
+            token = locs.GetNextToken();
+            sql += wxT(" LOCATION (\n    '");
+            sql += token;
+            sql += wxT("'");
+            while (locs.HasMoreTokens())
+            {
+                sql += wxT(",\n    '");
+                sql += locs.GetNextToken();
+                sql += wxT("'");
+            }
+            sql += wxT("\n)\n ");
+
+        }
+
+        /* add FORMAT clause */
+        sql += wxT("FORMAT '");
+        sql +=	fmttype[0] == 't' ? wxT("text") : wxT("csv");
+        sql += wxT("'");
+        sql += wxT(" (");
+        for (size_t i = 0; i < fmtopts.Length(); i++)
+        {
+            if (fmtopts[i] == wxT('\\')) sql += wxT('\\');
+            sql +=	fmtopts[i];
+        }
+        sql += wxT(")\n");
+
+        if (GetDatabase()->BackendMinimumVersion(8, 2))
+        {
+            /* add ENCODING clause */
+            sql += wxT("ENCODING '");
+            sql += extencoding ;
+            sql += wxT("'");
+
+            /* add Single Row Error Handling clause (if any) */
+            if(rejlim.Length() > 0)
+            {
+                sql += wxT("\n");
+
+                /*
+                * NOTE: error tables get automatically generated if don't exist.
+                * therefore we must be sure that this statment will be dumped after
+                * the error relation CREATE is dumped, so that we won't try to
+                * create it twice. For now we rely on the fact that we pick dumpable
+                * objects sorted by OID, and error table oid *should* always be less
+                * than its external table oid (could that not be true sometimes?)
+                */
+                if(errtblname.Length() > 0)
+                {
+                    sql += wxT("LOG ERRORS INTO ");
+                    sql += errtblname;
+                    sql += wxT(" ");
+                }
+
+                /* reject limit */
+                sql += wxT("SEGMENT REJECT LIMIT ");
+                sql += rejlim;
+
+                /* reject limit type */
+                if(rejlimtype[0] == 'r')
+                    sql += wxT(" ROWS");
+                else
+                    sql += wxT(" PERCENT");
+            }
+        }
+
         sql += wxT(";\n")
-            + GetOwnerSql(7, 3, wxEmptyString, wxT("TABLE"));
+               + GetOwnerSql(7, 3, wxEmptyString, wxT("TABLE"));
 
 
         sql += GetGrant(wxT("r"), wxT("TABLE ") + GetQuotedFullIdentifier());
 
         sql += GetCommentSql()
-             + wxT("\n");
+               + wxT("\n");
 
         // Column/constraint comments
         if (!colDetails.IsEmpty())
             sql += colDetails + wxT("\n");
-         
+
     }
     return sql;
 }
@@ -382,13 +382,13 @@ wxString gpExtTable::GetCols(ctlTree *browser, size_t indent, wxString &QMs, boo
 {
     wxString sql;
     wxString line;
-    
-    int colcount=0;
+
+    int colcount = 0;
     pgSetIterator set(GetConnection(),
-        wxT("SELECT attname\n")
-        wxT("  FROM pg_attribute\n")
-        wxT(" WHERE attrelid=") + GetOidStr() + wxT(" AND attnum>0\n")
-        wxT(" ORDER BY attnum"));
+                      wxT("SELECT attname\n")
+                      wxT("  FROM pg_attribute\n")
+                      wxT(" WHERE attrelid=") + GetOidStr() + wxT(" AND attnum>0\n")
+                      wxT(" ORDER BY attnum"));
 
 
     while (set.RowsLeft())
@@ -428,7 +428,7 @@ wxString gpExtTable::GetCols(ctlTree *browser, size_t indent, wxString &QMs, boo
 wxString gpExtTable::GetSelectSql(ctlTree *browser)
 {
     wxString qms;
-    wxString sql=
+    wxString sql =
         wxT("SELECT ") + GetCols(browser, 7, qms, false) + wxT("\n")
         wxT("  FROM ") + GetQuotedFullIdentifier() + wxT(";\n");
     return sql;
@@ -441,7 +441,7 @@ void gpExtTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
     {
         expandedKids = true;
         browser->RemoveDummyChild(this);
-        
+
         browser->AppendCollection(this, columnFactory);
     }
     if (properties)
@@ -461,8 +461,8 @@ void gpExtTable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 
 pgObject *gpExtTable::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *extTable=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *extTable = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
     {
         extTable = extTableFactory.CreateObjects(coll, 0, wxT("\n   AND c.oid=") + GetOidStr());
@@ -483,17 +483,17 @@ void gpExtTable::ShowHint(frmMain *form, bool force)
 
 pgObject *gpExtTableFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    gpExtTable *extTable=0;
+    gpExtTable *extTable = 0;
 
 
-    pgSet *extTables= collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT c.oid, c.xmin, c.relname, pg_get_userbyid(c.relowner) AS exttableowner, c.relacl AS relacl, description \n")
-        wxT("  FROM pg_class c\n")
-        wxT("  LEFT OUTER JOIN pg_description des ON (des.objoid=c.oid and des.objsubid=0)\n")
-        wxT(" WHERE  (c.relkind = 'x' OR (c.relkind = 'r' AND c.relstorage = 'x'))\n")
-        wxT("   AND relnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n")
-        + restriction
-        + wxT(" ORDER BY relname"));
+    pgSet *extTables = collection->GetDatabase()->ExecuteSet(
+                           wxT("SELECT c.oid, c.xmin, c.relname, pg_get_userbyid(c.relowner) AS exttableowner, c.relacl AS relacl, description \n")
+                           wxT("  FROM pg_class c\n")
+                           wxT("  LEFT OUTER JOIN pg_description des ON (des.objoid=c.oid and des.objsubid=0)\n")
+                           wxT(" WHERE  (c.relkind = 'x' OR (c.relkind = 'r' AND c.relstorage = 'x'))\n")
+                           wxT("   AND relnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n")
+                           + restriction
+                           + wxT(" ORDER BY relname"));
 
     if (extTables)
     {
@@ -527,7 +527,7 @@ pgObject *gpExtTableFactory::CreateObjects(pgCollection *collection, ctlTree *br
 wxString gpExtTableCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -543,7 +543,7 @@ wxString gpExtTableCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("External tables list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -553,8 +553,8 @@ wxString gpExtTableCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/exttable-sm.xpm"
 #include "images/exttables.xpm"
 
-gpExtTableFactory::gpExtTableFactory() 
-: pgSchemaObjFactory(__("External Table"), __("New External Table..."), __("Create a new External Table."), exttable_xpm, exttable_sm_xpm)
+gpExtTableFactory::gpExtTableFactory()
+    : pgSchemaObjFactory(__("External Table"), __("New External Table..."), __("Create a new External Table."), exttable_xpm, exttable_sm_xpm)
 {
     metaType = GP_EXTTABLE;
 }

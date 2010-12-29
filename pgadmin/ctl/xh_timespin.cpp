@@ -1,14 +1,14 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 // xh_timespin.cpp - wxTimeSpinCtrl handler
 //
 //////////////////////////////////////////////////////////////////////////
- 
+
 #include "pgAdmin3.h"
 
 #include "wx/wx.h"
@@ -18,8 +18,8 @@
 
 IMPLEMENT_DYNAMIC_CLASS(wxTimeSpinXmlHandler, wxXmlResourceHandler)
 
-wxTimeSpinXmlHandler::wxTimeSpinXmlHandler() 
-: wxXmlResourceHandler() 
+wxTimeSpinXmlHandler::wxTimeSpinXmlHandler()
+    : wxXmlResourceHandler()
 {
     XRC_ADD_STYLE(wxSP_WRAP);
     XRC_ADD_STYLE(wxSP_ARROW_KEYS);
@@ -29,7 +29,7 @@ wxTimeSpinXmlHandler::wxTimeSpinXmlHandler()
 
 
 wxObject *wxTimeSpinXmlHandler::DoCreateResource()
-{ 
+{
     XRC_MAKE_INSTANCE(timespin, wxTimeSpinCtrl);
 
     timespin->Create(m_parentAsWindow,
@@ -37,9 +37,9 @@ wxObject *wxTimeSpinXmlHandler::DoCreateResource()
                      GetPosition(), GetSize(),
                      GetStyle(),
                      GetName());
-    
+
     SetupWindow(timespin);
-    
+
     return timespin;
 }
 

@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgTextSearchConfiguration.h - Text Search Configuration property 
+// dlgTextSearchConfiguration.h - Text Search Configuration property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,10 @@ public:
     dlgTextSearchConfiguration(pgaFactory *factory, frmMain *frame, pgTextSearchConfiguration *cfg, pgSchema *sch);
     int Go(bool modal);
 
-    virtual wxString GetHelpPage(bool forCreate) const { return wxT("pg/sql-createtsconfig"); }
+    virtual wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pg/sql-createtsconfig");
+    }
     void CheckChange();
     wxString GetSql();
     pgObject *CreateObject(pgCollection *collection);

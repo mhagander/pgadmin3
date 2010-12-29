@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,32 +19,32 @@ class pgsDateGen : public pgsObjectGen
 {
 private:
 
-	typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
+    typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
 
-	wxDateTime m_min;
-	wxDateTime m_max;
-	int m_range;
+    wxDateTime m_min;
+    wxDateTime m_max;
+    int m_range;
 
-	bool m_sequence;
+    bool m_sequence;
 
-	pgsRandomizer m_randomizer;
+    pgsRandomizer m_randomizer;
 
 public:
 
-	pgsDateGen(wxDateTime min, wxDateTime max, const bool & sequence,
-			const long & seed = wxDateTime::GetTimeNow());
-	
-	bool is_sequence() const;
+    pgsDateGen(wxDateTime min, wxDateTime max, const bool &sequence,
+               const long &seed = wxDateTime::GetTimeNow());
 
-	virtual wxString random();
+    bool is_sequence() const;
 
-	virtual ~pgsDateGen();
+    virtual wxString random();
 
-	virtual pgsDateGen * clone();
+    virtual ~pgsDateGen();
 
-	/* pgsDateGen & operator =(const pgsDateGen & that); */
+    virtual pgsDateGen *clone();
 
-	/* pgsDateGen(const pgsDateGen & that); */
+    /* pgsDateGen & operator =(const pgsDateGen & that); */
+
+    /* pgsDateGen(const pgsDateGen & that); */
 
 };
 

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,11 +25,11 @@
 #include "gqb/gqbQueryObjs.h"
 
 gqbGridProjTable::gqbGridProjTable(gqbObjsArray *position, gqbObjsArray *parent, wxArrayString *alias):
-wxGridTableBase()
+    wxGridTableBase()
 {
-    colsPosition=position;
-    colsParents=parent;
-    columnsAlias=alias;
+    colsPosition = position;
+    colsParents = parent;
+    columnsAlias = alias;
     // GQB-TODO: replace above pointers array with local variable if possible or research what it's causing bug in destructor???
 }
 
@@ -55,8 +55,8 @@ int gqbGridProjTable::GetNumberCols()
 bool gqbGridProjTable::IsEmptyCell( int row, int col )
 {
 
-    int count=colsParents->GetCount();
-    if(row+1 <= count)
+    int count = colsParents->GetCount();
+    if(row + 1 <= count)
         return false;
     else
         return true;
@@ -68,17 +68,17 @@ wxString gqbGridProjTable::GetValue( int row, int col )
     switch(col)
     {
         case 0:
-            if(((gqbQueryObject *)colsParents->Item(row))->getAlias().length()>0)
+            if(((gqbQueryObject *)colsParents->Item(row))->getAlias().length() > 0)
             {
-				return ((gqbQueryObject*)colsParents->Item(row))->getAlias();
+                return ((gqbQueryObject *)colsParents->Item(row))->getAlias();
             }
             else
             {
-                return ((gqbQueryObject*)colsParents->Item(row))->getName();
+                return ((gqbQueryObject *)colsParents->Item(row))->getName();
             }
             break;
         case 1:
-            return ((gqbColumn*)colsPosition->Item(row))->getName();
+            return ((gqbColumn *)colsPosition->Item(row))->getName();
             break;
         case 2:
             return columnsAlias->Item(row);
@@ -106,18 +106,18 @@ wxString gqbGridProjTable::GetColLabelValue( int col)
 }
 
 
-void gqbGridProjTable::SetValue( int row, int col, const wxString& value )
+void gqbGridProjTable::SetValue( int row, int col, const wxString &value )
 {
     // Do nothing on values that cannot be edited on this model [Column & Relation Name]
     switch(col)
     {
         case 2:
-            columnsAlias->Item(row)=value;
+            columnsAlias->Item(row) = value;
             break;
     };
 }
 
-void* gqbGridProjTable::GetValueAsCustom( int row, int col, const wxString& typeName )
+void *gqbGridProjTable::GetValueAsCustom( int row, int col, const wxString &typeName )
 {
     switch(col)
     {
@@ -134,22 +134,22 @@ void* gqbGridProjTable::GetValueAsCustom( int row, int col, const wxString& type
 }
 
 
-void  gqbGridProjTable::SetValueAsCustom( int row, int col, const wxString& typeName, void* value )
+void  gqbGridProjTable::SetValueAsCustom( int row, int col, const wxString &typeName, void *value )
 {
     switch(col)
     {
         case 0:
-            colsParents->Add(((gqbQueryObject*)value));
+            colsParents->Add(((gqbQueryObject *)value));
             break;
         case 1:
-            colsPosition->Add(((gqbColumn*)value));
+            colsPosition->Add(((gqbColumn *)value));
     };
 }
 
 
 void gqbGridProjTable::AppendItem(int col, gqbObject *item)
 {
-    bool notify=false;
+    bool notify = false;
     switch(col)
     {
         case 0:
@@ -157,7 +157,7 @@ void gqbGridProjTable::AppendItem(int col, gqbObject *item)
             break;
         case 1:
             colsPosition->Add(item);
-            notify=true;
+            notify = true;
             break;
         case 2:
             columnsAlias->Add(wxT(""));
@@ -167,14 +167,14 @@ void gqbGridProjTable::AppendItem(int col, gqbObject *item)
     if (notify && GetView() )
     {
         wxGridTableMessage msg( this,
-            wxGRIDTABLE_NOTIFY_ROWS_INSERTED,
-            (colsParents->GetCount()-1),
-            1 );
+                                wxGRIDTABLE_NOTIFY_ROWS_INSERTED,
+                                (colsParents->GetCount() - 1),
+                                1 );
         GetView()->ProcessTableMessage( msg );
 
-		// Set the cells read-only
-		GetView()->SetReadOnly(GetView()->GetNumberRows() - 1, 0);
-		GetView()->SetReadOnly(GetView()->GetNumberRows() - 1, 1);
+        // Set the cells read-only
+        GetView()->SetReadOnly(GetView()->GetNumberRows() - 1, 0);
+        GetView()->SetReadOnly(GetView()->GetNumberRows() - 1, 1);
     }
 
 }
@@ -182,14 +182,14 @@ void gqbGridProjTable::AppendItem(int col, gqbObject *item)
 // Remove a column at the grid
 bool gqbGridProjTable::removeRow(gqbObject *itemTable, gqbObject *itemColumn)
 {
-    bool found=false;
-    int i,size=colsPosition->GetCount();
+    bool found = false;
+    int i, size = colsPosition->GetCount();
 
-    for(i=0;i<size;i++)
+    for(i = 0; i < size; i++)
     {
-        if (colsParents->Item(i)==itemTable && colsPosition->Item(i)==itemColumn)
+        if (colsParents->Item(i) == itemTable && colsPosition->Item(i) == itemColumn)
         {
-            found=true;
+            found = true;
             break;
         }
     }
@@ -203,9 +203,9 @@ bool gqbGridProjTable::removeRow(gqbObject *itemTable, gqbObject *itemColumn)
         if ( GetView() )                          // Notify Grid about the change
         {
             wxGridTableMessage msg( this,
-                wxGRIDTABLE_NOTIFY_ROWS_DELETED,
-                i+1,
-                1 );
+                                    wxGRIDTABLE_NOTIFY_ROWS_DELETED,
+                                    i + 1,
+                                    1 );
             GetView()->ProcessTableMessage( msg );
         }
     }
@@ -217,10 +217,10 @@ bool gqbGridProjTable::removeRow(gqbObject *itemTable, gqbObject *itemColumn)
 void gqbGridProjTable::removeAllRows(gqbObject *itemTable)
 {
 
-    int size=colsParents->GetCount();
-    for(int i=(size-1);i>=0;i--)
+    int size = colsParents->GetCount();
+    for(int i = (size - 1); i >= 0; i--)
     {
-        if (colsParents->Item(i)==itemTable)
+        if (colsParents->Item(i) == itemTable)
         {
             colsParents->RemoveAt(i);
             colsPosition->RemoveAt(i);
@@ -230,9 +230,9 @@ void gqbGridProjTable::removeAllRows(gqbObject *itemTable)
             if ( GetView() )
             {
                 wxGridTableMessage msg( this,
-                    wxGRIDTABLE_NOTIFY_ROWS_DELETED,
-                    i+1,
-                    1 );
+                                        wxGRIDTABLE_NOTIFY_ROWS_DELETED,
+                                        i + 1,
+                                        1 );
                 GetView()->ProcessTableMessage( msg );
             }
         }
@@ -243,28 +243,28 @@ void gqbGridProjTable::removeAllRows(gqbObject *itemTable)
 void gqbGridProjTable::changesPositions(int sPos, int dPos)
 {
 
-    int size=colsPosition->GetCount();
-    gqbObject *tmpTable=NULL, *tmpColumn=NULL;
+    int size = colsPosition->GetCount();
+    gqbObject *tmpTable = NULL, *tmpColumn = NULL;
     wxString tmpAlias = wxT("");
 
-    if( (sPos>=0 && sPos < size) && (dPos>=0 && dPos < size) )
+    if( (sPos >= 0 && sPos < size) && (dPos >= 0 && dPos < size) )
     {
-        tmpTable=colsParents->Item(sPos);
-        tmpColumn=colsPosition->Item(sPos);
-        tmpAlias=columnsAlias->Item(sPos);
+        tmpTable = colsParents->Item(sPos);
+        tmpColumn = colsPosition->Item(sPos);
+        tmpAlias = columnsAlias->Item(sPos);
 
-        colsParents->Item(sPos)=colsParents->Item(dPos);
-        colsPosition->Item(sPos)=colsPosition->Item(dPos);
-        columnsAlias->Item(sPos)=columnsAlias->Item(dPos);
-        colsParents->Item(dPos)=tmpTable;
-        colsPosition->Item(dPos)=tmpColumn;
-        columnsAlias->Item(dPos)=tmpAlias;
+        colsParents->Item(sPos) = colsParents->Item(dPos);
+        colsPosition->Item(sPos) = colsPosition->Item(dPos);
+        columnsAlias->Item(sPos) = columnsAlias->Item(dPos);
+        colsParents->Item(dPos) = tmpTable;
+        colsPosition->Item(dPos) = tmpColumn;
+        columnsAlias->Item(dPos) = tmpAlias;
     }
 
     wxGridTableMessage msg( this,
-        wxGRIDTABLE_REQUEST_VIEW_GET_VALUES,
-        sPos,
-        1 );
+                            wxGRIDTABLE_REQUEST_VIEW_GET_VALUES,
+                            sPos,
+                            1 );
     GetView()->ProcessTableMessage( msg );
 
 }
@@ -277,28 +277,28 @@ void gqbGridProjTable::changesRangeOnePos(int topPos, int bottomPos, int newTop)
     // Eliminate side effect of zero base array on calculations, but carefull newTop still it's zero based
     topPos++;
     bottomPos++;
-    int sizeRange=bottomPos-(topPos-1), size=GetNumberRows();
-    if(topPos>newTop)                             // Go Down
+    int sizeRange = bottomPos - (topPos - 1), size = GetNumberRows();
+    if(topPos > newTop)                           // Go Down
     {
-    // Only if the movement don't create an overflow
-        if( (topPos > 1) && ((newTop+sizeRange) <  size)  )
+        // Only if the movement don't create an overflow
+        if( (topPos > 1) && ((newTop + sizeRange) <  size)  )
         {
-            for(int i=newTop ; i < (newTop+sizeRange) ; i++)
+            for(int i = newTop ; i < (newTop + sizeRange) ; i++)
             {
-                changesPositions(i,i+1);
+                changesPositions(i, i + 1);
             }
         }
 
     }                                             // Go Up
     else
     {
-		// Only if the movement don't create an overflow
-        if( (bottomPos < size) && ((newTop+sizeRange) <=  size)  )
+        // Only if the movement don't create an overflow
+        if( (bottomPos < size) && ((newTop + sizeRange) <=  size)  )
         {
             // Go Up Down
-            for(int i=(newTop+sizeRange-1) ; i >= newTop  ; i--)
+            for(int i = (newTop + sizeRange - 1) ; i >= newTop  ; i--)
             {
-                changesPositions(i-1,i);
+                changesPositions(i - 1, i);
             }
         }
     }
@@ -309,18 +309,18 @@ void gqbGridProjTable::changesRangeOnePos(int topPos, int bottomPos, int newTop)
 void gqbGridProjTable::emptyTableData()
 {
 
-    int count=colsPosition->GetCount();
+    int count = colsPosition->GetCount();
     colsPosition->Empty();
     colsParents->Empty();
     columnsAlias->Empty();
 
-	// Notify Grid about the change
+    // Notify Grid about the change
     if ( GetView() )
     {
         wxGridTableMessage msg( this,
-            wxGRIDTABLE_NOTIFY_ROWS_DELETED,
-            1,                                    
-            count);
+                                wxGRIDTABLE_NOTIFY_ROWS_DELETED,
+                                1,
+                                count);
         GetView()->ProcessTableMessage( msg );
     }
 }

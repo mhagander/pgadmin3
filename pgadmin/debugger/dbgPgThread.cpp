@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dbgPgThread.cpp - debugger 
+// dbgPgThread.cpp - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -34,15 +34,15 @@ WX_DEFINE_LIST( ThreadCommandList );
 //  with a PostgreSQL server.  We use a separate thread to keep the main thread
 //  (and thus the user interface) responsive while we're waiting for the server.
 
-dbgPgThread::dbgPgThread( dbgPgConn & owner )
+dbgPgThread::dbgPgThread( dbgPgConn &owner )
     : wxThread(wxTHREAD_JOINABLE),
-    m_owner( owner ),
-    m_queueCounter(),
-    m_queueMutex(),
-    m_commandQueue(),
-    m_currentCommand( NULL ),
-    run( 0 ),
-    die( false )
+      m_owner( owner ),
+      m_queueCounter(),
+      m_queueMutex(),
+      m_commandQueue(),
+      m_currentCommand( NULL ),
+      run( 0 ),
+      die( false )
 {
     conv = &wxConvLibc;
 }
@@ -50,16 +50,16 @@ dbgPgThread::dbgPgThread( dbgPgConn & owner )
 ////////////////////////////////////////////////////////////////////////////////
 // startCommand()
 //
-//     This function is called by the GUI thread when the user decides to 
-//     execute a command.  To keep the GUI thread responsive, we use a 
+//     This function is called by the GUI thread when the user decides to
+//     execute a command.  To keep the GUI thread responsive, we use a
 //     separate thread to interact with the PostgreSQL server. This function
 //  wakes up the worker thread.
 
-void dbgPgThread::startCommand( const wxString &command, wxEvtHandler * caller, wxEventType eventType, dbgPgParams *params )
+void dbgPgThread::startCommand( const wxString &command, wxEvtHandler *caller, wxEventType eventType, dbgPgParams *params )
 {
-    // Save the command text (and the event handler that we should 
+    // Save the command text (and the event handler that we should
     // notify on completion) in the command queue and then wake up the
-    // worker thread.  The worker thread sleeps until we increment 
+    // worker thread.  The worker thread sleeps until we increment
     // m_queueCounter
 
     m_queueMutex.Lock();
@@ -94,7 +94,7 @@ void dbgPgThread::Die()
 //  waits for a result set from the server - when the result set arrives, we
 //  send an event to the GUI thread.
 
-void * dbgPgThread::Entry( void )
+void *dbgPgThread::Entry( void )
 {
 
     wxLogInfo( wxT( "worker thread waiting for some work to do..." ));
@@ -114,7 +114,7 @@ void * dbgPgThread::Entry( void )
 
         // This call to PQexec() will hang until we've received
         // a complete result set from the server.
-        PGresult *result=0;
+        PGresult *result = 0;
 
 #if defined (__WXMSW__) || (EDB_LIBPQ)
         // If we have a set of params, and we have the required functions...
@@ -128,12 +128,12 @@ void * dbgPgThread::Entry( void )
         {
             wxLogInfo(wxT("Using an EnterpriseDB callable statement"));
             wxString stmt = wxString::Format(wxT("DebugStmt-%d-%d"), this->GetId(), ++run);
-            PGresult *res = PQiPrepareOut(m_owner.getConnection(), 
-                                            stmt.mb_str(wxConvUTF8), 
-                                            command.mb_str(wxConvUTF8),
-                                            params->nParams,
-                                            params->paramTypes,
-                                            params->paramModes);
+            PGresult *res = PQiPrepareOut(m_owner.getConnection(),
+                                          stmt.mb_str(wxConvUTF8),
+                                          command.mb_str(wxConvUTF8),
+                                          params->nParams,
+                                          params->paramTypes,
+                                          params->paramModes);
 
             if( PQresultStatus(res) != PGRES_COMMAND_OK)
             {
@@ -142,13 +142,13 @@ void * dbgPgThread::Entry( void )
                 return this;
             }
 
-            int ret = PQiSendQueryPreparedOut(m_owner.getConnection(), 
-                                                stmt.mb_str(wxConvUTF8),
-                                                params->nParams,
-                                                params->paramValues,
-                                                NULL, // Can be null - all params are text
-                                                NULL, // Can be null - all params are text
-                                                1);
+            int ret = PQiSendQueryPreparedOut(m_owner.getConnection(),
+                                              stmt.mb_str(wxConvUTF8),
+                                              params->nParams,
+                                              params->paramValues,
+                                              NULL, // Can be null - all params are text
+                                              NULL, // Can be null - all params are text
+                                              1);
             if (ret != 1)
             {
                 wxLogError(_( "Couldn't execute the callable statement: %s" ), stmt.c_str());
@@ -157,87 +157,87 @@ void * dbgPgThread::Entry( void )
             }
 
             // We need to call PQgetResult before we can call PQgetOutResult
-        	// Note that this is all async code as far as libpq is concerned to
-        	// ensure we can always bail out when required, without leaving threads
-        	// hanging around.
-        	PGresult *dummy;
-        	while(true)
-        	{
-        		if (die || TestDestroy())
-        		{
-        		    PQrequestCancel(m_owner.getConnection());
-        		    return this;
-        	    }
-        			
-        	    PQconsumeInput(m_owner.getConnection());
-        		
-        		if (PQisBusy(m_owner.getConnection()))
-        		{
-        		    Yield();
-        			wxMilliSleep(10);
-        			continue;
-        		}
-        		
-        	    dummy = PQgetResult(m_owner.getConnection());
-        		
-        		// There should be 2 results - the first is the dummy, the second
-        		// contains our out params.
-        		if (dummy)
-        		    break;
-        	}
+            // Note that this is all async code as far as libpq is concerned to
+            // ensure we can always bail out when required, without leaving threads
+            // hanging around.
+            PGresult *dummy;
+            while(true)
+            {
+                if (die || TestDestroy())
+                {
+                    PQrequestCancel(m_owner.getConnection());
+                    return this;
+                }
+
+                PQconsumeInput(m_owner.getConnection());
+
+                if (PQisBusy(m_owner.getConnection()))
+                {
+                    Yield();
+                    wxMilliSleep(10);
+                    continue;
+                }
+
+                dummy = PQgetResult(m_owner.getConnection());
+
+                // There should be 2 results - the first is the dummy, the second
+                // contains our out params.
+                if (dummy)
+                    break;
+            }
 
             if((PQresultStatus(dummy) == PGRES_NONFATAL_ERROR) || (PQresultStatus(dummy) == PGRES_FATAL_ERROR))
                 result = dummy;
             else
-        	{
-        	    PQclear(dummy);
+            {
+                PQclear(dummy);
                 result = PQiGetOutResult(m_owner.getConnection());
-        	}
+            }
         }
         else
         {
-#endif        	
+#endif
             // This is the normal case for a pl/pgsql function, or if we don't
             // have access to PQgetOutResult.
-        	// Note that this is all async code as far as libpq is concerned to
-        	// ensure we can always bail out when required, without leaving threads
-        	// hanging around.
+            // Note that this is all async code as far as libpq is concerned to
+            // ensure we can always bail out when required, without leaving threads
+            // hanging around.
             int ret = PQsendQuery(m_owner.getConnection(), command.mb_str(wxConvUTF8));
-        	
+
             if (ret != 1)
             {
                 wxLogError(_( "Couldn't execute the query (%s): %s" ), command.c_str(), wxString(PQerrorMessage(m_owner.getConnection()), *conv).c_str());
                 return this;
             }
-        	
-        	PGresult *part;
-        	while(true)
-        	{
-        		if (die || TestDestroy())
-        		{
-        		    PQrequestCancel(m_owner.getConnection());
-        		    return this;
-        	    }
-        			
-        	    PQconsumeInput(m_owner.getConnection());
-        		
-        		if (PQisBusy(m_owner.getConnection()))
-        		{
-        		    Yield();
-        			wxMilliSleep(10);
-        			continue;
-        		}
-        		
-        		// In theory we should only get one result here, but we'll loop
-        		// anyway until we get the last one.
-        	    part = PQgetResult(m_owner.getConnection());
-        		
-        		if (!part)
-        		    break;
-        			
+
+            PGresult *part;
+            while(true)
+            {
+                if (die || TestDestroy())
+                {
+                    PQrequestCancel(m_owner.getConnection());
+                    return this;
+                }
+
+                PQconsumeInput(m_owner.getConnection());
+
+                if (PQisBusy(m_owner.getConnection()))
+                {
+                    Yield();
+                    wxMilliSleep(10);
+                    continue;
+                }
+
+                // In theory we should only get one result here, but we'll loop
+                // anyway until we get the last one.
+                part = PQgetResult(m_owner.getConnection());
+
+                if (!part)
+                    break;
+
                 result = part;
-        	}
-        	
+            }
+
 #if defined (__WXMSW__) || (EDB_LIBPQ)
         }
 #endif
@@ -273,10 +273,10 @@ void * dbgPgThread::Entry( void )
 // noticeHandler()
 //
 //     This function is invoked when a NOTICE is received from the PostgreSQL
-//    server.  We watch for a specially-formatted NOTICE that the PL debugger 
+//    server.  We watch for a specially-formatted NOTICE that the PL debugger
 //    raises when it reaches a breakpoint.
 
-void dbgPgThread::noticeHandler( void * arg, const char * message )
+void dbgPgThread::noticeHandler( void *arg, const char *message )
 {
     // Remove the last char from the message as it'll be a \n
     wxString msg = wxString(message, wxConvUTF8);
@@ -286,8 +286,8 @@ void dbgPgThread::noticeHandler( void * arg, const char * message )
 
     wxLogInfo(wxT("%s"), msg.c_str());
 
-    dbgPgThread   * thread = (dbgPgThread *)arg;
-    wxEvtHandler * caller = thread->m_currentCommand->getCaller();
+    dbgPgThread    *thread = (dbgPgThread *)arg;
+    wxEvtHandler *caller = thread->m_currentCommand->getCaller();
 
     if( strstr( message, "PLDBGBREAK" ))
     {
@@ -297,12 +297,12 @@ void dbgPgThread::noticeHandler( void * arg, const char * message )
         wxString PLDBGBREAK = tokens.GetNextToken();        // PLDBGBREAK:
         wxString PORT       = tokens.GetNextToken();        // port
 
-        PGconn * conn = thread->m_owner.getConnection();
+        PGconn *conn = thread->m_owner.getConnection();
 
-        // Create a dbgConnProp object that contains the same information in a 
+        // Create a dbgConnProp object that contains the same information in a
         // more convenient format
 
-        dbgConnProp * debugProps = new dbgConnProp;
+        dbgConnProp *debugProps = new dbgConnProp;
 
         debugProps->m_host         = wxString( PQhost( conn ), wxConvUTF8 );
         debugProps->m_database     = wxString( PQdb( conn ),   wxConvUTF8 );
@@ -331,23 +331,23 @@ void dbgPgThread::noticeHandler( void * arg, const char * message )
     }
     else
     {
-            wxCommandEvent buttonEvent( wxEVT_COMMAND_BUTTON_CLICKED, MENU_ID_NOTICE_RECEIVED );
+        wxCommandEvent buttonEvent( wxEVT_COMMAND_BUTTON_CLICKED, MENU_ID_NOTICE_RECEIVED );
 
-            buttonEvent.SetString( wxString( message, wxConvUTF8 ) );
-            caller->AddPendingEvent( buttonEvent );
+        buttonEvent.SetString( wxString( message, wxConvUTF8 ) );
+        caller->AddPendingEvent( buttonEvent );
     }
 }
 
-dbgPgThreadCommand * dbgPgThread::getNextCommand()
+dbgPgThreadCommand *dbgPgThread::getNextCommand()
 {
-    dbgPgThreadCommand * result;
+    dbgPgThreadCommand *result;
 
     m_queueMutex.Lock();
 
     wxLogInfo( wxT( "%d commands in queue" ), m_commandQueue.GetCount());
 
-    ThreadCommandList::Node * node = m_commandQueue.GetFirst();
-        
+    ThreadCommandList::Node *node = m_commandQueue.GetFirst();
+
     result = node->GetData();
 
     m_commandQueue.DeleteNode( node );

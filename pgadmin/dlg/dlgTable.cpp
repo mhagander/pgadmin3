@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -155,19 +155,19 @@ END_EVENT_TABLE();
 
 dlgProperty *pgTableFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgTable(this, frame, (pgTable*)node, (pgSchema*)parent);
+    return new dlgTable(this, frame, (pgTable *)node, (pgSchema *)parent);
 }
 
 dlgProperty *gpPartitionFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgTable(this, frame, (gpPartition*)node, (pgSchema*)parent);
+    return new dlgTable(this, frame, (gpPartition *)node, (pgSchema *)parent);
 }
 
 dlgTable::dlgTable(pgaFactory *f, frmMain *frame, pgTable *node, pgSchema *sch)
-: dlgSecurityProperty(f, frame, node, wxT("dlgTable"), wxT("INSERT,SELECT,UPDATE,DELETE,RULE,REFERENCES,TRIGGER"), "arwdRxt")
+    : dlgSecurityProperty(f, frame, node, wxT("dlgTable"), wxT("INSERT,SELECT,UPDATE,DELETE,RULE,REFERENCES,TRIGGER"), "arwdRxt")
 {
-    schema=sch;
-    table=node;
+    schema = sch;
+    table = node;
 
     btnAddTable->Disable();
     btnRemoveTable->Disable();
@@ -212,15 +212,15 @@ int dlgTable::Go(bool modal)
 
     // new of type combobox
     wxString typeQuery = wxT("SELECT t.oid, t.typname ")
-        wxT("FROM pg_type t, pg_namespace n ")
-        wxT("WHERE t.typtype='c' AND t.typnamespace=n.oid ")
-        wxT("AND NOT (n.nspname like 'pg_%' OR n.nspname='information_schema') ")
-        wxT("ORDER BY typname");
+                         wxT("FROM pg_type t, pg_namespace n ")
+                         wxT("WHERE t.typtype='c' AND t.typnamespace=n.oid ")
+                         wxT("AND NOT (n.nspname like 'pg_%' OR n.nspname='information_schema') ")
+                         wxT("ORDER BY typname");
     cbOfType->Insert(wxEmptyString, 0, (void *)0);
     cbOfType->FillOidKey(connection, typeQuery);
     cbOfType->SetSelection(0);
 
-    hasPK=false;
+    hasPK = false;
 
     if (table)
     {
@@ -233,11 +233,11 @@ int dlgTable::Go(bool modal)
         if (table->GetOfTypeOid() != 0)
             cbOfType->SetKey(table->GetOfTypeOid());
 
-        inheritedTableOids=table->GetInheritedTablesOidList();
+        inheritedTableOids = table->GetInheritedTablesOidList();
 
-        wxArrayString qitl=table->GetQuotedInheritedTablesList();
+        wxArrayString qitl = table->GetQuotedInheritedTablesList();
         size_t i;
-        for (i=0 ; i < qitl.GetCount() ; i++)
+        for (i = 0 ; i < qitl.GetCount() ; i++)
         {
             previousTables.Add(qitl.Item(i));
             lbTables->Append(qitl.Item(i));
@@ -249,12 +249,12 @@ int dlgTable::Go(bool modal)
         cbTablespace->Enable(connection->BackendMinimumVersion(7, 5));
 
         wxCookieType cookie;
-        pgObject *data=0;
-        wxTreeItemId item=mainForm->GetBrowser()->GetFirstChild(table->GetId(), cookie);
+        pgObject *data = 0;
+        wxTreeItemId item = mainForm->GetBrowser()->GetFirstChild(table->GetId(), cookie);
         while (item)
         {
-            data=mainForm->GetBrowser()->GetObject(item);
-            pgaFactory *factory=data->GetFactory();
+            data = mainForm->GetBrowser()->GetObject(item);
+            pgaFactory *factory = data->GetFactory();
             if (factory == columnFactory.GetCollectionFactory())
                 columnsItem = item;
             else if (factory == checkFactory.GetCollectionFactory())
@@ -267,80 +267,80 @@ int dlgTable::Go(bool modal)
             if (columnsItem && constraintsItem)
                 break;
 
-            item=mainForm->GetBrowser()->GetNextChild(table->GetId(), cookie);
+            item = mainForm->GetBrowser()->GetNextChild(table->GetId(), cookie);
         }
 
         if (columnsItem)
         {
-            pgCollection *coll=(pgCollection*)data;
+            pgCollection *coll = (pgCollection *)data;
             // make sure all columns are appended
             coll->ShowTreeDetail(mainForm->GetBrowser());
             // this is the columns collection
-            item=mainForm->GetBrowser()->GetFirstChild(columnsItem, cookie);
+            item = mainForm->GetBrowser()->GetFirstChild(columnsItem, cookie);
 
             // add columns
             while (item)
             {
-                data=mainForm->GetBrowser()->GetObject(item);
+                data = mainForm->GetBrowser()->GetObject(item);
                 if (data->IsCreatedBy(columnFactory))
                 {
-                    pgColumn *column=(pgColumn*)data;
+                    pgColumn *column = (pgColumn *)data;
                     // make sure column details are read
                     column->ShowTreeDetail(mainForm->GetBrowser());
 
                     if (column->GetColNumber() > 0)
                     {
                         bool inherited = (column->GetInheritedCount() != 0);
-                        int pos=lstColumns->AppendItem((inherited ? tableFactory.GetIconId() : column->GetIconId()), 
-                            column->GetName(), column->GetDefinition());
-                        previousColumns.Add(column->GetQuotedIdentifier() 
-                            + wxT(" ") + column->GetDefinition());
+                        int pos = lstColumns->AppendItem((inherited ? tableFactory.GetIconId() : column->GetIconId()),
+                                                         column->GetName(), column->GetDefinition());
+                        previousColumns.Add(column->GetQuotedIdentifier()
+                                            + wxT(" ") + column->GetDefinition());
                         lstColumns->SetItem(pos, 6, NumToStr((long)column));
                         if (inherited)
                             lstColumns->SetItem(pos, 2, column->GetInheritedTableName());
                     }
                 }
-                
-                item=mainForm->GetBrowser()->GetNextChild(columnsItem, cookie);
+
+                item = mainForm->GetBrowser()->GetNextChild(columnsItem, cookie);
             }
         }
         if (constraintsItem)
         {
-            pgCollection *coll=(pgCollection*)mainForm->GetBrowser()->GetObject(constraintsItem);
+            pgCollection *coll = (pgCollection *)mainForm->GetBrowser()->GetObject(constraintsItem);
             // make sure all constraints are appended
             coll->ShowTreeDetail(mainForm->GetBrowser());
             // this is the constraints collection
-            item=mainForm->GetBrowser()->GetFirstChild(constraintsItem, cookie);
+            item = mainForm->GetBrowser()->GetFirstChild(constraintsItem, cookie);
 
             // add constraints
             while (item)
             {
-                data=mainForm->GetBrowser()->GetObject(item);
+                data = mainForm->GetBrowser()->GetObject(item);
                 switch (data->GetMetaType())
                 {
                     case PGM_PRIMARYKEY:
                         hasPK = true;
                     case PGM_UNIQUE:
                     {
-                        pgIndexConstraint *obj=(pgIndexConstraint*)data;
+                        pgIndexConstraint *obj = (pgIndexConstraint *)data;
 
                         lstConstraints->AppendItem(data->GetIconId(), obj->GetName(), obj->GetDefinition());
-                        previousConstraints.Add(obj->GetQuotedIdentifier() 
-                            + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + obj->GetDefinition());
+                        previousConstraints.Add(obj->GetQuotedIdentifier()
+                                                + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + obj->GetDefinition());
                         break;
                     }
                     case PGM_EXCLUDE:
                     {
-                        pgIndexConstraint *obj=(pgIndexConstraint*)data;
+                        pgIndexConstraint *obj = (pgIndexConstraint *)data;
 
                         lstConstraints->AppendItem(data->GetIconId(), obj->GetName(), obj->GetDefinition());
-                        previousConstraints.Add(obj->GetQuotedIdentifier() 
-                            + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + obj->GetDefinition());
+                        previousConstraints.Add(obj->GetQuotedIdentifier()
+                                                + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + obj->GetDefinition());
                         break;
                     }
                     case PGM_FOREIGNKEY:
                     {
-                        pgForeignKey *obj=(pgForeignKey*)data;
+                        pgForeignKey *obj = (pgForeignKey *)data;
                         wxString def = obj->GetDefinition();
 
                         def.Replace(wxT("\n"), wxT(" "));
@@ -348,22 +348,22 @@ int dlgTable::Go(bool modal)
                             def.Replace(wxT("  "), wxT(" "));
 
                         lstConstraints->AppendItem(data->GetIconId(), obj->GetName(), def);
-                        previousConstraints.Add(obj->GetQuotedIdentifier() 
-                            + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + def);
+                        previousConstraints.Add(obj->GetQuotedIdentifier()
+                                                + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + def);
                         break;
                     }
                     case PGM_CHECK:
                     {
-                        pgCheck *obj=(pgCheck*)data;
+                        pgCheck *obj = (pgCheck *)data;
 
-                       lstConstraints->AppendItem(data->GetIconId(), obj->GetName(), obj->GetDefinition());
-                        previousConstraints.Add(obj->GetQuotedIdentifier() 
-                            + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + obj->GetDefinition());
+                        lstConstraints->AppendItem(data->GetIconId(), obj->GetName(), obj->GetDefinition());
+                        previousConstraints.Add(obj->GetQuotedIdentifier()
+                                                + wxT(" ") + obj->GetTypeName().Upper() + wxT(" ") + obj->GetDefinition());
                         break;
                     }
                 }
-                
-                item=mainForm->GetBrowser()->GetNextChild(constraintsItem, cookie);
+
+                item = mainForm->GetBrowser()->GetNextChild(constraintsItem, cookie);
             }
         }
     }
@@ -372,7 +372,7 @@ int dlgTable::Go(bool modal)
         // create mode
         btnChangeCol->Hide();
 
-        // Add the default tablespace 
+        // Add the default tablespace
         cbTablespace->Insert(_("<default tablespace>"), 0, (void *)0);
         cbTablespace->SetSelection(0);
     }
@@ -380,38 +380,38 @@ int dlgTable::Go(bool modal)
     cbOfType->Enable(connection->BackendMinimumVersion(9, 0) && !table);
     cbTables->Enable(connection->BackendMinimumVersion(8, 2) && cbOfType->GetCurrentSelection() == 0);
 
-    if (connection->BackendMinimumVersion(8,2) || !table)
+    if (connection->BackendMinimumVersion(8, 2) || !table)
     {
         wxString systemRestriction;
         if (!settings->GetShowSystemObjects())
-        systemRestriction = 
-            wxT("   AND ") + connection->SystemNamespaceRestriction(wxT("n.nspname"));
-        
+            systemRestriction =
+                wxT("   AND ") + connection->SystemNamespaceRestriction(wxT("n.nspname"));
+
         if (table)
         {
             wxString oids = table->GetOidStr();
             int i;
-            for (i=0 ; i < (int)inheritedTableOids.GetCount() ; i++)
+            for (i = 0 ; i < (int)inheritedTableOids.GetCount() ; i++)
             {
                 oids += wxT(", ") + inheritedTableOids.Item(i);
             }
             if (oids.Length() > 0)
                 systemRestriction += wxT(" AND c.oid NOT IN (") + oids + wxT(")");
         }
-    
-        pgSet *set=connection->ExecuteSet(
-            wxT("SELECT c.oid, c.relname , nspname\n")
-            wxT("  FROM pg_class c\n")
-            wxT("  JOIN pg_namespace n ON n.oid=c.relnamespace\n")
-            wxT(" WHERE relkind='r'\n")
-            + systemRestriction +
-            wxT(" ORDER BY relnamespace, c.relname"));
+
+        pgSet *set = connection->ExecuteSet(
+                         wxT("SELECT c.oid, c.relname , nspname\n")
+                         wxT("  FROM pg_class c\n")
+                         wxT("  JOIN pg_namespace n ON n.oid=c.relnamespace\n")
+                         wxT(" WHERE relkind='r'\n")
+                         + systemRestriction +
+                         wxT(" ORDER BY relnamespace, c.relname"));
         if (set)
         {
             while (!set->Eof())
             {
                 cbTables->Append(database->GetQuotedSchemaPrefix(set->GetVal(wxT("nspname")))
-                        + qtIdent(set->GetVal(wxT("relname"))));
+                                 + qtIdent(set->GetVal(wxT("relname"))));
 
                 tableOids.Add(set->GetVal(wxT("oid")));
                 set->MoveNext();
@@ -427,7 +427,7 @@ int dlgTable::Go(bool modal)
     btnRemoveConstr->Disable();
     btnOK->Disable();
 
-    if ((connection->BackendMinimumVersion(8,1) && table) || connection->BackendMinimumVersion(8,4))
+    if ((connection->BackendMinimumVersion(8, 1) && table) || connection->BackendMinimumVersion(8, 4))
     {
         txtBaseVac->SetValidator(numericValidator);
         txtBaseAn->SetValidator(numericValidator);
@@ -437,7 +437,7 @@ int dlgTable::Go(bool modal)
         txtVacLimit->SetValidator(numericValidator);
         txtFreezeMinAge->SetValidator(numericValidator);
         txtFreezeMaxAge->SetValidator(numericValidator);
-        if (connection->BackendMinimumVersion(8,4))
+        if (connection->BackendMinimumVersion(8, 4))
         {
             txtFreezeTableAge->SetValidator(numericValidator);
 
@@ -461,11 +461,11 @@ int dlgTable::Go(bool modal)
         settingAutoVacuum = false;
 
         pgSetIterator avSet(connection,
-            wxT("SELECT name, setting FROM pg_settings WHERE name like '%vacuum%' ORDER BY name"));
+                            wxT("SELECT name, setting FROM pg_settings WHERE name like '%vacuum%' ORDER BY name"));
         while (avSet.RowsLeft())
         {
-            wxString name=avSet.GetVal(wxT("name"));
-            wxString setting=avSet.GetVal(wxT("setting"));
+            wxString name = avSet.GetVal(wxT("name"));
+            wxString setting = avSet.GetVal(wxT("setting"));
 
             if (name == wxT("autovacuum_vacuum_cost_delay"))
                 settingCostDelay = StrToLong(setting);
@@ -522,33 +522,33 @@ int dlgTable::Go(bool modal)
         toastTableHasVacuum = false;
         toastTableVacEnabled = false;
 
-        if (!connection->BackendMinimumVersion(8,4))
+        if (!connection->BackendMinimumVersion(8, 4))
         {
             pgSetIterator set(connection, wxT("SELECT * FROM pg_autovacuum WHERE vacrelid=") + table->GetOidStr());
             if (set.RowsLeft())
             {
-                hasVacuum=true;
-    
+                hasVacuum = true;
+
                 tableVacEnabled = set.GetBool(wxT("enabled"));
                 chkVacEnabled->SetValue(tableVacEnabled);
-                
-                tableVacBaseThr=set.GetLong(wxT("vac_base_thresh"));
-                tableAnlBaseThr=set.GetLong(wxT("anl_base_thresh"));
-                tableCostDelay=set.GetLong(wxT("vac_cost_delay"));
-                tableCostLimit=set.GetLong(wxT("vac_cost_limit"));
-                tableVacFactor=set.GetDouble(wxT("vac_scale_factor"));
-                tableAnlFactor=set.GetDouble(wxT("anl_scale_factor"));
-    
+
+                tableVacBaseThr = set.GetLong(wxT("vac_base_thresh"));
+                tableAnlBaseThr = set.GetLong(wxT("anl_base_thresh"));
+                tableCostDelay = set.GetLong(wxT("vac_cost_delay"));
+                tableCostLimit = set.GetLong(wxT("vac_cost_limit"));
+                tableVacFactor = set.GetDouble(wxT("vac_scale_factor"));
+                tableAnlFactor = set.GetDouble(wxT("anl_scale_factor"));
+
                 if (connection->BackendMinimumVersion(8, 2))
                 {
-                    tableFreezeMinAge=set.GetLong(wxT("freeze_min_age"));
-                    tableFreezeMaxAge=set.GetLong(wxT("freeze_max_age"));
+                    tableFreezeMinAge = set.GetLong(wxT("freeze_min_age"));
+                    tableFreezeMaxAge = set.GetLong(wxT("freeze_max_age"));
                 }
             }
             else
             {
-               hasVacuum=false;
-               chkVacEnabled->SetValue(true);
+                hasVacuum = false;
+                chkVacEnabled->SetValue(true);
             }
         }
         else if (table)
@@ -587,38 +587,38 @@ int dlgTable::Go(bool modal)
             }
             else
             {
-               toastTableHasVacuum = table->GetToastCustomAutoVacuumEnabled();
-               if (toastTableHasVacuum)
-               {
-                   if (table->GetToastAutoVacuumEnabled() == 2)
-                       toastTableVacEnabled = settingAutoVacuum;
-                   else
-                       toastTableVacEnabled  = table->GetToastAutoVacuumEnabled() == 1;
-                   if (!table->GetToastAutoVacuumVacuumThreshold().IsEmpty())
-                       table->GetToastAutoVacuumVacuumThreshold().ToLong(&toastTableVacBaseThr);
-                   if (!table->GetToastAutoVacuumAnalyzeThreshold().IsEmpty())
-                       table->GetToastAutoVacuumAnalyzeThreshold().ToLong(&toastTableAnlBaseThr);
-                   if (!table->GetToastAutoVacuumVacuumScaleFactor().IsEmpty())
-                       table->GetToastAutoVacuumVacuumScaleFactor().ToDouble(&toastTableVacFactor);
-                   if (!table->GetToastAutoVacuumAnalyzeScaleFactor().IsEmpty())
-                       table->GetToastAutoVacuumAnalyzeScaleFactor().ToDouble(&toastTableAnlFactor);
-                   if (!table->GetToastAutoVacuumVacuumCostDelay().IsEmpty())
-                       table->GetToastAutoVacuumVacuumCostDelay().ToLong(&toastTableCostDelay);
-                   if (!table->GetToastAutoVacuumVacuumCostLimit().IsEmpty())
-                       table->GetToastAutoVacuumVacuumCostLimit().ToLong(&toastTableCostLimit);
-                   if (!table->GetToastAutoVacuumFreezeMinAge().IsEmpty())
-                       table->GetToastAutoVacuumFreezeMinAge().ToLong(&toastTableFreezeMinAge);
-                   if (!table->GetToastAutoVacuumFreezeMaxAge().IsEmpty())
-                       table->GetToastAutoVacuumFreezeMaxAge().ToLong(&toastTableFreezeMaxAge);
-                   if (!table->GetToastAutoVacuumFreezeTableAge().IsEmpty())
-                       table->GetToastAutoVacuumFreezeTableAge().ToLong(&toastTableFreezeTableAge);
-               }
-               chkToastVacEnabled->SetValue(toastTableHasVacuum ? toastTableVacEnabled : settingAutoVacuum);
+                toastTableHasVacuum = table->GetToastCustomAutoVacuumEnabled();
+                if (toastTableHasVacuum)
+                {
+                    if (table->GetToastAutoVacuumEnabled() == 2)
+                        toastTableVacEnabled = settingAutoVacuum;
+                    else
+                        toastTableVacEnabled  = table->GetToastAutoVacuumEnabled() == 1;
+                    if (!table->GetToastAutoVacuumVacuumThreshold().IsEmpty())
+                        table->GetToastAutoVacuumVacuumThreshold().ToLong(&toastTableVacBaseThr);
+                    if (!table->GetToastAutoVacuumAnalyzeThreshold().IsEmpty())
+                        table->GetToastAutoVacuumAnalyzeThreshold().ToLong(&toastTableAnlBaseThr);
+                    if (!table->GetToastAutoVacuumVacuumScaleFactor().IsEmpty())
+                        table->GetToastAutoVacuumVacuumScaleFactor().ToDouble(&toastTableVacFactor);
+                    if (!table->GetToastAutoVacuumAnalyzeScaleFactor().IsEmpty())
+                        table->GetToastAutoVacuumAnalyzeScaleFactor().ToDouble(&toastTableAnlFactor);
+                    if (!table->GetToastAutoVacuumVacuumCostDelay().IsEmpty())
+                        table->GetToastAutoVacuumVacuumCostDelay().ToLong(&toastTableCostDelay);
+                    if (!table->GetToastAutoVacuumVacuumCostLimit().IsEmpty())
+                        table->GetToastAutoVacuumVacuumCostLimit().ToLong(&toastTableCostLimit);
+                    if (!table->GetToastAutoVacuumFreezeMinAge().IsEmpty())
+                        table->GetToastAutoVacuumFreezeMinAge().ToLong(&toastTableFreezeMinAge);
+                    if (!table->GetToastAutoVacuumFreezeMaxAge().IsEmpty())
+                        table->GetToastAutoVacuumFreezeMaxAge().ToLong(&toastTableFreezeMaxAge);
+                    if (!table->GetToastAutoVacuumFreezeTableAge().IsEmpty())
+                        table->GetToastAutoVacuumFreezeTableAge().ToLong(&toastTableFreezeTableAge);
+                }
+                chkToastVacEnabled->SetValue(toastTableHasVacuum ? toastTableVacEnabled : settingAutoVacuum);
             }
         }
         else
         {
-            hasVacuum=false;
+            hasVacuum = false;
             chkVacEnabled->SetValue(settingAutoVacuum);
         }
 
@@ -640,7 +640,7 @@ int dlgTable::Go(bool modal)
         if (tableAnlFactor >= 0)
             txtFactorAn->SetValue(NumToStr(tableAnlFactor));
         else
-          txtFactorAn->SetValue(wxEmptyString);
+            txtFactorAn->SetValue(wxEmptyString);
 
         if (tableCostDelay >= 0)
             txtVacDelay->SetValue(NumToStr(tableCostDelay));
@@ -675,32 +675,32 @@ int dlgTable::Go(bool modal)
                 txtBaseToastVac->SetValue(NumToStr(toastTableVacBaseThr));
             else
                 txtBaseToastVac->SetValue(wxEmptyString);
-    
+
             if (toastTableAnlBaseThr >= 0)
                 txtBaseToastAn->SetValue(NumToStr(toastTableAnlBaseThr));
             else
                 txtBaseToastAn->SetValue(wxEmptyString);
-    
+
             if (toastTableVacFactor >= 0)
                 txtFactorToastVac->SetValue(NumToStr(toastTableVacFactor));
             else
                 txtFactorToastVac->SetValue(wxEmptyString);
-    
+
             if (toastTableAnlFactor >= 0)
                 txtFactorToastAn->SetValue(NumToStr(toastTableAnlFactor));
             else
-              txtFactorToastAn->SetValue(wxEmptyString);
-    
+                txtFactorToastAn->SetValue(wxEmptyString);
+
             if (toastTableCostDelay >= 0)
                 txtToastVacDelay->SetValue(NumToStr(toastTableCostDelay));
             else
                 txtToastVacDelay->SetValue(wxEmptyString);
-    
+
             if (toastTableCostLimit >= 0)
                 txtToastVacLimit->SetValue(NumToStr(toastTableCostLimit));
             else
                 txtToastVacLimit->SetValue(wxEmptyString);
-    
+
             if (toastTableFreezeMinAge >= 0)
                 txtToastFreezeMinAge->SetValue(NumToStr(toastTableFreezeMinAge));
             else
@@ -710,14 +710,14 @@ int dlgTable::Go(bool modal)
                 txtToastFreezeMaxAge->SetValue(NumToStr(toastTableFreezeMaxAge));
             else
                 txtToastFreezeMaxAge->SetValue(wxEmptyString);
-   
+
             if (toastTableFreezeTableAge >= 0)
                 txtToastFreezeTableAge->SetValue(NumToStr(toastTableFreezeTableAge));
             else
                 txtToastFreezeTableAge->SetValue(wxEmptyString);
 
             chkCustomToastVac->SetValue(toastTableHasVacuum);
-            chkToastVacEnabled->SetValue(toastTableHasVacuum?toastTableVacEnabled:settingAutoVacuum);
+            chkToastVacEnabled->SetValue(toastTableHasVacuum ? toastTableVacEnabled : settingAutoVacuum);
         }
         chkCustomVac->SetValue(hasVacuum);
         wxCommandEvent ev;
@@ -782,20 +782,20 @@ wxString dlgTable::GetItemConstraintType(ctlListView *list, long pos)
 wxString dlgTable::GetSql()
 {
     wxString sql;
-    wxString tabname=schema->GetQuotedPrefix() + qtIdent(GetName());
+    wxString tabname = schema->GetQuotedPrefix() + qtIdent(GetName());
 
     if (table)
     {
         int pos;
-        int index=-1;
+        int index = -1;
 
         wxString definition;
 
-        wxArrayString tmpDef=previousColumns;
+        wxArrayString tmpDef = previousColumns;
         wxString tmpsql;
 
         // Build a temporary list of ADD COLUMNs, and fixup the list to remove
-        for (pos=0; pos < lstColumns->GetItemCount() ; pos++)
+        for (pos = 0; pos < lstColumns->GetItemCount() ; pos++)
         {
             index = -1;
             if (lstColumns->GetText(pos, 2).IsEmpty())
@@ -803,21 +803,21 @@ wxString dlgTable::GetSql()
                 definition = lstColumns->GetText(pos, 3);
                 if (definition.IsEmpty())
                 {
-                    definition=qtIdent(lstColumns->GetText(pos)) + wxT(" ") + lstColumns->GetText(pos, 1);
-                    index=tmpDef.Index(definition);
+                    definition = qtIdent(lstColumns->GetText(pos)) + wxT(" ") + lstColumns->GetText(pos, 1);
+                    index = tmpDef.Index(definition);
                     if (index < 0)
                         tmpsql += wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-                            +  wxT(" ADD COLUMN ") + definition + wxT(";\n");
+                                  +  wxT(" ADD COLUMN ") + definition + wxT(";\n");
                 }
                 else
                 {
                     tmpsql += definition;
 
-                    pgColumn *column=(pgColumn*) StrToLong(lstColumns->GetText(pos, 6));
+                    pgColumn *column = (pgColumn *) StrToLong(lstColumns->GetText(pos, 6));
                     if (column)
                     {
-                        index=tmpDef.Index(column->GetQuotedIdentifier() 
-                                    + wxT(" ") + column->GetDefinition());
+                        index = tmpDef.Index(column->GetQuotedIdentifier()
+                                             + wxT(" ") + column->GetDefinition());
                     }
                 }
             }
@@ -825,8 +825,8 @@ wxString dlgTable::GetSql()
             {
                 if (! lstColumns->GetText(pos, 2).IsEmpty())
                 {
-                    definition=qtIdent(lstColumns->GetText(pos)) + wxT(" ") + lstColumns->GetText(pos, 1);
-                    index=tmpDef.Index(definition);
+                    definition = qtIdent(lstColumns->GetText(pos)) + wxT(" ") + lstColumns->GetText(pos, 1);
+                    index = tmpDef.Index(definition);
                 }
             }
             if (index >= 0 && index < (int)tmpDef.GetCount())
@@ -834,7 +834,7 @@ wxString dlgTable::GetSql()
         }
 
 
-        for (index=0 ; index < (int)tmpDef.GetCount() ; index++)
+        for (index = 0 ; index < (int)tmpDef.GetCount() ; index++)
         {
             definition = tmpDef.Item(index);
             if (definition[0U] == '"')
@@ -842,7 +842,7 @@ wxString dlgTable::GetSql()
             else
                 definition = definition.BeforeFirst(' ');
             sql += wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-                +  wxT(" DROP COLUMN ") + qtIdent(definition) + wxT(";\n");
+                   +  wxT(" DROP COLUMN ") + qtIdent(definition) + wxT(";\n");
         }
         // Add the ADD COLUMNs...
         sql += tmpsql;
@@ -850,7 +850,7 @@ wxString dlgTable::GetSql()
         AppendNameChange(sql);
         AppendOwnerChange(sql, wxT("TABLE ") + tabname);
 
-        tmpDef=previousTables;
+        tmpDef = previousTables;
         tmpsql.Empty();
 
         // Build a temporary list of INHERIT tables, and fixup the list to remove
@@ -860,7 +860,7 @@ wxString dlgTable::GetSql()
             index = tmpDef.Index(definition);
             if (index < 0)
                 tmpsql += wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-                    +  wxT(" INHERIT ") + definition + wxT(";\n");
+                          +  wxT(" INHERIT ") + definition + wxT(";\n");
             else
                 tmpDef.RemoveAt(index);
         }
@@ -869,28 +869,28 @@ wxString dlgTable::GetSql()
         {
             definition = tmpDef.Item(index);
             sql += wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-                +  wxT(" NO INHERIT ") + qtIdent(definition) + wxT(";\n");
+                   +  wxT(" NO INHERIT ") + qtIdent(definition) + wxT(";\n");
         }
         // Add the INHERIT COLUMNs...
         sql += tmpsql;
 
-        tmpDef=previousConstraints;
+        tmpDef = previousConstraints;
         tmpsql.Empty();
 
         // Build a temporary list of ADD CONSTRAINTs, and fixup the list to remove
-        for (pos=0; pos < lstConstraints->GetItemCount() ; pos++)
+        for (pos = 0; pos < lstConstraints->GetItemCount() ; pos++)
         {
-            wxString conname= qtIdent(lstConstraints->GetItemText(pos));
+            wxString conname = qtIdent(lstConstraints->GetItemText(pos));
             definition = conname;
-            definition += wxT(" ") + GetItemConstraintType(lstConstraints, pos) 
-                        + wxT(" ") + lstConstraints->GetText(pos, 1);
-            index=tmpDef.Index(definition);
+            definition += wxT(" ") + GetItemConstraintType(lstConstraints, pos)
+                          + wxT(" ") + lstConstraints->GetText(pos, 1);
+            index = tmpDef.Index(definition);
             if (index >= 0)
                 tmpDef.RemoveAt(index);
             else
             {
                 tmpsql += wxT("ALTER TABLE ") + tabname
-                    +  wxT(" ADD");
+                          +  wxT(" ADD");
                 if (!conname.IsEmpty())
                     tmpsql += wxT(" CONSTRAINT ");
 
@@ -898,16 +898,16 @@ wxString dlgTable::GetSql()
             }
         }
 
-        for (index=0 ; index < (int)tmpDef.GetCount() ; index++)
+        for (index = 0 ; index < (int)tmpDef.GetCount() ; index++)
         {
             definition = tmpDef.Item(index);
             if (definition[0U] == '"')
                 definition = definition.Mid(1).BeforeFirst('"');
             else
                 definition = definition.BeforeFirst(' ');
-                sql = wxT("ALTER TABLE ") + tabname
-                    + wxT(" DROP CONSTRAINT ") + qtIdent(definition) + wxT(";\n")
-                    + sql;
+            sql = wxT("ALTER TABLE ") + tabname
+                  + wxT(" DROP CONSTRAINT ") + qtIdent(definition) + wxT(";\n")
+                  + sql;
 
         }
         // Add the ADD CONSTRAINTs...
@@ -915,23 +915,23 @@ wxString dlgTable::GetSql()
 
         if (chkHasOids->GetValue() != table->GetHasOids())
         {
-            sql += wxT("ALTER TABLE ") + tabname 
-                +  wxT(" SET WITHOUT OIDS;\n");
+            sql += wxT("ALTER TABLE ") + tabname
+                   +  wxT(" SET WITHOUT OIDS;\n");
         }
         if (connection->BackendMinimumVersion(8, 0) && cbTablespace->GetOIDKey() != table->GetTablespaceOid())
-            sql += wxT("ALTER TABLE ") + tabname 
-                +  wxT(" SET TABLESPACE ") + qtIdent(cbTablespace->GetValue())
-                + wxT(";\n");
+            sql += wxT("ALTER TABLE ") + tabname
+                   +  wxT(" SET TABLESPACE ") + qtIdent(cbTablespace->GetValue())
+                   + wxT(";\n");
 
-        if (connection->BackendMinimumVersion(8,1))
+        if (connection->BackendMinimumVersion(8, 1))
         {
             if (!chkCustomVac->GetValue())
             {
                 if (hasVacuum)
                 {
-                    if (connection->BackendMinimumVersion(8,4))
+                    if (connection->BackendMinimumVersion(8, 4))
                         sql += wxT("ALTER TABLE ") + tabname
-                            +  wxT(" RESET(\n")
+                               +  wxT(" RESET(\n")
                                wxT("  autovacuum_enabled,\n")
                                wxT("  autovacuum_vacuum_threshold,\n")
                                wxT("  autovacuum_analyze_threshold,\n")
@@ -1009,14 +1009,14 @@ wxString dlgTable::GetSql()
                         valChanged = false;
                         FillAutoVacuumParameters(setStr, resetStr, wxT("autovacuum_freeze_min_age"), newVal);
                     }
-                    
+
                     newVal = AppendNum(valChanged, txtFreezeMaxAge, tableFreezeMaxAge);
                     if (valChanged)
                     {
                         valChanged = false;
                         FillAutoVacuumParameters(setStr, resetStr, wxT("autovacuum_freeze_max_age"), newVal);
                     }
-                    
+
                     newVal = AppendNum(valChanged, txtFreezeTableAge, tableFreezeTableAge);
                     if (valChanged)
                     {
@@ -1040,30 +1040,30 @@ wxString dlgTable::GetSql()
                     if (connection->BackendMinimumVersion(8, 2))
                     {
                         vacStr = wxT("INSERT INTO pg_autovacuum(vacrelid, enabled, vac_base_thresh, anl_base_thresh, vac_scale_factor, anl_scale_factor, vac_cost_delay, vac_cost_limit, freeze_min_age, freeze_max_age)")
-                                 wxT("\n   VALUES(") 
-                               + table->GetOidStr() + wxT(", ")
-                               + BoolToStr(chkVacEnabled->GetValue()) + wxT(", ")
-                               + AppendNum(changed, txtBaseVac, tableVacBaseThr) + wxT(", ")
-                               + AppendNum(changed, txtBaseAn, tableAnlBaseThr) + wxT(", ")
-                               + AppendNum(changed, txtFactorVac, tableVacFactor) + wxT(", ")
-                               + AppendNum(changed, txtFactorAn, tableAnlFactor) + wxT(", ")
-                               + AppendNum(changed, txtVacDelay, tableCostDelay) + wxT(", ")
-                               + AppendNum(changed, txtVacLimit, tableCostLimit) + wxT(", ")
-                               + AppendNum(changed, txtFreezeMinAge, tableFreezeMinAge) + wxT(", ")
-                               + AppendNum(changed, txtFreezeMaxAge, tableFreezeMaxAge) + wxT(");\n");
+                                 wxT("\n   VALUES(")
+                                 + table->GetOidStr() + wxT(", ")
+                                 + BoolToStr(chkVacEnabled->GetValue()) + wxT(", ")
+                                 + AppendNum(changed, txtBaseVac, tableVacBaseThr) + wxT(", ")
+                                 + AppendNum(changed, txtBaseAn, tableAnlBaseThr) + wxT(", ")
+                                 + AppendNum(changed, txtFactorVac, tableVacFactor) + wxT(", ")
+                                 + AppendNum(changed, txtFactorAn, tableAnlFactor) + wxT(", ")
+                                 + AppendNum(changed, txtVacDelay, tableCostDelay) + wxT(", ")
+                                 + AppendNum(changed, txtVacLimit, tableCostLimit) + wxT(", ")
+                                 + AppendNum(changed, txtFreezeMinAge, tableFreezeMinAge) + wxT(", ")
+                                 + AppendNum(changed, txtFreezeMaxAge, tableFreezeMaxAge) + wxT(");\n");
                     }
                     else
                     {
                         vacStr = wxT("INSERT INTO pg_autovacuum(vacrelid, enabled, vac_base_thresh, anl_base_thresh, vac_scale_factor, anl_scale_factor, vac_cost_delay, vac_cost_limit)")
-                                 wxT("\n   VALUES(") 
-                               + table->GetOidStr() + wxT(", ")
-                               + BoolToStr(chkVacEnabled->GetValue()) + wxT(", ")
-                               + AppendNum(changed, txtBaseVac, tableVacBaseThr) + wxT(", ")
-                               + AppendNum(changed, txtBaseAn, tableAnlBaseThr) + wxT(", ")
-                               + AppendNum(changed, txtFactorVac, tableVacFactor) + wxT(", ")
-                               + AppendNum(changed, txtFactorAn, tableAnlFactor) + wxT(", ")
-                               + AppendNum(changed, txtVacDelay, tableCostDelay) + wxT(", ")
-                               + AppendNum(changed, txtVacLimit, tableCostLimit) + wxT(");\n");
+                                 wxT("\n   VALUES(")
+                                 + table->GetOidStr() + wxT(", ")
+                                 + BoolToStr(chkVacEnabled->GetValue()) + wxT(", ")
+                                 + AppendNum(changed, txtBaseVac, tableVacBaseThr) + wxT(", ")
+                                 + AppendNum(changed, txtBaseAn, tableAnlBaseThr) + wxT(", ")
+                                 + AppendNum(changed, txtFactorVac, tableVacFactor) + wxT(", ")
+                                 + AppendNum(changed, txtFactorAn, tableAnlFactor) + wxT(", ")
+                                 + AppendNum(changed, txtVacDelay, tableCostDelay) + wxT(", ")
+                                 + AppendNum(changed, txtVacLimit, tableCostLimit) + wxT(");\n");
                     }
                 }
                 else
@@ -1072,29 +1072,29 @@ wxString dlgTable::GetSql()
                     {
                         vacStr = wxT("UPDATE pg_autovacuum\n")
                                  wxT("   SET enabled=")
-                               + BoolToStr(chkVacEnabled->GetValue())
-                               + wxT(", vac_base_thresh = ") + AppendNum(changed, txtBaseVac, tableVacBaseThr) 
-                               + wxT(", anl_base_thresh = ") + AppendNum(changed, txtBaseAn, tableAnlBaseThr) 
-                               + wxT(", vac_scale_factor = ") + AppendNum(changed, txtFactorVac, tableVacFactor)
-                               + wxT(", anl_scale_factor = ") + AppendNum(changed, txtFactorAn, tableAnlFactor)
-                               + wxT(", vac_cost_delay = ") + AppendNum(changed, txtVacDelay, tableCostDelay)
-                               + wxT(", vac_cost_limit = ") + AppendNum(changed, txtVacLimit, tableCostLimit)
-                               + wxT(", freeze_min_age = ") + AppendNum(changed, txtFreezeMinAge, tableFreezeMinAge)
-                               + wxT(", freeze_max_age = ") + AppendNum(changed, txtFreezeMaxAge, tableFreezeMaxAge)
-                               + wxT("\n WHERE vacrelid=") + table->GetOidStr() + wxT(";\n");
+                                 + BoolToStr(chkVacEnabled->GetValue())
+                                 + wxT(", vac_base_thresh = ") + AppendNum(changed, txtBaseVac, tableVacBaseThr)
+                                 + wxT(", anl_base_thresh = ") + AppendNum(changed, txtBaseAn, tableAnlBaseThr)
+                                 + wxT(", vac_scale_factor = ") + AppendNum(changed, txtFactorVac, tableVacFactor)
+                                 + wxT(", anl_scale_factor = ") + AppendNum(changed, txtFactorAn, tableAnlFactor)
+                                 + wxT(", vac_cost_delay = ") + AppendNum(changed, txtVacDelay, tableCostDelay)
+                                 + wxT(", vac_cost_limit = ") + AppendNum(changed, txtVacLimit, tableCostLimit)
+                                 + wxT(", freeze_min_age = ") + AppendNum(changed, txtFreezeMinAge, tableFreezeMinAge)
+                                 + wxT(", freeze_max_age = ") + AppendNum(changed, txtFreezeMaxAge, tableFreezeMaxAge)
+                                 + wxT("\n WHERE vacrelid=") + table->GetOidStr() + wxT(";\n");
                     }
                     else
                     {
                         vacStr = wxT("UPDATE pg_autovacuum\n")
                                  wxT("   SET enabled=")
-                               + BoolToStr(chkVacEnabled->GetValue())
-                               + wxT(", vac_base_thresh = ") + AppendNum(changed, txtBaseVac, tableVacBaseThr) 
-                               + wxT(", anl_base_thresh = ") + AppendNum(changed, txtBaseAn, tableAnlBaseThr) 
-                               + wxT(", vac_scale_factor = ") + AppendNum(changed, txtFactorVac, tableVacFactor)
-                               + wxT(", anl_scale_factor = ") + AppendNum(changed, txtFactorAn, tableAnlFactor)
-                               + wxT(", vac_cost_delay = ") + AppendNum(changed, txtVacDelay, tableCostDelay)
-                               + wxT(", vac_cost_limit = ") + AppendNum(changed, txtVacLimit, tableCostLimit)
-                               + wxT("\n WHERE vacrelid=") + table->GetOidStr() + wxT(";\n");
+                                 + BoolToStr(chkVacEnabled->GetValue())
+                                 + wxT(", vac_base_thresh = ") + AppendNum(changed, txtBaseVac, tableVacBaseThr)
+                                 + wxT(", anl_base_thresh = ") + AppendNum(changed, txtBaseAn, tableAnlBaseThr)
+                                 + wxT(", vac_scale_factor = ") + AppendNum(changed, txtFactorVac, tableVacFactor)
+                                 + wxT(", anl_scale_factor = ") + AppendNum(changed, txtFactorAn, tableAnlFactor)
+                                 + wxT(", vac_cost_delay = ") + AppendNum(changed, txtVacDelay, tableCostDelay)
+                                 + wxT(", vac_cost_limit = ") + AppendNum(changed, txtVacLimit, tableCostLimit)
+                                 + wxT("\n WHERE vacrelid=") + table->GetOidStr() + wxT(";\n");
                     }
 
                 }
@@ -1109,7 +1109,7 @@ wxString dlgTable::GetSql()
                 if (toastTableHasVacuum)
                 {
                     sql += wxT("ALTER TABLE ") + tabname
-                        +  wxT(" RESET(\n")
+                           +  wxT(" RESET(\n")
                            wxT("  toast.autovacuum_enabled,\n")
                            wxT("  toast.autovacuum_vacuum_threshold,\n")
                            wxT("  toast.autovacuum_analyze_threshold,\n")
@@ -1183,14 +1183,14 @@ wxString dlgTable::GetSql()
                     valChanged = false;
                     FillAutoVacuumParameters(setStr, resetStr, wxT("toast.autovacuum_freeze_min_age"), newVal);
                 }
-                
+
                 newVal = AppendNum(valChanged, txtToastFreezeMaxAge, toastTableFreezeMaxAge);
                 if (valChanged)
                 {
                     valChanged = false;
                     FillAutoVacuumParameters(setStr, resetStr, wxT("toast.autovacuum_freeze_max_age"), newVal);
                 }
-                
+
                 newVal = AppendNum(valChanged, txtToastFreezeTableAge, toastTableFreezeTableAge);
                 if (valChanged)
                 {
@@ -1224,10 +1224,10 @@ wxString dlgTable::GetSql()
             sql += wxT("\n(");
 
         int pos;
-        bool needComma=false;
+        bool needComma = false;
         if (!typedTable)
         {
-            for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+            for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
             {
                 if (lstColumns->GetText(pos, 2).IsEmpty())
                 {
@@ -1235,33 +1235,33 @@ wxString dlgTable::GetSql()
                     if (needComma)
                         sql += wxT(", ");
                     else
-                        needComma=true;
+                        needComma = true;
 
-                    wxString name=lstColumns->GetText(pos);
+                    wxString name = lstColumns->GetText(pos);
                     wxString definition = lstColumns->GetText(pos, 1);
 
                     sql += wxT("\n   ") + qtIdent(name)
-                        + wxT(" ") + definition;
+                           + wxT(" ") + definition;
                 }
             }
         }
 
-        for (pos=0 ; pos < lstConstraints->GetItemCount() ; pos++)
+        for (pos = 0 ; pos < lstConstraints->GetItemCount() ; pos++)
         {
-            wxString name=lstConstraints->GetItemText(pos);
+            wxString name = lstConstraints->GetItemText(pos);
             wxString definition = lstConstraints->GetText(pos, 1);
 
             if (needComma)
                 sql += wxT(", ");
             else
-                needComma=true;
+                needComma = true;
 
             sql += wxT("\n   ");
             AppendIfFilled(sql, wxT("CONSTRAINT "), qtIdent(name));
 
             sql += wxT(" ") + GetItemConstraintType(lstConstraints, pos) + wxT(" ") + definition;
         }
-        
+
         if (!typedTable || (typedTable && lstConstraints->GetItemCount() > 0))
             sql += wxT("\n) ");
 
@@ -1271,7 +1271,7 @@ wxString dlgTable::GetSql()
             sql += wxT("\nINHERITS (");
 
             unsigned int i;
-            for (i=0 ; i < lbTables->GetCount() ; i++)
+            for (i = 0 ; i < lbTables->GetCount() ; i++)
             {
                 if (i)
                     sql += wxT(", ");
@@ -1344,14 +1344,14 @@ wxString dlgTable::GetSql()
                     valChanged = false;
                     FillAutoVacuumParameters(sql, resetStr, wxT("autovacuum_freeze_min_age"), newVal);
                 }
-                
+
                 newVal = AppendNum(valChanged, txtFreezeMaxAge, tableFreezeMaxAge);
                 if (valChanged)
                 {
                     valChanged = false;
                     FillAutoVacuumParameters(sql, resetStr, wxT("autovacuum_freeze_max_age"), newVal);
                 }
-                
+
                 newVal = AppendNum(valChanged, txtFreezeTableAge, tableFreezeTableAge);
                 if (valChanged)
                 {
@@ -1414,14 +1414,14 @@ wxString dlgTable::GetSql()
                     valChanged = false;
                     FillAutoVacuumParameters(sql, resetStr, wxT("toast.autovacuum_freeze_min_age"), newVal);
                 }
-                
+
                 newVal = AppendNum(valChanged, txtToastFreezeMaxAge, toastTableFreezeMaxAge);
                 if (valChanged)
                 {
                     valChanged = false;
                     FillAutoVacuumParameters(sql, resetStr, wxT("toast.autovacuum_freeze_max_age"), newVal);
                 }
-                
+
                 newVal = AppendNum(valChanged, txtToastFreezeTableAge, toastTableFreezeTableAge);
                 if (valChanged)
                 {
@@ -1447,23 +1447,23 @@ wxString dlgTable::GetSql()
         // Extra column info
 
         // Statistics
-        for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+        for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
         {
             if (!lstColumns->GetText(pos, 4).IsEmpty())
                 sql += wxT("ALTER TABLE ") + tabname
-                    + wxT(" ALTER COLUMN ") + qtIdent(lstColumns->GetText(pos, 0))
-                    + wxT(" SET STATISTICS ") + lstColumns->GetText(pos, 4)
-                    + wxT(";\n");
+                       + wxT(" ALTER COLUMN ") + qtIdent(lstColumns->GetText(pos, 0))
+                       + wxT(" SET STATISTICS ") + lstColumns->GetText(pos, 4)
+                       + wxT(";\n");
         }
 
         // Comments
-        for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+        for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
         {
             if (!lstColumns->GetText(pos, 5).IsEmpty())
                 sql += wxT("COMMENT ON COLUMN ") + tabname
-                    + wxT(".") + qtIdent(lstColumns->GetText(pos, 0))
-                    + wxT(" IS ") + qtDbString(lstColumns->GetText(pos, 5))
-                    + wxT(";\n");
+                       + wxT(".") + qtIdent(lstColumns->GetText(pos, 0))
+                       + wxT(" IS ") + qtDbString(lstColumns->GetText(pos, 5))
+                       + wxT(";\n");
         }
 
     }
@@ -1496,11 +1496,11 @@ void dlgTable::FillConstraint()
 
 pgObject *dlgTable::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgObject *obj=tableFactory.CreateObjects(collection, 0, wxT(
-        "\n   AND rel.relname=") + qtDbString(name) + wxT(
-        "\n   AND rel.relnamespace=") + schema->GetOidStr());
+    pgObject *obj = tableFactory.CreateObjects(collection, 0, wxT(
+                        "\n   AND rel.relname=") + qtDbString(name) + wxT(
+                        "\n   AND rel.relnamespace=") + schema->GetOidStr());
 
     return obj;
 }
@@ -1510,7 +1510,7 @@ wxString dlgTable::GetNumString(wxTextCtrl *ctl, bool enabled, const wxString &v
 {
     if (!enabled)
         return val;
-    wxString str=ctl->GetValue();
+    wxString str = ctl->GetValue();
     if (str.IsEmpty() || StrToLong(val) < 0)
         return val;
     else
@@ -1520,11 +1520,11 @@ wxString dlgTable::GetNumString(wxTextCtrl *ctl, bool enabled, const wxString &v
 
 wxString dlgTable::AppendNum(bool &changed, wxTextCtrl *ctl, long val)
 {
-    wxString str=ctl->GetValue();
-    long v=StrToLong(str);
+    wxString str = ctl->GetValue();
+    long v = StrToLong(str);
     if (str.IsEmpty() || v < 0)
-        v=-1;
-    
+        v = -1;
+
     changed |= (v != val);
     return NumToStr(v);
 }
@@ -1532,10 +1532,10 @@ wxString dlgTable::AppendNum(bool &changed, wxTextCtrl *ctl, long val)
 
 wxString dlgTable::AppendNum(bool &changed, wxTextCtrl *ctl, double val)
 {
-    wxString str=ctl->GetValue();
-    double v=StrToDouble(str);
+    wxString str = ctl->GetValue();
+    double v = StrToDouble(str);
     if (str.IsEmpty() || v < 0)
-        v=-1.;
+        v = -1.;
 
     changed |= (v != val);
     return NumToStr(v);
@@ -1548,11 +1548,11 @@ void dlgTable::OnChangeSize(wxSizeEvent &ev)
     if (lstConstraints)
     {
         lstConstraints->SetSize(wxDefaultCoord, wxDefaultCoord,
-            ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 150);
+                                ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 150);
     }
 
     lstColumns->SetSize(wxDefaultCoord, wxDefaultCoord,
-        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 150);
+                        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 150);
 
     dlgSecurityProperty::OnChangeSize(ev);
 }
@@ -1563,7 +1563,7 @@ void dlgTable::OnChangeVacuum(wxCommandEvent &ev)
 {
     if (connection->BackendMinimumVersion(8, 1))
     {
-        bool vacEn=chkCustomVac->GetValue() && chkVacEnabled->GetValue();
+        bool vacEn = chkCustomVac->GetValue() && chkVacEnabled->GetValue();
         chkVacEnabled->Enable(chkCustomVac->GetValue());
 
         txtBaseVac->Enable(vacEn);
@@ -1602,9 +1602,9 @@ void dlgTable::OnChangeVacuum(wxCommandEvent &ev)
             stFreezeTableAgeCurr->SetLabel(NumToStr((tableFreezeTableAge == -1) ? settingFreezeTableAge : tableFreezeTableAge));
 
             /* Toast Table Vacuum Settings */
-            bool toastVacEn=chkCustomToastVac->GetValue() && chkToastVacEnabled->GetValue();
+            bool toastVacEn = chkCustomToastVac->GetValue() && chkToastVacEnabled->GetValue();
             chkToastVacEnabled->Enable(chkCustomToastVac->GetValue());
-    
+
             txtBaseToastVac->Enable(toastVacEn);
             txtBaseToastAn->Enable(toastVacEn);
             txtFactorToastVac->Enable(toastVacEn);
@@ -1614,7 +1614,7 @@ void dlgTable::OnChangeVacuum(wxCommandEvent &ev)
             txtToastFreezeMinAge->Enable(toastVacEn);
             txtToastFreezeMaxAge->Enable(toastVacEn);
             txtToastFreezeTableAge->Enable(toastVacEn);
-    
+
             stBaseToastVacCurr->SetLabel(NumToStr((toastTableVacBaseThr == -1) ? settingVacBaseThr : toastTableVacBaseThr));
             stBaseToastAnCurr->SetLabel(NumToStr((toastTableAnlBaseThr == -1) ? settingAnlBaseThr : toastTableAnlBaseThr));
             stFactorToastVacCurr->SetLabel(NumToStr((toastTableVacFactor == -1) ? settingVacFactor : toastTableVacFactor));
@@ -1650,7 +1650,7 @@ void dlgTable::OnOK(wxCommandEvent &ev)
         return;
 #endif
     if (lstColumns->GetItemCount() > 0 && !hasPK
-        && frmHint::ShowHint(this, HINT_PRIMARYKEY) == wxID_CANCEL)
+            && frmHint::ShowHint(this, HINT_PRIMARYKEY) == wxID_CANCEL)
         return;
 
     dlgProperty::OnOK(ev);
@@ -1661,7 +1661,7 @@ void dlgTable::CheckChange()
 {
     if (table)
     {
-        bool changed=false;
+        bool changed = false;
         if (connection->BackendMinimumVersion(7, 4) || lstColumns->GetItemCount() > 0)
         {
             changed = !GetSql().IsEmpty();
@@ -1670,11 +1670,11 @@ void dlgTable::CheckChange()
     }
     else
     {
-        wxString name=GetName();
-        bool enable=true;
+        wxString name = GetName();
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
-        CheckValid(enable, connection->BackendMinimumVersion(7, 4) || lstColumns->GetItemCount() > 0, 
-            _("Please specify columns."));
+        CheckValid(enable, connection->BackendMinimumVersion(7, 4) || lstColumns->GetItemCount() > 0,
+                   _("Please specify columns."));
         EnableOK(enable);
     }
 }
@@ -1682,20 +1682,20 @@ void dlgTable::CheckChange()
 
 void dlgTable::OnAddTable(wxCommandEvent &ev)
 {
-    int sel=cbTables->GetGuessedSelection();
+    int sel = cbTables->GetGuessedSelection();
     if (sel >= 0)
     {
-        wxString tabname=cbTables->GetValue();
-        wxString taboid=tableOids.Item(sel);
+        wxString tabname = cbTables->GetValue();
+        wxString taboid = tableOids.Item(sel);
         inheritedTableOids.Add(taboid);
         tableOids.RemoveAt(sel);
 
         lbTables->Append(tabname);
         cbTables->Delete(sel);
 
-        pgSet *set=connection->ExecuteSet(
-            wxT("SELECT attname, format_type(atttypid, NULL) AS atttype FROM pg_attribute\n")
-            wxT (" WHERE NOT attisdropped AND attnum>0 AND attrelid=") + taboid);
+        pgSet *set = connection->ExecuteSet(
+                         wxT("SELECT attname, format_type(atttypid, NULL) AS atttype FROM pg_attribute\n")
+                         wxT (" WHERE NOT attisdropped AND attnum>0 AND attrelid=") + taboid);
         if (set)
         {
             bool found;
@@ -1703,7 +1703,7 @@ void dlgTable::OnAddTable(wxCommandEvent &ev)
             {
                 found = false;
 
-                size_t row=lstColumns->GetItemCount();
+                size_t row = lstColumns->GetItemCount();
                 while (row--)
                 {
                     if (set->GetVal(wxT("attname")).Cmp(lstColumns->GetText(row, 0)) == 0)
@@ -1720,14 +1720,14 @@ void dlgTable::OnAddTable(wxCommandEvent &ev)
                 else
                 {
                     lstColumns->AppendItem(tableFactory.GetIconId(),
-                        set->GetVal(wxT("attname")), 
-                        set->GetVal(wxT("atttype")),
-                        tabname);
+                                           set->GetVal(wxT("attname")),
+                                           set->GetVal(wxT("atttype")),
+                                           tabname);
                 }
                 set->MoveNext();
             }
             delete set;
-        }        
+        }
         CheckChange();
     }
 }
@@ -1741,17 +1741,17 @@ void dlgTable::OnRemoveTable(wxCommandEvent &ev)
             return;
     }
 
-    int sel=lbTables->GetSelection();
+    int sel = lbTables->GetSelection();
     if (sel >= 0)
     {
-        wxString tabname=lbTables->GetStringSelection();
+        wxString tabname = lbTables->GetStringSelection();
         tableOids.Add(inheritedTableOids.Item(sel));
         inheritedTableOids.RemoveAt(sel);
 
         lbTables->Delete(sel);
         cbTables->Append(tabname);
 
-        size_t row=lstColumns->GetItemCount();
+        size_t row = lstColumns->GetItemCount();
         while (row--)
         {
             if (tabname == lstColumns->GetText(row, 2))
@@ -1791,23 +1791,23 @@ void dlgTable::OnChangeOfType(wxCommandEvent &ev)
             }
         }
 
-        pgSet *set=connection->ExecuteSet(
-            wxT("SELECT a.attname, format_type(atttypid, NULL) AS atttypname ")
-            wxT("FROM pg_attribute a, pg_class c\n")
-            wxT("WHERE NOT a.attisdropped AND a.attnum>0 ")
-            wxT("AND a.attrelid=c.oid AND c.relname='") + qtIdent(cbOfType->GetValue()) + wxT("'"));
+        pgSet *set = connection->ExecuteSet(
+                         wxT("SELECT a.attname, format_type(atttypid, NULL) AS atttypname ")
+                         wxT("FROM pg_attribute a, pg_class c\n")
+                         wxT("WHERE NOT a.attisdropped AND a.attnum>0 ")
+                         wxT("AND a.attrelid=c.oid AND c.relname='") + qtIdent(cbOfType->GetValue()) + wxT("'"));
         if (set)
         {
             while (!set->Eof())
             {
                 lstColumns->AppendItem(tableFactory.GetIconId(),
-                    set->GetVal(wxT("attname")), 
-                    set->GetVal(wxT("atttypname")),
-                    wxT(""));
+                                       set->GetVal(wxT("attname")),
+                                       set->GetVal(wxT("atttypname")),
+                                       wxT(""));
                 set->MoveNext();
             }
             delete set;
-        }        
+        }
     }
     else
     {
@@ -1831,8 +1831,8 @@ void dlgTable::OnChangeOfType(wxCommandEvent &ev)
 
 void dlgTable::OnChangeCol(wxCommandEvent &ev)
 {
-    long pos=lstColumns->GetSelection();
-    pgColumn *column=(pgColumn*) StrToLong(lstColumns->GetText(pos, 6));
+    long pos = lstColumns->GetSelection();
+    pgColumn *column = (pgColumn *) StrToLong(lstColumns->GetText(pos, 6));
 
     dlgColumn col(&columnFactory, mainForm, column, table);
     col.CenterOnParent();
@@ -1848,13 +1848,13 @@ void dlgTable::OnChangeCol(wxCommandEvent &ev)
     CheckChange();
 }
 
-// Cache datatypes to avoid multiple calls to server when adding multiple columns to a table. 
+// Cache datatypes to avoid multiple calls to server when adding multiple columns to a table.
 void dlgTable::PopulateDatatypeCache()
 {
     DatatypeReader tr(database, true);
     while (tr.HasMore())
     {
-        pgDatatype dt=tr.GetDatatype();
+        pgDatatype dt = tr.GetDatatype();
 
         dataType *dType = new dataType();
         dType->SetOid(tr.GetOid());
@@ -1871,7 +1871,7 @@ void dlgTable::OnAddCol(wxCommandEvent &ev)
     dlgColumn col(&columnFactory, mainForm, NULL, table);
     col.CenterOnParent();
     col.SetDatabase(database);
-    col.SetDatatypeCache(dtCache);   
+    col.SetDatatypeCache(dtCache);
     if (col.Go(true) != wxID_CANCEL)
     {
         long pos = lstColumns->AppendItem(columnFactory.GetIconId(), col.GetName(), col.GetDefinition());
@@ -1904,9 +1904,9 @@ void dlgTable::OnRemoveCol(wxCommandEvent &ev)
 
 void dlgTable::OnSelChangeCol(wxListEvent &ev)
 {
-    long pos=lstColumns->GetSelection();
-    wxString inheritedFromTable=lstColumns->GetText(pos, 2);
-    
+    long pos = lstColumns->GetSelection();
+    wxString inheritedFromTable = lstColumns->GetText(pos, 2);
+
     btnAddCol->Enable(!(cbOfType->GetCurrentSelection() > 0 && cbOfType->GetOIDKey() > 0));
     btnRemoveCol->Enable(inheritedFromTable.IsEmpty() && !(cbOfType->GetCurrentSelection() > 0 && cbOfType->GetOIDKey() > 0));
     btnChangeCol->Enable(table != 0 && !lstColumns->GetText(pos, 6).IsEmpty() && inheritedFromTable.IsEmpty());
@@ -1915,7 +1915,7 @@ void dlgTable::OnSelChangeCol(wxListEvent &ev)
 
 void dlgTable::OnAddConstr(wxCommandEvent &ev)
 {
-    int sel=cbConstrType->GetCurrentSelection();
+    int sel = cbConstrType->GetCurrentSelection();
     if (hasPK)
         sel++;
 
@@ -1932,7 +1932,7 @@ void dlgTable::OnAddConstr(wxCommandEvent &ev)
                 tmpDef.Replace(wxT("\n"), wxT(" "));
 
                 lstConstraints->AppendItem(primaryKeyFactory.GetIconId(), pk.GetName(), tmpDef);
-                hasPK=true;
+                hasPK = true;
                 FillConstraint();
             }
             break;
@@ -2010,7 +2010,7 @@ void dlgTable::OnRemoveConstr(wxCommandEvent &ev)
             return;
     }
 
-    int pos=lstConstraints->GetSelection();
+    int pos = lstConstraints->GetSelection();
     if (pos < 0)
         return;
 
@@ -2021,10 +2021,10 @@ void dlgTable::OnRemoveConstr(wxCommandEvent &ev)
     lstConstraints->GetItem(item);
     if (item.GetImage() == primaryKeyFactory.GetIconId())
     {
-        hasPK=false;
+        hasPK = false;
         FillConstraint();
     }
-    
+
     lstConstraints->DeleteItem(pos);
     btnRemoveConstr->Disable();
 
@@ -2038,8 +2038,8 @@ void dlgTable::OnSelChangeConstr(wxListEvent &ev)
 }
 
 
-void dlgTable::FillAutoVacuumParameters(wxString& setStr, wxString& resetStr,
-                                        const wxString& parameter, const wxString& val)
+void dlgTable::FillAutoVacuumParameters(wxString &setStr, wxString &resetStr,
+                                        const wxString &parameter, const wxString &val)
 {
     if (val == wxT("-1"))
     {

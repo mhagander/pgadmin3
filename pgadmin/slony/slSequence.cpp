@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,16 +22,16 @@
 #include "frm/frmMain.h"
 
 
-slSequence::slSequence(slSet *s, const wxString& newName)
-: slSetObject(s, slSequenceFactory, newName)
+slSequence::slSequence(slSet *s, const wxString &newName)
+    : slSetObject(s, slSequenceFactory, newName)
 {
 }
 
 bool slSequence::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(
-              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() 
-            + wxT("setdropsequence(") + NumToStr(GetSlId()) + wxT(");\n"));
+               wxT("SELECT ") + GetCluster()->GetSchemaPrefix()
+               + wxT("setdropsequence(") + NumToStr(GetSlId()) + wxT(");\n"));
 }
 
 
@@ -40,11 +40,11 @@ wxString slSequence::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Register sequence ") + GetName() + wxT(" for replication.\n\n")
-              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() + wxT("setaddsequence(") 
-                    + NumToStr(GetSet()->GetSlId()) + wxT(", ") 
-                    + NumToStr(GetSlId()) + wxT(", ")
-                    + qtDbString(GetName()) + wxT(", ")
-                    + qtDbString(GetComment()) + wxT(");\n");
+              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() + wxT("setaddsequence(")
+              + NumToStr(GetSet()->GetSlId()) + wxT(", ")
+              + NumToStr(GetSlId()) + wxT(", ")
+              + qtDbString(GetName()) + wxT(", ")
+              + qtDbString(GetComment()) + wxT(");\n");
     }
     return sql;
 }
@@ -54,7 +54,7 @@ void slSequence::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
     }
@@ -74,8 +74,8 @@ void slSequence::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 
 pgObject *slSequence::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *sequence=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *sequence = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         sequence = slSequenceFactory.CreateObjects(coll, 0, wxT(" WHERE seq_id=") + NumToStr(GetSlId()) + wxT("\n"));
 
@@ -86,8 +86,8 @@ pgObject *slSequence::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *slSlSequenceFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restr)
 {
-    slSetObjCollection *collection=(slSetObjCollection*)coll;
-    slSequence *sequence=0;
+    slSetObjCollection *collection = (slSetObjCollection *)coll;
+    slSequence *sequence = 0;
     wxString restriction;
     if (restr.IsEmpty())
         restriction = wxT(" WHERE seq_set = ") + NumToStr(collection->GetSlId());
@@ -95,13 +95,13 @@ pgObject *slSlSequenceFactory::CreateObjects(pgCollection *coll, ctlTree *browse
         restriction = restr;
 
     pgSet *sequences = collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT seq_id, seq_set, nspname, relname, seq_comment\n")
-        wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_sequence\n")
-        wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_set ON set_id=seq_set\n")
-        wxT("  JOIN pg_class cl ON cl.oid=seq_reloid\n")
-        wxT("  JOIN pg_namespace nsp ON nsp.oid=relnamespace\n")
-         + restriction +
-        wxT(" ORDER BY seq_id"));
+                           wxT("SELECT seq_id, seq_set, nspname, relname, seq_comment\n")
+                           wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_sequence\n")
+                           wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_set ON set_id=seq_set\n")
+                           wxT("  JOIN pg_class cl ON cl.oid=seq_reloid\n")
+                           wxT("  JOIN pg_namespace nsp ON nsp.oid=relnamespace\n")
+                           + restriction +
+                           wxT(" ORDER BY seq_id"));
 
     if (sequences)
     {
@@ -114,13 +114,13 @@ pgObject *slSlSequenceFactory::CreateObjects(pgCollection *coll, ctlTree *browse
             if (browser)
             {
                 browser->AppendObject(collection, sequence);
-				sequences->MoveNext();
+                sequences->MoveNext();
             }
             else
                 break;
         }
 
-		delete sequences;
+        delete sequences;
     }
     return sequence;
 }
@@ -132,8 +132,8 @@ pgObject *slSlSequenceFactory::CreateObjects(pgCollection *coll, ctlTree *browse
 #include "images/sequence-repl.xpm"
 #include "images/sequences.xpm"
 
-slSlSequenceFactory::slSlSequenceFactory() 
-: slSetObjFactory(__("Sequence"), __("New Sequence"), __("Create a new Sequence."), sequence_repl_xpm)
+slSlSequenceFactory::slSlSequenceFactory()
+    : slSetObjFactory(__("Sequence"), __("New Sequence"), __("Create a new Sequence."), sequence_repl_xpm)
 {
     metaType = SLM_SEQUENCE;
 }

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -17,8 +17,8 @@
 #include "schema/edbPackageVariable.h"
 
 
-edbPackageVariable::edbPackageVariable(edbPackage *newPackage, const wxString& newName)
-: edbPackageObject(newPackage, packageVariableFactory, newName)
+edbPackageVariable::edbPackageVariable(edbPackage *newPackage, const wxString &newName)
+    : edbPackageObject(newPackage, packageVariableFactory, newName)
 {
 }
 
@@ -50,8 +50,8 @@ void edbPackageVariable::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlList
 
 pgObject *edbPackageVariable::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *packageVariable=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *packageVariable = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
     {
         if (coll->GetConnection()->EdbMinimumVersion(8, 2))
@@ -69,33 +69,33 @@ pgObject *edbPackageVariable::Refresh(ctlTree *browser, const wxTreeItemId item)
 pgObject *edbPackageVariableFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
 
-    edbPackageVariable *packageVariable=0;
+    edbPackageVariable *packageVariable = 0;
 
-	pgSet *packageVariables;
+    pgSet *packageVariables;
 
-	wxString sql;
+    wxString sql;
 
     if (collection->GetConnection()->EdbMinimumVersion(8, 2))
     {
         sql = wxT("SELECT oid, varname AS eltname, varaccess AS visibility, format_type(vartype, NULL) as datatype FROM edb_variable\n")
               wxT(" WHERE varpackage = ") + ((edbPackageObjCollection *)collection)->GetPackage()->GetOidStr() + wxT("\n")
-		      + restriction + wxT("\n")
-		      wxT(" ORDER BY varname");
+              + restriction + wxT("\n")
+              wxT(" ORDER BY varname");
     }
     else
     {
         sql = wxT("SELECT oid, eltname, visibility, format_type(eltdatatype, NULL) as datatype FROM edb_pkgelements\n")
               wxT(" WHERE eltclass = 'V'\n")
               wxT(" AND packageoid = ") + ((edbPackageObjCollection *)collection)->GetPackage()->GetOidStr() + wxT("\n")
-		      + restriction + wxT("\n")
-		      wxT(" ORDER BY eltname");
+              + restriction + wxT("\n")
+              wxT(" ORDER BY eltname");
     }
 
     packageVariables = collection->GetDatabase()->ExecuteSet(sql);
 
     if (packageVariables)
     {
-        edbPackage* package = ((edbPackageObjCollection *)collection)->GetPackage();
+        edbPackage *package = ((edbPackageObjCollection *)collection)->GetPackage();
 
         while (!packageVariables->Eof())
         {
@@ -118,13 +118,13 @@ pgObject *edbPackageVariableFactory::CreateObjects(pgCollection *collection, ctl
             if (browser)
             {
                 browser->AppendObject(collection, packageVariable);
-				packageVariables->MoveNext();
+                packageVariables->MoveNext();
             }
             else
                 break;
         }
 
-		delete packageVariables;
+        delete packageVariables;
     }
     return packageVariable;
 }
@@ -132,8 +132,8 @@ pgObject *edbPackageVariableFactory::CreateObjects(pgCollection *collection, ctl
 #include "images/variable.xpm"
 #include "images/variables.xpm"
 
-edbPackageVariableFactory::edbPackageVariableFactory() 
-: edbPackageObjFactory(__("Variable"), __("New Variable..."), __("Create a new Variable."), variable_xpm)
+edbPackageVariableFactory::edbPackageVariableFactory()
+    : edbPackageObjFactory(__("Variable"), __("New Variable..."), __("Create a new Variable."), variable_xpm)
 {
     metaType = EDB_PACKAGEVARIABLE;
 }

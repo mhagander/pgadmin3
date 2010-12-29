@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -32,18 +32,18 @@ END_EVENT_TABLE()
 
 frmSplash::frmSplash(wxFrame *parent)
 #ifndef __WXDEBUG__
-: wxFrame((wxFrame *)NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, 100), 0 | wxFRAME_SHAPED | wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR | wxSTAY_ON_TOP)
+    : wxFrame((wxFrame *)NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, 100), 0 | wxFRAME_SHAPED | wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR | wxSTAY_ON_TOP)
 #else
-: wxFrame((wxFrame *)NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, 100), 0 | wxFRAME_SHAPED | wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR)
+    : wxFrame((wxFrame *)NULL, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, 100), 0 | wxFRAME_SHAPED | wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR)
 #endif
 {
     appearanceFactory->SetIcons(this);
     splash = appearanceFactory->GetSplashImage();
-    
+
     SetClientSize(splash.GetWidth(), splash.GetHeight());
 
 #ifndef __WXGTK__
-	SetWindowShape();
+    SetWindowShape();
 #endif
 
     CenterOnScreen();
@@ -51,25 +51,25 @@ frmSplash::frmSplash(wxFrame *parent)
 
 void frmSplash::SetWindowShape()
 {
-	wxRegion region(splash);
+    wxRegion region(splash);
     SetShape(region);
 }
 
-void frmSplash::OnPaint(wxPaintEvent& WXUNUSED(event))
+void frmSplash::OnPaint(wxPaintEvent &WXUNUSED(event))
 {
-    wxPoint pos=appearanceFactory->GetSplashTextPos();
+    wxPoint pos = appearanceFactory->GetSplashTextPos();
 
     wxPaintDC dc(this);
-	dc.DrawBitmap(splash, 0, 0, true);
+    dc.DrawBitmap(splash, 0, 0, true);
 
     dc.SetTextForeground(appearanceFactory->GetSplashTextColour());
     dc.SetFont(appearanceFactory->GetSplashTextFont());
 
-	if (appearanceFactory->IsBranded())
-	{
-		dc.DrawText(_("This program is based on pgAdmin III"), pos);
-		pos.y += appearanceFactory->GetSplashTextOffset();
-	}
+    if (appearanceFactory->IsBranded())
+    {
+        dc.DrawText(_("This program is based on pgAdmin III"), pos);
+        pos.y += appearanceFactory->GetSplashTextOffset();
+    }
     dc.DrawText(VERSION_WITHOUT_DATE, pos);
     pos.y += appearanceFactory->GetSplashTextOffset();
     dc.DrawText(COPYRIGHT, pos);
@@ -77,7 +77,7 @@ void frmSplash::OnPaint(wxPaintEvent& WXUNUSED(event))
     dc.DrawText(LICENSE, pos);
 }
 
-void frmSplash::OnWindowCreate(wxWindowCreateEvent& WXUNUSED(evt))
+void frmSplash::OnWindowCreate(wxWindowCreateEvent &WXUNUSED(evt))
 {
     SetWindowShape();
 }

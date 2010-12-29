@@ -1,13 +1,13 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 // frmMain.cpp - The main form
 //
-// Note: Due to the size of frmMain, event handler, browser and statistics 
+// Note: Due to the size of frmMain, event handler, browser and statistics
 //       functions are in events.cpp.
 //
 //////////////////////////////////////////////////////////////////////////
@@ -82,15 +82,15 @@
 #error wxWindows must be compiled with wxDIALOG_UNIT_COMPATIBILITY=0!
 #endif
 
-frmMain::frmMain(const wxString& title)
-: pgFrame((wxFrame *)NULL, title)
+frmMain::frmMain(const wxString &title)
+    : pgFrame((wxFrame *)NULL, title)
 {
-    msgLevel=0;
-    lastPluginUtility=NULL;
+    msgLevel = 0;
+    lastPluginUtility = NULL;
     pluginUtilityCount = 0;
 
     dlgName = wxT("frmMain");
-    SetMinSize(wxSize(400,300));
+    SetMinSize(wxSize(400, 300));
     RestorePosition(50, 50, 750, 550, 600, 450);
 
     wxWindowBase::SetFont(settings->GetSystemFont());
@@ -114,7 +114,7 @@ frmMain::frmMain(const wxString& title)
     }
 
     // Current database
-    denyCollapseItem=wxTreeItemId();
+    denyCollapseItem = wxTreeItemId();
     currentObject = 0;
 
     appearanceFactory->SetIcons(this);
@@ -123,13 +123,13 @@ frmMain::frmMain(const wxString& title)
     manager.SetManagedWindow(this);
     manager.SetFlags(wxAUI_MGR_DEFAULT | wxAUI_MGR_TRANSPARENT_DRAG | wxAUI_MGR_ALLOW_ACTIVE_PANE);
 
-    SetMinSize(wxSize(600, 450)); 
+    SetMinSize(wxSize(600, 450));
 
     // wxGTK needs this deferred
     pgaFactory::RealizeImages();
 
     CreateMenus();
-    
+
     // Setup the object browser
     browser = new ctlTree(this, CTL_BROWSER, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS | wxSIMPLE_BORDER);
     browser->SetImageList(imageList);
@@ -145,7 +145,7 @@ frmMain::frmMain(const wxString& title)
 
     properties = new ctlListView(listViews, CTL_PROPVIEW, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER);
     statistics = new ctlListView(listViews, CTL_STATVIEW, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER);
-	listViews->SetWindowStyle(wxAUI_NB_WINDOWLIST_BUTTON | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_DEFAULT_STYLE);
+    listViews->SetWindowStyle(wxAUI_NB_WINDOWLIST_BUTTON | wxAUI_NB_TAB_EXTERNAL_MOVE | wxAUI_NB_DEFAULT_STYLE);
     dependencies = new ctlListView(listViews, CTL_DEPVIEW, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER);
     dependents = new ctlListView(listViews, CTL_REFVIEW, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER);
 
@@ -211,14 +211,14 @@ frmMain::frmMain(const wxString& title)
     serversObj = new pgServerCollection(serverFactory.GetCollectionFactory());
     wxTreeItemId root = browser->AddRoot(_("Server Groups"), serversObj->GetIconId(), -1, serversObj);
 
-    // Work around a bug in the generic tree control in wxWidgets, 
+    // Work around a bug in the generic tree control in wxWidgets,
     // Per http://trac.wxwidgets.org/ticket/10085
     browser->SetItemText(root, _("Server Groups"));
 
     // Load servers
     RetrieveServers();
 
-	browser->Expand(root);
+    browser->Expand(root);
     browser->SortChildren(root);
 }
 
@@ -242,21 +242,21 @@ void frmMain::CreateMenus()
     // to add a new menu or context menu to the main window, i.e. define a possible
     // action on a pgObject, everything has to go into this method. Doing menu related
     // stuff elsewhere is plain wrong!
-    // Create a proper actionFactory  (or contextActionFactory) for each of your new actions 
+    // Create a proper actionFactory  (or contextActionFactory) for each of your new actions
     // in the new frmXXX.cpp and register it here.
 
     fileMenu = new wxMenu();
     pluginsMenu = new wxMenu();
     viewMenu = new wxMenu();
     editMenu = new wxMenu();
-    newMenu=new wxMenu();
+    newMenu = new wxMenu();
     toolsMenu = new wxMenu();
-    slonyMenu=new wxMenu();
-    scriptingMenu=new wxMenu();
+    slonyMenu = new wxMenu();
+    scriptingMenu = new wxMenu();
     viewDataMenu = new wxMenu();
-    debuggingMenu=new wxMenu();
-    reportMenu=new wxMenu();
-    wxMenu *cfgMenu=new wxMenu();
+    debuggingMenu = new wxMenu();
+    reportMenu = new wxMenu();
+    wxMenu *cfgMenu = new wxMenu();
     helpMenu = new wxMenu();
     newContextMenu = new wxMenu();
 
@@ -268,7 +268,7 @@ void frmMain::CreateMenus()
     LoadPluginUtilities();
 
     //--------------------------
-    fileMenu->Append(MNU_SAVEDEFINITION, _("&Save Definition..."),_("Save the SQL definition of the selected object."));
+    fileMenu->Append(MNU_SAVEDEFINITION, _("&Save Definition..."), _("Save the SQL definition of the selected object."));
     fileMenu->AppendSeparator();
     new addServerFactory(menuFactories, fileMenu, toolBar);
 
@@ -278,7 +278,7 @@ void frmMain::CreateMenus()
     viewMenu->AppendSeparator();
     viewMenu->Append(MNU_DEFAULTVIEW, _("&Default view\tCtrl-Alt-V"),     _("Restore the default view."));
     viewMenu->AppendSeparator();
-    actionFactory *refFact=new refreshFactory(menuFactories, viewMenu, toolBar);
+    actionFactory *refFact = new refreshFactory(menuFactories, viewMenu, toolBar);
     new countRowsFactory(menuFactories, viewMenu, 0);
     new executePgstattupleFactory(menuFactories, viewMenu, 0);
     new executePgstatindexFactory(menuFactories, viewMenu, 0);
@@ -295,7 +295,7 @@ void frmMain::CreateMenus()
 
     new passwordFactory(menuFactories, fileMenu, 0);
     fileMenu->AppendSeparator();
-    optionsFactory *optFact=new optionsFactory(menuFactories, fileMenu, 0);
+    optionsFactory *optFact = new optionsFactory(menuFactories, fileMenu, 0);
     fileMenu->AppendSeparator();
     new mainConfigFileFactory(menuFactories, fileMenu, 0);
     new hbaConfigFileFactory(menuFactories, fileMenu, 0);
@@ -325,7 +325,7 @@ void frmMain::CreateMenus()
     // -------------------------
 
     //--------------------------
-    
+
     newMenuFactory = new submenuFactory(menuFactories);     // placeholder where "New objects" submenu will be inserted
     editMenu->Append(newMenuFactory->GetId(), _("New &Object"), newMenu,    _("Create a new object."));
     editMenu->AppendSeparator();
@@ -355,7 +355,7 @@ void frmMain::CreateMenus()
 
     toolBar->AddSeparator();
     toolsMenu->AppendSeparator();
-    
+
     debuggingMenuFactory = new submenuFactory(menuFactories);     // placeholder where "Debugging" submenu will be inserted
     toolsMenu->Append(debuggingMenuFactory->GetId(), _("&Debugging"), debuggingMenu,    _("Debugging options for the selected item."));
     new debuggerFactory(menuFactories, debuggingMenu, 0);
@@ -419,11 +419,11 @@ void frmMain::CreateMenus()
     //--------------------------
     toolBar->AddSeparator();
 
-    actionFactory *helpFact=new contentsFactory(menuFactories, helpMenu, 0);
+    actionFactory *helpFact = new contentsFactory(menuFactories, helpMenu, 0);
     new hintFactory(menuFactories, helpMenu, toolBar, true);
     new faqFactory(menuFactories, helpMenu, 0);
     new bugReportFactory(menuFactories, helpMenu, 0);
-    
+
     helpMenu->AppendSeparator();
 
     new pgsqlHelpFactory(menuFactories, helpMenu, toolBar, true);
@@ -432,15 +432,15 @@ void frmMain::CreateMenus()
     if (!appearanceFactory->GetHideGreenplumHelp())
         new greenplumHelpFactory(menuFactories, helpMenu, toolBar, true);
     new slonyHelpFactory(menuFactories, helpMenu, toolBar, true);
-    
+
     // Don't include this seperator on Mac, because the only option
     // under it will be moved to the application menu.
 #ifndef __WXMAC__
     helpMenu->AppendSeparator();
 #endif
 
-    actionFactory *abFact=new aboutFactory(menuFactories, helpMenu, 0);
-    
+    actionFactory *abFact = new aboutFactory(menuFactories, helpMenu, 0);
+
 #ifdef __WXMAC__
     wxApp::s_macPreferencesMenuItemId = optFact->GetId();
     wxApp::s_macExitMenuItemId = MNU_EXIT;
@@ -448,7 +448,7 @@ void frmMain::CreateMenus()
 #else
     (void)optFact;
     (void)abFact;
-#endif 
+#endif
 
 
     menuBar = new wxMenuBar();
@@ -488,7 +488,7 @@ void frmMain::CreateMenus()
 
     SetAcceleratorTable(accel);
 
-    // Display the bar and configure buttons. 
+    // Display the bar and configure buttons.
     toolBar->Realize();
 }
 
@@ -498,7 +498,7 @@ void frmMain::Refresh(pgObject *data)
     StartMsg(data->GetTranslatedMessage(REFRESHINGDETAILS));
     browser->Freeze();
 
-    wxTreeItemId currentItem=data->GetId();
+    wxTreeItemId currentItem = data->GetId();
 
     // Scan the child nodes and make a list of those that are expanded
     // This is not an exact science as node names may change etc.
@@ -509,11 +509,11 @@ void frmMain::Refresh(pgObject *data)
 
     // refresh information about the object
     data->SetDirty();
-    
+
     pgObject *newData = data->Refresh(browser, currentItem);
 
     bool done = !data->GetConnection() || data->GetConnection()->GetStatus() == PGCONN_OK;
-    
+
     if (newData != data)
     {
         wxLogInfo(wxT("Deleting %s %s for refresh"), data->GetTypeName().c_str(), data->GetQuotedFullIdentifier().c_str());
@@ -537,7 +537,7 @@ void frmMain::Refresh(pgObject *data)
         else
         {
             wxLogInfo(wxT("No object to replace: vanished after refresh."));
-            
+
             // If the connection is dead, just return here
             if (data->GetConnection()->GetStatus() != PGCONN_OK)
             {
@@ -545,9 +545,9 @@ void frmMain::Refresh(pgObject *data)
                 browser->Thaw();
                 return;
             }
-    
-            wxTreeItemId delItem=currentItem;
-            currentItem=browser->GetItemParent(currentItem);
+
+            wxTreeItemId delItem = currentItem;
+            currentItem = browser->GetItemParent(currentItem);
             browser->SelectItem(currentItem);
             browser->Delete(delItem);
         }
@@ -569,7 +569,7 @@ void frmMain::OnCopy(wxCommandEvent &ev)
 {
     for (unsigned int i = 0; i < manager.GetAllPanes().GetCount(); i++)
     {
-        wxAuiPaneInfo& pane = manager.GetAllPanes()[i];
+        wxAuiPaneInfo &pane = manager.GetAllPanes()[i];
         if (pane.HasFlag(wxAuiPaneInfo::optionActive))
         {
             if (pane.name == wxT("sqlPane"))
@@ -581,7 +581,7 @@ void frmMain::OnCopy(wxCommandEvent &ev)
                 ctlListView *list;
                 int row, col;
                 wxString text;
-                
+
                 switch(listViews->GetSelection())
                 {
                     case NBP_PROPERTIES:
@@ -602,9 +602,9 @@ void frmMain::OnCopy(wxCommandEvent &ev)
                         return;
                         break;
                 }
-                
+
                 row = list->GetFirstSelected();
-                
+
                 while (row >= 0)
                 {
                     for (col = 0; col < list->GetColumnCount(); col++)
@@ -618,7 +618,7 @@ void frmMain::OnCopy(wxCommandEvent &ev)
 #endif
                     row = list->GetNextSelected(row);
                 }
-                
+
                 if (text.Length() > 0 && wxTheClipboard->Open())
                 {
                     wxTheClipboard->SetData(new wxTextDataObject(text));
@@ -697,9 +697,8 @@ bool frmMain::SetCurrentNode(wxTreeItemId node, const wxString &path)
             browser->SelectItem(child, true);
             return true;
         }
-        else
-            if (SetCurrentNode(child, path))
-                return true;
+        else if (SetCurrentNode(child, path))
+            return true;
 
         child = browser->GetNextChild(node, cookie);
     }
@@ -710,22 +709,22 @@ bool frmMain::SetCurrentNode(wxTreeItemId node, const wxString &path)
 void frmMain::ShowObjStatistics(pgObject *data)
 {
 
-	statistics->Freeze();
-	statistics->ClearAll();
-	statistics->AddColumn(_("Statistics"), statistics->GetSize().GetWidth() - 10);
-	statistics->InsertItem(0, _("No statistics are available for the current selection"), PGICON_STATISTICS);
-	data->ShowStatistics(this, statistics);
-	statistics->Thaw();
+    statistics->Freeze();
+    statistics->ClearAll();
+    statistics->AddColumn(_("Statistics"), statistics->GetSize().GetWidth() - 10);
+    statistics->InsertItem(0, _("No statistics are available for the current selection"), PGICON_STATISTICS);
+    data->ShowStatistics(this, statistics);
+    statistics->Thaw();
 
-	dependencies->Freeze();
-	dependencies->DeleteAllItems();
-	data->ShowDependencies(this, dependencies);
-	dependencies->Thaw();
+    dependencies->Freeze();
+    dependencies->DeleteAllItems();
+    data->ShowDependencies(this, dependencies);
+    dependencies->Thaw();
 
-	dependents->Freeze();
-	dependents->DeleteAllItems();
-	data->ShowDependents(this, dependents);
-	dependents->Thaw();
+    dependents->Freeze();
+    dependents->DeleteAllItems();
+    data->ShowDependents(this, dependents);
+    dependents->Thaw();
 }
 
 
@@ -756,10 +755,10 @@ bool frmMain::CheckAlive()
         if (browser->ItemHasChildren(folderitem))
         {
             wxCookieType cookie;
-            wxTreeItemId serverItem=browser->GetFirstChild(folderitem, cookie);
+            wxTreeItemId serverItem = browser->GetFirstChild(folderitem, cookie);
             while (serverItem)
             {
-                pgServer *server=(pgServer*)browser->GetObject(serverItem);
+                pgServer *server = (pgServer *)browser->GetObject(serverItem);
 
                 if (server && server->IsCreatedBy(serverFactory) && server->connection())
                 {
@@ -769,17 +768,17 @@ bool frmMain::CheckAlive()
                         wxTreeItemId item = browser->GetFirstChild(serverItem, cookie2);
                         while (item)
                         {
-                            pgObject *obj=browser->GetObject(item);
+                            pgObject *obj = browser->GetObject(item);
                             if (obj && obj->IsCreatedBy(databaseFactory.GetCollectionFactory()))
                             {
                                 wxCookieType cookie3;
                                 item = browser->GetFirstChild(obj->GetId(), cookie3);
                                 while (item)
                                 {
-                                    pgDatabase *db=(pgDatabase*)browser->GetObject(item);
+                                    pgDatabase *db = (pgDatabase *)browser->GetObject(item);
                                     if (db && db->IsCreatedBy(databaseFactory))
                                     {
-                                        pgConn *conn=db->GetConnection();
+                                        pgConn *conn = db->GetConnection();
                                         if (conn)
                                         {
                                             if (!conn->IsAlive() && (conn->GetStatus() == PGCONN_BROKEN || conn->GetStatus() == PGCONN_BAD))
@@ -788,8 +787,8 @@ bool frmMain::CheckAlive()
                                                 if (!userInformed)
                                                 {
                                                     wxMessageDialog dlg(this, _("Do you want to attempt to reconnect to the database?"),
-                                                    wxString::Format(_("Connection to database %s lost."), db->GetName().c_str()), 
-                                                        wxICON_EXCLAMATION|wxYES_NO|wxYES_DEFAULT);
+                                                                        wxString::Format(_("Connection to database %s lost."), db->GetName().c_str()),
+                                                                        wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT);
 
                                                     closeIt = (dlg.ShowModal() == wxID_NO);
                                                     userInformed = true;
@@ -797,32 +796,32 @@ bool frmMain::CheckAlive()
                                                 if (closeIt)
                                                 {
                                                     db->Disconnect();
-                                                    
+
                                                     browser->DeleteChildren(db->GetId());
                                                     db->UpdateIcon(browser);
                                                 }
-	        									else 
-	        									{
+                                                else
+                                                {
                                                     // Create a server object and connect it.
                                                     wxBusyInfo waiting(wxString::Format(_("Reconnecting to database %s"),
-                                                        db->GetName().c_str()), this);
+                                                                                        db->GetName().c_str()), this);
 
                                                     // Give the UI a chance to redraw
                                                     wxSafeYield();
                                                     wxMilliSleep(100);
                                                     wxSafeYield();
 
-	        										if (!conn->Reconnect())
+                                                    if (!conn->Reconnect())
                                                     {
                                                         db->Disconnect();
-                                                    
+
                                                         browser->DeleteChildren(db->GetId());
                                                         db->UpdateIcon(browser);
                                                     }
                                                     else
                                                         // Indicate things are back to normal
                                                         userInformed = false;
-	        									}
+                                                }
 
                                             }
                                         }
@@ -841,8 +840,8 @@ bool frmMain::CheckAlive()
                             if (!userInformed)
                             {
                                 wxMessageDialog dlg(this, _("Do you want to attempt to reconnect to the server?"),
-                                    wxString::Format(_("Connection to server %s lost."), server->GetName().c_str()), 
-                                    wxICON_EXCLAMATION|wxYES_NO|wxYES_DEFAULT);
+                                                    wxString::Format(_("Connection to server %s lost."), server->GetName().c_str()),
+                                                    wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT);
 
                                 closeIt = (dlg.ShowModal() == wxID_NO);
                                 userInformed = true;
@@ -854,18 +853,18 @@ bool frmMain::CheckAlive()
                                 execSelChange(serverItem, true);
                                 browser->DeleteChildren(serverItem);
                             }
-	        				else 
-	        				{
+                            else
+                            {
                                 // Create a server object and connect it.
                                 wxBusyInfo waiting(wxString::Format(_("Reconnecting to server %s (%s:%d)"),
-                                    server->GetDescription().c_str(), server->GetName().c_str(), server->GetPort()), this);
+                                                                    server->GetDescription().c_str(), server->GetName().c_str(), server->GetPort()), this);
 
                                 // Give the UI a chance to redraw
                                 wxSafeYield();
                                 wxMilliSleep(100);
                                 wxSafeYield();
 
-	        					if (!server->connection()->Reconnect())
+                                if (!server->connection()->Reconnect())
                                 {
                                     server->Disconnect(this);
                                     browser->SelectItem(serverItem);
@@ -875,7 +874,7 @@ bool frmMain::CheckAlive()
                                 else
                                     // Indicate things are back to normal
                                     userInformed = false;
-	        				}
+                            }
                         }
                     }
                 }
@@ -892,12 +891,12 @@ bool frmMain::CheckAlive()
 wxTreeItemId frmMain::RestoreEnvironment(pgServer *server)
 {
     wxTreeItemId item, lastItem;
-    wxString lastDatabase=server->GetLastDatabase();
+    wxString lastDatabase = server->GetLastDatabase();
     if (lastDatabase.IsNull())
         return item;
 
     wxCookieType cookie;
-    pgObject *data=0;
+    pgObject *data = 0;
     item = browser->GetFirstChild(server->GetId(), cookie);
     while (item)
     {
@@ -913,7 +912,7 @@ wxTreeItemId frmMain::RestoreEnvironment(pgServer *server)
     // found DATABASES item
     listViews->SetSelection(NBP_PROPERTIES);
     data->ShowTree(this, browser, 0, 0);
-    lastItem=item;
+    lastItem = item;
 
     item = browser->GetFirstChild(lastItem, cookie);
     while (item)
@@ -927,11 +926,11 @@ wxTreeItemId frmMain::RestoreEnvironment(pgServer *server)
     if (!item)
         return lastItem;
 
-    // found last DATABASE 
+    // found last DATABASE
     data->ShowTree(this, browser, 0, 0);
     lastItem = item;
 
-    wxString lastSchema=server->GetLastSchema();
+    wxString lastSchema = server->GetLastSchema();
     if (lastSchema.IsNull())
         return lastItem;
 
@@ -949,7 +948,7 @@ wxTreeItemId frmMain::RestoreEnvironment(pgServer *server)
 
     // found SCHEMAS item
     data->ShowTree(this, browser, 0, 0);
-    lastItem=item;
+    lastItem = item;
 
     item = browser->GetFirstChild(lastItem, cookie);
     while (item)
@@ -969,7 +968,7 @@ int frmMain::ReconnectServer(pgServer *server, bool restore)
 {
     // Create a server object and connect it.
     wxBusyInfo waiting(wxString::Format(_("Connecting to server %s (%s:%d)"),
-        server->GetDescription().c_str(), server->GetName().c_str(), server->GetPort()), this);
+                                        server->GetDescription().c_str(), server->GetName().c_str(), server->GetPort()), this);
 
     // Give the UI a chance to redraw
     wxSafeYield();
@@ -995,7 +994,7 @@ int frmMain::ReconnectServer(pgServer *server, bool restore)
 
             browser->Freeze();
             if (restore && server->GetRestore())
-                item=RestoreEnvironment(server);
+                item = RestoreEnvironment(server);
             else
                 item = server->GetId();
             browser->Thaw();
@@ -1047,9 +1046,9 @@ int frmMain::ReconnectServer(pgServer *server, bool restore)
 
 bool frmMain::reportError(const wxString &error, const wxString &msgToIdentify, const wxString &hint)
 {
-    bool identified=false;
+    bool identified = false;
 
-    wxString translated=wxGetTranslation(msgToIdentify);
+    wxString translated = wxGetTranslation(msgToIdentify);
     if (translated != msgToIdentify)
     {
         identified = (error.Find(translated) >= 0);
@@ -1058,7 +1057,7 @@ bool frmMain::reportError(const wxString &error, const wxString &msgToIdentify, 
     if (!identified)
     {
         if (msgToIdentify.Left(20) == wxT("Translator attention"))
-            identified = (error.Find(msgToIdentify.Mid(msgToIdentify.Find('!')+1)) >= 0);
+            identified = (error.Find(msgToIdentify.Mid(msgToIdentify.Find('!') + 1)) >= 0);
         else
             identified = (error.Find(msgToIdentify) >= 0);
     }
@@ -1074,8 +1073,8 @@ bool frmMain::reportError(const wxString &error, const wxString &msgToIdentify, 
 
 void frmMain::ReportConnError(pgServer *server)
 {
-    wxString error=server->GetLastError();
-    bool wantHint=false;
+    wxString error = server->GetLastError();
+    bool wantHint = false;
 
     wantHint = reportError(error, __("Translator attention: must match libpq translation!Is the server running on host"), HINT_CONNECTSERVER);
     if (!wantHint)
@@ -1098,7 +1097,7 @@ void frmMain::StoreServers()
 
     // Get the hostname for later...
     char buf[255];
-    gethostname(buf, 255); 
+    gethostname(buf, 255);
     wxString hostname = wxString(buf, wxConvUTF8);
 
     wxTreeItemIdValue foldercookie;
@@ -1111,7 +1110,7 @@ void frmMain::StoreServers()
             wxTreeItemId serveritem = browser->GetFirstChild(folderitem, servercookie);
             while (serveritem)
             {
-                server = (pgServer*)browser->GetItemData(serveritem);
+                server = (pgServer *)browser->GetItemData(serveritem);
                 if (server->IsCreatedBy(serverFactory))
                 {
                     wxString key;
@@ -1135,13 +1134,13 @@ void frmMain::StoreServers()
                     settings->Write(key + wxT("SSL"), server->GetSSL());
                     settings->Write(key + wxT("Group"), server->GetGroup());
 
-                    pgCollection *coll=browser->FindCollection(databaseFactory, server->GetId());
+                    pgCollection *coll = browser->FindCollection(databaseFactory, server->GetId());
                     if (coll)
                     {
                         treeObjectIterator dbs(browser, coll);
                         pgDatabase *db;
 
-                        while ((db=(pgDatabase*)dbs.GetNextObject()) != 0)
+                        while ((db = (pgDatabase *)dbs.GetNextObject()) != 0)
                             settings->Write(key + wxT("Databases/") + db->GetName() + wxT("/SchemaRestriction"), db->GetSchemaRestriction());
                     }
                 }
@@ -1169,7 +1168,7 @@ void frmMain::RetrieveServers()
 
     // Create all servers' nodes
     serverFactory.CreateObjects(serversObj, browser);
-    
+
     // Count number of servers and groups
     groupitem = browser->GetFirstChild(browser->GetRootItem(), groupcookie);
     while (groupitem)
@@ -1183,7 +1182,7 @@ void frmMain::RetrieveServers()
     }
 }
 
-pgServer *frmMain::ConnectToServer(const wxString& servername, bool restore)
+pgServer *frmMain::ConnectToServer(const wxString &servername, bool restore)
 {
     wxTreeItemIdValue foldercookie, servercookie;
     wxTreeItemId folderitem, serveritem;
@@ -1217,9 +1216,9 @@ pgServer *frmMain::ConnectToServer(const wxString& servername, bool restore)
     return 0;
 }
 
-void frmMain::StartMsg(const wxString& msg)
+void frmMain::StartMsg(const wxString &msg)
 {
-   if (msgLevel++)
+    if (msgLevel++)
         return;
 
     timermsg.Printf(wxT("%s..."), msg.c_str());
@@ -1240,7 +1239,7 @@ void frmMain::EndMsg(bool done)
         // Get the execution time & display it
         float timeval = stopwatch.Time();
         wxString time;
-        time.Printf(_("%.2f secs"), (timeval/1000));
+        time.Printf(_("%.2f secs"), (timeval / 1000));
         statusBar->SetStatusText(time, 2);
 
         // Display the 'Done' message
@@ -1302,9 +1301,9 @@ faqFactory::faqFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolb
 
 wxWindow *faqFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-   wxLaunchDefaultBrowser(wxT("http://www.pgadmin.org/support/faq.php"));
+    wxLaunchDefaultBrowser(wxT("http://www.pgadmin.org/support/faq.php"));
 
-   return 0;
+    return 0;
 }
 
 #include "images/help.xpm"

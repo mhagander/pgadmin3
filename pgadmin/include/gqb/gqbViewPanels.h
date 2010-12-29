@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -50,23 +50,23 @@ enum gridButtons
 class gqbGridPanel: public wxPanel
 {
 public:
-    gqbGridPanel(wxWindow* parent, wxWindowID id, gqbGridProjTable *gridModel);
+    gqbGridPanel(wxWindow *parent, wxWindowID id, gqbGridProjTable *gridModel);
     ~gqbGridPanel();
     wxBitmapButton *buttonUp, *buttonDown, *buttonUpTop, *buttonDownBottom;
     wxBitmap upBitmap, upTopBitmap, downBitmap, downBottomBitmap;
     void SetGridColsSize();
 
-	// Events for wxGrid
-    void OnGridSelectCell( wxGridEvent& ev );
-    void OnGridRangeSelected( wxGridRangeSelectEvent& ev );
-    void OnButtonUp(wxCommandEvent&);
-    void OnButtonUpTop(wxCommandEvent&);
-    void OnButtonDown(wxCommandEvent&);
-    void OnButtonDownBottom(wxCommandEvent&);
+    // Events for wxGrid
+    void OnGridSelectCell( wxGridEvent &ev );
+    void OnGridRangeSelected( wxGridRangeSelectEvent &ev );
+    void OnButtonUp(wxCommandEvent &);
+    void OnButtonUpTop(wxCommandEvent &);
+    void OnButtonDown(wxCommandEvent &);
+    void OnButtonDownBottom(wxCommandEvent &);
 
 private:
     bool allowSelCells;
-    int selTop,selBottom;         // Range Selection of wxGrid, -1 it's value not set.
+    int selTop, selBottom;        // Range Selection of wxGrid, -1 it's value not set.
     wxGrid *colsGrid;             // Columns Grid used for order of columns in sentence & single row functions
     gqbGridProjTable *gModel;
     DECLARE_EVENT_TABLE()
@@ -79,12 +79,18 @@ private:
 class gqbColsTree : public wxTreeCtrl
 {
 public:
-    gqbColsTree(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style);
-    wxTreeItemId& createRoot(wxString &Name);
-    wxTreeItemId& getRootNode(){return rootNode;}
-    void refreshTree(gqbModel *model, gqbQueryObject *doNotInclude=NULL);
+    gqbColsTree(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style);
+    wxTreeItemId &createRoot(wxString &Name);
+    wxTreeItemId &getRootNode()
+    {
+        return rootNode;
+    }
+    void refreshTree(gqbModel *model, gqbQueryObject *doNotInclude = NULL);
     virtual void DeleteAllItems();
-    ~gqbColsTree() { DeleteAllItems(); }
+    ~gqbColsTree()
+    {
+        DeleteAllItems();
+    }
 
 private:
     wxTreeItemId rootNode;
@@ -99,18 +105,26 @@ enum
 class gqbColsPopUp: public wxDialog
 {
 public:
-    gqbColsPopUp(wxWindow* parent, wxWindowID id, wxString title, wxPoint pos, const wxSize size);
+    gqbColsPopUp(wxWindow *parent, wxWindowID id, wxString title, wxPoint pos, const wxSize size);
     virtual void refreshTree(gqbModel *_model);
-    void OnPopUpOKClick(wxCommandEvent& event);
-    void OnPopUpTreeClick(wxTreeEvent& event);
-    void OnPopUpTreeDoubleClick(wxTreeEvent& event);
+    void OnPopUpOKClick(wxCommandEvent &event);
+    void OnPopUpTreeClick(wxTreeEvent &event);
+    void OnPopUpTreeDoubleClick(wxTreeEvent &event);
     void setEditText(wxString text);
-    wxString getEditText(){return editTree->GetValue();};
-    void setUsedCell(wxGrid* grid, int row, int col){usedGrid=grid; _row=row; _col=col;};
+    wxString getEditText()
+    {
+        return editTree->GetValue();
+    };
+    void setUsedCell(wxGrid *grid, int row, int col)
+    {
+        usedGrid = grid;
+        _row = row;
+        _col = col;
+    };
     void focus();
 
 protected:
-    int _row,_col;
+    int _row, _col;
     wxGrid *usedGrid;
     gqbColsTree *colsTree;
     wxTextCtrl *editTree;
@@ -125,17 +139,17 @@ class gqbJoinsPopUp: public gqbColsPopUp
 {
 public:
     gqbJoinsPopUp(
-        gqbJoinsPanel* parent, wxWindowID id, wxString title, wxPoint pos,
-        const wxSize size, gqbQueryJoin* _join, bool isSource,
-        gqbGridJoinTable* _gmodel);
-    void OnPopUpOKClick(wxCommandEvent& event);
-    void OnPopUpTreeClick(wxTreeEvent& event);
-    void OnPopUpTreeDoubleClick(wxTreeEvent& event);
+        gqbJoinsPanel *parent, wxWindowID id, wxString title, wxPoint pos,
+        const wxSize size, gqbQueryJoin *_join, bool isSource,
+        gqbGridJoinTable *_gmodel);
+    void OnPopUpOKClick(wxCommandEvent &event);
+    void OnPopUpTreeClick(wxTreeEvent &event);
+    void OnPopUpTreeDoubleClick(wxTreeEvent &event);
 
     // This should be called through OnPopUpOKClick & OnPopUpTreeDoubleClick
     void updateJoin();
 
-    virtual void refreshTree(gqbModel* _model);
+    virtual void refreshTree(gqbModel *_model);
 
 private:
     gqbQueryJoin *join; // Not owned, shouldn't be deletedat this class
@@ -152,8 +166,8 @@ private:
 class gqbCustomGrid: public wxGrid
 {
 public:
-    gqbCustomGrid(wxWindow* parent, wxWindowID id);
-    void ComboBoxEvent(wxGridEvent& event);
+    gqbCustomGrid(wxWindow *parent, wxWindowID id);
+    void ComboBoxEvent(wxGridEvent &event);
     void RevertSel();
 
 private:
@@ -164,11 +178,11 @@ private:
 class gqbCriteriaPanel: public wxPanel
 {
 public:
-    gqbCriteriaPanel(wxWindow* parent, gqbModel *_model, gqbGridRestTable *gridModel);
-    void OnCellLeftClick(wxGridEvent& ev);
+    gqbCriteriaPanel(wxWindow *parent, gqbModel *_model, gqbGridRestTable *gridModel);
+    void OnCellLeftClick(wxGridEvent &ev);
     void refreshTree(gqbModel *_model);
-    void OnButtonAdd(wxCommandEvent&);
-    void OnButtonDrop(wxCommandEvent&);
+    void OnButtonAdd(wxCommandEvent &);
+    void OnButtonDrop(wxCommandEvent &);
     void SetGridColsSize();
 
 private:
@@ -186,11 +200,11 @@ private:
 class gqbJoinsPanel: public wxPanel
 {
 public:
-    gqbJoinsPanel(wxWindow* parent, gqbModel *_model, gqbGridJoinTable *_gmodel, gqbController *_controller);
-    void OnCellLeftClick(wxGridEvent& ev);
+    gqbJoinsPanel(wxWindow *parent, gqbModel *_model, gqbGridJoinTable *_gmodel, gqbController *_controller);
+    void OnCellLeftClick(wxGridEvent &ev);
     void refreshTree(gqbModel *_model);
-    void OnButtonAdd(wxCommandEvent&);
-    void OnButtonDrop(wxCommandEvent&);
+    void OnButtonAdd(wxCommandEvent &);
+    void OnButtonDrop(wxCommandEvent &);
     void SetGridColsSize();
     void updateView(gqbQueryObject *tbl);
     void selectJoin(gqbQueryJoin *join);
@@ -215,23 +229,23 @@ private:
 class gqbOrderPanel: public wxPanel
 {
 public:
-    gqbOrderPanel(wxWindow* parent, gqbGridOrderTable* gridTableLeft, gqbGridOrderTable* gridTableRight);
+    gqbOrderPanel(wxWindow *parent, gqbGridOrderTable *gridTableLeft, gqbGridOrderTable *gridTableRight);
     void SetGridColsSize();
 
 private:
     bool allowSelCells;
-    void OnButtonUp(wxCommandEvent&);
-    void OnButtonUpTop(wxCommandEvent&);
-    void OnButtonDown(wxCommandEvent&);
-    void OnButtonDownBottom(wxCommandEvent&);
-    void OnButtonRemove(wxCommandEvent&);
-    void OnButtonRemoveAll(wxCommandEvent&);
-    void OnButtonAdd(wxCommandEvent&);
-    void OnButtonAddAll(wxCommandEvent&);
-    void OnGridSelectCell( wxGridEvent& ev );
-    void OnGridRangeSelected( wxGridRangeSelectEvent& ev );
-    void OnCellLeftClick(wxGridEvent& ev);
-    int selLeft, selRightTop,selRightBottom;
+    void OnButtonUp(wxCommandEvent &);
+    void OnButtonUpTop(wxCommandEvent &);
+    void OnButtonDown(wxCommandEvent &);
+    void OnButtonDownBottom(wxCommandEvent &);
+    void OnButtonRemove(wxCommandEvent &);
+    void OnButtonRemoveAll(wxCommandEvent &);
+    void OnButtonAdd(wxCommandEvent &);
+    void OnButtonAddAll(wxCommandEvent &);
+    void OnGridSelectCell( wxGridEvent &ev );
+    void OnGridRangeSelected( wxGridRangeSelectEvent &ev );
+    void OnCellLeftClick(wxGridEvent &ev);
+    int selLeft, selRightTop, selRightBottom;
     gqbGridOrderTable *tableLeft, *tableRight;
     wxGrid *availableColumns, *usedColumns;
     wxBitmapButton *buttonAdd, *buttonAddAll, *buttonRemove, *buttonRemoveAll;

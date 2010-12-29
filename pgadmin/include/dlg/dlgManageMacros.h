@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,32 +18,32 @@
 class dlgManageMacros : public DialogWithHelp
 {
 public:
-	dlgManageMacros(wxWindow *parent, frmMain *form, queryMacroList *macros);
-	~dlgManageMacros();
-	int ManageMacros(); // returns: 0=no changes, 1=changes to save, -1=changes to rollback
-    
+    dlgManageMacros(wxWindow *parent, frmMain *form, queryMacroList *macros);
+    ~dlgManageMacros();
+    int ManageMacros(); // returns: 0=no changes, 1=changes to save, -1=changes to rollback
+
 
 private:
-	queryMacroList *macros;
-	wxString GetHelpPage() const;
-	void OnOK(wxCommandEvent& ev);
-	void OnCancel(wxCommandEvent& ev);
-	void OnClear(wxCommandEvent& ev);
-	void OnSave (wxCommandEvent& ev);
-	void OnKeySelect(wxListEvent& ev);
-	void OnNameChange(wxCommandEvent& ev);
-	void OnQueryChange(wxStyledTextEvent &ev);
+    queryMacroList *macros;
+    wxString GetHelpPage() const;
+    void OnOK(wxCommandEvent &ev);
+    void OnCancel(wxCommandEvent &ev);
+    void OnClear(wxCommandEvent &ev);
+    void OnSave (wxCommandEvent &ev);
+    void OnKeySelect(wxListEvent &ev);
+    void OnNameChange(wxCommandEvent &ev);
+    void OnQueryChange(wxStyledTextEvent &ev);
 
-	// Helper methods
-	void AddKeyToList(int position, const wxString& key);
-	void DeleteMacro(int listItem);
-	void SetMacro(bool silent);
+    // Helper methods
+    void AddKeyToList(int position, const wxString &key);
+    void DeleteMacro(int listItem);
+    void SetMacro(bool silent);
 
-	bool anythingChanged;
-	bool thisMacroChanged;
-	bool appQueryModify; // Marker to ignore modify events while setting query text
+    bool anythingChanged;
+    bool thisMacroChanged;
+    bool appQueryModify; // Marker to ignore modify events while setting query text
 
-	DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()
 };
 
 #endif /*dlgManageMacros_H*/

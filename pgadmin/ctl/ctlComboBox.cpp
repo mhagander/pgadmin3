@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -20,39 +20,42 @@
 class StringClientData : public wxClientData
 {
 public:
-    StringClientData(const wxChar *c) { str=c; }
+    StringClientData(const wxChar *c)
+    {
+        str = c;
+    }
     wxString str;
 };
 
 
 
 
-int ctlComboBoxFix::Append(const wxString& item, const wxString &str)
+int ctlComboBoxFix::Append(const wxString &item, const wxString &str)
 {
     return wxComboBox::Append(item, new StringClientData(str));
 }
 
 
-int ctlComboBoxFix::Append(const wxString& item, long l)
+int ctlComboBoxFix::Append(const wxString &item, long l)
 {
-    return wxComboBox::Append(item, (void*)l);
+    return wxComboBox::Append(item, (void *)l);
 }
 
 
-int ctlComboBoxFix::Append(const wxString& item, OID oid)
+int ctlComboBoxFix::Append(const wxString &item, OID oid)
 {
-    return wxComboBox::Append(item, (void*)oid);
+    return wxComboBox::Append(item, (void *)oid);
 }
 
 
 int ctlComboBoxFix::FillLongKey(pgConn *conn, const wxChar *qry)
 {
-    int cnt=0;
+    int cnt = 0;
     pgSetIterator set(conn->ExecuteSet(qry));
     while (set.RowsLeft())
     {
-        long l=set.GetLong(0);
-        wxString txt=set.GetVal(1);
+        long l = set.GetLong(0);
+        wxString txt = set.GetVal(1);
         Append(txt, l);
         cnt++;
     }
@@ -62,12 +65,12 @@ int ctlComboBoxFix::FillLongKey(pgConn *conn, const wxChar *qry)
 
 int ctlComboBoxFix::FillOidKey(pgConn *conn, const wxChar *qry)
 {
-    int cnt=0;
+    int cnt = 0;
     pgSetIterator set(conn->ExecuteSet(qry));
     while (set.RowsLeft())
     {
-        OID oid=set.GetOid(0);
-        wxString txt=set.GetVal(1);
+        OID oid = set.GetOid(0);
+        wxString txt = set.GetVal(1);
         Append(txt, oid);
         cnt++;
     }
@@ -77,12 +80,12 @@ int ctlComboBoxFix::FillOidKey(pgConn *conn, const wxChar *qry)
 
 int ctlComboBoxFix::FillStringKey(pgConn *conn, const wxChar *qry)
 {
-    int cnt=0;
+    int cnt = 0;
     pgSetIterator set(conn->ExecuteSet(qry));
     while (set.RowsLeft())
     {
-        wxString str=set.GetVal(0);
-        wxString txt=set.GetVal(1);
+        wxString str = set.GetVal(0);
+        wxString txt = set.GetVal(1);
         Append(txt, str);
         cnt++;
     }
@@ -107,7 +110,7 @@ wxString ctlComboBoxFix::GetStringKey(int sel)
 {
     if (sel < 0)
         sel = GetSelection();
-    StringClientData *scd=(StringClientData*)GetClientObject(sel);
+    StringClientData *scd = (StringClientData *)GetClientObject(sel);
     if (scd)
         return scd->str;
     return wxEmptyString;
@@ -115,7 +118,7 @@ wxString ctlComboBoxFix::GetStringKey(int sel)
 
 
 ctlComboBoxFix::ctlComboBoxFix(wxWindow *wnd, int id, wxPoint pos, wxSize siz, long attr)
-: wxComboBox(wnd, id, wxEmptyString, pos, siz, 0, NULL, attr)
+    : wxComboBox(wnd, id, wxEmptyString, pos, siz, 0, NULL, attr)
 {
 }
 
@@ -123,7 +126,7 @@ ctlComboBoxFix::ctlComboBoxFix(wxWindow *wnd, int id, wxPoint pos, wxSize siz, l
 bool ctlComboBoxFix::SetKey(long val)
 {
     unsigned int i;
-    for (i=0 ; i < GetCount() ; i++)
+    for (i = 0 ; i < GetCount() ; i++)
     {
         if (GetLongKey(i) == val)
         {
@@ -139,7 +142,7 @@ bool ctlComboBoxFix::SetKey(long val)
 bool ctlComboBoxFix::SetKey(OID val)
 {
     unsigned int i;
-    for (i=0 ; i < GetCount() ; i++)
+    for (i = 0 ; i < GetCount() ; i++)
     {
         if (GetOIDKey(i) == val)
         {
@@ -155,7 +158,7 @@ bool ctlComboBoxFix::SetKey(OID val)
 bool ctlComboBoxFix::SetKey(const wxString &val)
 {
     unsigned int i;
-    for (i=0 ; i < GetCount() ; i++)
+    for (i = 0 ; i < GetCount() ; i++)
     {
         if (GetStringKey(i) == val)
         {
@@ -171,7 +174,7 @@ bool ctlComboBoxFix::SetKey(const wxString &val)
 ////////////////////////////////////////////
 
 ctlComboBox::ctlComboBox(wxWindow *wnd, int id, wxPoint pos, wxSize siz, long attr)
-: ctlComboBoxFix(wnd, id, pos, siz, attr)
+    : ctlComboBoxFix(wnd, id, pos, siz, attr)
 {
 #ifdef __WXGTK__
     SetEditable(false);
@@ -184,13 +187,13 @@ int ctlComboBox::GuessSelection(wxCommandEvent &ev)
     if (ev.GetEventType() != wxEVT_COMMAND_TEXT_UPDATED)
         return GetGuessedSelection();
 
-    wxString str=wxComboBox::GetValue();
+    wxString str = wxComboBox::GetValue();
     if (str.Length())
     {
-        long pos=GetInsertionPoint();
-    
-        long sel, count=GetCount();
-        int len=str.Length();
+        long pos = GetInsertionPoint();
+
+        long sel, count = GetCount();
+        int len = str.Length();
         for (sel = 0 ; sel < count ; sel++)
         {
             if (str == GetString(sel).Left(len))
@@ -208,7 +211,7 @@ int ctlComboBox::GuessSelection(wxCommandEvent &ev)
 
 int ctlComboBox::GetGuessedSelection() const
 {
-    int sel=GetCurrentSelection();
+    int sel = GetCurrentSelection();
 
     if (sel < 0)
         sel = FindString(GetValue());
@@ -217,9 +220,9 @@ int ctlComboBox::GetGuessedSelection() const
 
 int ctlComboBox::GetSelection() const
 {
-    int sel=0;
+    int sel = 0;
 #ifdef __WXMSW__
-    sel=GetCurrentSelection();
+    sel = GetCurrentSelection();
 
     if (sel < 0)
 #endif
@@ -229,7 +232,7 @@ int ctlComboBox::GetSelection() const
 
 wxString ctlComboBox::GetGuessedStringSelection() const
 {
-    int sel=GetGuessedSelection();
+    int sel = GetGuessedSelection();
     if (sel < 0)
         return wxEmptyString;
     else

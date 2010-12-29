@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -27,10 +27,10 @@ public:
 protected:
     void addObject(gqbObject *object);
     void removeObject(gqbObject *object);
-    gqbIteratorBase* createIterator();
-    gqbIteratorBase* createDownIterator();
-	int countObjects();
-    gqbObject* getObjectAtIndex(int index);
+    gqbIteratorBase *createIterator();
+    gqbIteratorBase *createDownIterator();
+    int countObjects();
+    gqbObject *getObjectAtIndex(int index);
     bool existsObject(gqbObject *object);
     int indexObject(gqbObject *object);
     void insertObjectAt(gqbObject *object, int index);

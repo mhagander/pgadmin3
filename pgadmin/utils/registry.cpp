@@ -17,11 +17,13 @@
 #define RESERVED        0
 #define PGREG_SEPERATOR wxT("\\")
 
-static struct stdkey {
+static struct stdkey
+{
     HKEY         key;
     wxString name;
 }
-aStdHKeys[] = {
+aStdHKeys[] =
+{
     {HKEY_CLASSES_ROOT,   wxT("HKEY_CLASSES_ROOT")},
     {HKEY_CURRENT_USER,   wxT("HKEY_CURRENT_USER")},
     {HKEY_LOCAL_MACHINE,  wxT("HKEY_LOCAL_MACHINE") },
@@ -31,12 +33,12 @@ aStdHKeys[] = {
 
 #define NOS_STD_KEYS (size_t)(sizeof(aStdHKeys)/sizeof(stdkey))
 
-pgRegKey::pgRegKey(HKEY root, const wxString& subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode)
+pgRegKey::pgRegKey(HKEY root, const wxString &subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode)
 {
     Init(root, subkey, wowMode, accessMode);
 }
 
-pgRegKey::pgRegKey(const pgRegKey& parent, const wxString& key)
+pgRegKey::pgRegKey(const pgRegKey &parent, const wxString &key)
 {
     wxString strKey;
     strKey << parent.m_strName << PGREG_SEPERATOR << key;
@@ -45,7 +47,7 @@ pgRegKey::pgRegKey(const pgRegKey& parent, const wxString& key)
     m_wowMode        = parent.m_wowMode;
 }
 
-void pgRegKey::Init(HKEY root, const wxString& subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode)
+void pgRegKey::Init(HKEY root, const wxString &subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode)
 {
     m_hRoot            = root;
     m_strName             = subkey;
@@ -75,7 +77,7 @@ void pgRegKey::Init(HKEY root, const wxString& subkey, PGREGWOWMODE wowMode, PGR
     }
 }
 
-pgRegKey *pgRegKey::OpenRegKey(HKEY root, const wxString& subkey, PGREGACCESSMODE accessmode, PGREGWOWMODE wowMode)
+pgRegKey *pgRegKey::OpenRegKey(HKEY root, const wxString &subkey, PGREGACCESSMODE accessmode, PGREGWOWMODE wowMode)
 {
     wxString strKey = subkey;
 
@@ -112,7 +114,7 @@ pgRegKey::~pgRegKey()
     Close();
 }
 
-bool pgRegKey::KeyExists(HKEY root, const wxString& subkey, PGREGWOWMODE wowMode)
+bool pgRegKey::KeyExists(HKEY root, const wxString &subkey, PGREGWOWMODE wowMode)
 {
     if (subkey.IsEmpty())
         return true;
@@ -181,21 +183,21 @@ wxString pgRegKey::ToString() const
 
 wxString pgRegKey::GetKeyName() const
 {
-  if (!m_strName.IsEmpty())
-  {
-    int index = m_strName.Find(wxT('\\'), true);
-    return m_strName.SubString(index + 1, m_strName.Len());
-  }
-  return wxEmptyString;
+    if (!m_strName.IsEmpty())
+    {
+        int index = m_strName.Find(wxT('\\'), true);
+        return m_strName.SubString(index + 1, m_strName.Len());
+    }
+    return wxEmptyString;
 }
 
-bool pgRegKey::QueryValue(const wxString& strkey, LPDWORD pVal) const
+bool pgRegKey::QueryValue(const wxString &strkey, LPDWORD pVal) const
 {
     if (strkey.IsEmpty())
         return false;
 
     DWORD dwType, dwSize = sizeof(DWORD);
-    unsigned char * pBuf = (unsigned char *)pVal;
+    unsigned char *pBuf = (unsigned char *)pVal;
 
     long nError = ::RegQueryValueEx(m_hKey, (LPCTSTR)strkey, RESERVED, &dwType, pBuf, &dwSize);
 
@@ -207,7 +209,7 @@ bool pgRegKey::QueryValue(const wxString& strkey, LPDWORD pVal) const
     return true;
 }
 
-bool pgRegKey::QueryValue(const wxString& strVal, wxString& sVal) const
+bool pgRegKey::QueryValue(const wxString &strVal, wxString &sVal) const
 {
     DWORD dwType, dwSize;
 
@@ -218,7 +220,7 @@ bool pgRegKey::QueryValue(const wxString& strVal, wxString& sVal) const
         sVal = wxT("");
         if (dwSize == 0)
             return true;
-        
+
         wxChar *pBuf = (wxChar *)calloc(dwSize, sizeof(wxChar));
         nError = ::RegQueryValueEx(m_hKey, (LPCTSTR)strVal, RESERVED, &dwType, (LPBYTE)pBuf, &dwSize);
 
@@ -243,7 +245,8 @@ bool pgRegKey::QueryValue(const wxString& strVal, wxString& sVal) const
                     sVal << curr_line;
                 index += (DWORD)wxStrlen(actualValueStr + index) + 1;
                 free(curr_line);
-            } while (actualValueStr[index] && dwType == REG_MULTI_SZ);
+            }
+            while (actualValueStr[index] && dwType == REG_MULTI_SZ);
 
             free(actualValueStr);
         }
@@ -254,23 +257,23 @@ bool pgRegKey::QueryValue(const wxString& strVal, wxString& sVal) const
     return false;
 }
 
-bool pgRegKey::QueryValue(const wxString& strVal, LPBYTE& pVal, DWORD& len) const
+bool pgRegKey::QueryValue(const wxString &strVal, LPBYTE &pVal, DWORD &len) const
 {
     DWORD dwType;
     if(RegQueryValueEx(m_hKey, (LPCTSTR)strVal,
-        RESERVED, &dwType, pVal, &len) == ERROR_SUCCESS)
+                       RESERVED, &dwType, pVal, &len) == ERROR_SUCCESS)
         return true;
     len = 0;
     return false;
 }
 
-bool pgRegKey::GetFirstValue(wxString& strkey, long &lIndex) const
+bool pgRegKey::GetFirstValue(wxString &strkey, long &lIndex) const
 {
     lIndex = 0;
     return GetNextValue(strkey, lIndex);
 }
 
-bool pgRegKey::GetNextValue(wxString& strval, long &lIndex) const
+bool pgRegKey::GetNextValue(wxString &strval, long &lIndex) const
 {
     if (lIndex < 0)
         return false;
@@ -294,7 +297,7 @@ bool pgRegKey::GetNextValue(wxString& strval, long &lIndex) const
     return true;
 }
 
-bool pgRegKey::HasValue(const wxString& strval)
+bool pgRegKey::HasValue(const wxString &strval)
 {
     long nRetVal = ::RegQueryValueEx(m_hKey, (LPCTSTR)strval, RESERVED, NULL, NULL, NULL);
 
@@ -332,7 +335,7 @@ bool pgRegKey::GetNextKey(pgRegKey*& pKey, long &lIndex) const
 
     HKEY tmpRegKey = 0;
     nError
-        = ::RegOpenKeyEx(m_hRoot, (LPCTSTR)strSubKey, RESERVED, (m_accessMode == PGREG_READ ? KEY_READ : KEY_ALL_ACCESS) | m_wowMode, &tmpRegKey);
+    = ::RegOpenKeyEx(m_hRoot, (LPCTSTR)strSubKey, RESERVED, (m_accessMode == PGREG_READ ? KEY_READ : KEY_ALL_ACCESS) | m_wowMode, &tmpRegKey);
 
     if (nError != ERROR_SUCCESS)
     {
@@ -350,7 +353,7 @@ bool pgRegKey::GetNextKey(pgRegKey*& pKey, long &lIndex) const
     return true;
 }
 
-bool pgRegKey::HasKey(const wxString& strKey) const
+bool pgRegKey::HasKey(const wxString &strKey) const
 {
     wxString strSubKey = m_strName;
     strSubKey << wxT("\\") << strKey;
@@ -358,12 +361,12 @@ bool pgRegKey::HasKey(const wxString& strKey) const
     return pgRegKey::KeyExists(m_hRoot, strSubKey, m_wowMode == KEY_WOW64_64KEY ? PGREG_WOW64 : PGREG_WOW32) ;
 }
 
-DWORD pgRegKey::GetValueType(const wxString& key) const
+DWORD pgRegKey::GetValueType(const wxString &key) const
 {
     DWORD dwType;
     long nError = RegQueryValueEx((HKEY) m_hKey, (LPCTSTR)key, RESERVED,
-                                                                &dwType, NULL, NULL);
-    
+                                  &dwType, NULL, NULL);
+
     if (nError != ERROR_SUCCESS)
         return REG_NONE;
     return dwType;

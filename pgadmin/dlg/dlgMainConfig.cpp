@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -42,7 +42,7 @@ END_EVENT_TABLE()
 #define stDescription       CTRL_STATIC("stDescription")
 
 
-static const wxChar* contextStrings[]=
+static const wxChar *contextStrings[] =
 {
     __("Internal - not externally settable"),
     __("Postmaster - set on server start"),
@@ -55,7 +55,7 @@ static const wxChar* contextStrings[]=
 };
 
 
-static const wxChar* sourceStrings[]=
+static const wxChar *sourceStrings[] =
 {
     __("Variable has still its initial default value"),
     __("Set via environment variable"),
@@ -72,17 +72,17 @@ static const wxChar* sourceStrings[]=
 };
 
 
-dlgMainConfig::dlgMainConfig(pgFrame *parent, pgSettingItem *_item) : 
-DialogWithHelp((frmMain*)parent)
+dlgMainConfig::dlgMainConfig(pgFrame *parent, pgSettingItem *_item) :
+    DialogWithHelp((frmMain *)parent)
 {
     wxWindowBase::SetFont(settings->GetSystemFont());
-    LoadResource((wxWindow*)parent, wxT("dlgMainConfig"));
+    LoadResource((wxWindow *)parent, wxT("dlgMainConfig"));
 
     // Icon
     SetIcon(wxIcon(property_xpm));
     RestorePosition();
 
-    item=_item;
+    item = _item;
 
     SetTitle(wxString::Format(_("Configuration setting \"%s\""), item->name.c_str()));
 
@@ -97,7 +97,7 @@ DialogWithHelp((frmMain*)parent)
             item->newLine = new pgConfigLine(item->orgLine);
         else
             item->newLine = new pgConfigLine();
-    }    
+    }
 
     chkEnabled->SetValue(!item->newLine->isComment);
     txtValue->SetValue(item->newLine->value);
@@ -149,12 +149,12 @@ wxString dlgMainConfig::GetHelpPage() const
 }
 
 
-void dlgMainConfig::OnChange(wxCommandEvent& ev)
+void dlgMainConfig::OnChange(wxCommandEvent &ev)
 {
 }
 
 
-void dlgMainConfig::OnOK(wxCommandEvent& ev)
+void dlgMainConfig::OnOK(wxCommandEvent &ev)
 {
 #ifdef __WXGTK__
     if (!btnOK->IsEnabled())
@@ -168,7 +168,7 @@ void dlgMainConfig::OnOK(wxCommandEvent& ev)
 }
 
 
-void dlgMainConfig::OnCancel(wxCommandEvent& ev)
+void dlgMainConfig::OnCancel(wxCommandEvent &ev)
 {
     EndModal(wxID_CANCEL);
 }

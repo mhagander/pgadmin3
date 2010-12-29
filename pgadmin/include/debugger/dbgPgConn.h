@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dbgPgConn.h - debugger 
+// dbgPgConn.h - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -13,8 +13,8 @@
 // class dbgPgConn
 //
 //    A dbgPgConn object encapsulates the connection to a PostgreSQL server.  This
-//  class is a wrapper around a Pgconn that provides a convenient constructor 
-//  and a few member functions.  
+//  class is a wrapper around a Pgconn that provides a convenient constructor
+//  and a few member functions.
 //
 //    This class doesn't do much - instead, the real work happens in a dbgPgThread
 //  (a separate thread) that initiates commands and processes result sets.
@@ -38,7 +38,7 @@ enum DebuggerApiVersions
     DEBUGGER_V3_API = 3
 };
 
-class dbgPgParams 
+class dbgPgParams
 {
 public:
     int nParams;
@@ -47,20 +47,20 @@ public:
     int *paramModes;
 };
 
-class dbgPgConn 
+class dbgPgConn
 {
-  public:
+public:
 
     dbgPgConn( frmDebugger *frame,
-              const wxString &server   = wxT( "" ), 
-              const wxString &database = wxT( "" ), 
-              const wxString &username = wxT( "" ), 
-              const wxString &password = wxT( "" ), 
-              const wxString &port     = wxT( "5432" ), 
-              int sslmode               = 0,
-              const wxString &applicationname = wxT( "" ));
+               const wxString &server   = wxT( "" ),
+               const wxString &database = wxT( "" ),
+               const wxString &username = wxT( "" ),
+               const wxString &password = wxT( "" ),
+               const wxString &port     = wxT( "5432" ),
+               int sslmode               = 0,
+               const wxString &applicationname = wxT( "" ));
 
-    dbgPgConn( frmDebugger *frame, const dbgConnProp & props, bool startThread = true );
+    dbgPgConn( frmDebugger *frame, const dbgConnProp &props, bool startThread = true );
 
     ~dbgPgConn();
 
@@ -78,11 +78,11 @@ class dbgPgConn
     void Close();                           // Close this connection
     void Cancel();                          // Cancel any ongoing queries
 
-    void startCommand( const wxString &command, wxEvtHandler * caller, wxEventType eventType = wxEVT_NULL, dbgPgParams *params = NULL );    // Starts executing a command    
-    void setNoticeHandler( PQnoticeProcessor handler, void * arg ); // Registers a NOTICE handler
+    void startCommand( const wxString &command, wxEvtHandler *caller, wxEventType eventType = wxEVT_NULL, dbgPgParams *params = NULL );     // Starts executing a command
+    void setNoticeHandler( PQnoticeProcessor handler, void *arg );  // Registers a NOTICE handler
     PGresult *waitForCommand( const wxString &command );            // Starts a command and waits for completion
 
-  private:
+private:
 
     void Init( const wxString &server, const wxString &database, const wxString &userName, const wxString &password, const wxString &port, int sslmode, const wxString &applicationname, bool startThread );
 

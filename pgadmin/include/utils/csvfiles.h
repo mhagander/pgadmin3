@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -20,7 +20,7 @@
 class CSVTokenizer : public wxObject
 {
 public:
-    CSVTokenizer(const wxString& str): m_string(str), m_pos(0) { }
+    CSVTokenizer(const wxString &str): m_string(str), m_pos(0) { }
 
     bool HasMoreTokens() const;
 
@@ -36,14 +36,14 @@ protected:
 class CSVLineTokenizer : public wxObject
 {
 public:
-    CSVLineTokenizer(const wxString& str): m_string(str), m_pos(0) { }
+    CSVLineTokenizer(const wxString &str): m_string(str), m_pos(0) { }
 
     bool HasMoreLines() const;
 
     // Get the next line.  Will return empty string if !HasMoreLines().
     // partial is set "true" if the last line returned was not a complete
     // line (no newline char at end).
-    wxString GetNextLine(bool & partial);
+    wxString GetNextLine(bool &partial);
 
 protected:
 

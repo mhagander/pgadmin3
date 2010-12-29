@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,8 +18,8 @@
 #include "schema/pgForeignKey.h"
 #include "schema/pgConstraints.h"
 
-pgForeignKey::pgForeignKey(pgTable *newTable, const wxString& newName)
-: pgTableObject(newTable, foreignKeyFactory, newName)
+pgForeignKey::pgForeignKey(pgTable *newTable, const wxString &newName)
+    : pgTableObject(newTable, foreignKeyFactory, newName)
 {
 }
 
@@ -31,7 +31,7 @@ pgForeignKey::~pgForeignKey()
 wxString pgForeignKey::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -48,11 +48,11 @@ wxString pgForeignKey::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop foreign key \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop foreign key \"%s\"?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop foreign key cascaded?");
@@ -97,8 +97,8 @@ wxString pgForeignKey::GetTranslatedMessage(int kindOfMessage) const
 bool pgForeignKey::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(wxT(
-        "ALTER TABLE ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + qtIdent(fkTable)
-        + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier());
+                                          "ALTER TABLE ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + qtIdent(fkTable)
+                                      + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier());
 }
 
 
@@ -107,15 +107,15 @@ wxString pgForeignKey::GetDefinition()
     wxString sql;
 
     sql = wxT("(") + GetQuotedFkColumns()
-        +  wxT(")\n      REFERENCES ") + GetQuotedSchemaPrefix(GetRefSchema()) + qtIdent(GetReferences()) 
-        +  wxT(" (") + GetQuotedRefColumns()
-        +  wxT(")");
-    
+          +  wxT(")\n      REFERENCES ") + GetQuotedSchemaPrefix(GetRefSchema()) + qtIdent(GetReferences())
+          +  wxT(" (") + GetQuotedRefColumns()
+          +  wxT(")");
+
     if (GetDatabase()->BackendMinimumVersion(7, 4) || GetMatch() == wxT("FULL"))
         sql += wxT(" MATCH ") + GetMatch();
 
     sql += wxT("\n      ON UPDATE ") + GetOnUpdate()
-        +  wxT(" ON DELETE ") + GetOnDelete();
+           +  wxT(" ON DELETE ") + GetOnDelete();
     if (GetDeferrable())
     {
         sql += wxT(" DEFERRABLE INITIALLY ");
@@ -131,8 +131,8 @@ wxString pgForeignKey::GetDefinition()
 wxString pgForeignKey::GetConstraint()
 {
     wxString sql;
-    sql = GetQuotedIdentifier() 
-        +  wxT(" FOREIGN KEY ") + GetDefinition();
+    sql = GetQuotedIdentifier()
+          +  wxT(" FOREIGN KEY ") + GetDefinition();
 
     return sql;
 }
@@ -143,14 +143,14 @@ wxString pgForeignKey::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Foreign Key: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- ALTER TABLE ") + GetQuotedSchemaPrefix(fkSchema) + qtIdent(fkTable)
-            + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier() + wxT(";")
-            + wxT("\n\nALTER TABLE ") + GetQuotedSchemaPrefix(fkSchema) + qtIdent(fkTable)
-            + wxT("\n  ADD CONSTRAINT ") + GetConstraint() 
-            + wxT(";\n");
+              + wxT("-- ALTER TABLE ") + GetQuotedSchemaPrefix(fkSchema) + qtIdent(fkTable)
+              + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier() + wxT(";")
+              + wxT("\n\nALTER TABLE ") + GetQuotedSchemaPrefix(fkSchema) + qtIdent(fkTable)
+              + wxT("\n  ADD CONSTRAINT ") + GetConstraint()
+              + wxT(";\n");
         if (!GetComment().IsEmpty())
             sql += wxT("COMMENT ON CONSTRAINT ") + GetQuotedIdentifier() + wxT(" ON ") + GetQuotedSchemaPrefix(fkSchema) + qtIdent(fkTable)
-                +  wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+                   +  wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
     }
 
     return sql;
@@ -166,7 +166,7 @@ void pgForeignKey::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         wxStringTokenizer c1l(GetConkey(), wxT(","));
         wxStringTokenizer c2l(GetConfkey(), wxT(","));
@@ -175,13 +175,13 @@ void pgForeignKey::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
         // resolve column names
         while (c1l.HasMoreTokens())
         {
-            c1=c1l.GetNextToken();
-            c2=c2l.GetNextToken();
-            pgSet *set=ExecuteSet(
-                wxT("SELECT a1.attname as conattname, a2.attname as confattname\n")
-                wxT("  FROM pg_attribute a1, pg_attribute a2\n")
-                wxT(" WHERE a1.attrelid=") + GetTableOidStr() + wxT(" AND a1.attnum=") + c1 + wxT("\n")
-                wxT("   AND a2.attrelid=") + GetRelTableOidStr() + wxT(" AND a2.attnum=") + c2);
+            c1 = c1l.GetNextToken();
+            c2 = c2l.GetNextToken();
+            pgSet *set = ExecuteSet(
+                             wxT("SELECT a1.attname as conattname, a2.attname as confattname\n")
+                             wxT("  FROM pg_attribute a1, pg_attribute a2\n")
+                             wxT(" WHERE a1.attrelid=") + GetTableOidStr() + wxT(" AND a1.attnum=") + c1 + wxT("\n")
+                             wxT("   AND a2.attrelid=") + GetRelTableOidStr() + wxT(" AND a2.attnum=") + c2);
             if (set)
             {
                 if (!fkColumns.IsNull())
@@ -198,10 +198,10 @@ void pgForeignKey::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
                 delete set;
             }
         }
-        wxTreeItemId item=browser->GetItemParent(GetId());
+        wxTreeItemId item = browser->GetItemParent(GetId());
         while (item)
         {
-            pgTable *table=(pgTable*)browser->GetObject(item);
+            pgTable *table = (pgTable *)browser->GetObject(item);
             if (table->IsCreatedBy(tableFactory))
             {
                 coveringIndex = table->GetCoveringIndex(browser, fkColumns);
@@ -218,8 +218,8 @@ void pgForeignKey::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
         properties->AppendItem(_("Name"), GetName());
         properties->AppendItem(_("OID"), NumToStr(GetOid()));
         properties->AppendItem(_("Child columns"), GetFkColumns());
-        properties->AppendItem(_("References"), GetReferences() 
-            + wxT("(") +GetRefColumns() + wxT(")"));
+        properties->AppendItem(_("References"), GetReferences()
+                               + wxT("(") + GetRefColumns() + wxT(")"));
 
         properties->AppendItem(_("Covering index"), GetCoveringIndex());
         properties->AppendItem(_("Match type"), GetMatch());
@@ -227,8 +227,8 @@ void pgForeignKey::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
         properties->AppendItem(_("On delete"), GetOnDelete());
         properties->AppendItem(_("Deferrable?"), BoolToYesNo(GetDeferrable()));
         if (GetDeferrable())
-            properties->AppendItem(_("Initially?"), 
-                GetDeferred() ? wxT("DEFERRED") : wxT("IMMEDIATE"));
+            properties->AppendItem(_("Initially?"),
+                                   GetDeferred() ? wxT("DEFERRED") : wxT("IMMEDIATE"));
         properties->AppendItem(_("System foreign key?"), BoolToYesNo(GetSystemObject()));
         properties->AppendItem(_("Comment"), firstLineOnly(GetComment()));
     }
@@ -239,9 +239,9 @@ void pgForeignKey::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
 
 pgObject *pgForeignKey::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *foreignKey=0;
+    pgObject *foreignKey = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         foreignKey = foreignKeyFactory.CreateObjects(coll, 0, wxT("\n   AND ct.oid=") + GetOidStr());
 
@@ -252,22 +252,22 @@ pgObject *pgForeignKey::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgForeignKeyFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restriction)
 {
-    pgTableObjCollection *collection=(pgTableObjCollection*)coll;
-    pgForeignKey *foreignKey=0;
+    pgTableObjCollection *collection = (pgTableObjCollection *)coll;
+    pgForeignKey *foreignKey = 0;
 
-    pgSet *foreignKeys= collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT ct.oid, conname, condeferrable, condeferred, confupdtype, confdeltype, confmatchtype, ")
-               wxT("conkey, confkey, confrelid, nl.nspname as fknsp, cl.relname as fktab, ")
-               wxT("nr.nspname as refnsp, cr.relname as reftab, description\n")
-        wxT("  FROM pg_constraint ct\n")
-        wxT("  JOIN pg_class cl ON cl.oid=conrelid\n")
-        wxT("  JOIN pg_namespace nl ON nl.oid=cl.relnamespace\n")
-        wxT("  JOIN pg_class cr ON cr.oid=confrelid\n")
-        wxT("  JOIN pg_namespace nr ON nr.oid=cr.relnamespace\n")
-        wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=ct.oid\n")
-        wxT(" WHERE contype='f' AND conrelid = ") + collection->GetOidStr()
-        + restriction + wxT("\n")
-        wxT(" ORDER BY conname"));
+    pgSet *foreignKeys = collection->GetDatabase()->ExecuteSet(
+                             wxT("SELECT ct.oid, conname, condeferrable, condeferred, confupdtype, confdeltype, confmatchtype, ")
+                             wxT("conkey, confkey, confrelid, nl.nspname as fknsp, cl.relname as fktab, ")
+                             wxT("nr.nspname as refnsp, cr.relname as reftab, description\n")
+                             wxT("  FROM pg_constraint ct\n")
+                             wxT("  JOIN pg_class cl ON cl.oid=conrelid\n")
+                             wxT("  JOIN pg_namespace nl ON nl.oid=cl.relnamespace\n")
+                             wxT("  JOIN pg_class cr ON cr.oid=confrelid\n")
+                             wxT("  JOIN pg_namespace nr ON nr.oid=cr.relnamespace\n")
+                             wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=ct.oid\n")
+                             wxT(" WHERE contype='f' AND conrelid = ") + collection->GetOidStr()
+                             + restriction + wxT("\n")
+                             wxT(" ORDER BY conname"));
 
     if (foreignKeys)
     {
@@ -282,9 +282,9 @@ pgObject *pgForeignKeyFactory::CreateObjects(pgCollection *coll, ctlTree *browse
             foreignKey->iSetFkTable(foreignKeys->GetVal(wxT("fktab")));
             foreignKey->iSetRefSchema(foreignKeys->GetVal(wxT("refnsp")));
             foreignKey->iSetReferences(foreignKeys->GetVal(wxT("reftab")));
-            wxString onUpd=foreignKeys->GetVal(wxT("confupdtype"));
-            wxString onDel=foreignKeys->GetVal(wxT("confdeltype"));
-            wxString match=foreignKeys->GetVal(wxT("confmatchtype"));
+            wxString onUpd = foreignKeys->GetVal(wxT("confupdtype"));
+            wxString onDel = foreignKeys->GetVal(wxT("confdeltype"));
+            wxString match = foreignKeys->GetVal(wxT("confmatchtype"));
             foreignKey->iSetOnUpdate(
                 onUpd.IsSameAs('a') ? wxT("NO ACTION") :
                 onUpd.IsSameAs('r') ? wxT("RESTRICT") :
@@ -297,15 +297,15 @@ pgObject *pgForeignKeyFactory::CreateObjects(pgCollection *coll, ctlTree *browse
                 onDel.IsSameAs('c') ? wxT("CASCADE") :
                 onDel.IsSameAs('d') ? wxT("SET DEFAULT") :
                 onDel.IsSameAs('n') ? wxT("SET NULL") : wxT("Unknown"));
-                foreignKey->iSetMatch(
-                        match.IsSameAs('f') ? wxT("FULL") :
-                        match.IsSameAs('u') ? wxT("SIMPLE") : wxT("Unknown"));
+            foreignKey->iSetMatch(
+                match.IsSameAs('f') ? wxT("FULL") :
+                match.IsSameAs('u') ? wxT("SIMPLE") : wxT("Unknown"));
 
-            wxString cn=foreignKeys->GetVal(wxT("conkey"));
-            cn = cn.Mid(1, cn.Length()-2);
+            wxString cn = foreignKeys->GetVal(wxT("conkey"));
+            cn = cn.Mid(1, cn.Length() - 2);
             foreignKey->iSetConkey(cn);
-            cn=foreignKeys->GetVal(wxT("confkey"));
-            cn = cn.Mid(1, cn.Length()-2);
+            cn = foreignKeys->GetVal(wxT("confkey"));
+            cn = cn.Mid(1, cn.Length() - 2);
             foreignKey->iSetConfkey(cn);
 
             foreignKey->iSetDeferrable(foreignKeys->GetBool(wxT("condeferrable")));
@@ -314,13 +314,13 @@ pgObject *pgForeignKeyFactory::CreateObjects(pgCollection *coll, ctlTree *browse
             if (browser)
             {
                 browser->AppendObject(collection, foreignKey);
-	    		foreignKeys->MoveNext();
+                foreignKeys->MoveNext();
             }
             else
                 break;
         }
 
-		delete foreignKeys;
+        delete foreignKeys;
     }
     return foreignKey;
 }
@@ -330,7 +330,7 @@ pgObject *pgForeignKeyFactory::CreateObjects(pgCollection *coll, ctlTree *browse
 wxString pgForeignKeyCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -343,7 +343,7 @@ wxString pgForeignKeyCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Foreign keys list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -352,8 +352,8 @@ wxString pgForeignKeyCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/foreignkey.xpm"
 
 
-pgForeignKeyFactory::pgForeignKeyFactory() 
-: pgTableObjFactory(__("Foreign Key"), __("New Foreign Key..."), __("Create a new Foreign Key constraint."), foreignkey_xpm)
+pgForeignKeyFactory::pgForeignKeyFactory()
+    : pgTableObjFactory(__("Foreign Key"), __("New Foreign Key..."), __("Create a new Foreign Key constraint."), foreignkey_xpm)
 {
     metaType = PGM_FOREIGNKEY;
     collectionFactory = &constraintCollectionFactory;

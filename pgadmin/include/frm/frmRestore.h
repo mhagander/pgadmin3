@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -26,7 +26,7 @@ public:
     void Go();
     wxString GetDisplayCmd(int step);
     wxString GetCmd(int step);
-    
+
 private:
     wxString GetHelpPage() const;
     void OnChangeName(wxCommandEvent &ev);
@@ -37,7 +37,7 @@ private:
     void OnChangeData(wxCommandEvent &ev);
     void OnChangeSchema(wxCommandEvent &ev);
     void OnChangeList(wxListEvent &ev);
-    void OnEndProcess(wxProcessEvent& event);
+    void OnEndProcess(wxProcessEvent &event);
 
     wxString getCmdPart1();
     wxString getCmdPart2(int step);
@@ -67,14 +67,20 @@ public:
 class restoreTreeItemData : public wxTreeItemData
 {
 public:
-    restoreTreeItemData(int id, const wxString& desc);
+    restoreTreeItemData(int id, const wxString &desc);
 
-    int GetId() { return restoreId; }
-    wxString GetDesc() { return restoreDesc; }
+    int GetId()
+    {
+        return restoreId;
+    }
+    wxString GetDesc()
+    {
+        return restoreDesc;
+    }
 
 private:
-   int restoreId;
-   wxString restoreDesc;
+    int restoreId;
+    wxString restoreDesc;
 };
 
 

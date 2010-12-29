@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -227,7 +227,7 @@ void frmReport::OnChange(wxCommandEvent &ev)
         if (rbHtmlEmbed->GetValue())
         {
             if (!wxFile::Exists(txtHtmlStylesheet->GetValue()))
-              enable = false;
+                enable = false;
         }
     }
     else
@@ -263,7 +263,7 @@ void frmReport::OnChange(wxCommandEvent &ev)
         if (rbXmlProcess->GetValue())
         {
             if (!wxFile::Exists(txtXmlStylesheet->GetValue()))
-              enable = false;
+                enable = false;
         }
     }
 
@@ -310,12 +310,12 @@ void frmReport::OnOK(wxCommandEvent &ev)
 
     // Generate the report data
     wxString report;
-    
+
     if (rbHtml->GetValue())
     {
         if (rbHtmlBuiltin->GetValue())
         {
-            wxString xml = GetXmlReport(wxEmptyString);            
+            wxString xml = GetXmlReport(wxEmptyString);
             wxString xsl = GetDefaultXsl(GetEmbeddedCss(GetDefaultCss()));
             report = XslProcessReport(xml, xsl);
         }
@@ -439,7 +439,7 @@ void frmReport::OnBrowseStylesheet(wxCommandEvent &ev)
 
         if (!wxFile::Exists(def))
             def.Empty();
-   
+
 #ifdef __WXMSW__
         wxFileDialog file(this, _("Select stylesheet filename"), wxGetHomeDir(), def, _("HTML Stylesheet files (*.css)|*.css|All files (*.*)|*.*"), wxFD_OPEN);
 #else
@@ -458,7 +458,7 @@ void frmReport::OnBrowseStylesheet(wxCommandEvent &ev)
 
         if (!wxFile::Exists(def))
             def.Empty();
-   
+
 #ifdef __WXMSW__
         wxFileDialog file(this, _("Select stylesheet filename"), wxGetHomeDir(), def, _("XML Stylesheet files (*.xsl)|*.xsl|All files (*.*)|*.*"), wxFD_OPEN);
 #else
@@ -479,10 +479,10 @@ void frmReport::OnBrowseFile(wxCommandEvent &ev)
     {
 #ifdef __WXMSW__
         wxFileDialog file(this, _("Select output filename"), wxGetHomeDir(), txtHtmlFile->GetValue(),
-            _("HTML files (*.html)|*.html|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+                          _("HTML files (*.html)|*.html|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #else
         wxFileDialog file(this, _("Select output filename"), wxGetHomeDir(), txtHtmlFile->GetValue(),
-            _("HTML files (*.html)|*.html|All files (*)|*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+                          _("HTML files (*.html)|*.html|All files (*)|*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #endif
 
         if (file.ShowModal() == wxID_OK)
@@ -495,10 +495,10 @@ void frmReport::OnBrowseFile(wxCommandEvent &ev)
     {
 #ifdef __WXMSW__
         wxFileDialog file(this, _("Select output filename"), wxGetHomeDir(), txtXmlFile->GetValue(),
-            _("XML files (*.xml)|*.xml|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+                          _("XML files (*.xml)|*.xml|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #else
         wxFileDialog file(this, _("Select output filename"), wxGetHomeDir(), txtXmlFile->GetValue(),
-            _("XML files (*.xml)|*.xml|All files (*)|*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+                          _("XML files (*.xml)|*.xml|All files (*)|*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #endif
 
         if (file.ShowModal() == wxID_OK)
@@ -509,9 +509,9 @@ void frmReport::OnBrowseFile(wxCommandEvent &ev)
     }
 }
 
-void frmReport::SetReportTitle(const wxString &t) 
-{ 
-    txtTitle->SetValue(t); 
+void frmReport::SetReportTitle(const wxString &t)
+{
+    txtTitle->SetValue(t);
 }
 
 
@@ -649,7 +649,7 @@ wxString frmReport::GetDefaultXsl(const wxString &css)
             wxT("\n")
             wxT("    <div id=\"ReportDetails\">\n")
             wxT("      <xsl:apply-templates select=\"section\" >\n")
-			wxT("        <xsl:sort select=\"@number\" data-type=\"number\" order=\"ascending\" />\n")
+            wxT("        <xsl:sort select=\"@number\" data-type=\"number\" order=\"ascending\" />\n")
             wxT("      </xsl:apply-templates>\n")
             wxT("    </div>\n")
             wxT("\n")
@@ -658,8 +658,8 @@ wxString frmReport::GetDefaultXsl(const wxString &css)
     data += wxT(" <a href=\"");
     data += HtmlEntities(appearanceFactory->GetWebsiteUrl());
     data += wxT("\">");
-	data += HtmlEntities(appearanceFactory->GetLongAppName());
-	data += wxT("</a>\n")
+    data += HtmlEntities(appearanceFactory->GetLongAppName());
+    data += wxT("</a>\n")
             wxT("    </div>\n")
             wxT("\n")
             wxT("    <br />\n")
@@ -677,12 +677,12 @@ wxString frmReport::GetDefaultXsl(const wxString &css)
             wxT("    <table>\n")
             wxT("      <tr>\n")
             wxT("        <xsl:apply-templates select=\"../section[@id = current()/@id]/table/columns/column\">\n")
-			wxT("          <xsl:sort select=\"@number\" data-type=\"number\" order=\"ascending\" />\n")
+            wxT("          <xsl:sort select=\"@number\" data-type=\"number\" order=\"ascending\" />\n")
             wxT("          <xsl:with-param name=\"count\" select=\"count(../section[@id = current()/@id]/table/columns/column)\" />\n")
             wxT("        </xsl:apply-templates>\n")
             wxT("      </tr>\n")
             wxT("      <xsl:apply-templates select=\"../section[@id = current()/@id]/table/rows/*\" mode=\"rows\">\n")
-			wxT("          <xsl:sort select=\"@number\" data-type=\"number\" order=\"ascending\" />\n")
+            wxT("          <xsl:sort select=\"@number\" data-type=\"number\" order=\"ascending\" />\n")
             wxT("        <xsl:with-param name=\"column-meta\" select=\"../section[@id = current()/@id]/table/columns/column\" />\n")
             wxT("      </xsl:apply-templates>\n")
             wxT("    </table>\n")
@@ -791,10 +791,10 @@ int frmReport::XmlCreateSection(const wxString &name)
     sectionTableRows.Add(wxT(""));
     sectionTableInfo.Add(wxT(""));
     sectionSql.Add(wxT(""));
-    return ind+1;
+    return ind + 1;
 }
 
-void frmReport::XmlSetSectionTableHeader(const int section, int columns, const wxChar *name,...)
+void frmReport::XmlSetSectionTableHeader(const int section, int columns, const wxChar *name, ...)
 {
     va_list ap;
     const wxChar *p = name;
@@ -805,13 +805,13 @@ void frmReport::XmlSetSectionTableHeader(const int section, int columns, const w
     for (int x = 0; x < columns; x++)
     {
         data += wxT("        <column id=\"c");
-        data += NumToStr((long)(x+1));
+        data += NumToStr((long)(x + 1));
         data += wxT("\" number=\"");
-		data += NumToStr((long)(x+1));
+        data += NumToStr((long)(x + 1));
         data += wxT("\" name=\"");
         data += HtmlEntities(p);
-		data += wxT("\"/>\n");
-        p = va_arg(ap, wxChar*);
+        data += wxT("\"/>\n");
+        p = va_arg(ap, wxChar *);
     }
 
     va_end(ap);
@@ -819,7 +819,7 @@ void frmReport::XmlSetSectionTableHeader(const int section, int columns, const w
     sectionTableHeader[section-1] = data;
 }
 
-void frmReport::XmlAddSectionTableRow(const int section, int number, int columns, const wxChar *value,...)
+void frmReport::XmlAddSectionTableRow(const int section, int number, int columns, const wxChar *value, ...)
 {
     va_list ap;
     const wxChar *p = value;
@@ -829,18 +829,18 @@ void frmReport::XmlAddSectionTableRow(const int section, int number, int columns
 
     data = wxT("        <row id=\"r");
     data += NumToStr((long)number);
-	data += wxT("\" number=\"");
+    data += wxT("\" number=\"");
     data += NumToStr((long)number);
-	data += wxT("\"");
-	
+    data += wxT("\"");
+
     for (int x = 0; x < columns; x++)
     {
         data += wxT(" c");
-        data += NumToStr((long)(x+1));
+        data += NumToStr((long)(x + 1));
         data += wxT("=\"");
         data += HtmlEntities(p);
         data += wxT("\"");
-        p = va_arg(ap, wxChar*);
+        p = va_arg(ap, wxChar *);
     }
 
 
@@ -866,9 +866,9 @@ void frmReport::XmlAddSectionTableFromListView(const int section, ctlListView *l
         list->GetColumn(x, itm);
         wxString label = itm.GetText();
         data += wxT("        <column id=\"c");
-        data += NumToStr((long)(x+1));
+        data += NumToStr((long)(x + 1));
         data += wxT("\" number=\"");
-        data += NumToStr((long)(x+1));
+        data += NumToStr((long)(x + 1));
         data += wxT("\" name=\"");
         data += HtmlEntities(label);
         data += wxT("\" />\n");
@@ -881,15 +881,15 @@ void frmReport::XmlAddSectionTableFromListView(const int section, ctlListView *l
     for (int y = 0; y < rows; y++)
     {
         data = wxT("        <row id=\"r");
-        data += NumToStr((long)(y+1));
-	    data += wxT("\" number=\"");
-        data += NumToStr((long)(y+1));
-		data += wxT("\"");
+        data += NumToStr((long)(y + 1));
+        data += wxT("\" number=\"");
+        data += NumToStr((long)(y + 1));
+        data += wxT("\"");
 
         for (int x = 0; x < cols; x++)
         {
             data += wxT(" c");
-            data += NumToStr((long)(x+1));
+            data += NumToStr((long)(x + 1));
             data += wxT("=\"");
             data += HtmlEntities(list->GetText(y, x));
             data += wxT("\"");
@@ -930,10 +930,10 @@ void frmReport::XmlAddSectionTableFromGrid(const int section, ctlSQLResult *grid
     for (int y = 0; y < rows; y++)
     {
         data = wxT("        <row id=\"r");
-        data += NumToStr((long)(y+1));
-	    data += wxT("\" number=\"");
-        data += NumToStr((long)(y+1));
-		data += wxT("\"");
+        data += NumToStr((long)(y + 1));
+        data += wxT("\" number=\"");
+        data += NumToStr((long)(y + 1));
+        data += wxT("\"");
 
         for (int x = 1; x <= cols; x++)
         {
@@ -949,7 +949,7 @@ void frmReport::XmlAddSectionTableFromGrid(const int section, ctlSQLResult *grid
 }
 
 void frmReport::XmlSetSectionSql(int section, const wxString &sql)
-{ 
+{
     sectionSql[section-1] = HtmlEntities(sql);
 
     if (!sectionSql[section-1].IsEmpty())
@@ -966,7 +966,7 @@ void frmReport::XmlAddSectionValue(const int section, const wxString &name, cons
 wxString frmReport::GetSectionTableColumns(const int section)
 {
     wxString data;
-    
+
     data  = wxT("      <columns>\n");
     data += sectionTableHeader[section-1];
     data += wxT("      </columns>\n");
@@ -977,7 +977,7 @@ wxString frmReport::GetSectionTableColumns(const int section)
 wxString frmReport::GetSectionTableRows(const int section)
 {
     wxString data;
-    
+
     data  = wxT("      <rows>\n");
     data += sectionTableRows[section-1];
     data += wxT("      </rows>\n");
@@ -988,7 +988,7 @@ wxString frmReport::GetSectionTableRows(const int section)
 wxString frmReport::GetSectionTable(const int section)
 {
     wxString data;
-    
+
     data  = wxT("    <table>\n");
     data += GetSectionTableColumns(section);
     data += GetSectionTableRows(section);
@@ -1008,7 +1008,7 @@ wxString frmReport::GetSectionTable(const int section)
 wxString frmReport::GetSection(const int section)
 {
     wxString data;
-    
+
     data  = wxT("  <section id=\"s");
     data += NumToStr((long)section);
     data += wxT("\" number=\"");
@@ -1025,7 +1025,7 @@ wxString frmReport::GetSection(const int section)
         data += sectionSql[section-1];
         data += wxT("</sql>\n");
     }
-    
+
     data += sectionData[section-1];
     data += wxT("  </section>\n");
 
@@ -1037,7 +1037,7 @@ wxString frmReport::GetXmlReport(const wxString &stylesheet = wxT(""))
     wxString data;
 
     data  = wxT("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    
+
     if (!stylesheet.IsEmpty())
     {
         data += wxT("<?xml-stylesheet type=\"text/xsl\" href=\"");
@@ -1052,7 +1052,7 @@ wxString frmReport::GetXmlReport(const wxString &stylesheet = wxT(""))
     data += header;
     data += wxT("  </header>\n\n");
 
-    for (unsigned int x=1; x <= sectionName.GetCount(); x++ )
+    for (unsigned int x = 1; x <= sectionName.GetCount(); x++ )
     {
         data += GetSection(x);
         data += wxT("\n");
@@ -1071,9 +1071,9 @@ wxString frmReport::GetXmlReport(const wxString &stylesheet = wxT(""))
 
 wxString frmReport::XslProcessReport(const wxString &xml, const wxString &xsl)
 {
-    xmlChar *output=0;
-    xmlDocPtr ssDoc=0, xmlDoc=0, resDoc=0;
-    xsltStylesheetPtr ssPtr=0;
+    xmlChar *output = 0;
+    xmlDocPtr ssDoc = 0, xmlDoc = 0, resDoc = 0;
+    xsltStylesheetPtr ssPtr = 0;
     int length;
 
     wxBeginBusyCursor();
@@ -1140,7 +1140,7 @@ cleanup:
 
     // This crashes - dunno why :-(
     // if (ssDoc)
-    //  xmlFreeDoc(ssDoc); 
+    //  xmlFreeDoc(ssDoc);
 
     xsltCleanupGlobals();
     xmlCleanupParser();
@@ -1190,14 +1190,14 @@ wxWindow *reportBaseFactory::StartDialog(frmMain *form, pgObject *obj)
     wxEndBusyCursor();
 
     report->ShowModal();
-    return 0;   
+    return 0;
 }
 
 ///////////////////////////////////////////////////////
 // Properties report
 ///////////////////////////////////////////////////////
 reportObjectPropertiesFactory::reportObjectPropertiesFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar)
-: reportBaseFactory(list)
+    : reportBaseFactory(list)
 {
     mnu->Append(id, _("&Properties report"), _("Generate a properties report for this object."));
 }
@@ -1232,7 +1232,7 @@ void reportObjectPropertiesFactory::GenerateReport(frmReport *report, pgObject *
 // DDL report
 ///////////////////////////////////////////////////////
 reportObjectDdlFactory::reportObjectDdlFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar)
-: reportBaseFactory(list)
+    : reportBaseFactory(list)
 {
     mnu->Append(id, _("&DDL report"), _("Generate a DDL report for this object."));
 }
@@ -1262,7 +1262,7 @@ void reportObjectDdlFactory::GenerateReport(frmReport *report, pgObject *object)
 // Data dictionary report
 ///////////////////////////////////////////////////////
 reportObjectDataDictionaryFactory::reportObjectDataDictionaryFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar)
-: reportBaseFactory(list)
+    : reportBaseFactory(list)
 {
     mnu->Append(id, _("&Data dictionary report"), _("Generate a data dictionary report for this object."));
 }
@@ -1299,7 +1299,7 @@ void reportObjectDataDictionaryFactory::GenerateReport(frmReport *report, pgObje
     pgColumn *column;
     bool haveInherit = false;
     wxString colName;
-    while ((column = (pgColumn*)colIt.GetNextObject()) != 0)
+    while ((column = (pgColumn *)colIt.GetNextObject()) != 0)
     {
         column->ShowTreeDetail(browser);
         if (column->GetColNumber() > 0)
@@ -1311,8 +1311,8 @@ void reportObjectDataDictionaryFactory::GenerateReport(frmReport *report, pgObje
                 haveInherit = true;
             }
 
-            report->XmlAddSectionTableRow(section, 
-                                          column->GetColNumber(), 
+            report->XmlAddSectionTableRow(section,
+                                          column->GetColNumber(),
                                           6,
                                           colName.c_str(),
                                           column->GetVarTypename().c_str(),
@@ -1337,7 +1337,7 @@ void reportObjectDataDictionaryFactory::GenerateReport(frmReport *report, pgObje
     pgObject *constraint;
     long x = 1;
     wxString definition, type;
-    while ((constraint = (pgObject*)conIt.GetNextObject()) != 0)
+    while ((constraint = (pgObject *)conIt.GetNextObject()) != 0)
     {
         if (x == 1)
         {
@@ -1351,27 +1351,27 @@ void reportObjectDataDictionaryFactory::GenerateReport(frmReport *report, pgObje
         {
             case PGM_PRIMARYKEY:
                 type = _("Primary key");
-                definition = ((pgIndexConstraint*)constraint)->GetDefinition();
+                definition = ((pgIndexConstraint *)constraint)->GetDefinition();
                 break;
             case PGM_UNIQUE:
                 type = _("Unique");
-                definition = ((pgIndexConstraint*)constraint)->GetDefinition();
+                definition = ((pgIndexConstraint *)constraint)->GetDefinition();
                 break;
             case PGM_FOREIGNKEY:
                 type = _("Foreign key");
-                definition = ((pgForeignKey*)constraint)->GetDefinition();
+                definition = ((pgForeignKey *)constraint)->GetDefinition();
                 break;
             case PGM_EXCLUDE:
                 type = _("Exclude");
-                definition = ((pgIndexConstraint*)constraint)->GetDefinition();
+                definition = ((pgIndexConstraint *)constraint)->GetDefinition();
                 break;
             case PGM_CHECK:
                 type = _("Check");
-		        definition = wxT("(") + ((pgCheck*)constraint)->GetDefinition() + wxT(")");
+                definition = wxT("(") + ((pgCheck *)constraint)->GetDefinition() + wxT(")");
                 break;
         }
 
-        report->XmlAddSectionTableRow(section, 
+        report->XmlAddSectionTableRow(section,
                                       x,
                                       4,
                                       constraint->GetName().c_str(),
@@ -1386,7 +1386,7 @@ void reportObjectDataDictionaryFactory::GenerateReport(frmReport *report, pgObje
 // Statistics report
 ///////////////////////////////////////////////////////
 reportObjectStatisticsFactory::reportObjectStatisticsFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar)
-: reportBaseFactory(list)
+    : reportBaseFactory(list)
 {
     mnu->Append(id, _("&Statistics report"), _("Generate a statistics report for this object."));
 }
@@ -1404,9 +1404,9 @@ bool reportObjectStatisticsFactory::CheckEnable(pgObject *obj)
                 if (f)
                 {
                     if (f->GetMetaType() == PGM_TABLE ||
-                        f->GetMetaType() == GP_PARTITION ||
-                        f->GetMetaType() == PGM_TABLESPACE || 
-                        f->GetMetaType() == PGM_DATABASE)
+                            f->GetMetaType() == GP_PARTITION ||
+                            f->GetMetaType() == PGM_TABLESPACE ||
+                            f->GetMetaType() == PGM_DATABASE)
                         return true;
                 }
                 else
@@ -1445,7 +1445,7 @@ void reportObjectStatisticsFactory::GenerateReport(frmReport *report, pgObject *
 // Dependencies report
 ///////////////////////////////////////////////////////
 reportObjectDependenciesFactory::reportObjectDependenciesFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar)
-: reportBaseFactory(list)
+    : reportBaseFactory(list)
 {
     mnu->Append(id, _("&Dependencies report"), _("Generate a dependencies report for this object."));
 }
@@ -1478,7 +1478,7 @@ void reportObjectDependenciesFactory::GenerateReport(frmReport *report, pgObject
 // Dependents report
 ///////////////////////////////////////////////////////
 reportObjectDependentsFactory::reportObjectDependentsFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar)
-: reportBaseFactory(list)
+    : reportBaseFactory(list)
 {
     mnu->Append(id, _("&Dependents report"), _("Generate a dependents report for this object."));
 }
@@ -1511,7 +1511,7 @@ void reportObjectDependentsFactory::GenerateReport(frmReport *report, pgObject *
 // Object list report
 ///////////////////////////////////////////////////////
 reportObjectListFactory::reportObjectListFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar)
-: reportBaseFactory(list)
+    : reportBaseFactory(list)
 {
     mnu->Append(id, _("&Object list report"), _("Generate an object list report for this collection."));
 }

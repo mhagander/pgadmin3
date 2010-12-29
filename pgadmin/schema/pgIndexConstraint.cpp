@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,7 +23,7 @@
 wxString pgIndexConstraint::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -40,11 +40,11 @@ wxString pgIndexConstraint::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop index constraint \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop index constraint \"%s\"?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop index constraint cascaded?");
@@ -96,8 +96,8 @@ wxString pgIndexConstraint::GetTranslatedMessage(int kindOfMessage) const
 bool pgIndexConstraint::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(wxT(
-        "ALTER TABLE ") + qtIdent(GetIdxSchema()) + wxT(".") + qtIdent(GetIdxTable())
-            + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier() + wxT(";"));
+                                          "ALTER TABLE ") + qtIdent(GetIdxSchema()) + wxT(".") + qtIdent(GetIdxTable())
+                                      + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier() + wxT(";"));
 }
 
 
@@ -108,7 +108,7 @@ wxString pgIndexConstraint::GetDefinition()
     if (wxString(GetTypeName()).Upper() == wxT("EXCLUDE"))
         sql += wxT("\n  USING ") + GetIndexType() + wxT(" ");
 
-     sql += wxT("(") + GetQuotedColumns() + wxT(")");
+    sql += wxT("(") + GetQuotedColumns() + wxT(")");
 
     if (GetConnection()->BackendMinimumVersion(8, 2) && GetFillFactor().Length() > 0)
         sql += wxT("\n  WITH (FILLFACTOR=") + GetFillFactor() + wxT(")");
@@ -135,8 +135,8 @@ wxString pgIndexConstraint::GetCreate()
 {
     wxString sql;
 
-    sql = GetQuotedIdentifier() + wxT(" ") 
-        + GetTypeName().Upper() + GetDefinition();
+    sql = GetQuotedIdentifier() + wxT(" ")
+          + GetTypeName().Upper() + GetDefinition();
 
     return sql;
 };
@@ -146,19 +146,19 @@ wxString pgIndexConstraint::GetSql(ctlTree *browser)
 {
     if (sql.IsNull())
     {
-        sql = wxT("-- Constraint: ") + GetQuotedFullIdentifier() 
-            + wxT("\n\n-- ALTER TABLE ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
-            + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier() + wxT(";")
-            + wxT("\n\nALTER TABLE ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
-            + wxT("\n  ADD CONSTRAINT ")
-            + GetCreate()
-            + wxT(";\n");
+        sql = wxT("-- Constraint: ") + GetQuotedFullIdentifier()
+              + wxT("\n\n-- ALTER TABLE ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
+              + wxT(" DROP CONSTRAINT ") + GetQuotedIdentifier() + wxT(";")
+              + wxT("\n\nALTER TABLE ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
+              + wxT("\n  ADD CONSTRAINT ")
+              + GetCreate()
+              + wxT(";\n");
 
-		if (!GetComment().IsNull())
-		{
-		    sql += wxT("COMMENT ON CONSTRAINT ") + GetQuotedIdentifier() + wxT(" ON ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
-			    + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
-		}
+        if (!GetComment().IsNull())
+        {
+            sql += wxT("COMMENT ON CONSTRAINT ") + GetQuotedIdentifier() + wxT(" ON ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
+                   + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+        }
     }
     return sql;
 }
@@ -181,7 +181,7 @@ void pgIndexConstraint::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListV
             properties->AppendItem(_("Columns"), GetColumns());
         else
         {
-            properties->AppendItem(_("Procedure "), GetSchemaPrefix(GetProcNamespace()) + GetProcName()+wxT("(")+GetTypedColumns()+wxT(")"));
+            properties->AppendItem(_("Procedure "), GetSchemaPrefix(GetProcNamespace()) + GetProcName() + wxT("(") + GetTypedColumns() + wxT(")"));
             properties->AppendItem(_("Operator classes"), GetOperatorClasses());
         }
         properties->AppendItem(_("Unique?"), GetIsUnique());
@@ -198,8 +198,8 @@ void pgIndexConstraint::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListV
 
 pgObject *pgPrimaryKey::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *index=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *index = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         index = primaryKeyFactory.CreateObjects(coll, 0, wxT("\n   AND cls.oid=") + GetOidStr());
 
@@ -208,8 +208,8 @@ pgObject *pgPrimaryKey::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgUnique::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *index=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *index = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         index = uniqueFactory.CreateObjects(coll, 0, wxT("\n   AND cls.oid=") + GetOidStr());
 
@@ -218,8 +218,8 @@ pgObject *pgUnique::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgExclude::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *index=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *index = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         index = excludeFactory.CreateObjects(coll, 0, wxT("\n   AND cls.oid=") + GetOidStr());
 
@@ -246,8 +246,8 @@ pgObject *pgExcludeFactory::CreateObjects(pgCollection *collection, ctlTree *bro
 
 #include "images/primarykey.xpm"
 
-pgPrimaryKeyFactory::pgPrimaryKeyFactory() 
-: pgIndexBaseFactory(__("Primary Key"), __("New Primary Key..."), __("Create a new Primary Key constraint."), primarykey_xpm)
+pgPrimaryKeyFactory::pgPrimaryKeyFactory()
+    : pgIndexBaseFactory(__("Primary Key"), __("New Primary Key..."), __("Create a new Primary Key constraint."), primarykey_xpm)
 {
     metaType = PGM_PRIMARYKEY;
     collectionFactory = &constraintCollectionFactory;
@@ -258,8 +258,8 @@ pgPrimaryKeyFactory primaryKeyFactory;
 
 #include "images/unique.xpm"
 
-pgUniqueFactory::pgUniqueFactory() 
-: pgIndexBaseFactory(__("Unique"), __("New Unique Constraint..."), __("Create a new Unique constraint."), unique_xpm)
+pgUniqueFactory::pgUniqueFactory()
+    : pgIndexBaseFactory(__("Unique"), __("New Unique Constraint..."), __("Create a new Unique constraint."), unique_xpm)
 {
     metaType = PGM_UNIQUE;
     collectionFactory = &constraintCollectionFactory;
@@ -271,8 +271,8 @@ pgUniqueFactory uniqueFactory;
 
 #include "images/exclude.xpm"
 
-pgExcludeFactory::pgExcludeFactory() 
-: pgIndexBaseFactory(__("Exclude"), __("New Exclusion Constraint..."), __("Create a new Exclusion constraint."), exclude_xpm)
+pgExcludeFactory::pgExcludeFactory()
+    : pgIndexBaseFactory(__("Exclude"), __("New Exclusion Constraint..."), __("Create a new Exclusion constraint."), exclude_xpm)
 {
     metaType = PGM_EXCLUDE;
     collectionFactory = &constraintCollectionFactory;

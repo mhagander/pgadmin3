@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -16,42 +16,42 @@
 
 class pgsDictionaryGen : public pgsObjectGen
 {
-	
+
 private:
 
-	typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
+    typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
 
-	wxString m_file_path;
-	wxCSConv m_conv;
-	
-	long m_nb_lines;
+    wxString m_file_path;
+    wxCSConv m_conv;
 
-	pgsRandomizer m_randomizer;
+    long m_nb_lines;
+
+    pgsRandomizer m_randomizer;
 
 public:
 
-	pgsDictionaryGen(const wxString & file_path, const bool & sequence = false,
-			const long & seed = wxDateTime::GetTimeNow(), wxCSConv conv = wxConvLocal);
+    pgsDictionaryGen(const wxString &file_path, const bool &sequence = false,
+                     const long &seed = wxDateTime::GetTimeNow(), wxCSConv conv = wxConvLocal);
 
-	virtual wxString random();
+    virtual wxString random();
 
-	virtual ~pgsDictionaryGen();
+    virtual ~pgsDictionaryGen();
 
-	virtual pgsDictionaryGen * clone();
+    virtual pgsDictionaryGen *clone();
 
-	/* pgsDictionaryGen(const pgsDictionaryGen & that); */
-	
-	const long & nb_lines() const;
-	
-private:
-	
-	pgsDictionaryGen & operator =(const pgsDictionaryGen & that);
+    /* pgsDictionaryGen(const pgsDictionaryGen & that); */
+
+    const long &nb_lines() const;
 
 private:
 
-	long count_lines();
+    pgsDictionaryGen &operator =(const pgsDictionaryGen &that);
 
-	wxString get_line(long line_nb);
+private:
+
+    long count_lines();
+
+    wxString get_line(long line_nb);
 
 };
 

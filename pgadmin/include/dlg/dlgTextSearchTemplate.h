@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgTextSearchTemplate.h - Text Search Template property 
+// dlgTextSearchTemplate.h - Text Search Template property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -26,7 +26,10 @@ public:
 
     void CheckChange();
     wxString GetSql();
-    virtual wxString GetHelpPage(bool forCreate) const { return wxT("pg/sql-createtstemplate"); }
+    virtual wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pg/sql-createtstemplate");
+    }
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
 

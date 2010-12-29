@@ -1,14 +1,14 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 // timespin.cpp - timeSpin SpinCtrl
 //
 //////////////////////////////////////////////////////////////////////////
- 
+
 #include "pgAdmin3.h"
 
 #include <wx/wx.h>
@@ -33,11 +33,11 @@ IMPLEMENT_DYNAMIC_CLASS(wxTimeSpinCtrl, wxControl)
 
 
 wxTimeSpinCtrl::wxTimeSpinCtrl(wxWindow *parent,
-                            wxWindowID id,
-                            const wxPoint& pos,
-                            const wxSize& size,
-                            long style,
-                            const wxString& name)
+                               wxWindowID id,
+                               const wxPoint &pos,
+                               const wxSize &size,
+                               long style,
+                               const wxString &name)
 {
     Init();
     Create(parent, id, pos, size, style, name);
@@ -46,26 +46,26 @@ wxTimeSpinCtrl::wxTimeSpinCtrl(wxWindow *parent,
 
 bool wxTimeSpinCtrl::Create(wxWindow *parent,
                             wxWindowID id,
-                            const wxPoint& pos,
-                            const wxSize& size,
+                            const wxPoint &pos,
+                            const wxSize &size,
                             long style,
-                            const wxString& name)
+                            const wxString &name)
 {
-    wxControl::Create(parent, id, pos, size, style & ~(wxSP_WRAP|wxSP_ARROW_KEYS), wxDefaultValidator, name);
+    wxControl::Create(parent, id, pos, size, style & ~(wxSP_WRAP | wxSP_ARROW_KEYS), wxDefaultValidator, name);
     SetFont(parent->GetFont());
 
-    m_spn=new wxSpinButton(this, CTRLID_SPN, wxDefaultPosition, wxDefaultSize, wxSP_WRAP | wxSP_VERTICAL | (style & wxSP_ARROW_KEYS));
+    m_spn = new wxSpinButton(this, CTRLID_SPN, wxDefaultPosition, wxDefaultSize, wxSP_WRAP | wxSP_VERTICAL | (style & wxSP_ARROW_KEYS));
 
-    wxSize cs=GetClientSize();
-    wxSize ss=m_spn->GetBestSize();
+    wxSize cs = GetClientSize();
+    wxSize ss = m_spn->GetBestSize();
 
-    m_txt=new wxTextCtrl(this, CTRLID_TXT, wxEmptyString, wxPoint(0,0), wxSize(cs.x-ss.x, cs.y), wxNO_BORDER|wxWANTS_CHARS);
+    m_txt = new wxTextCtrl(this, CTRLID_TXT, wxEmptyString, wxPoint(0, 0), wxSize(cs.x - ss.x, cs.y), wxNO_BORDER | wxWANTS_CHARS);
     m_txt->Connect(wxID_ANY, wxID_ANY, wxEVT_KEY_DOWN, wxKeyEventHandler(wxTimeSpinCtrl::OnEditKey), 0, this);
     m_txt->Connect(wxID_ANY, wxID_ANY, wxEVT_KILL_FOCUS, wxFocusEventHandler(wxTimeSpinCtrl::OnKillFocus), 0, this);
 
     wxArrayString valArray;
     wxChar c;
-    for (c='0'; c <= '9'; c++)
+    for (c = '0'; c <= '9'; c++)
         valArray.Add(wxString(c, 1));
     valArray.Add(wxT(":"));
     wxTextValidator tv(wxFILTER_INCLUDE_CHAR_LIST);
@@ -73,10 +73,10 @@ bool wxTimeSpinCtrl::Create(wxWindow *parent,
     m_txt->SetValidator(tv);
 
     m_spn->SetSize(ss.x, cs.y);
-    m_spn->SetPosition(wxPoint(cs.x-ss.x, 0));
+    m_spn->SetPosition(wxPoint(cs.x - ss.x, 0));
 
     canWrap = (style & wxSP_WRAP) != 0;
-    SetMax(24*60*60 -1);
+    SetMax(24 * 60 * 60 - 1);
 
     SetInitialSize(size);
 
@@ -85,16 +85,16 @@ bool wxTimeSpinCtrl::Create(wxWindow *parent,
 
 #define TXTPOSX 0
 #define TXTPOSY 0
-void wxTimeSpinCtrl::OnSize(wxSizeEvent& event)
+void wxTimeSpinCtrl::OnSize(wxSizeEvent &event)
 {
     if ( m_spn )
     {
         wxSize sz = GetClientSize();
 
-        wxSize ss=m_spn->GetSize();
-        int eh=m_txt->GetBestSize().y;
+        wxSize ss = m_spn->GetSize();
+        int eh = m_txt->GetBestSize().y;
 
-        m_txt->SetSize(TXTPOSX, TXTPOSY, sz.x-ss.x-TXTPOSX, sz.y > eh ? eh-TXTPOSY : sz.y-TXTPOSY);
+        m_txt->SetSize(TXTPOSX, TXTPOSY, sz.x - ss.x - TXTPOSX, sz.y > eh ? eh - TXTPOSY : sz.y - TXTPOSY);
         m_spn->SetSize(sz.x - ss.x, 0, ss.x, sz.y);
     }
 
@@ -156,14 +156,14 @@ void wxTimeSpinCtrl::SetMax(long seconds, bool useDay)
         m_format = wxT("%D:%H:%M:%S");
     else
         m_format = wxT("%H:%M:%S");
-    maxSpinValue = seconds+1;
+    maxSpinValue = seconds + 1;
     if (maxSpinValue < 2)
         maxSpinValue = 2;
     m_spn->SetRange(0, 32767);
 }
 
 
-bool wxTimeSpinCtrl::SetTime(const wxDateTime& time)
+bool wxTimeSpinCtrl::SetTime(const wxDateTime &time)
 {
     if (time.IsValid())
     {
@@ -179,7 +179,7 @@ bool wxTimeSpinCtrl::SetTime(const wxDateTime& time)
 }
 
 
-bool wxTimeSpinCtrl::SetValue(const wxTimeSpan& span)
+bool wxTimeSpinCtrl::SetValue(const wxTimeSpan &span)
 {
     m_txt->SetValue(span.Format(m_format));
     spinValue = span.GetSeconds().GetLo();
@@ -196,9 +196,9 @@ wxTimeSpan wxTimeSpinCtrl::GetValue()
 
 int wxTimeSpinCtrl::GetTimePart()
 {
-    wxString strAfter=m_txt->GetRange(m_txt->GetInsertionPoint(), 9999);
-    int cnt=0;
-    wxChar *p=(wxChar*)strAfter.c_str();
+    wxString strAfter = m_txt->GetRange(m_txt->GetInsertionPoint(), 9999);
+    int cnt = 0;
+    wxChar *p = (wxChar *)strAfter.c_str();
     while (*p)
     {
         if (*p++ == ':')
@@ -210,21 +210,21 @@ int wxTimeSpinCtrl::GetTimePart()
 
 void wxTimeSpinCtrl::Highlight(int tp)
 {
-    wxString txt=m_txt->GetValue();
-    long from=0, to;
+    wxString txt = m_txt->GetValue();
+    long from = 0, to;
     int i;
 
-    for (i=3-tp - (hasDay ? 0 : 1) ; i > 0 ; i--)
-        from += txt.Mid(from).Find(':') +1;
+    for (i = 3 - tp - (hasDay ? 0 : 1) ; i > 0 ; i--)
+        from += txt.Mid(from).Find(':') + 1;
 
-    to=txt.Mid(from).Find(':') + from;
+    to = txt.Mid(from).Find(':') + from;
     if (to < from)
         to = 999;
 
     m_txt->SetSelection(from, to);
 }
 
-        
+
 void wxTimeSpinCtrl::OnSpinUp(wxSpinEvent &ev)
 {
 #ifdef __WXMSW__
@@ -243,34 +243,34 @@ void wxTimeSpinCtrl::OnSpinDown(wxSpinEvent &ev)
 
 void wxTimeSpinCtrl::DoSpin(int diff)
 {
-    int tp=GetTimePart();
-    long oldValue=0, maxValue=0, mult=0;
+    int tp = GetTimePart();
+    long oldValue = 0, maxValue = 0, mult = 0;
 
     switch (tp)
     {
-        case 0: 
+        case 0:
             oldValue = spinValue;
             maxValue = 60;
             mult = 1;
             break;
         case 1:
-            oldValue = spinValue/60;
+            oldValue = spinValue / 60;
             maxValue = 60;
             mult = 60;
             break;
 
         case 2:
-            oldValue = spinValue/60/60;
+            oldValue = spinValue / 60 / 60;
             if (hasDay)
                 maxValue = 24;
             else
-                maxValue = maxSpinValue/60/60;
-            mult = 60*60;
+                maxValue = maxSpinValue / 60 / 60;
+            mult = 60 * 60;
             break;
         case 3:
-            oldValue = spinValue/60/60/24;
-            maxValue = maxSpinValue/60/60/24;
-            mult = 60*60*24;
+            oldValue = spinValue / 60 / 60 / 24;
+            maxValue = maxSpinValue / 60 / 60 / 24;
+            mult = 60 * 60 * 24;
             break;
         default:
             // can't happen
@@ -287,9 +287,9 @@ void wxTimeSpinCtrl::DoSpin(int diff)
             diff -= maxValue;
     }
 
-    long newSpinValue = spinValue + diff*mult;
+    long newSpinValue = spinValue + diff * mult;
     if (newSpinValue < 0)
-        newSpinValue = maxSpinValue-1;
+        newSpinValue = maxSpinValue - 1;
     else if (newSpinValue > maxSpinValue)
         newSpinValue = 0;
 
@@ -297,7 +297,7 @@ void wxTimeSpinCtrl::DoSpin(int diff)
     {
         spinValue = newSpinValue;
         wxTimeSpan span(0, 0, spinValue);
-        wxString txt=span.Format(m_format);
+        wxString txt = span.Format(m_format);
         m_txt->SetValue(txt);
         Highlight(tp);
 
@@ -311,7 +311,7 @@ void wxTimeSpinCtrl::DoSpin(int diff)
 
 void wxTimeSpinCtrl::OnText(wxCommandEvent &ev)
 {
-    long time=GetTextTime();
+    long time = GetTextTime();
     if (time >= 0)
     {
         spinValue = time;
@@ -326,7 +326,7 @@ void wxTimeSpinCtrl::OnNavigate(wxNavigationKeyEvent &ev)
 {
     if (wxWindow::FindFocus() == m_txt)
     {
-        int tp=GetTimePart();
+        int tp = GetTimePart();
         if (ev.GetDirection())
             tp++;
         else
@@ -351,7 +351,7 @@ void wxTimeSpinCtrl::OnEditKey(wxKeyEvent &ev)
             {
                 if (!ev.ShiftDown())
                 {
-                    int tp=GetTimePart()+1;
+                    int tp = GetTimePart() + 1;
                     if (tp < 3 || (hasDay && tp == 3))
                     {
                         Highlight(tp);
@@ -364,7 +364,7 @@ void wxTimeSpinCtrl::OnEditKey(wxKeyEvent &ev)
             {
                 if (!ev.ShiftDown())
                 {
-                    int tp=GetTimePart()-1;
+                    int tp = GetTimePart() - 1;
                     if (tp >= 0)
                     {
                         Highlight(tp);
@@ -392,7 +392,7 @@ void wxTimeSpinCtrl::OnEditKey(wxKeyEvent &ev)
 long wxTimeSpinCtrl::GetTextTime()
 {
     int t1, t2, t3, t4;
-    int scanned=wxSscanf(m_txt->GetValue(), wxT("%d:%d:%d:%d"), &t1, &t2, &t3, &t4);
+    int scanned = wxSscanf(m_txt->GetValue(), wxT("%d:%d:%d:%d"), &t1, &t2, &t3, &t4);
 
     switch (scanned)
     {
@@ -402,15 +402,15 @@ long wxTimeSpinCtrl::GetTextTime()
             break;
         case 2:
             if (t1 >= 0 && t2 >= 0 && t2 < 60)
-                return t1*60+t2;
+                return t1 * 60 + t2;
             break;
         case 3:
             if (t1 >= 0 && t2 >= 0 && t2 < 60 && t3 >= 0 && t3 < 60)
-                return (t1*60+t2)*60+t3;
+                return (t1 * 60 + t2) * 60 + t3;
             break;
         case 4:
             if (t1 >= 0 && t2 >= 0 && t2 < 24 && t3 >= 0 && t3 < 60 && t4 >= 0 && t4 < 60)
-                return ((t1*24+t2)*60+t3)*60+t4;
+                return ((t1 * 24 + t2) * 60 + t3) * 60 + t4;
             break;
         default:
             break;
@@ -425,7 +425,7 @@ void wxTimeSpinCtrl::OnKillFocus(wxFocusEvent &ev)
     ev.Skip();
 #endif
 
-    long time=GetTextTime();
+    long time = GetTextTime();
 
     if (time < 0)
     {
@@ -433,12 +433,12 @@ void wxTimeSpinCtrl::OnKillFocus(wxFocusEvent &ev)
         spinValue = 0;
         m_spn->SetValue(0);
     }
-	else
-	{
-		int tp=GetTimePart();
-		SetValue(wxTimeSpan(0,0,time));
-		Highlight(tp);
-	}
+    else
+    {
+        int tp = GetTimePart();
+        SetValue(wxTimeSpan(0, 0, time));
+        Highlight(tp);
+    }
 }
 
 

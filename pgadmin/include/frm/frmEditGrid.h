@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -39,8 +39,16 @@
 class cacheLine
 {
 public:
-    cacheLine() { cols=0; stored=false; readOnly=false; }
-    ~cacheLine() { if (cols) delete[] cols; }
+    cacheLine()
+    {
+        cols = 0;
+        stored = false;
+        readOnly = false;
+    }
+    ~cacheLine()
+    {
+        if (cols) delete[] cols;
+    }
 
     wxString *cols;
     bool stored, readOnly;
@@ -52,7 +60,10 @@ class cacheLinePool
 public:
     cacheLinePool(int initialLines);
     ~cacheLinePool();
-    cacheLine *operator[] (int line) { return Get(line); }
+    cacheLine *operator[] (int line)
+    {
+        return Get(line);
+    }
     cacheLine *Get(int lineNo);
     bool IsFilled(int lineNo);
     void Delete(int lineNo);
@@ -66,26 +77,54 @@ private:
 class sqlCell
 {
 public:
-    sqlCell() { ClearCell(); }
+    sqlCell()
+    {
+        ClearCell();
+    }
 
-    void SetCell(long r, long c) { row = r; col = c; }
-    void ClearCell() { row = -1; col = -1; }
-    bool IsSet() { return row != -1 && col != -1; }
+    void SetCell(long r, long c)
+    {
+        row = r;
+        col = c;
+    }
+    void ClearCell()
+    {
+        row = -1;
+        col = -1;
+    }
+    bool IsSet()
+    {
+        return row != -1 && col != -1;
+    }
 
-    long GetRow() { return row; }
-    long GetCol() { return col; }
+    long GetRow()
+    {
+        return row;
+    }
+    long GetCol()
+    {
+        return col;
+    }
 
 private:
     long row;
     long col;
 };
 
-// we cannot derive from wxGridCellAttr because destructor is private but not virtual 
+// we cannot derive from wxGridCellAttr because destructor is private but not virtual
 class sqlCellAttr
 {
 public:
-    sqlCellAttr()  { attr = new wxGridCellAttr; isPrimaryKey=false; needResize=false; }
-    ~sqlCellAttr() { attr->DecRef(); }
+    sqlCellAttr()
+    {
+        attr = new wxGridCellAttr;
+        isPrimaryKey = false;
+        needResize = false;
+    }
+    ~sqlCellAttr()
+    {
+        attr->DecRef();
+    }
     int size();
     int precision();
 
@@ -103,9 +142,12 @@ class sqlTable;
 class ctlSQLEditGrid : public ctlSQLGrid
 {
 public:
-    ctlSQLEditGrid(wxFrame *parent, wxWindowID id, const wxPoint& pos, const wxSize& size);
+    ctlSQLEditGrid(wxFrame *parent, wxWindowID id, const wxPoint &pos, const wxSize &size);
 
-    sqlTable *GetTable() { return (sqlTable*)wxGrid::GetTable(); }
+    sqlTable *GetTable()
+    {
+        return (sqlTable *)wxGrid::GetTable();
+    }
     //wxSize GetBestSize(int row, int col);
     void ResizeEditor(int row, int col);
     wxArrayInt GetSelectedRows() const;
@@ -116,7 +158,7 @@ public:
 class sqlTable : public wxGridTableBase
 {
 public:
-    sqlTable(pgConn *conn, pgQueryThread *thread, const wxString& tabName, const OID relid, bool _hasOid, const wxString& _pkCols, char _relkind);
+    sqlTable(pgConn *conn, pgQueryThread *thread, const wxString &tabName, const OID relid, bool _hasOid, const wxString &_pkCols, char _relkind);
     ~sqlTable();
     bool StoreLine();
     void UndoLine(int row);
@@ -127,21 +169,33 @@ public:
     wxString GetColLabelValue(int col);
     wxString GetColLabelValueUnformatted(int col);
     wxString GetRowLabelValue(int row);
-    wxGridCellAttr* GetAttr(int row, int col, wxGridCellAttr::wxAttrKind kind);
+    wxGridCellAttr *GetAttr(int row, int col, wxGridCellAttr::wxAttrKind kind);
 
     wxString GetValue(int row, int col);
     void SetValue(int row, int col, const wxString &value);
 
-    bool IsEmptyCell(int row, int col) { return false; }
-    bool needsResizing(int col) { return columns[col].needResize; }
+    bool IsEmptyCell(int row, int col)
+    {
+        return false;
+    }
+    bool needsResizing(int col)
+    {
+        return columns[col].needResize;
+    }
     bool AppendRows(size_t rows);
     bool DeleteRows(size_t pos, size_t rows);
-    int  LastRow() { return lastRow; }
+    int  LastRow()
+    {
+        return lastRow;
+    }
     bool IsColText(int col);
     bool IsColBoolean(int col);
 
     bool CheckInCache(int row);
-    bool IsLineSaved(int row) { return GetLine(row)->stored; }
+    bool IsLineSaved(int row)
+    {
+        return GetLine(row)->stored;
+    }
 
     bool Paste();
 
@@ -172,7 +226,7 @@ private:
     int rowsDeleted;    // rows deleted from initial dataSet
     sqlCellAttr *columns;
 
-	wxArrayInt colMap;
+    wxArrayInt colMap;
 
     friend class ctlSQLEditGrid;
 };
@@ -184,57 +238,72 @@ class pgSchemaObject;
 class frmEditGrid : public pgFrame
 {
 public:
-    frmEditGrid(frmMain *form, const wxString& _title, pgConn *conn, pgSchemaObject *obj, bool ascending = true);
+    frmEditGrid(frmMain *form, const wxString &_title, pgConn *conn, pgSchemaObject *obj, bool ascending = true);
     ~frmEditGrid();
 
     void ShowForm(bool filter = false);
     void Go();
-    wxString GetSortCols() const { return orderBy; } ;
+    wxString GetSortCols() const
+    {
+        return orderBy;
+    } ;
     void SetSortCols(const wxString &cols);
-    wxString GetFilter() const { return rowFilter; } ;
+    wxString GetFilter() const
+    {
+        return rowFilter;
+    } ;
     void SetFilter(const wxString &filter);
-    int GetLimit() const { return limit; } ;
+    int GetLimit() const
+    {
+        return limit;
+    } ;
     void SetLimit(const int rowlimit);
-    wxMenu *GetFileMenu() { return fileMenu; };
-    wxMenu *GetEditMenu() { return editMenu; };
+    wxMenu *GetFileMenu()
+    {
+        return fileMenu;
+    };
+    wxMenu *GetEditMenu()
+    {
+        return editMenu;
+    };
 
 private:
-    void OnEraseBackground(wxEraseEvent& event);
-    void OnSize(wxSizeEvent& event);
-    
-    void OnCloseWindow(wxCloseEvent& event);
-    void OnClose(wxCommandEvent& event);
-    void OnHelp(wxCommandEvent& event);
-    void OnContents(wxCommandEvent& event);
-    void OnRefresh(wxCommandEvent& event);
-    void OnDelete(wxCommandEvent& event);
-    void OnOptions(wxCommandEvent& event);
-    void OnSave(wxCommandEvent& event);
+    void OnEraseBackground(wxEraseEvent &event);
+    void OnSize(wxSizeEvent &event);
+
+    void OnCloseWindow(wxCloseEvent &event);
+    void OnClose(wxCommandEvent &event);
+    void OnHelp(wxCommandEvent &event);
+    void OnContents(wxCommandEvent &event);
+    void OnRefresh(wxCommandEvent &event);
+    void OnDelete(wxCommandEvent &event);
+    void OnOptions(wxCommandEvent &event);
+    void OnSave(wxCommandEvent &event);
     bool DoSave();
-	void CancelChange();
-    void OnUndo(wxCommandEvent& event);
-    void OnCellChange(wxGridEvent& event);
-    void OnGridSelectCells(wxGridRangeSelectEvent& event);
-    void OnEditorShown(wxGridEvent& event);
-    void OnEditorHidden(wxGridEvent& event);
-    void OnKey(wxKeyEvent& event);
-    void OnCopy(wxCommandEvent& event);
-    void OnIncludeFilter(wxCommandEvent& event);
-    void OnExcludeFilter(wxCommandEvent& event);
-    void OnRemoveFilters(wxCommandEvent& event);
-    void OnAscSort(wxCommandEvent& event);
-    void OnDescSort(wxCommandEvent& event);
-    void OnRemoveSort(wxCommandEvent& event);
-    void OnPaste(wxCommandEvent& event);
-    void OnLabelDoubleClick(wxGridEvent& event);
-    void OnLabelRightClick(wxGridEvent& event);
-    void OnCellRightClick(wxGridEvent& event);
+    void CancelChange();
+    void OnUndo(wxCommandEvent &event);
+    void OnCellChange(wxGridEvent &event);
+    void OnGridSelectCells(wxGridRangeSelectEvent &event);
+    void OnEditorShown(wxGridEvent &event);
+    void OnEditorHidden(wxGridEvent &event);
+    void OnKey(wxKeyEvent &event);
+    void OnCopy(wxCommandEvent &event);
+    void OnIncludeFilter(wxCommandEvent &event);
+    void OnExcludeFilter(wxCommandEvent &event);
+    void OnRemoveFilters(wxCommandEvent &event);
+    void OnAscSort(wxCommandEvent &event);
+    void OnDescSort(wxCommandEvent &event);
+    void OnRemoveSort(wxCommandEvent &event);
+    void OnPaste(wxCommandEvent &event);
+    void OnLabelDoubleClick(wxGridEvent &event);
+    void OnLabelRightClick(wxGridEvent &event);
+    void OnCellRightClick(wxGridEvent &event);
     void Abort();
-    void OnToggleScratchPad(wxCommandEvent& event);
-    void OnToggleLimitBar(wxCommandEvent& event);
-    void OnToggleToolBar(wxCommandEvent& event);
-    void OnAuiUpdate(wxAuiManagerEvent& event);
-    void OnDefaultView(wxCommandEvent& event);
+    void OnToggleScratchPad(wxCommandEvent &event);
+    void OnToggleLimitBar(wxCommandEvent &event);
+    void OnToggleToolBar(wxCommandEvent &event);
+    void OnAuiUpdate(wxAuiManagerEvent &event);
+    void OnDefaultView(wxCommandEvent &event);
 
     wxAuiManager manager;
     ctlSQLEditGrid *sqlGrid;
@@ -268,9 +337,12 @@ public:
     bool CheckEnable(pgObject *obj);
 
 protected:
-    editGridFactoryBase(menuFactoryList *list) : contextActionFactory(list) { rowlimit = 0; }
+    editGridFactoryBase(menuFactoryList *list) : contextActionFactory(list)
+    {
+        rowlimit = 0;
+    }
     wxWindow *ViewData(frmMain *form, pgObject *obj, bool filter);
-	int rowlimit;
+    int rowlimit;
     bool pkAscending;
 };
 
@@ -293,8 +365,8 @@ public:
 class editGridLimitedFactory : public editGridFactoryBase
 {
 public:
-	editGridLimitedFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar, int limit, bool ascending);
-	wxWindow *StartDialog(frmMain *form, pgObject *obj);
+    editGridLimitedFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *toolbar, int limit, bool ascending);
+    wxWindow *StartDialog(frmMain *form, pgObject *obj);
 };
 
 #endif

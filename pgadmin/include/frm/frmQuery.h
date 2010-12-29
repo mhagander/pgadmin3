@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -53,13 +53,15 @@ class pgScriptTimer;
 class QueryExecInfo
 {
 public:
-	QueryExecInfo() {
-		toFileExportForm = NULL;
-	}
-	~QueryExecInfo() {
-		if (toFileExportForm)
-			delete toFileExportForm;
-	}
+    QueryExecInfo()
+    {
+        toFileExportForm = NULL;
+    }
+    ~QueryExecInfo()
+    {
+        if (toFileExportForm)
+            delete toFileExportForm;
+    }
 
     int queryOffset;
     frmExport *toFileExportForm;
@@ -71,18 +73,30 @@ public:
 class frmQuery : public pgFrame
 {
 public:
-    frmQuery(frmMain *form, const wxString& _title, pgConn *conn, const wxString& qry, const wxString& file = wxEmptyString);
+    frmQuery(frmMain *form, const wxString &_title, pgConn *conn, const wxString &qry, const wxString &file = wxEmptyString);
     ~frmQuery();
     void Go();
-    
+
     void writeScriptOutput();
     void setExtendedTitle();
     void SetLineEndingStyle();
 
-    void SetQueryText(wxString str) { sqlQuery->SetText(str); }
-    void ColouriseQuery(int start, int stop) { sqlQuery->Colourise(start, stop); }
-		void SetChanged(bool p_changed) { changed = p_changed; }
-		void SetLastPath(wxString p_lastpath) { lastPath = p_lastpath; }
+    void SetQueryText(wxString str)
+    {
+        sqlQuery->SetText(str);
+    }
+    void ColouriseQuery(int start, int stop)
+    {
+        sqlQuery->Colourise(start, stop);
+    }
+    void SetChanged(bool p_changed)
+    {
+        changed = p_changed;
+    }
+    void SetLastPath(wxString p_lastpath)
+    {
+        lastPath = p_lastpath;
+    }
     bool CheckChanged(bool canVeto);
 
     void UpdateFavouritesList();
@@ -107,122 +121,122 @@ private:
     wxButton *btnDeleteAll;
     wxArrayString histoQueries;
 
-	// Query timing/status update
+    // Query timing/status update
     wxTimer timer;
     wxLongLong elapsedQuery, startTimeQuery;
-    
+
     // pgScript interface
-    pgsApplication * pgScript;
+    pgsApplication *pgScript;
     wxString pgsOutputString;
     wxStringOutputStream pgsStringOutput;
     wxTextOutputStream pgsOutput;
-    pgScriptTimer * pgsTimer;
+    pgScriptTimer *pgsTimer;
 
-	//GQB related
-    void OnChangeNotebook(wxAuiNotebookEvent& event);
-    void OnAdjustSizesTimer(wxTimerEvent & event);
-	void OnResizeHorizontally(wxSplitterEvent& event);
+    //GQB related
+    void OnChangeNotebook(wxAuiNotebookEvent &event);
+    void OnAdjustSizesTimer(wxTimerEvent &event);
+    void OnResizeHorizontally(wxSplitterEvent &event);
     void adjustGQBSizes();
-	bool updateFromGqb(bool executing);
+    bool updateFromGqb(bool executing);
     wxAuiNotebook *sqlNotebook;
     gqbModel *model;
     gqbController *controller;
     bool firstTime;
-	bool gqbUpdateRunning;
+    bool gqbUpdateRunning;
     wxTimer *adjustSizesTimer;
 
-	// Our connection
+    // Our connection
     pgConn *conn;
 
-	// These status flags are required to work round some wierdness on wxGTK,
-	// particularly on Solaris.
+    // These status flags are required to work round some wierdness on wxGTK,
+    // particularly on Solaris.
     bool closing, loading;
 
-    void OnEraseBackground(wxEraseEvent& event);
-    void OnSize(wxSizeEvent& event);
+    void OnEraseBackground(wxEraseEvent &event);
+    void OnSize(wxSizeEvent &event);
 
-    void OnChangeStc(wxStyledTextEvent& event);
-    void OnPositionStc(wxStyledTextEvent& event);
-    void OnClose(wxCloseEvent& event);
-    void OnSetFocus(wxFocusEvent& event);
-    void OnContents(wxCommandEvent& event);
-    void OnHelp(wxCommandEvent& event);
-    void OnCancel(wxCommandEvent& event);
-    void OnExecute(wxCommandEvent& event);
-    void OnExecScript(wxCommandEvent& event);
-    void OnExecFile(wxCommandEvent& event);
-    void OnExplain(wxCommandEvent& event);
-    void OnBuffers(wxCommandEvent& event);
-    void OnNew(wxCommandEvent& event);
-    void OnOpen(wxCommandEvent& event);
-    void OnSave(wxCommandEvent& event);
-    void OnSaveAs(wxCommandEvent& event);
-    void SaveExplainAsImage(wxCommandEvent& event);
-    void OnExport(wxCommandEvent& event);
-    void OnExit(wxCommandEvent& event);
-    void OnCut(wxCommandEvent& event);
-    void OnCopy(wxCommandEvent& event);
-    void OnPaste(wxCommandEvent& event);
-    void OnClear(wxCommandEvent& event);
-    void OnSearchReplace(wxCommandEvent& event);
-    void OnUndo(wxCommandEvent& event);
-    void OnRedo(wxCommandEvent& event);
-    void OnSaveHistory(wxCommandEvent& event);
-    void OnAutoRollback(wxCommandEvent& event);
+    void OnChangeStc(wxStyledTextEvent &event);
+    void OnPositionStc(wxStyledTextEvent &event);
+    void OnClose(wxCloseEvent &event);
+    void OnSetFocus(wxFocusEvent &event);
+    void OnContents(wxCommandEvent &event);
+    void OnHelp(wxCommandEvent &event);
+    void OnCancel(wxCommandEvent &event);
+    void OnExecute(wxCommandEvent &event);
+    void OnExecScript(wxCommandEvent &event);
+    void OnExecFile(wxCommandEvent &event);
+    void OnExplain(wxCommandEvent &event);
+    void OnBuffers(wxCommandEvent &event);
+    void OnNew(wxCommandEvent &event);
+    void OnOpen(wxCommandEvent &event);
+    void OnSave(wxCommandEvent &event);
+    void OnSaveAs(wxCommandEvent &event);
+    void SaveExplainAsImage(wxCommandEvent &event);
+    void OnExport(wxCommandEvent &event);
+    void OnExit(wxCommandEvent &event);
+    void OnCut(wxCommandEvent &event);
+    void OnCopy(wxCommandEvent &event);
+    void OnPaste(wxCommandEvent &event);
+    void OnClear(wxCommandEvent &event);
+    void OnSearchReplace(wxCommandEvent &event);
+    void OnUndo(wxCommandEvent &event);
+    void OnRedo(wxCommandEvent &event);
+    void OnSaveHistory(wxCommandEvent &event);
+    void OnAutoRollback(wxCommandEvent &event);
     void OnChangeConnection(wxCommandEvent &ev);
-    void OnClearHistory(wxCommandEvent& event);
-    void OnActivate(wxActivateEvent& event);
-    void OnFocus(wxFocusEvent& event);
-    void OnSelectAll(wxCommandEvent& event);
-    void OnAddFavourite(wxCommandEvent& event);
-    void OnManageFavourites(wxCommandEvent& event);
-    void OnSelectFavourite(wxCommandEvent& event);
-    void OnQuickReport(wxCommandEvent& event);
-    void OnAutoIndent(wxCommandEvent& event);
-    void OnWordWrap(wxCommandEvent& event);
-    void OnShowIndentGuides(wxCommandEvent& event);
-    void OnShowWhitespace(wxCommandEvent& event);
-    void OnShowLineEnds(wxCommandEvent& event);
-    void OnShowLineNumber(wxCommandEvent& event);
+    void OnClearHistory(wxCommandEvent &event);
+    void OnActivate(wxActivateEvent &event);
+    void OnFocus(wxFocusEvent &event);
+    void OnSelectAll(wxCommandEvent &event);
+    void OnAddFavourite(wxCommandEvent &event);
+    void OnManageFavourites(wxCommandEvent &event);
+    void OnSelectFavourite(wxCommandEvent &event);
+    void OnQuickReport(wxCommandEvent &event);
+    void OnAutoIndent(wxCommandEvent &event);
+    void OnWordWrap(wxCommandEvent &event);
+    void OnShowIndentGuides(wxCommandEvent &event);
+    void OnShowWhitespace(wxCommandEvent &event);
+    void OnShowLineEnds(wxCommandEvent &event);
+    void OnShowLineNumber(wxCommandEvent &event);
 
-    void OnToggleScratchPad(wxCommandEvent& event);
-    void OnToggleDatabaseBar(wxCommandEvent& event);
-    void OnToggleToolBar(wxCommandEvent& event);
-    void OnToggleOutputPane(wxCommandEvent& event);
-    void OnAuiUpdate(wxAuiManagerEvent& event);
-    void OnDefaultView(wxCommandEvent& event);
-    void OnBlockIndent(wxCommandEvent& event);
-    void OnBlockOutDent(wxCommandEvent& event);
-    void OnChangeToUpperCase(wxCommandEvent& event);
-    void OnChangeToLowerCase(wxCommandEvent& event);
-    void OnCommentText(wxCommandEvent& event);
-    void OnUncommentText(wxCommandEvent& event);
+    void OnToggleScratchPad(wxCommandEvent &event);
+    void OnToggleDatabaseBar(wxCommandEvent &event);
+    void OnToggleToolBar(wxCommandEvent &event);
+    void OnToggleOutputPane(wxCommandEvent &event);
+    void OnAuiUpdate(wxAuiManagerEvent &event);
+    void OnDefaultView(wxCommandEvent &event);
+    void OnBlockIndent(wxCommandEvent &event);
+    void OnBlockOutDent(wxCommandEvent &event);
+    void OnChangeToUpperCase(wxCommandEvent &event);
+    void OnChangeToLowerCase(wxCommandEvent &event);
+    void OnCommentText(wxCommandEvent &event);
+    void OnUncommentText(wxCommandEvent &event);
 
-    void OnDeleteCurrent(wxCommandEvent& event);
-    void OnDeleteAll(wxCommandEvent& event);
+    void OnDeleteCurrent(wxCommandEvent &event);
+    void OnDeleteAll(wxCommandEvent &event);
 
-    void OnTimer(wxTimerEvent & event);
+    void OnTimer(wxTimerEvent &event);
 
     void OpenLastFile();
-    void updateMenu(wxObject *obj=0);
-    void execQuery(const wxString &query, int resultToRetrieve=0, bool singleResult=false, const int queryOffset=0, bool toFile=false, bool explain=false, bool verbose=false);
+    void updateMenu(wxObject *obj = 0);
+    void execQuery(const wxString &query, int resultToRetrieve = 0, bool singleResult = false, const int queryOffset = 0, bool toFile = false, bool explain = false, bool verbose = false);
     void OnQueryComplete(wxCommandEvent &ev);
     void completeQuery(bool done, bool explain, bool verbose);
     void OnScriptComplete(wxCommandEvent &ev);
     void setTools(const bool running);
-    void showMessage(const wxString& msg, const wxString &msgShort=wxT(""));
+    void showMessage(const wxString &msg, const wxString &msgShort = wxT(""));
     int GetLineEndingStyle();
-    void OnSetEOLMode(wxCommandEvent& event);
+    void OnSetEOLMode(wxCommandEvent &event);
     void SetEOLModeDisplay(int mode);
-    void OnMacroInvoke(wxCommandEvent& event);
-    void OnMacroManage(wxCommandEvent& event);
+    void OnMacroInvoke(wxCommandEvent &event);
+    void OnMacroManage(wxCommandEvent &event);
 
     void LoadQueries();
     void SaveQueries();
     void OnChangeQuery(wxCommandEvent &event);
 
-    wxBitmap CreateBitmap(const wxColour& colour);
-    wxColour GetServerColour(pgConn* connection);
+    wxBitmap CreateBitmap(const wxColour &colour);
+    wxColour GetServerColour(pgConn *connection);
 
     wxWindow *currentControl();
     wxMenu *queryMenu;
@@ -260,7 +274,7 @@ enum
 
 enum
 {
-    CTL_SQLQUERY=331,
+    CTL_SQLQUERY = 331,
     CTL_SQLRESULT,
     CTL_MSGRESULT,
     CTL_MSGHISTORY,
@@ -353,10 +367,10 @@ public:
 class pgScriptTimer : public wxTimer
 {
 private:
-    frmQuery * m_parent;
+    frmQuery *m_parent;
 
 public:
-    pgScriptTimer(frmQuery * parent);
+    pgScriptTimer(frmQuery *parent);
     void Notify();
 };
 

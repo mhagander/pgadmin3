@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -24,20 +24,20 @@
 #include "schema/pgTablespace.h"
 
 
-pgLoginRole::pgLoginRole(const wxString& newName)
-: pgRole(loginRoleFactory, newName)
+pgLoginRole::pgLoginRole(const wxString &newName)
+    : pgRole(loginRoleFactory, newName)
 {
 }
 
 
-pgGroupRole::pgGroupRole(const wxString& newName)
-: pgRole(groupRoleFactory, newName)
+pgGroupRole::pgGroupRole(const wxString &newName)
+    : pgRole(groupRoleFactory, newName)
 {
 }
 
 
-pgRole::pgRole(pgaFactory &factory, const wxString& newName)
-: pgServerObject(factory, newName)
+pgRole::pgRole(pgaFactory &factory, const wxString &newName)
+    : pgServerObject(factory, newName)
 {
 }
 
@@ -45,7 +45,7 @@ pgRole::pgRole(pgaFactory &factory, const wxString& newName)
 wxString pgLoginRole::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -58,11 +58,11 @@ wxString pgLoginRole::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop login role \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop login role \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop login role cascaded?");
@@ -107,7 +107,7 @@ wxString pgLoginRole::GetTranslatedMessage(int kindOfMessage) const
 wxString pgGroupRole::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -120,11 +120,11 @@ wxString pgGroupRole::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop group role \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop group role \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop group role cascaded?");
@@ -179,10 +179,10 @@ bool pgRole::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     if (GetUpdateCatalog())
     {
-        wxMessageDialog dlg(frame, 
-            _("Deleting a superuser might result in unwanted behaviour (e.g. when restoring the database).\nAre you sure?"),
-            _("Confirm superuser deletion"),
-                     wxICON_EXCLAMATION | wxYES_NO |wxNO_DEFAULT);
+        wxMessageDialog dlg(frame,
+                            _("Deleting a superuser might result in unwanted behaviour (e.g. when restoring the database).\nAre you sure?"),
+                            _("Confirm superuser deletion"),
+                            wxICON_EXCLAMATION | wxYES_NO | wxNO_DEFAULT);
         if (dlg.ShowModal() != wxID_YES)
             return false;
     }
@@ -195,8 +195,8 @@ wxString pgRole::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Role: ") + GetName() + wxT("\n\n")
-            + wxT("-- DROP ROLE ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE ROLE ") + GetQuotedIdentifier();
+              + wxT("-- DROP ROLE ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE ROLE ") + GetQuotedIdentifier();
 
         if (GetCanLogin())
         {
@@ -214,38 +214,38 @@ wxString pgRole::GetSql(ctlTree *browser)
         if (GetCreateRole())        sql += wxT(" CREATEROLE");
         else                        sql += wxT(" NOCREATEROLE");
         if (GetConnectionLimit() > 0)
-                                    sql += wxT(" CONNECTION LIMIT ") + NumToStr(GetConnectionLimit());
+            sql += wxT(" CONNECTION LIMIT ") + NumToStr(GetConnectionLimit());
         if (GetAccountExpires().IsValid())
-        AppendIfFilled(sql, wxT(" VALID UNTIL "), qtDbString(DateToAnsiStr(GetAccountExpires())));
+            AppendIfFilled(sql, wxT(" VALID UNTIL "), qtDbString(DateToAnsiStr(GetAccountExpires())));
         if (GetRolQueueName().Length() > 0)
             AppendIfFilled(sql, wxT(" RESOURCE QUEUE "), GetRolQueueName());
-        sql +=wxT(";\n");
+        sql += wxT(";\n");
 
         if (this->GetSuperuser() && !GetUpdateCatalog())
             sql += wxT("UPDATE pg_authid SET rolcatupdate=false WHERE rolname=") + qtDbString(GetIdentifier()) + wxT(";\n");
 
         size_t index;
-        for (index=0 ; index < configList.GetCount() ; index++)
+        for (index = 0 ; index < configList.GetCount() ; index++)
         {
             if (configList.Item(index).BeforeFirst('=') != wxT("search_path") &&
-                configList.Item(index).BeforeFirst('=') != wxT("temp_tablespaces"))
+                    configList.Item(index).BeforeFirst('=') != wxT("temp_tablespaces"))
                 sql += wxT("ALTER ROLE ") + GetQuotedIdentifier()
-                    + wxT(" SET ") + configList.Item(index).BeforeFirst('=') + wxT("='") + configList.Item(index).AfterFirst('=') + wxT("';\n");
+                       + wxT(" SET ") + configList.Item(index).BeforeFirst('=') + wxT("='") + configList.Item(index).AfterFirst('=') + wxT("';\n");
             else
                 sql += wxT("ALTER ROLE ") + GetQuotedIdentifier()
-                    + wxT(" SET ") + configList.Item(index).BeforeFirst('=') + wxT("=") + configList.Item(index).AfterFirst('=') + wxT(";\n");
+                       + wxT(" SET ") + configList.Item(index).BeforeFirst('=') + wxT("=") + configList.Item(index).AfterFirst('=') + wxT(";\n");
         }
-        for (index=0 ; index < rolesIn.GetCount() ; index++)
+        for (index = 0 ; index < rolesIn.GetCount() ; index++)
         {
-            wxString role=rolesIn.Item(index);
-            bool admin=false;
+            wxString role = rolesIn.Item(index);
+            bool admin = false;
             if (role.Right(PGROLE_ADMINOPTION_LEN) == PGROLE_ADMINOPTION)
             {
-                admin=true;
-                role=role.Left(role.Length()-PGROLE_ADMINOPTION_LEN);
+                admin = true;
+                role = role.Left(role.Length() - PGROLE_ADMINOPTION_LEN);
             }
             sql += wxT("GRANT ") + qtIdent(role)
-                +  wxT(" TO ") + GetQuotedIdentifier();
+                   +  wxT(" TO ") + GetQuotedIdentifier();
 
             if (admin)
                 sql += wxT(" WITH ADMIN OPTION");
@@ -256,7 +256,7 @@ wxString pgRole::GetSql(ctlTree *browser)
         if (!GetComment().IsNull())
         {
             sql += wxT("COMMENT ON ROLE ") + GetQuotedFullIdentifier() + wxT(" IS ")
-                +  qtDbString(GetComment()) + wxT(";\n");
+                   +  qtDbString(GetComment()) + wxT(";\n");
         }
 
     }
@@ -279,19 +279,19 @@ void pgRole::ShowDependents(frmMain *form, ctlListView *referencedBy, const wxSt
     wxArrayString dblist;
 
     pgSet *set;
-    set=GetConnection()->ExecuteSet(
-    wxT("SELECT 'd' as type, datname, datallowconn, datdba\n")
-    wxT("  FROM pg_database db\n")
-    wxT("UNION\n")
-    wxT("SELECT 'M', spcname, null, null\n")
-    wxT("  FROM pg_tablespace where spcowner=") + GetOidStr() + wxT("\n")
-    wxT(" ORDER BY 1, 2"));
+    set = GetConnection()->ExecuteSet(
+              wxT("SELECT 'd' as type, datname, datallowconn, datdba\n")
+              wxT("  FROM pg_database db\n")
+              wxT("UNION\n")
+              wxT("SELECT 'M', spcname, null, null\n")
+              wxT("  FROM pg_tablespace where spcowner=") + GetOidStr() + wxT("\n")
+              wxT(" ORDER BY 1, 2"));
 
     if (set)
     {
         while (!set->Eof())
         {
-            wxString name=set->GetVal(wxT("datname"));
+            wxString name = set->GetVal(wxT("datname"));
             if (set->GetVal(wxT("type")) == wxT("d"))
             {
                 if (set->GetBool(wxT("datallowconn")))
@@ -311,39 +311,39 @@ void pgRole::ShowDependents(frmMain *form, ctlListView *referencedBy, const wxSt
     // across system tables.
     // Strictly speaking, we'd need to join pg_shdepend to each subquery
 
-    wxString depOids=wxT("(SELECT objid FROM pg_shdepend WHERE refobjid=") + GetOidStr() + wxT(")");
+    wxString depOids = wxT("(SELECT objid FROM pg_shdepend WHERE refobjid=") + GetOidStr() + wxT(")");
 
-    FillOwned(form->GetBrowser(), referencedBy, dblist, 
-        wxT("SELECT cl.relkind, COALESCE(cin.nspname, cln.nspname) as nspname, COALESCE(ci.relname, cl.relname) as relname, cl.relname as indname\n")
-        wxT("  FROM pg_class cl\n")
-        wxT("  JOIN pg_namespace cln ON cl.relnamespace=cln.oid\n")
-        wxT("  LEFT OUTER JOIN pg_index ind ON ind.indexrelid=cl.oid\n")
-        wxT("  LEFT OUTER JOIN pg_class ci ON ind.indrelid=ci.oid\n")
-        wxT("  LEFT OUTER JOIN pg_namespace cin ON ci.relnamespace=cin.oid\n")
-        wxT(" WHERE cl.oid IN ") + depOids + wxT(" AND cl.oid > ") + sysoid + wxT("\n")
-        wxT("UNION ALL\n")
-        wxT("SELECT 'n', null, nspname, null\n")
-        wxT("  FROM pg_namespace nsp WHERE nsp.oid IN ") + depOids + wxT(" AND nsp.oid > ") + sysoid + wxT("\n")
-        wxT("UNION ALL\n")
-        wxT("SELECT CASE WHEN typtype='d' THEN 'd' ELSE 'y' END, null, typname, null\n")
-        wxT("  FROM pg_type ty WHERE ty.oid IN ") + depOids + wxT(" AND ty.oid > ") + sysoid + wxT("\n")
-        wxT("UNION ALL\n")
-        wxT("SELECT 'C', null, conname, null\n")
-        wxT("  FROM pg_conversion co WHERE co.oid IN ") + depOids + wxT(" AND co.oid > ") + sysoid + wxT("\n")
-        wxT("UNION ALL\n")
-        wxT("SELECT CASE WHEN prorettype=") + NumToStr(PGOID_TYPE_TRIGGER) + wxT(" THEN 'T' ELSE 'p' END, null, proname, null\n")
-        wxT("  FROM pg_proc pr WHERE pr.oid IN ") + depOids + wxT(" AND pr.oid > ") + sysoid + wxT("\n")
-        wxT("UNION ALL\n")
-        wxT("SELECT 'o', null, oprname || '('::text || ")
-                    wxT("COALESCE(tl.typname, ''::text) || ")
-                    wxT("CASE WHEN tl.oid IS NOT NULL AND tr.oid IS NOT NULL THEN ','::text END || ")
-                    wxT("COALESCE(tr.typname, ''::text) || ')'::text, null\n")
-        wxT("  FROM pg_operator op\n")
-        wxT("  LEFT JOIN pg_type tl ON tl.oid=op.oprleft\n")
-        wxT("  LEFT JOIN pg_type tr ON tr.oid=op.oprright\n")
-        wxT(" WHERE op.oid IN ") + depOids + wxT(" AND op.oid > ") + sysoid + wxT("\n")
-        wxT(" ORDER BY 1,2,3"));
-            
+    FillOwned(form->GetBrowser(), referencedBy, dblist,
+              wxT("SELECT cl.relkind, COALESCE(cin.nspname, cln.nspname) as nspname, COALESCE(ci.relname, cl.relname) as relname, cl.relname as indname\n")
+              wxT("  FROM pg_class cl\n")
+              wxT("  JOIN pg_namespace cln ON cl.relnamespace=cln.oid\n")
+              wxT("  LEFT OUTER JOIN pg_index ind ON ind.indexrelid=cl.oid\n")
+              wxT("  LEFT OUTER JOIN pg_class ci ON ind.indrelid=ci.oid\n")
+              wxT("  LEFT OUTER JOIN pg_namespace cin ON ci.relnamespace=cin.oid\n")
+              wxT(" WHERE cl.oid IN ") + depOids + wxT(" AND cl.oid > ") + sysoid + wxT("\n")
+              wxT("UNION ALL\n")
+              wxT("SELECT 'n', null, nspname, null\n")
+              wxT("  FROM pg_namespace nsp WHERE nsp.oid IN ") + depOids + wxT(" AND nsp.oid > ") + sysoid + wxT("\n")
+              wxT("UNION ALL\n")
+              wxT("SELECT CASE WHEN typtype='d' THEN 'd' ELSE 'y' END, null, typname, null\n")
+              wxT("  FROM pg_type ty WHERE ty.oid IN ") + depOids + wxT(" AND ty.oid > ") + sysoid + wxT("\n")
+              wxT("UNION ALL\n")
+              wxT("SELECT 'C', null, conname, null\n")
+              wxT("  FROM pg_conversion co WHERE co.oid IN ") + depOids + wxT(" AND co.oid > ") + sysoid + wxT("\n")
+              wxT("UNION ALL\n")
+              wxT("SELECT CASE WHEN prorettype=") + NumToStr(PGOID_TYPE_TRIGGER) + wxT(" THEN 'T' ELSE 'p' END, null, proname, null\n")
+              wxT("  FROM pg_proc pr WHERE pr.oid IN ") + depOids + wxT(" AND pr.oid > ") + sysoid + wxT("\n")
+              wxT("UNION ALL\n")
+              wxT("SELECT 'o', null, oprname || '('::text || ")
+              wxT("COALESCE(tl.typname, ''::text) || ")
+              wxT("CASE WHEN tl.oid IS NOT NULL AND tr.oid IS NOT NULL THEN ','::text END || ")
+              wxT("COALESCE(tr.typname, ''::text) || ')'::text, null\n")
+              wxT("  FROM pg_operator op\n")
+              wxT("  LEFT JOIN pg_type tl ON tl.oid=op.oprleft\n")
+              wxT("  LEFT JOIN pg_type tr ON tr.oid=op.oprright\n")
+              wxT(" WHERE op.oid IN ") + depOids + wxT(" AND op.oid > ") + sysoid + wxT("\n")
+              wxT(" ORDER BY 1,2,3"));
+
     form->EndMsg(set != 0);
 }
 
@@ -352,25 +352,25 @@ void pgRole::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
         wxString rolesquery;
 
         if (GetConnection()->BackendMinimumVersion(8, 2))
-            rolesquery = wxT("SELECT rolname, admin_option,\n") 
+            rolesquery = wxT("SELECT rolname, admin_option,\n")
                          wxT(" pg_catalog.shobj_description(r.oid, 'pg_authid') AS description\n");
         else
-            rolesquery = wxT("SELECT rolname, admin_option\n"); 
+            rolesquery = wxT("SELECT rolname, admin_option\n");
 
-        rolesquery += wxT("  FROM pg_roles r\n") 
-                      wxT("  JOIN pg_auth_members ON r.oid=roleid\n") 
-                      wxT(" WHERE member=") + GetOidStr() + wxT("\n") 
+        rolesquery += wxT("  FROM pg_roles r\n")
+                      wxT("  JOIN pg_auth_members ON r.oid=roleid\n")
+                      wxT(" WHERE member=") + GetOidStr() + wxT("\n")
                       wxT(" ORDER BY rolname");
 
         pgSetIterator roles(GetConnection(), rolesquery);
 
         while (roles.RowsLeft())
         {
-            wxString role=roles.GetVal(wxT("rolname"));
+            wxString role = roles.GetVal(wxT("rolname"));
             if (roles.GetBool(wxT("admin_option")))
                 role += PGROLE_ADMINOPTION;
 
@@ -392,7 +392,7 @@ void pgRole::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
         properties->AppendItem(_("Inherits?"), BoolToYesNo(GetInherits()));
 
         wxString strConnLimit;
-        strConnLimit.Printf(wxT("%ld"), GetConnectionLimit()); 
+        strConnLimit.Printf(wxT("%ld"), GetConnectionLimit());
         properties->AppendItem(_("Connection Limit"), strConnLimit);
 
         properties->AppendItem(_("Comment"), firstLineOnly(GetComment()));
@@ -400,7 +400,7 @@ void pgRole::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
         wxString roleList;
 
         size_t index;
-        for (index=0 ; index < rolesIn.GetCount() ; index++)
+        for (index = 0 ; index < rolesIn.GetCount() ; index++)
         {
             if (!roleList.IsEmpty())
                 roleList += wxT(", ");
@@ -408,9 +408,9 @@ void pgRole::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
         }
         properties->AppendItem(_("Member of"), roleList);
 
-        for (index=0; index < configList.GetCount() ; index++)
+        for (index = 0; index < configList.GetCount() ; index++)
         {
-            wxString item=configList.Item(index);
+            wxString item = configList.Item(index);
             properties->AppendItem(item.BeforeFirst('='), item.AfterFirst('='));
         }
     }
@@ -419,21 +419,21 @@ void pgRole::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 void pgRole::ReassignDropOwnedTo(frmMain *form)
 {
     wxString query;
-    
+
     dlgReassignDropOwned rdo(form, GetConnection(), this, GetServer()->GetDbRestriction());
     if (rdo.ShowModal() != wxID_CANCEL)
     {
         pgConn *conn;
         conn = new pgConn(GetConnection()->GetHost(),
-                     rdo.GetDatabase(),
-                     GetConnection()->GetUser(),
-                     GetConnection()->GetPassword(),
-                     GetConnection()->GetPort(),
-                     GetConnection()->GetRole(),
-                     GetConnection()->GetSslMode(),
-                     0,
-                     GetConnection()->GetApplicationName());
-                     
+                          rdo.GetDatabase(),
+                          GetConnection()->GetUser(),
+                          GetConnection()->GetPassword(),
+                          GetConnection()->GetPort(),
+                          GetConnection()->GetRole(),
+                          GetConnection()->GetSslMode(),
+                          0,
+                          GetConnection()->GetApplicationName());
+
         if (conn->GetStatus() == PGCONN_OK)
         {
             if (rdo.IsReassign())
@@ -462,8 +462,8 @@ void pgRole::ReassignDropOwnedTo(frmMain *form)
 
 pgObject *pgRole::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *role=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *role = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
     {
         if (coll->GetServer()->GetConnection()->BackendMinimumVersion(8, 5))
@@ -479,16 +479,16 @@ pgObject *pgRole::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgRoleBaseFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgRole *role=0;
-    pgSet *roles=0;
+    pgRole *role = 0;
+    pgSet *roles = 0;
     wxString query;
 
     wxString tabname;
 
     if (collection->GetServer()->HasPrivilege(wxT("table"), wxT("pg_authid"), wxT("SELECT")))
-        tabname=wxT("pg_authid");
+        tabname = wxT("pg_authid");
     else
-        tabname=wxT("pg_roles");
+        tabname = wxT("pg_roles");
 
     // In 9.0+, role config options are in pg_db_role_setting
     if (collection->GetServer()->GetConnection()->BackendMinimumVersion(8, 5))
@@ -497,8 +497,8 @@ pgObject *pgRoleBaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
         if (collection->GetServer()->GetConnection()->GetIsGreenplum())
             query += wxT(", (SELECT rsqname FROM pg_resqueue WHERE pg_resqueue.oid = rolresqueue) AS rsqname");
         query += wxT(" FROM ") + tabname + wxT(" tab") +
-              wxT("  LEFT OUTER JOIN pg_db_role_setting setting ON (tab.oid=setting.setrole AND setting.setdatabase=0)\n") + 
-              restriction +  wxT(" ORDER BY rolname");
+                 wxT("  LEFT OUTER JOIN pg_db_role_setting setting ON (tab.oid=setting.setrole AND setting.setdatabase=0)\n") +
+                 restriction +  wxT(" ORDER BY rolname");
     }
     else if (collection->GetServer()->GetConnection()->BackendMinimumVersion(8, 2))
     {
@@ -539,12 +539,12 @@ pgObject *pgRoleBaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
 
             if (collection->GetServer()->GetConnection()->GetIsGreenplum())
             {
-                role->iSetRolQueueName(roles->GetVal(wxT("rsqname")));	
+                role->iSetRolQueueName(roles->GetVal(wxT("rsqname")));
             }
 
-            wxString cfg=roles->GetVal(wxT("rolconfig"));
+            wxString cfg = roles->GetVal(wxT("rolconfig"));
             if (!cfg.IsEmpty())
-                FillArray(role->GetConfigList(), cfg.Mid(1, cfg.Length()-2));
+                FillArray(role->GetConfigList(), cfg.Mid(1, cfg.Length() - 2));
 
             if (browser)
             {
@@ -566,7 +566,7 @@ pgObject *pgRoleBaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
 wxString pgLoginRoleCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -579,7 +579,7 @@ wxString pgLoginRoleCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Login roles list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -589,7 +589,7 @@ wxString pgLoginRoleCollection::GetTranslatedMessage(int kindOfMessage) const
 wxString pgGroupRoleCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -602,7 +602,7 @@ wxString pgGroupRoleCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Group roles list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -631,14 +631,14 @@ pgObject *pgGroupRoleFactory::CreateObjects(pgCollection *collection, ctlTree *b
 #include "images/loginroles.xpm"
 
 
-pgRoleBaseFactory::pgRoleBaseFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img) 
-: pgServerObjFactory(tn, ns, nls, img)
+pgRoleBaseFactory::pgRoleBaseFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img)
+    : pgServerObjFactory(tn, ns, nls, img)
 {
     metaType = PGM_ROLE;
 }
 
 pgLoginRoleFactory::pgLoginRoleFactory()
-: pgRoleBaseFactory(__("Login Role"), __("New Login Role..."), __("Create a new Login Role."), user_xpm)
+    : pgRoleBaseFactory(__("Login Role"), __("New Login Role..."), __("Create a new Login Role."), user_xpm)
 {
 }
 
@@ -647,7 +647,7 @@ static pgaCollectionFactory lcf(&loginRoleFactory, __("Login Roles"), loginroles
 
 
 pgGroupRoleFactory::pgGroupRoleFactory()
-: pgRoleBaseFactory(__("Group Role"), __("New Group Role..."), __("Create a new Group Role."), group_xpm)
+    : pgRoleBaseFactory(__("Group Role"), __("New Group Role..."), __("Create a new Group Role."), group_xpm)
 {
 }
 
@@ -663,12 +663,12 @@ reassignDropOwnedFactory::reassignDropOwnedFactory(menuFactoryList *list, wxMenu
 
 wxWindow *reassignDropOwnedFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    ((pgRole*)obj)->ReassignDropOwnedTo(form);
-    
+    ((pgRole *)obj)->ReassignDropOwnedTo(form);
+
     return 0;
 }
 
 bool reassignDropOwnedFactory::CheckEnable(pgObject *obj)
 {
-    return obj && obj->IsCreatedBy(loginRoleFactory) && ((pgRole*)obj)->GetConnection()->BackendMinimumVersion(8, 2);
+    return obj && obj->IsCreatedBy(loginRoleFactory) && ((pgRole *)obj)->GetConnection()->BackendMinimumVersion(8, 2);
 }

@@ -1,14 +1,14 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 // xh_calb.cpp - wxCalendarBox handler
 //
 //////////////////////////////////////////////////////////////////////////
- 
+
 #include "pgAdmin3.h"
 
 #include "wx/wx.h"
@@ -18,15 +18,15 @@
 
 IMPLEMENT_DYNAMIC_CLASS(wxCalendarBoxXmlHandler, wxXmlResourceHandler)
 
-wxCalendarBoxXmlHandler::wxCalendarBoxXmlHandler() 
-: wxXmlResourceHandler() 
+wxCalendarBoxXmlHandler::wxCalendarBoxXmlHandler()
+    : wxXmlResourceHandler()
 {
     AddWindowStyles();
 }
 
 
 wxObject *wxCalendarBoxXmlHandler::DoCreateResource()
-{ 
+{
     XRC_MAKE_INSTANCE(calendar, wxCalendarBox);
 
 #if pgUSE_WX_CAL
@@ -46,9 +46,9 @@ wxObject *wxCalendarBoxXmlHandler::DoCreateResource()
                      GetStyle(),
                      GetName());
 #endif
-    
+
     SetupWindow(calendar);
-    
+
     return calendar;
 }
 

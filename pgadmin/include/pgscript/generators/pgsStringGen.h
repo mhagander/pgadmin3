@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -20,34 +20,34 @@ class pgsStringGen : public pgsObjectGen
 {
 private:
 
-	typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
+    typedef pgsCopiedPtr<pgsIntegerGen> pgsRandomizer; // Needs a clone() method
 
-	pgsRandomizer m_w_size_randomizer;
-	pgsRandomizer m_letter_randomizer;
+    pgsRandomizer m_w_size_randomizer;
+    pgsRandomizer m_letter_randomizer;
 
-	UCHAR m_nb_words;
+    UCHAR m_nb_words;
 
-	pgsVectorChar m_characters;
+    pgsVectorChar m_characters;
 
 public:
 
-	pgsStringGen(USHORT w_size_min, USHORT w_size_max = 0, const UCHAR & nb_words = 1,
-			const long & seed = wxDateTime::GetTimeNow(),
-			pgsVectorChar characters = pgsVectorChar());
+    pgsStringGen(USHORT w_size_min, USHORT w_size_max = 0, const UCHAR &nb_words = 1,
+                 const long &seed = wxDateTime::GetTimeNow(),
+                 pgsVectorChar characters = pgsVectorChar());
 
-	virtual wxString random();
+    virtual wxString random();
 
-	virtual ~pgsStringGen();
+    virtual ~pgsStringGen();
 
-	virtual pgsStringGen * clone();
+    virtual pgsStringGen *clone();
 
-	/* pgsStringGen & operator =(const pgsStringGen & that); */
+    /* pgsStringGen & operator =(const pgsStringGen & that); */
 
-	/* pgsStringGen(const pgsStringGen & that); */
+    /* pgsStringGen(const pgsStringGen & that); */
 
 private:
 
-	void init_characters();
+    void init_characters();
 
 };
 

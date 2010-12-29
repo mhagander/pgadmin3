@@ -42,38 +42,38 @@ public:
     };
 
 public:
-    static pgRegKey* OpenRegKey(HKEY root, const wxString& subkey, PGREGACCESSMODE accessmode = PGREG_READ, PGREGWOWMODE wowMode = PGREG_WOW_DEFAULT);
+    static pgRegKey *OpenRegKey(HKEY root, const wxString &subkey, PGREGACCESSMODE accessmode = PGREG_READ, PGREGWOWMODE wowMode = PGREG_WOW_DEFAULT);
     ~pgRegKey();
 
-    static bool KeyExists(HKEY root, const wxString& subKey, PGREGWOWMODE wowMode = PGREG_WOW_DEFAULT);
+    static bool KeyExists(HKEY root, const wxString &subKey, PGREGWOWMODE wowMode = PGREG_WOW_DEFAULT);
 
     bool  GetKeyInfo(size_t *pnSubKeys,      // number of subkeys
                      size_t *pnMaxKeyLen,    // max len of subkey name
                      size_t *pnValues,       // number of values
                      size_t *pnMaxValueLen) const;
 
-    bool QueryValue(const wxString& strVal, LPDWORD pVal) const;
-    bool QueryValue(const wxString& strVal, wxString& pVal) const;
-    bool QueryValue(const wxString& strVal, LPBYTE&  pVal, DWORD& len) const;
+    bool QueryValue(const wxString &strVal, LPDWORD pVal) const;
+    bool QueryValue(const wxString &strVal, wxString &pVal) const;
+    bool QueryValue(const wxString &strVal, LPBYTE  &pVal, DWORD &len) const;
 
-    bool GetFirstValue(wxString& strVal, long &lindex) const;
-    bool GetNextValue(wxString& strVal, long &lindex) const;
-    bool HasValue(const wxString& strVal);
+    bool GetFirstValue(wxString &strVal, long &lindex) const;
+    bool GetNextValue(wxString &strVal, long &lindex) const;
+    bool HasValue(const wxString &strVal);
 
     bool GetFirstKey(pgRegKey*& pkey, long &lindex) const;
     bool GetNextKey(pgRegKey*& pkey, long &lindex) const;
-    bool HasKey(const wxString& strKey) const;
+    bool HasKey(const wxString &strKey) const;
 
-    DWORD GetValueType(const wxString& strVal) const;
+    DWORD GetValueType(const wxString &strVal) const;
 
     wxString ToString() const;
     wxString GetKeyName() const;
 
 private:
-    pgRegKey(HKEY root, const wxString& subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode);
-    pgRegKey(const pgRegKey& keyParent, const wxString& strKey);
+    pgRegKey(HKEY root, const wxString &subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode);
+    pgRegKey(const pgRegKey &keyParent, const wxString &strKey);
 
-    void Init(HKEY root, const wxString& subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode);
+    void Init(HKEY root, const wxString &subkey, PGREGWOWMODE wowMode, PGREGACCESSMODE accessMode);
     void Close();
 
     HKEY            m_hRoot;

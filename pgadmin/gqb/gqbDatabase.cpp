@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,7 +23,7 @@
 #include "schema/pgSchema.h"
 
 gqbDatabase::gqbDatabase(wxString name, pgConn *connection)
-: gqbObject(name, NULL, connection)
+    : gqbObject(name, NULL, connection)
 {
     setType(GQB_DATABASE);
 }
@@ -43,7 +43,7 @@ void gqbDatabase::createObjects(gqbBrowser *_tablesBrowser)
 
 
 // Use database connection to create all objects inside tree
-void gqbDatabase::createSchemas(gqbBrowser *tablesBrowser, wxTreeItemId parentNode,typeSchema MetaType, int indexImage)
+void gqbDatabase::createSchemas(gqbBrowser *tablesBrowser, wxTreeItemId parentNode, typeSchema MetaType, int indexImage)
 {
 
     // Search Schemas and insert it
@@ -73,26 +73,26 @@ void gqbDatabase::createSchemas(gqbBrowser *tablesBrowser, wxTreeItemId parentNo
     if (MetaType == GQB_CATALOG)
     {
         sql = wxT("SELECT 2 AS nsptyp, nspname, nsp.oid")
-            wxT("  FROM pg_namespace nsp\n")
-            + restr +
-            wxT(" ORDER BY 1, nspname");
+              wxT("  FROM pg_namespace nsp\n")
+              + restr +
+              wxT(" ORDER BY 1, nspname");
     }
     else
     {
         if (conn->BackendMinimumVersion(8, 1))
         {
             sql = wxT("SELECT CASE WHEN nspname LIKE E'pg\\\\_temp\\\\_%' THEN 1\n")
-                wxT("            WHEN (nspname LIKE E'pg\\\\_%') THEN 0\n");
+                  wxT("            WHEN (nspname LIKE E'pg\\\\_%') THEN 0\n");
         }
         else
         {
             sql = wxT("SELECT CASE WHEN nspname LIKE 'pg\\\\_temp\\\\_%' THEN 1\n")
-                wxT("            WHEN (nspname LIKE 'pg\\\\_%') THEN 0\n");
+                  wxT("            WHEN (nspname LIKE 'pg\\\\_%') THEN 0\n");
         }
         sql += wxT("            ELSE 3 END AS nsptyp, nspname, nsp.oid\n")
-            wxT("  FROM pg_namespace nsp\n")
-            + restr +
-            wxT(" ORDER BY 1, nspname");
+               wxT("  FROM pg_namespace nsp\n")
+               + restr +
+               wxT(" ORDER BY 1, nspname");
     }
 
     pgSet *schemas = conn->ExecuteSet(sql);
@@ -102,8 +102,8 @@ void gqbDatabase::createSchemas(gqbBrowser *tablesBrowser, wxTreeItemId parentNo
     {
         while (!schemas->Eof())
         {
-            wxString name=schemas->GetVal(wxT("nspname"));
-            long nsptyp=schemas->GetLong(wxT("nsptyp"));
+            wxString name = schemas->GetVal(wxT("nspname"));
+            long nsptyp = schemas->GetLong(wxT("nsptyp"));
 
             wxStringTokenizer tokens(settings->GetSystemSchemas(), wxT(","));
             while (tokens.HasMoreTokens())
@@ -130,13 +130,13 @@ void gqbDatabase::createSchemas(gqbBrowser *tablesBrowser, wxTreeItemId parentNo
 
                 // Create Schema Object
                 schema = new gqbSchema(this, name, conn, schemas->GetOid(wxT("oid")));
-                parent=tablesBrowser->AppendItem(parentNode, name, indexImage, indexImage, schema);
+                parent = tablesBrowser->AppendItem(parentNode, name, indexImage, indexImage, schema);
 
                 if(name != wxT("pg_catalog") && name != wxT("pgagent"))
-				{
-                    tableImage=GQB_IMG_CATALOG_OBJ;
-					viewImage=GQB_IMG_CATALOG_OBJ;
-				}
+                {
+                    tableImage = GQB_IMG_CATALOG_OBJ;
+                    viewImage = GQB_IMG_CATALOG_OBJ;
+                }
             }
             else
             {
@@ -144,7 +144,7 @@ void gqbDatabase::createSchemas(gqbBrowser *tablesBrowser, wxTreeItemId parentNo
                 // Create Schema Object
                 // Note that the schema will be populated when the node is expanded.
                 schema = new gqbSchema(this, name, conn, schemas->GetOid(wxT("oid")));
-                parent=tablesBrowser->AppendItem(parentNode, name , indexImage, indexImage, schema);
+                parent = tablesBrowser->AppendItem(parentNode, name , indexImage, indexImage, schema);
             }
 
             schemas->MoveNext();

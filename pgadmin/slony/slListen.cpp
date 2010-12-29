@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,19 +22,19 @@
 #include "frm/frmMain.h"
 
 
-slListen::slListen(slNode *n, const wxString& newName)
-: slNodeObject(n, listenFactory, newName)
+slListen::slListen(slNode *n, const wxString &newName)
+    : slNodeObject(n, listenFactory, newName)
 {
 }
 
 bool slListen::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(
-              wxT("SELECT ") + GetCluster()->GetSchemaPrefix() 
-            + wxT("droplisten(") + NumToStr(GetSlId())
-            + wxT(", ") + NumToStr(GetProviderId())
-            + wxT(", ") + NumToStr(GetNode()->GetSlId())
-            + wxT(");\n"));
+               wxT("SELECT ") + GetCluster()->GetSchemaPrefix()
+               + wxT("droplisten(") + NumToStr(GetSlId())
+               + wxT(", ") + NumToStr(GetProviderId())
+               + wxT(", ") + NumToStr(GetNode()->GetSlId())
+               + wxT(");\n"));
 }
 
 
@@ -43,13 +43,13 @@ wxString slListen::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Node  will listen to ") + GetProviderName()
-                + wxT(" for replication data from ") + GetOriginName() + wxT(".\n\n")
+              + wxT(" for replication data from ") + GetOriginName() + wxT(".\n\n")
 
               wxT("SELECT ") + GetCluster()->GetSchemaPrefix()
-                    + wxT("storelisten(") + NumToStr(GetSlId())
-                    + wxT(", ") + NumToStr(GetProviderId())
-                    + wxT(", ") + NumToStr(GetNode()->GetSlId())
-                    + wxT(");\n");
+              + wxT("storelisten(") + NumToStr(GetSlId())
+              + wxT(", ") + NumToStr(GetProviderId())
+              + wxT(", ") + NumToStr(GetNode()->GetSlId())
+              + wxT(");\n");
     }
     return sql;
 }
@@ -59,7 +59,7 @@ void slListen::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
     }
@@ -80,14 +80,14 @@ void slListen::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
 
 pgObject *slListen::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *listen=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *listen = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
-        listen = listenFactory.CreateObjects(coll, 0, 
-                wxT(" WHERE li_origin =") + NumToStr(GetSlId()) +
-                wxT("   AND li_provider = ") + NumToStr(GetProviderId()) +
-                wxT("   AND li_receiver = ") + NumToStr(GetNode()->GetSlId()) +
-                wxT("\n"));
+        listen = listenFactory.CreateObjects(coll, 0,
+                                             wxT(" WHERE li_origin =") + NumToStr(GetSlId()) +
+                                             wxT("   AND li_provider = ") + NumToStr(GetProviderId()) +
+                                             wxT("   AND li_receiver = ") + NumToStr(GetNode()->GetSlId()) +
+                                             wxT("\n"));
 
     return listen;
 }
@@ -96,8 +96,8 @@ pgObject *slListen::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *slListenFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restr)
 {
-    slNodeObjCollection *collection=(slNodeObjCollection*)coll;
-    slListen *listen=0;
+    slNodeObjCollection *collection = (slNodeObjCollection *)coll;
+    slListen *listen = 0;
     wxString restriction;
     if (restr.IsEmpty())
         restriction = wxT(" WHERE li_receiver = ") + NumToStr(collection->GetSlId());
@@ -105,19 +105,19 @@ pgObject *slListenFactory::CreateObjects(pgCollection *coll, ctlTree *browser, c
         restriction = restr;
 
     pgSet *listens = collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT li_origin, li_provider, li_receiver, no.no_comment as origin_name, np.no_comment as provider_name\n")
-        wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_listen\n")
-        wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_node no ON no.no_id=li_origin\n")
-        wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_node np ON np.no_id=li_provider\n")
-         + restriction +
-        wxT(" ORDER BY li_origin, li_provider"));
+                         wxT("SELECT li_origin, li_provider, li_receiver, no.no_comment as origin_name, np.no_comment as provider_name\n")
+                         wxT("  FROM ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_listen\n")
+                         wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_node no ON no.no_id=li_origin\n")
+                         wxT("  JOIN ") + collection->GetCluster()->GetSchemaPrefix() + wxT("sl_node np ON np.no_id=li_provider\n")
+                         + restriction +
+                         wxT(" ORDER BY li_origin, li_provider"));
 
     if (listens)
     {
         while (!listens->Eof())
         {
-            wxString orgName=listens->GetVal(wxT("origin_name")).BeforeFirst('\n');
-            wxString provName=listens->GetVal(wxT("provider_name")).BeforeFirst('\n');
+            wxString orgName = listens->GetVal(wxT("origin_name")).BeforeFirst('\n');
+            wxString provName = listens->GetVal(wxT("provider_name")).BeforeFirst('\n');
 
             listen = new slListen(collection->GetNode(), orgName + wxT(" (") + provName + wxT(")"));
             listen->iSetSlId(listens->GetLong(wxT("li_origin")));
@@ -128,13 +128,13 @@ pgObject *slListenFactory::CreateObjects(pgCollection *coll, ctlTree *browser, c
             if (browser)
             {
                 browser->AppendObject(collection, listen);
-				listens->MoveNext();
+                listens->MoveNext();
             }
             else
                 break;
         }
 
-		delete listens;
+        delete listens;
     }
     return listen;
 }
@@ -145,8 +145,8 @@ pgObject *slListenFactory::CreateObjects(pgCollection *coll, ctlTree *browser, c
 #include "images/sllisten.xpm"
 #include "images/sllistens.xpm"
 
-slListenFactory::slListenFactory() 
-: slNodeObjFactory(__("Listen"), __("New Listen"), __("Create a new Listen."), sllisten_xpm)
+slListenFactory::slListenFactory()
+    : slNodeObjFactory(__("Listen"), __("New Listen"), __("Create a new Listen."), sllisten_xpm)
 {
     metaType = SLM_LISTEN;
 }

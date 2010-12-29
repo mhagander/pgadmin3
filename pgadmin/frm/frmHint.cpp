@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -47,40 +47,46 @@ struct make_dumb_compilers_happy        // unnamed structs don't make all compil
     const wxChar *fixText;
     const wxChar *helpItem;
     int flags;
-} 
-hintArray[]=
+}
+hintArray[] =
 {
-    {   HINT_CONNECTSERVER,
+    {
+        HINT_CONNECTSERVER,
         __("Server not listening"),
         0,
         wxT("pg/runtime-config#runtime-config-connection"),
         HINT_CANSUPPRESS
     },
-    {   HINT_MISSINGHBA,
+    {
+        HINT_MISSINGHBA,
         __("Server denies access"),
-        0, 
-        wxT("pg/client-authentication#auth-pg-hba-conf"), 
+        0,
+        wxT("pg/client-authentication#auth-pg-hba-conf"),
         HINT_CANSUPPRESS
     },
-    {   HINT_MISSINGIDENT,
+    {
+        HINT_MISSINGIDENT,
         __("Ident authentication failed"),
-        0, 
-        wxT("pg/auth-methods#auth-ident"), 
+        0,
+        wxT("pg/auth-methods#auth-ident"),
         HINT_CANSUPPRESS
     },
-    {   HINT_PRIMARYKEY,
+    {
+        HINT_PRIMARYKEY,
         __("Creation of primary key suggested"),
-        0, 
+        0,
         wxT("pg/ddl-constraints"),
-        HINT_CANSUPPRESS|HINT_CANABORT
+        HINT_CANSUPPRESS | HINT_CANABORT
     },
-    {   HINT_FKINDEX,
+    {
+        HINT_FKINDEX,
         __("Creation of index in referencing table suggested"),
         0,
         wxT("pg/ddl-constraints#ddl-constraints-fk"),
-        HINT_CANSUPPRESS|HINT_CANABORT
+        HINT_CANSUPPRESS | HINT_CANABORT
     },
-    {   HINT_VACUUM,
+    {
+        HINT_VACUUM,
         __("Running VACUUM recommended"),
         __("VACUUM"),
         wxT("pg/maintenance#routine-vacuuming"),
@@ -91,7 +97,7 @@ hintArray[]=
         __("Query took a long time to complete"),
         0,
         wxT("query"),
-        HINT_CANSUPPRESS|HINT_CANABORT|HINT_YESNO
+        HINT_CANSUPPRESS | HINT_CANABORT | HINT_YESNO
     },
     {
         HINT_INSTRUMENTATION,
@@ -133,16 +139,16 @@ hintArray[]=
         _("Editing views, stored procedures or functions"),
         0,
         wxT("query"),
-        HINT_CANSUPPRESS|HINT_CANABORT
+        HINT_CANSUPPRESS | HINT_CANABORT
     },
     {
         HINT_SAVING_PASSWORDS,
         _("Saving passwords"),
         0,
         wxT("pg/libpq-pgpass"),
-        HINT_CANSUPPRESS|HINT_CANABORT
+        HINT_CANSUPPRESS | HINT_CANABORT
     },
-    { 0,0,0,0 }
+    { 0, 0, 0, 0 }
 };
 
 
@@ -162,7 +168,7 @@ END_EVENT_TABLE();
 
 frmHint::frmHint(wxWindow *fr, bool _force) : DialogWithHelp(0)
 {
-    force=_force;
+    force = _force;
     wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(fr, wxT("frmHint"));
     RestorePosition();
@@ -179,11 +185,11 @@ wxString frmHint::GetPage(const wxChar *hintPage)
 {
     wxString page;
 
-    wxString cn=settings->GetCanonicalLanguageName();
+    wxString cn = settings->GetCanonicalLanguageName();
     if (cn.IsEmpty())
-        cn=wxT("en_US");
+        cn = wxT("en_US");
 
-    wxString filename=docPath + wxT("/") + cn + wxT("/hints/") + hintPage + wxT(".html");
+    wxString filename = docPath + wxT("/") + cn + wxT("/hints/") + hintPage + wxT(".html");
 
     if (!wxFile::Exists(filename))
         filename = docPath + wxT("/en_US/hints/") + hintPage + wxT(".html");
@@ -215,14 +221,14 @@ void frmHint::SetHint(const wxString &info)
 {
     currentHint = hintnos.Item(0);
 
-    bool canSuppress=false;
+    bool canSuppress = false;
     if (hintnos.GetCount() == 1)
     {
         if (hintArray[currentHint].flags & HINT_CANSUPPRESS)
-            canSuppress=true;
+            canSuppress = true;
         SetTitle(_("Guru Hint") + wxString(wxT(" - ")) + wxGetTranslation(hintArray[currentHint].hintCaption));
 
-        wxString page=GetPage(hintArray[currentHint].hintPage);
+        wxString page = GetPage(hintArray[currentHint].hintPage);
         page.Replace(wxT("<INFO>"), HtmlEntities(info));
 
         htmlHint->SetPage(page);
@@ -236,7 +242,7 @@ void frmHint::SetHint(const wxString &info)
 
         if (header.IsEmpty())
         {
-            header = 
+            header =
                 wxT("<html><head>\n")
                 wxT("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\">\n")
                 wxT("<link rel=\"STYLESHEET\" type=\"text/css\" href=\"../pgadmin3.css\">\n")
@@ -245,46 +251,46 @@ void frmHint::SetHint(const wxString &info)
         }
         else
         {
-            int o=header.Find(wxT("</body>"));
+            int o = header.Find(wxT("</body>"));
             if (o > 0)
                 header = header.Left(o) + wxT("<p>");
         }
 
         size_t i;
-        for (i=0 ; i < hintnos.GetCount() ; i++)
+        for (i = 0 ; i < hintnos.GetCount() ; i++)
         {
-            int hintno=hintnos.Item(i);
+            int hintno = hintnos.Item(i);
             if (hintArray[hintno].flags & HINT_CANSUPPRESS)
-                canSuppress=true;
-            wxString page=GetPage(hintArray[hintno].hintPage);
-            int a=page.Find(wxT("<body>"));
-            int o=page.Find(wxT("</body>"));
-            if (a<0)
-                a=0;
+                canSuppress = true;
+            wxString page = GetPage(hintArray[hintno].hintPage);
+            int a = page.Find(wxT("<body>"));
+            int o = page.Find(wxT("</body>"));
+            if (a < 0)
+                a = 0;
             if (o < 0)
-                o=wxStringBase::npos;
+                o = wxStringBase::npos;
 
 
-            int ha=page.Find(wxT("<H3>"));
-            int ho=page.Find(wxT("</H3>"));
+            int ha = page.Find(wxT("<H3>"));
+            int ho = page.Find(wxT("</H3>"));
             if (ha < 0)
-                ha=page.Find(wxT("<h3>"));
+                ha = page.Find(wxT("<h3>"));
             if (ho < 0)
-                ho=page.Find(wxT("</h3>"));
+                ho = page.Find(wxT("</h3>"));
 
             if (ha > a && ho > ha)
             {
-                wxString hintTitle=page.Mid(ha+4, ho-ha-4);
+                wxString hintTitle = page.Mid(ha + 4, ho - ha - 4);
 
-                pages  += page.Mid(a, ha-a)
-                       + wxT("<H3><A Name=\"") + hintArray[hintno].hintPage + wxT("\">")
-                       + hintTitle + wxT("</A>")
-                       + page.Mid(ho, o-ho);
+                pages  += page.Mid(a, ha - a)
+                          + wxT("<H3><A Name=\"") + hintArray[hintno].hintPage + wxT("\">")
+                          + hintTitle + wxT("</A>")
+                          + page.Mid(ho, o - ho);
                 header += wxString(wxT("<A HREF=\"#")) + hintArray[hintno].hintPage + wxT("\">")
-                       + hintTitle + wxT("</A><BR>");
+                          + hintTitle + wxT("</A><BR>");
             }
             else
-                pages += page.Mid(a, o-a);
+                pages += page.Mid(a, o - a);
         }
 
         pages.Replace(wxT("<INFO>"), info);
@@ -321,9 +327,9 @@ frmHint::~frmHint()
     if (!force && chkSuppress->GetValue())
     {
         size_t i;
-        for (i=0 ; i < hintnos.GetCount() ; i++)
+        for (i = 0 ; i < hintnos.GetCount() ; i++)
         {
-            int hintno=hintnos.Item(i);
+            int hintno = hintnos.Item(i);
             if (hintArray[hintno].flags & HINT_CANSUPPRESS)
                 settings->Write(wxString(wxT("Hints/")) + hintArray[hintno].hintPage, wxT("Suppress"));
         }
@@ -334,7 +340,7 @@ frmHint::~frmHint()
 
 wxString frmHint::GetHelpPage() const
 {
-    const wxChar *helpItem=hintArray[currentHint].helpItem;
+    const wxChar *helpItem = hintArray[currentHint].helpItem;
     if (helpItem)
         return helpItem;
 
@@ -344,7 +350,7 @@ wxString frmHint::GetHelpPage() const
 
 void frmHint::ResetHints()
 {
-    int hintno=0;
+    int hintno = 0;
     while (hintArray[hintno].hintPage)
     {
         settings->Write(wxString(wxT("Hints/")) + hintArray[hintno].hintPage, wxEmptyString);
@@ -355,7 +361,7 @@ void frmHint::ResetHints()
 
 int frmHint::GetHintNo(const wxString &hint)
 {
-    int hintno=0;
+    int hintno = 0;
     while (hintArray[hintno].hintPage)
     {
         if (hintArray[hintno].hintPage == hint)
@@ -399,9 +405,9 @@ int frmHint::ShowHint(wxWindow *fr, const wxArrayString &hints, const wxString &
 
     if(!hints.GetCount())
         return wxID_OK;
-    for (i=0 ; i < hints.GetCount() ; i++)
+    for (i = 0 ; i < hints.GetCount() ; i++)
     {
-        int hintNo=GetHintNo(hints.Item(i));
+        int hintNo = GetHintNo(hints.Item(i));
         if (hintNo >= 0 && (force || WantHint(hintNo)))
             hintnos.Add(hintNo);
     }
@@ -409,7 +415,7 @@ int frmHint::ShowHint(wxWindow *fr, const wxArrayString &hints, const wxString &
     if (!hintnos.GetCount())
         return wxID_OK;
 
-    frmHint *frm=new frmHint(fr, force);
+    frmHint *frm = new frmHint(fr, force);
     frm->SetHint(hintnos, info);
 
     frm->CenterOnParent();
@@ -425,12 +431,12 @@ int frmHint::ShowHint(wxWindow *fr, const wxArrayString &hints, const wxString &
 
 int frmHint::ShowHint(wxWindow *fr, const wxString &hint, const wxString &info, bool force)
 {
-    int rc=wxID_OK;
+    int rc = wxID_OK;
     int hintno = GetHintNo(hint);
 
     if (WantHint(hintno))
     {
-        frmHint *frm=new frmHint(fr, force);
+        frmHint *frm = new frmHint(fr, force);
         frm->SetHint(hintno, info);
 
         frm->CenterOnParent();
@@ -456,7 +462,7 @@ hintFactory::hintFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *too
     mnu->Append(id, _("Hints"), _("Display helpful hints on current object."));
     if (toolbar)
     {
-        const char **img=(bigTool ? hint_xpm : hint2_xpm);
+        const char **img = (bigTool ? hint_xpm : hint2_xpm);
         toolbar->AddTool(id, _("Hints"), wxBitmap(img), _("Display helpful hints on current object."));
     }
 }

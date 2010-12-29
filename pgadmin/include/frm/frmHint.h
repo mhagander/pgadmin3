@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -37,8 +37,8 @@ class frmMain;
 class frmHint : public DialogWithHelp
 {
 public:
-    static int ShowHint(wxWindow *fr,  const wxString &hint, const wxString &info=wxEmptyString, bool force=false);
-    static int ShowHint(wxWindow *fr,  const wxArrayString &hints, const wxString &info=wxEmptyString, bool force=false);
+    static int ShowHint(wxWindow *fr,  const wxString &hint, const wxString &info = wxEmptyString, bool force = false);
+    static int ShowHint(wxWindow *fr,  const wxArrayString &hints, const wxString &info = wxEmptyString, bool force = false);
     static bool WantHint(const wxString &hint);
     static void ResetHints();
 

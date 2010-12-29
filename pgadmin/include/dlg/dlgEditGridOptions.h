@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -37,7 +37,7 @@ class dlgEditGridOptions : public pgDialog
 {
 public:
 
-	// Construction
+    // Construction
     dlgEditGridOptions(frmEditGrid *parent, pgConn *conn, const wxString &rel, ctlSQLEditGrid *grid);
     ~dlgEditGridOptions();
 
@@ -47,25 +47,25 @@ private:
     void OnChangeSize(wxSizeEvent &ev);
 #endif
 
-	void OnCancel(wxCommandEvent &ev);
+    void OnCancel(wxCommandEvent &ev);
     void OnClose(wxCloseEvent &ev);
-	void OnOK(wxCommandEvent &ev);
-	void OnRemove(wxCommandEvent &ev);
-	void OnAsc(wxCommandEvent &ev);
-	void OnDesc(wxCommandEvent &ev);
-	void OnValidate(wxCommandEvent &ev);
+    void OnOK(wxCommandEvent &ev);
+    void OnRemove(wxCommandEvent &ev);
+    void OnAsc(wxCommandEvent &ev);
+    void OnDesc(wxCommandEvent &ev);
+    void OnValidate(wxCommandEvent &ev);
     void OnCboColumnsChange(wxCommandEvent &ev);
     void OnLstSortColsChange(wxListEvent &ev);
-	bool Validate();
-	frmEditGrid *parent;
-	pgConn *connection;
-	wxString relation;
-	ctlSQLEditGrid *editGrid;
-	ctlSQLBox *filter;
-	wxMBConv *conv;
+    bool Validate();
+    frmEditGrid *parent;
+    pgConn *connection;
+    wxString relation;
+    ctlSQLEditGrid *editGrid;
+    ctlSQLBox *filter;
+    wxMBConv *conv;
 
-	// Macros
-	DECLARE_EVENT_TABLE()
+    // Macros
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

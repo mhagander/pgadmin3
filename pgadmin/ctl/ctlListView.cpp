@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,7 +21,7 @@
 
 
 ctlListView::ctlListView(wxWindow *p, int id, wxPoint pos, wxSize siz, long attr)
-: wxListView(p, id, pos, siz, attr | wxLC_REPORT)
+    : wxListView(p, id, pos, siz, attr | wxLC_REPORT)
 {
 }
 
@@ -51,14 +51,14 @@ void ctlListView::AddColumn(const wxChar *text, int size, int format)
     }
     else
     {
-        InsertColumn(GetColumnCount(), text, format, ConvertDialogToPixels(wxPoint(size,0)).x);
+        InsertColumn(GetColumnCount(), text, format, ConvertDialogToPixels(wxPoint(size, 0)).x);
     }
 }
 
 
 long ctlListView::AppendItem(int icon, const wxChar *val, const wxChar *val2, const wxChar *val3, const wxChar *val4)
 {
-    long pos=InsertItem(GetItemCount(), val, icon);
+    long pos = InsertItem(GetItemCount(), val, icon);
     if (val2 && *val2)
         SetItem(pos, 1, val2);
     if (val3 && *val3)
@@ -76,9 +76,9 @@ void ctlListView::CreateColumns(wxImageList *images, const wxString &left, const
     if (leftSize < 0)
     {
 #ifdef __WXMAC__
-        leftSize = rightSize = (GetParent()->GetSize().GetWidth() - 20)/2;
+        leftSize = rightSize = (GetParent()->GetSize().GetWidth() - 20) / 2;
 #else
-        leftSize = rightSize = GetSize().GetWidth()/2;
+        leftSize = rightSize = GetSize().GetWidth() / 2;
 #endif
     }
     else
@@ -89,7 +89,7 @@ void ctlListView::CreateColumns(wxImageList *images, const wxString &left, const
 #ifdef __WXMAC__
         rightSize = (GetParent()->GetSize().GetWidth() - 20) - leftSize;
 #else
-        rightSize = GetClientSize().GetWidth()-leftSize;
+        rightSize = GetClientSize().GetWidth() - leftSize;
 #endif
     }
     if (!leftSize)
@@ -113,9 +113,9 @@ void ctlListView::CreateColumns(wxImageList *images, const wxString &str1, const
     if (leftSize < 0)
     {
 #ifdef __WXMAC__
-        leftSize = rightSize = (GetParent()->GetSize().GetWidth() - 20)/2;
+        leftSize = rightSize = (GetParent()->GetSize().GetWidth() - 20) / 2;
 #else
-        leftSize = rightSize = GetSize().GetWidth()/2;
+        leftSize = rightSize = GetSize().GetWidth() / 2;
 #endif
     }
     else
@@ -126,7 +126,7 @@ void ctlListView::CreateColumns(wxImageList *images, const wxString &str1, const
 #ifdef __WXMAC__
         rightSize = (GetParent()->GetSize().GetWidth() - 20) - leftSize;
 #else
-        rightSize = GetClientSize().GetWidth()-leftSize;
+        rightSize = GetClientSize().GetWidth() - leftSize;
 #endif
     }
     if (!leftSize)
@@ -136,8 +136,8 @@ void ctlListView::CreateColumns(wxImageList *images, const wxString &str1, const
     else
     {
         InsertColumn(0, str1, wxLIST_FORMAT_LEFT, leftSize);
-        InsertColumn(1, str2, wxLIST_FORMAT_LEFT, rightSize/2);
-        InsertColumn(2, str3, wxLIST_FORMAT_LEFT, rightSize/2);
+        InsertColumn(1, str2, wxLIST_FORMAT_LEFT, rightSize / 2);
+        InsertColumn(2, str3, wxLIST_FORMAT_LEFT, rightSize / 2);
     }
 
     if (images)

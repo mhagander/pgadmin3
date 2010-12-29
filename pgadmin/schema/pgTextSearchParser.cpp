@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,8 +18,8 @@
 #include "schema/pgTextSearchParser.h"
 
 
-pgTextSearchParser::pgTextSearchParser(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, textSearchParserFactory, newName)
+pgTextSearchParser::pgTextSearchParser(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, textSearchParserFactory, newName)
 {
 }
 
@@ -30,7 +30,7 @@ pgTextSearchParser::~pgTextSearchParser()
 wxString pgTextSearchParser::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -43,11 +43,11 @@ wxString pgTextSearchParser::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop FTS parser \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop FTS parser \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop FTS parser cascaded?");
@@ -104,20 +104,20 @@ wxString pgTextSearchParser::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Text Search Parser: ") + GetFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP TEXT SEARCH PARSER ") + GetFullIdentifier() + wxT("\n\n")
-            + wxT("CREATE TEXT SEARCH PARSER ") + GetFullIdentifier() + wxT(" (")
-            + wxT("\n  START = ") + qtTypeIdent(GetStart())
-            + wxT(",\n  GETTOKEN = ") + qtTypeIdent(GetGettoken())
-            + wxT(",\n  END = ") + qtTypeIdent(GetEnd())
-            + wxT(",\n  LEXTYPES = ") + qtTypeIdent(GetLextypes());
+              + wxT("-- DROP TEXT SEARCH PARSER ") + GetFullIdentifier() + wxT("\n\n")
+              + wxT("CREATE TEXT SEARCH PARSER ") + GetFullIdentifier() + wxT(" (")
+              + wxT("\n  START = ") + qtTypeIdent(GetStart())
+              + wxT(",\n  GETTOKEN = ") + qtTypeIdent(GetGettoken())
+              + wxT(",\n  END = ") + qtTypeIdent(GetEnd())
+              + wxT(",\n  LEXTYPES = ") + qtTypeIdent(GetLextypes());
 
         AppendIfFilled(sql, wxT(",\n  HEADLINE = "), GetHeadline());
 
         sql += wxT("\n);\n");
 
-	if (!GetComment().IsNull())
-	    sql += wxT("COMMENT ON TEXT SEARCH PARSER ") + GetFullIdentifier()
-	    + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+        if (!GetComment().IsNull())
+            sql += wxT("COMMENT ON TEXT SEARCH PARSER ") + GetFullIdentifier()
+                   + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
     }
 
     return sql;
@@ -145,8 +145,8 @@ void pgTextSearchParser::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlList
 
 pgObject *pgTextSearchParser::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *parser=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *parser = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         parser = textSearchParserFactory.CreateObjects(coll, 0, wxT("\n   AND prs.oid=") + GetOidStr());
 
@@ -157,7 +157,7 @@ pgObject *pgTextSearchParser::Refresh(ctlTree *browser, const wxTreeItemId item)
 wxString pgTextSearchParserCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -170,7 +170,7 @@ wxString pgTextSearchParserCollection::GetTranslatedMessage(int kindOfMessage) c
             message = _("FTS parsers list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -180,16 +180,16 @@ wxString pgTextSearchParserCollection::GetTranslatedMessage(int kindOfMessage) c
 
 pgObject *pgTextSearchParserFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgTextSearchParser *parser=0;
+    pgTextSearchParser *parser = 0;
 
-	pgSet *parsers;
-	parsers = collection->GetDatabase()->ExecuteSet(
-		wxT("SELECT prs.oid, prs.prsname, prs.prsstart, prs.prstoken, prs.prsend, prs.prslextype, prs.prsheadline, description\n")
-		wxT("  FROM pg_ts_parser prs\n")
-		wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=prs.oid\n")
-		wxT(" WHERE prs.prsnamespace = ") + collection->GetSchema()->GetOidStr() 
-		+ restriction + wxT("\n")
-		wxT(" ORDER BY prs.prsname"));
+    pgSet *parsers;
+    parsers = collection->GetDatabase()->ExecuteSet(
+                  wxT("SELECT prs.oid, prs.prsname, prs.prsstart, prs.prstoken, prs.prsend, prs.prslextype, prs.prsheadline, description\n")
+                  wxT("  FROM pg_ts_parser prs\n")
+                  wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=prs.oid\n")
+                  wxT(" WHERE prs.prsnamespace = ") + collection->GetSchema()->GetOidStr()
+                  + restriction + wxT("\n")
+                  wxT(" ORDER BY prs.prsname"));
 
     if (parsers)
     {
@@ -214,13 +214,13 @@ pgObject *pgTextSearchParserFactory::CreateObjects(pgCollection *collection, ctl
             if (browser)
             {
                 browser->AppendObject(collection, parser);
-		parsers->MoveNext();
+                parsers->MoveNext();
             }
             else
                 break;
         }
 
-		delete parsers;
+        delete parsers;
     }
     return parser;
 }
@@ -229,8 +229,8 @@ pgObject *pgTextSearchParserFactory::CreateObjects(pgCollection *collection, ctl
 #include "images/parser.xpm"
 #include "images/parsers.xpm"
 
-pgTextSearchParserFactory::pgTextSearchParserFactory() 
-: pgSchemaObjFactory(__("FTS Parser"), __("New FTS Parser..."), __("Create a new FTS Parser."), parser_xpm)
+pgTextSearchParserFactory::pgTextSearchParserFactory()
+    : pgSchemaObjFactory(__("FTS Parser"), __("New FTS Parser..."), __("Create a new FTS Parser."), parser_xpm)
 {
 }
 

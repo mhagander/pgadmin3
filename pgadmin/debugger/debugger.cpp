@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -49,10 +49,10 @@ wxWindow *debuggerFactory::StartDialog(frmMain *form, pgObject *obj)
     {
         wxLogError(_("The selected function could not be found."));
         ctlTree *browser = form->GetBrowser();
-        wxTreeItemId item=browser->GetSelection();
+        wxTreeItemId item = browser->GetSelection();
         if (obj == browser->GetObject(item))
         {
-            pgCollection *coll=browser->GetParentCollection(obj->GetId());
+            pgCollection *coll = browser->GetParentCollection(obj->GetId());
             browser->DeleteChildren(coll->GetId());
             coll->ShowTreeDetail(browser);
         }
@@ -84,10 +84,10 @@ wxWindow *debuggerFactory::StartDialog(frmMain *form, pgObject *obj)
     if (!directDebugger->startDebugging())
     {
         ctlTree *browser = form->GetBrowser();
-        wxTreeItemId item=browser->GetSelection();
+        wxTreeItemId item = browser->GetSelection();
         if (obj == browser->GetObject(item))
         {
-            pgCollection *coll=browser->GetParentCollection(obj->GetId());
+            pgCollection *coll = browser->GetParentCollection(obj->GetId());
             browser->DeleteChildren(coll->GetId());
             coll->ShowTreeDetail(browser);
         }
@@ -123,44 +123,44 @@ bool debuggerFactory::CheckEnable(pgObject *obj)
         switch (obj->GetMetaType())
         {
             case PGM_FUNCTION:
+            {
+                pgFunction *func = (pgFunction *)obj;
+
+                // If this is an EDB wrapped function, no debugging allowed
+                if (obj->GetConnection()->GetIsEdb() && func->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$")))
+                    return false;
+
+                if (func->GetReturnType() != wxT("trigger") && func->GetReturnType() != wxT("\"trigger\""))
                 {
-                    pgFunction *func = (pgFunction *)obj;
-
-                    // If this is an EDB wrapped function, no debugging allowed
-                    if (obj->GetConnection()->GetIsEdb() && func->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$")))
-                        return false;
-
-                    if (func->GetReturnType() != wxT("trigger") && func->GetReturnType() != wxT("\"trigger\""))
-                    {
-                        if (func->GetLanguage() == wxT("plpgsql") && obj->GetDatabase()->CanDebugPlpgsql())
-                            return true;
+                    if (func->GetLanguage() == wxT("plpgsql") && obj->GetDatabase()->CanDebugPlpgsql())
+                        return true;
 #ifndef EDB_LIBPQ
 #ifdef __WXMSW__
-                        else if (func->GetLanguage() == wxT("edbspl") &&
-                                 obj->GetConnection()->EdbMinimumVersion(8, 4) &&
-                                 !(PQiGetOutResult && PQiPrepareOut && PQiSendQueryPreparedOut))
-                            return false;
+                    else if (func->GetLanguage() == wxT("edbspl") &&
+                             obj->GetConnection()->EdbMinimumVersion(8, 4) &&
+                             !(PQiGetOutResult && PQiPrepareOut && PQiSendQueryPreparedOut))
+                        return false;
 #else
-                        else if (func->GetLanguage() == wxT("edbspl") && obj->GetConnection()->EdbMinimumVersion(8, 4))
-                            return false;
+                    else if (func->GetLanguage() == wxT("edbspl") && obj->GetConnection()->EdbMinimumVersion(8, 4))
+                        return false;
 #endif
 #endif
-                        else if (func->GetLanguage() == wxT("edbspl") && obj->GetDatabase()->CanDebugEdbspl())
-                            return true;
-                        else
-                            return false;
-                    }
+                    else if (func->GetLanguage() == wxT("edbspl") && obj->GetDatabase()->CanDebugEdbspl())
+                        return true;
                     else
                         return false;
                 }
-                break;
+                else
+                    return false;
+            }
+            break;
 
             case EDB_PACKAGEFUNCTION:
-                if (obj->GetDatabase()->GetConnection()->EdbMinimumVersion(8, 2) && 
-                    obj->GetDatabase()->CanDebugEdbspl() && 
-                    obj->GetName() != wxT("cons") &&
-                    ((edbPackageFunction *)obj)->GetSource() != wxEmptyString &&
-                    (!((edbPackageFunction *)obj)->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$"))))
+                if (obj->GetDatabase()->GetConnection()->EdbMinimumVersion(8, 2) &&
+                        obj->GetDatabase()->CanDebugEdbspl() &&
+                        obj->GetName() != wxT("cons") &&
+                        ((edbPackageFunction *)obj)->GetSource() != wxEmptyString &&
+                        (!((edbPackageFunction *)obj)->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$"))))
                     return true;
                 break;
 
@@ -189,7 +189,7 @@ wxWindow *breakpointFactory::StartDialog(frmMain *form, pgObject *obj)
 
     // Check here to make sure the function still exists before proceeding.
     // There is still a very small window in which it might be dropped, but
-    // we should be able to handle most cases here without having to do this 
+    // we should be able to handle most cases here without having to do this
     // deep down in query threads.
     // We also make sure the function name doesn't contain a : as that will
     // sent the debugger API nuts.
@@ -204,10 +204,10 @@ wxWindow *breakpointFactory::StartDialog(frmMain *form, pgObject *obj)
     {
         wxLogError(_("The selected function could not be found."));
         ctlTree *browser = form->GetBrowser();
-        wxTreeItemId item=browser->GetSelection();
+        wxTreeItemId item = browser->GetSelection();
         if (obj == browser->GetObject(item))
         {
-            pgCollection *coll=browser->GetParentCollection(obj->GetId());
+            pgCollection *coll = browser->GetParentCollection(obj->GetId());
             browser->DeleteChildren(coll->GetId());
             coll->ShowTreeDetail(browser);
         }
@@ -231,8 +231,8 @@ wxWindow *breakpointFactory::StartDialog(frmMain *form, pgObject *obj)
     // Setup the debugging session
     ctlCodeWindow *globalDebugger = NULL;
     globalDebugger = debugger->addDebug(cp);
-	if (globalDebugger == NULL)
-		return 0;
+    if (globalDebugger == NULL)
+        return 0;
 
     dbgBreakPointList &breakpoints = globalDebugger->getBreakpointList();
     breakpoints.Append(new dbgBreakPoint(dbgBreakPoint::OID, dbgOid, wxT("'NULL'")));
@@ -261,58 +261,58 @@ bool breakpointFactory::CheckEnable(pgObject *obj)
         switch (obj->GetMetaType())
         {
             case PGM_FUNCTION:
-                {
-                    pgFunction *func = (pgFunction *)obj;
+            {
+                pgFunction *func = (pgFunction *)obj;
 
-                    // If this is an EDB wrapped function, no debugging allowed
-                    if (obj->GetConnection()->GetIsEdb() && func->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$")))
-                        return false;
+                // If this is an EDB wrapped function, no debugging allowed
+                if (obj->GetConnection()->GetIsEdb() && func->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$")))
+                    return false;
 
-                    if (func->GetLanguage() == wxT("plpgsql") && obj->GetDatabase()->CanDebugPlpgsql())
-                        return true;
+                if (func->GetLanguage() == wxT("plpgsql") && obj->GetDatabase()->CanDebugPlpgsql())
+                    return true;
 #ifndef EDB_LIBPQ
 #ifdef __WXMSW__
-                        else if (func->GetLanguage() == wxT("edbspl") &&
-                                 obj->GetConnection()->EdbMinimumVersion(8, 4) &&
-                                 !(PQiGetOutResult && PQiPrepareOut && PQiSendQueryPreparedOut))
-                            return false;
+                else if (func->GetLanguage() == wxT("edbspl") &&
+                         obj->GetConnection()->EdbMinimumVersion(8, 4) &&
+                         !(PQiGetOutResult && PQiPrepareOut && PQiSendQueryPreparedOut))
+                    return false;
 #else
-                        else if (func->GetLanguage() == wxT("edbspl") && obj->GetConnection()->EdbMinimumVersion(8, 4))
-                            return false;
+                else if (func->GetLanguage() == wxT("edbspl") && obj->GetConnection()->EdbMinimumVersion(8, 4))
+                    return false;
 #endif
 #endif
-                    else if (func->GetLanguage() == wxT("edbspl") && obj->GetDatabase()->CanDebugEdbspl())
-                        return true;
-                    else
-                        return false;
-                }
-                break;
+                else if (func->GetLanguage() == wxT("edbspl") && obj->GetDatabase()->CanDebugEdbspl())
+                    return true;
+                else
+                    return false;
+            }
+            break;
 
             case EDB_PACKAGEFUNCTION:
-                if (obj->GetDatabase()->GetConnection()->EdbMinimumVersion(8, 2) && 
-                    obj->GetDatabase()->CanDebugEdbspl() && 
-                    obj->GetName() != wxT("cons") &&
-                    ((edbPackageFunction *)obj)->GetSource() != wxEmptyString &&
-                    (!((edbPackageFunction *)obj)->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$"))))
+                if (obj->GetDatabase()->GetConnection()->EdbMinimumVersion(8, 2) &&
+                        obj->GetDatabase()->CanDebugEdbspl() &&
+                        obj->GetName() != wxT("cons") &&
+                        ((edbPackageFunction *)obj)->GetSource() != wxEmptyString &&
+                        (!((edbPackageFunction *)obj)->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$"))))
                     return true;
                 break;
 
             case PGM_TRIGGER:
-                {
-                    pgTrigger *trig = (pgTrigger *)obj;
+            {
+                pgTrigger *trig = (pgTrigger *)obj;
 
-                    // If this is an EDB wrapped function, no debugging allowed
-                    if (obj->GetConnection()->GetIsEdb() && trig->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$")))
-                        return false;
+                // If this is an EDB wrapped function, no debugging allowed
+                if (obj->GetConnection()->GetIsEdb() && trig->GetSource().Trim(false).StartsWith(wxT("$__EDBwrapped__$")))
+                    return false;
 
-                    if (trig->GetLanguage() == wxT("plpgsql") && obj->GetDatabase()->CanDebugPlpgsql())
-                        return true;
-                    else if (trig->GetLanguage() == wxT("edbspl") && obj->GetDatabase()->CanDebugEdbspl())
-                        return true;
-                    else
-                        return false;
-                }
-                break;
+                if (trig->GetLanguage() == wxT("plpgsql") && obj->GetDatabase()->CanDebugPlpgsql())
+                    return true;
+                else if (trig->GetLanguage() == wxT("edbspl") && obj->GetDatabase()->CanDebugEdbspl())
+                    return true;
+                else
+                    return false;
+            }
+            break;
 
             default:
                 break;

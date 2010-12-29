@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,8 +22,8 @@
 #include "schema/pgIndexConstraint.h"
 
 
-pgIndexBase::pgIndexBase(pgTable *newTable, pgaFactory &factory, const wxString& newName)
-: pgTableObject(newTable, factory, newName)
+pgIndexBase::pgIndexBase(pgTable *newTable, pgaFactory &factory, const wxString &newName)
+    : pgTableObject(newTable, factory, newName)
 {
     showExtendedStatistics = false;
 }
@@ -31,7 +31,7 @@ pgIndexBase::pgIndexBase(pgTable *newTable, pgaFactory &factory, const wxString&
 wxString pgIndexBase::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -48,11 +48,11 @@ wxString pgIndexBase::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop index \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop index \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop index cascaded?");
@@ -102,7 +102,7 @@ wxString pgIndexBase::GetTranslatedMessage(int kindOfMessage) const
 
 bool pgIndexBase::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP INDEX ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
+    wxString sql = wxT("DROP INDEX ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
     if (cascaded)
         sql += wxT(" CASCADE");
     return GetDatabase()->ExecuteVoid(sql);
@@ -117,15 +117,15 @@ wxString pgIndexBase::GetCreate()
     if (GetIsUnique())
         str += wxT("UNIQUE ");
     str += wxT("INDEX ");
-    str += qtIdent(GetName()) 
-        + wxT("\n  ON ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
-        + wxT("\n  USING ") + GetIndexType()
-        + wxT("\n  (");
+    str += qtIdent(GetName())
+           + wxT("\n  ON ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
+           + wxT("\n  USING ") + GetIndexType()
+           + wxT("\n  (");
     if (GetProcName().IsNull())
         str += GetQuotedColumns();
     else
     {
-        str += GetQuotedSchemaPrefix(GetProcNamespace()) + qtIdent(GetProcName())+wxT("(")+GetQuotedColumns()+wxT(")");
+        str += GetQuotedSchemaPrefix(GetProcNamespace()) + qtIdent(GetProcName()) + wxT("(") + GetQuotedColumns() + wxT(")");
         if (!this->GetOperatorClasses().IsNull())
             str += wxT(" ") + GetOperatorClasses();
     }
@@ -145,9 +145,9 @@ wxString pgIndexBase::GetCreate()
     if (GetConnection()->BackendMinimumVersion(7, 5))
         if (GetIsClustered())
             str += wxT("ALTER TABLE ") + GetQuotedSchemaPrefix(GetIdxSchema()) + qtIdent(GetIdxTable())
-                +  wxT(" CLUSTER ON ") + qtIdent(GetName())
-                + wxT(";\n");
-    
+                   +  wxT(" CLUSTER ON ") + qtIdent(GetName())
+                   + wxT(";\n");
+
     return str;
 }
 
@@ -157,9 +157,9 @@ wxString pgIndexBase::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Index: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP INDEX ") + GetQuotedFullIdentifier() + wxT(";\n\n")
-            + GetCreate()
-            + GetCommentSql();
+              + wxT("-- DROP INDEX ") + GetQuotedFullIdentifier() + wxT(";\n\n")
+              + GetCreate()
+              + GetCommentSql();
     }
     return sql;
 }
@@ -172,14 +172,14 @@ void pgIndexBase::ReadColumnDetails()
     {
         expandedKids = true;
 
-		// Allocate memory to store column def
-		if (columnCount>0) columnList.Alloc(columnCount);
+        // Allocate memory to store column def
+        if (columnCount > 0) columnList.Alloc(columnCount);
 
-		if (GetConnection()->BackendMinimumVersion(7, 4))
+        if (GetConnection()->BackendMinimumVersion(7, 4))
         {
             long i;
 
-            for (i=1 ; i <= columnCount ; i++)
+            for (i = 1 ; i <= columnCount ; i++)
             {
                 if (i > 1)
                 {
@@ -189,40 +189,40 @@ void pgIndexBase::ReadColumnDetails()
 
                 wxString options, coldef;
                 if (GetConnection()->BackendMinimumVersion(8, 3))
-                    options = wxT("  i.indoption[") + NumToStr((long)(i-1)) + wxT("] AS options,\n");
+                    options = wxT("  i.indoption[") + NumToStr((long)(i - 1)) + wxT("] AS options,\n");
 
                 pgSet *res;
 
                 if (GetConnection()->BackendMinimumVersion(9, 0))
                 {
                     res = ExecuteSet(
-                        wxT("SELECT\n") + options +
-                        wxT("  CASE WHEN (o.opcdefault = FALSE) THEN\n")
-                        wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(") || ' ' || o.opcname\n") +
-                        wxT("  ELSE\n") +
-                        wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(")\n") +
-                        wxT("  END AS coldef,\n") +
-                        wxT("  op.oprname\n") +
-                        wxT("FROM pg_index i\n") +
-                        wxT("JOIN pg_attribute a ON (a.attrelid = i.indexrelid AND attnum = ") + NumToStr(i) + wxT(")\n") +
-                        wxT("LEFT OUTER JOIN pg_opclass o ON (o.oid = i.indclass[") + NumToStr((long)(i-1)) + wxT("])\n") +
-                        wxT("LEFT OUTER JOIN pg_constraint c ON (c.conindid = i.indexrelid) ")
-                        wxT("LEFT OUTER JOIN pg_operator op ON (op.oid = c.conexclop[") + NumToStr(i) + wxT("])\n") +
-                        wxT("WHERE i.indexrelid = ") + GetOidStr());
+                              wxT("SELECT\n") + options +
+                              wxT("  CASE WHEN (o.opcdefault = FALSE) THEN\n")
+                              wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(") || ' ' || o.opcname\n") +
+                              wxT("  ELSE\n") +
+                              wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(")\n") +
+                              wxT("  END AS coldef,\n") +
+                              wxT("  op.oprname\n") +
+                              wxT("FROM pg_index i\n") +
+                              wxT("JOIN pg_attribute a ON (a.attrelid = i.indexrelid AND attnum = ") + NumToStr(i) + wxT(")\n") +
+                              wxT("LEFT OUTER JOIN pg_opclass o ON (o.oid = i.indclass[") + NumToStr((long)(i - 1)) + wxT("])\n") +
+                              wxT("LEFT OUTER JOIN pg_constraint c ON (c.conindid = i.indexrelid) ")
+                              wxT("LEFT OUTER JOIN pg_operator op ON (op.oid = c.conexclop[") + NumToStr(i) + wxT("])\n") +
+                              wxT("WHERE i.indexrelid = ") + GetOidStr());
                 }
                 else
                 {
                     res = ExecuteSet(
-                        wxT("SELECT\n") + options +
-                        wxT("  CASE WHEN (o.opcdefault = FALSE) THEN\n")
-                        wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(") || ' ' || o.opcname\n") +
-                        wxT("  ELSE\n") +
-                        wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(")\n") +
-                        wxT("  END AS coldef\n") +
-                        wxT("FROM pg_index i\n") +
-                        wxT("JOIN pg_attribute a ON (a.attrelid = i.indexrelid AND attnum = ") + NumToStr(i) + wxT(")\n") +
-                        wxT("LEFT OUTER JOIN pg_opclass o ON (o.oid = i.indclass[") + NumToStr((long)(i-1)) + wxT("])\n") +
-                        wxT("WHERE i.indexrelid = ") + GetOidStr());
+                              wxT("SELECT\n") + options +
+                              wxT("  CASE WHEN (o.opcdefault = FALSE) THEN\n")
+                              wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(") || ' ' || o.opcname\n") +
+                              wxT("  ELSE\n") +
+                              wxT("    pg_get_indexdef(i.indexrelid, ") + NumToStr(i) + GetDatabase()->GetPrettyOption() + wxT(")\n") +
+                              wxT("  END AS coldef\n") +
+                              wxT("FROM pg_index i\n") +
+                              wxT("JOIN pg_attribute a ON (a.attrelid = i.indexrelid AND attnum = ") + NumToStr(i) + wxT(")\n") +
+                              wxT("LEFT OUTER JOIN pg_opclass o ON (o.oid = i.indclass[") + NumToStr((long)(i - 1)) + wxT("])\n") +
+                              wxT("WHERE i.indexrelid = ") + GetOidStr());
                 }
 
                 if (res->NumRows() > 0)
@@ -233,7 +233,7 @@ void pgIndexBase::ReadColumnDetails()
                     if (GetConnection()->BackendMinimumVersion(8, 3))
                     {
                         long opt = res->GetLong(wxT("options"));
-                        
+
                         if (opt && (opt & 0x0001)) // Descending...
                         {
                             coldef += wxT(" DESC");
@@ -248,7 +248,7 @@ void pgIndexBase::ReadColumnDetails()
                         }
                     }
                 }
-                
+
                 if (isExclude)
                 {
                     coldef += wxT(" WITH ") + res->GetVal(wxT("oprname"));
@@ -256,7 +256,7 @@ void pgIndexBase::ReadColumnDetails()
 
                 columns += coldef;
                 quotedColumns += coldef;
-				columnList.Add(coldef);
+                columnList.Add(coldef);
             }
         }
         else
@@ -268,17 +268,17 @@ void pgIndexBase::ReadColumnDetails()
             wxStringTokenizer collist(GetColumnNumbers());
             wxStringTokenizer args(procArgTypeList);
             wxString cn, ct;
-            columnCount=0;
+            columnCount = 0;
 
             while (collist.HasMoreTokens())
             {
-                cn=collist.GetNextToken();
-                ct=args.GetNextToken();
+                cn = collist.GetNextToken();
+                ct = args.GetNextToken();
 
-                pgSet *colSet=ExecuteSet(
-                    wxT("SELECT attname as conattname\n")
-                    wxT("  FROM pg_attribute\n")
-                    wxT(" WHERE attrelid=") + GetTableOidStr() + wxT(" AND attnum=") + cn);
+                pgSet *colSet = ExecuteSet(
+                                    wxT("SELECT attname as conattname\n")
+                                    wxT("  FROM pg_attribute\n")
+                                    wxT(" WHERE attrelid=") + GetTableOidStr() + wxT(" AND attnum=") + cn);
                 if (colSet)
                 {
                     if (columnCount)
@@ -286,15 +286,15 @@ void pgIndexBase::ReadColumnDetails()
                         columns += wxT(", ");
                         quotedColumns += wxT(", ");
                     }
-                    wxString colName=colSet->GetVal(0);
+                    wxString colName = colSet->GetVal(0);
                     columns += colName;
-					columnList.Add(colName);
+                    columnList.Add(colName);
                     quotedColumns += qtIdent(colName);
 
                     if (!ct.IsNull())
                     {
-                        pgSet *typeSet=ExecuteSet(wxT(
-                            "SELECT typname FROM pg_type where oid=") + ct);
+                        pgSet *typeSet = ExecuteSet(wxT(
+                                                        "SELECT typname FROM pg_type where oid=") + ct);
                         if (typeSet)
                         {
                             if (columnCount)
@@ -303,7 +303,7 @@ void pgIndexBase::ReadColumnDetails()
                                 typedColumns += wxT(", ");
                                 quotedTypedColumns += wxT(", ");
                             }
-                            wxString colType=typeSet->GetVal(0);
+                            wxString colType = typeSet->GetVal(0);
                             procArgs += colType;
                             typedColumns += colName + wxT("::") + colType;
                             quotedTypedColumns += qtIdent(colName) + wxT("::") + colType;
@@ -320,8 +320,8 @@ void pgIndexBase::ReadColumnDetails()
         while (ops.HasMoreTokens())
         {
             op = ops.GetNextToken();
-            pgSet *set=ExecuteSet(wxT(
-                "SELECT opcname FROM pg_opclass WHERE oid=") + op);
+            pgSet *set = ExecuteSet(wxT(
+                                        "SELECT opcname FROM pg_opclass WHERE oid=") + op);
             if (set)
             {
                 if (!operatorClasses.IsNull())
@@ -346,7 +346,7 @@ void pgIndexBase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *p
         if (GetConnection()->BackendMinimumVersion(8, 0))
             properties->AppendItem(_("Tablespace"), tablespace);
         if (!GetProcName().IsNull())
-            properties->AppendItem(_("Procedure "), GetSchemaPrefix(GetProcNamespace())+GetProcName()+wxT("(")+GetTypedColumns()+wxT(")"));
+            properties->AppendItem(_("Procedure "), GetSchemaPrefix(GetProcNamespace()) + GetProcName() + wxT("(") + GetTypedColumns() + wxT(")"));
         else
             properties->AppendItem(_("Columns"), GetColumns());
 
@@ -368,10 +368,10 @@ void pgIndexBase::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
     wxString sql =
         wxT("SELECT idx_scan AS ") + qtIdent(_("Index Scans")) +
-             wxT(", idx_tup_read AS ") + qtIdent(_("Index Tuples Read")) +
-             wxT(", idx_tup_fetch AS ") + qtIdent(_("Index Tuples Fetched"))+
-             wxT(", idx_blks_read AS ") + qtIdent(_("Index Blocks Read")) +
-             wxT(", idx_blks_hit AS ") + qtIdent(_("Index Blocks Hit"));
+        wxT(", idx_tup_read AS ") + qtIdent(_("Index Tuples Read")) +
+        wxT(", idx_tup_fetch AS ") + qtIdent(_("Index Tuples Fetched")) +
+        wxT(", idx_blks_read AS ") + qtIdent(_("Index Blocks Read")) +
+        wxT(", idx_blks_hit AS ") + qtIdent(_("Index Blocks Hit"));
 
     if (GetConnection()->HasFeature(FEATURE_SIZE))
         sql += wxT(", pg_size_pretty(pg_relation_size(") + GetOidStr() + wxT(")) AS ") + qtIdent(_("Index Size"));
@@ -396,9 +396,9 @@ void pgIndexBase::ShowStatistics(frmMain *form, ctlListView *statistics)
                wxT("  FROM pg_stat_all_indexes stat");
     }
     sql +=  wxT("\n")
-        wxT("  JOIN pg_statio_all_indexes statio ON stat.indexrelid = statio.indexrelid\n")
-        wxT("  JOIN pg_class cl ON cl.oid=stat.indexrelid\n")
-        wxT(" WHERE stat.indexrelid = ") + GetOidStr();
+            wxT("  JOIN pg_statio_all_indexes statio ON stat.indexrelid = statio.indexrelid\n")
+            wxT("  JOIN pg_class cl ON cl.oid=stat.indexrelid\n")
+            wxT(" WHERE stat.indexrelid = ") + GetOidStr();
 
     DisplayStatistics(statistics, sql);
 }
@@ -406,8 +406,8 @@ void pgIndexBase::ShowStatistics(frmMain *form, ctlListView *statistics)
 
 pgObject *pgIndexBase::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *index=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *index = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         index = indexFactory.CreateObjects(coll, 0, wxT("\n   AND cls.oid=") + GetOidStr());
 
@@ -429,17 +429,17 @@ executePgstatindexFactory::executePgstatindexFactory(menuFactoryList *list, wxMe
 
 wxWindow *executePgstatindexFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-	if (!((pgIndexBase*)obj)->GetShowExtendedStatistics())
-	{
-		((pgIndexBase*)obj)->iSetShowExtendedStatistics(true);
-		wxTreeItemId item=form->GetBrowser()->GetSelection();
-		if (obj == form->GetBrowser()->GetObject(item))
-			form->SelectStatisticsTab();
-	}
-	else
-		((pgIndexBase*)obj)->iSetShowExtendedStatistics(false);
+    if (!((pgIndexBase *)obj)->GetShowExtendedStatistics())
+    {
+        ((pgIndexBase *)obj)->iSetShowExtendedStatistics(true);
+        wxTreeItemId item = form->GetBrowser()->GetSelection();
+        if (obj == form->GetBrowser()->GetObject(item))
+            form->SelectStatisticsTab();
+    }
+    else
+        ((pgIndexBase *)obj)->iSetShowExtendedStatistics(false);
 
-	form->GetMenuFactories()->CheckMenu(obj, form->GetMenuBar(), (ctlMenuToolbar *)form->GetToolBar());
+    form->GetMenuFactories()->CheckMenu(obj, form->GetMenuBar(), (ctlMenuToolbar *)form->GetToolBar());
 
     return 0;
 }
@@ -447,10 +447,10 @@ wxWindow *executePgstatindexFactory::StartDialog(frmMain *form, pgObject *obj)
 
 bool executePgstatindexFactory::CheckEnable(pgObject *obj)
 {
-    return obj && 
+    return obj &&
            (obj->IsCreatedBy(indexFactory) || obj->IsCreatedBy(primaryKeyFactory)
-         || obj->IsCreatedBy(uniqueFactory) || obj->IsCreatedBy(excludeFactory)) &&
-           ((pgIndexBase*)obj)->HasPgstatindex();
+            || obj->IsCreatedBy(uniqueFactory) || obj->IsCreatedBy(excludeFactory)) &&
+           ((pgIndexBase *)obj)->HasPgstatindex();
 }
 
 bool executePgstatindexFactory::CheckChecked(pgObject *obj)
@@ -459,23 +459,23 @@ bool executePgstatindexFactory::CheckChecked(pgObject *obj)
         return false;
 
     if (obj->GetMetaType() == PGM_INDEX || obj->GetMetaType() == PGM_PRIMARYKEY
-     || obj->GetMetaType() == PGM_UNIQUE || obj->GetMetaType() == PGM_EXCLUDE)
-        return ((pgIndexBase*)obj)->GetShowExtendedStatistics();
+            || obj->GetMetaType() == PGM_UNIQUE || obj->GetMetaType() == PGM_EXCLUDE)
+        return ((pgIndexBase *)obj)->GetShowExtendedStatistics();
 
     return false;
 }
 
 
-pgIndex::pgIndex(pgTable *newTable, const wxString& newName)
-: pgIndexBase(newTable, indexFactory, newName)
+pgIndex::pgIndex(pgTable *newTable, const wxString &newName)
+    : pgIndexBase(newTable, indexFactory, newName)
 {
 }
 
 
 pgObject *pgIndexBaseFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restriction)
 {
-    pgTableObjCollection *collection=(pgTableObjCollection*)coll;
-    pgIndexBase *index=0;
+    pgTableObjCollection *collection = (pgTableObjCollection *)coll;
+    pgIndexBase *index = 0;
     wxString query;
 
     wxString proname, projoin;
@@ -490,29 +490,29 @@ pgObject *pgIndexBaseFactory::CreateObjects(pgCollection *coll, ctlTree *browser
     }
     else
     {
-        proname=wxT("proname, pn.nspname as pronspname, proargtypes, ");
+        proname = wxT("proname, pn.nspname as pronspname, proargtypes, ");
         projoin =   wxT("  LEFT OUTER JOIN pg_proc pr ON pr.oid=indproc\n")
                     wxT("  LEFT OUTER JOIN pg_namespace pn ON pn.oid=pr.pronamespace\n");
     }
     query = wxT("SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as idxname, indrelid, indkey, indisclustered, indisunique, indisprimary, n.nspname,\n")
-        wxT("       ") + proname + wxT("tab.relname as tabname, indclass, con.oid AS conoid, CASE contype WHEN 'p' THEN desp.description WHEN 'u' THEN desp.description WHEN 'x' THEN desp.description ELSE des.description END AS description,\n")
-        wxT("       pg_get_expr(indpred, indrelid") + collection->GetDatabase()->GetPrettyOption() + wxT(") as indconstraint, contype, condeferrable, condeferred, amname\n");
+            wxT("       ") + proname + wxT("tab.relname as tabname, indclass, con.oid AS conoid, CASE contype WHEN 'p' THEN desp.description WHEN 'u' THEN desp.description WHEN 'x' THEN desp.description ELSE des.description END AS description,\n")
+            wxT("       pg_get_expr(indpred, indrelid") + collection->GetDatabase()->GetPrettyOption() + wxT(") as indconstraint, contype, condeferrable, condeferred, amname\n");
     if (collection->GetConnection()->BackendMinimumVersion(8, 2))
         query += wxT(", substring(array_to_string(cls.reloptions, ',') from 'fillfactor=([0-9]*)') AS fillfactor \n");
-     query += wxT("  FROM pg_index idx\n")
-        wxT("  JOIN pg_class cls ON cls.oid=indexrelid\n")
-        wxT("  JOIN pg_class tab ON tab.oid=indrelid\n")
-        + projoin + 
-        wxT("  JOIN pg_namespace n ON n.oid=tab.relnamespace\n")
-        wxT("  JOIN pg_am am ON am.oid=cls.relam\n")
-        wxT("  LEFT JOIN pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0' AND dep.deptype='i')\n")
-        wxT("  LEFT OUTER JOIN pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)\n")
-        wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=cls.oid\n")
-        wxT("  LEFT OUTER JOIN pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0)\n")
-        wxT(" WHERE indrelid = ") + collection->GetOidStr()
-        + restriction + wxT("\n")
-        wxT(" ORDER BY cls.relname");
-    pgSet *indexes= collection->GetDatabase()->ExecuteSet(query);
+    query += wxT("  FROM pg_index idx\n")
+             wxT("  JOIN pg_class cls ON cls.oid=indexrelid\n")
+             wxT("  JOIN pg_class tab ON tab.oid=indrelid\n")
+             + projoin +
+             wxT("  JOIN pg_namespace n ON n.oid=tab.relnamespace\n")
+             wxT("  JOIN pg_am am ON am.oid=cls.relam\n")
+             wxT("  LEFT JOIN pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0' AND dep.deptype='i')\n")
+             wxT("  LEFT OUTER JOIN pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)\n")
+             wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=cls.oid\n")
+             wxT("  LEFT OUTER JOIN pg_description desp ON (desp.objoid=con.oid AND desp.objsubid = 0)\n")
+             wxT(" WHERE indrelid = ") + collection->GetOidStr()
+             + restriction + wxT("\n")
+             wxT(" ORDER BY cls.relname");
+    pgSet *indexes = collection->GetDatabase()->ExecuteSet(query);
 
     if (indexes)
     {
@@ -536,7 +536,7 @@ pgObject *pgIndexBaseFactory::CreateObjects(pgCollection *coll, ctlTree *browser
                     ((pgExclude *)index)->iSetConstraintOid(indexes->GetOid(wxT("conoid")));
                     break;
                 default:
-                    index=0;
+                    index = 0;
                     break;
             }
 
@@ -555,10 +555,10 @@ pgObject *pgIndexBaseFactory::CreateObjects(pgCollection *coll, ctlTree *browser
                 index->iSetColumnCount(indexes->GetLong(wxT("indnatts")));
                 if (collection->GetConnection()->BackendMinimumVersion(8, 0))
                 {
-					if (indexes->GetOid(wxT("spcoid")) == 0)
-						index->iSetTablespaceOid(collection->GetDatabase()->GetTablespaceOid());
-					else
-						index->iSetTablespaceOid(indexes->GetOid(wxT("spcoid")));
+                    if (indexes->GetOid(wxT("spcoid")) == 0)
+                        index->iSetTablespaceOid(collection->GetDatabase()->GetTablespaceOid());
+                    else
+                        index->iSetTablespaceOid(indexes->GetOid(wxT("spcoid")));
 
                     if (indexes->GetVal(wxT("spcname")) == wxEmptyString)
                         index->iSetTablespace(collection->GetDatabase()->GetTablespace());
@@ -585,13 +585,13 @@ pgObject *pgIndexBaseFactory::CreateObjects(pgCollection *coll, ctlTree *browser
             if (browser)
             {
                 browser->AppendObject(collection, index);
-        		indexes->MoveNext();
+                indexes->MoveNext();
             }
             else
                 break;
         }
 
-		delete indexes;
+        delete indexes;
     }
     return index;
 }
@@ -599,7 +599,7 @@ pgObject *pgIndexBaseFactory::CreateObjects(pgCollection *coll, ctlTree *browser
 
 pgCollection *pgIndexBaseFactory::CreateCollection(pgObject *obj)
 {
-    return new pgIndexBaseCollection(GetCollectionFactory(), (pgTable*)obj);
+    return new pgIndexBaseCollection(GetCollectionFactory(), (pgTable *)obj);
 }
 
 
@@ -613,7 +613,7 @@ pgObject *pgIndexFactory::CreateObjects(pgCollection *collection, ctlTree *brows
 wxString pgIndexBaseCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -626,7 +626,7 @@ wxString pgIndexBaseCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Indexes list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -636,7 +636,7 @@ wxString pgIndexBaseCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/indexes.xpm"
 
 pgIndexFactory::pgIndexFactory()
-: pgIndexBaseFactory(__("Index"), __("New Index..."), __("Create a new Index."), index_xpm)
+    : pgIndexBaseFactory(__("Index"), __("New Index..."), __("Create a new Index."), index_xpm)
 {
     metaType = PGM_INDEX;
 }
@@ -647,7 +647,7 @@ static pgaCollectionFactory cf(&indexFactory, __("Indexes"), indexes_xpm);
 
 
 pgIndexBaseCollection::pgIndexBaseCollection(pgaFactory *factory, pgTable *tbl)
-: pgTableObjCollection(factory, tbl)
+    : pgTableObjCollection(factory, tbl)
 {
 }
 
@@ -656,7 +656,7 @@ void pgIndexBaseCollection::ShowStatistics(frmMain *form, ctlListView *statistic
 {
     wxLogInfo(wxT("Displaying statistics for indexes on ") + GetTable()->GetName());
 
-    bool hasSize=GetConnection()->HasFeature(FEATURE_SIZE);
+    bool hasSize = GetConnection()->HasFeature(FEATURE_SIZE);
 
     // Add the statistics view columns
     statistics->ClearAll();
@@ -668,26 +668,26 @@ void pgIndexBaseCollection::ShowStatistics(frmMain *form, ctlListView *statistic
         statistics->AddColumn(_("Size"));
 
     wxString sql = wxT("SELECT indexrelname, ")
-		wxT("idx_scan, idx_tup_read, idx_tup_fetch");
+                   wxT("idx_scan, idx_tup_read, idx_tup_fetch");
 
     if (hasSize)
         sql += wxT(", pg_size_pretty(pg_relation_size(indexrelid)) AS ") + qtIdent(wxT("size"));
 
     sql += wxT("\n")
-        wxT("  FROM pg_stat_all_indexes stat\n")
-        wxT("  JOIN pg_class cls ON cls.oid=indexrelid\n")
-        wxT("  LEFT JOIN pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0')\n")
-        wxT("  LEFT OUTER JOIN pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)\n")
-        wxT("  WHERE schemaname = ") + qtDbString(GetTable()->GetSchema()->GetName())
-		+ wxT(" AND stat.relname = ") + qtDbString(GetTable()->GetName())
-		+ wxT(" AND con.contype IS NULL")
-        + wxT("\n ORDER BY indexrelname");
+           wxT("  FROM pg_stat_all_indexes stat\n")
+           wxT("  JOIN pg_class cls ON cls.oid=indexrelid\n")
+           wxT("  LEFT JOIN pg_depend dep ON (dep.classid = cls.tableoid AND dep.objid = cls.oid AND dep.refobjsubid = '0')\n")
+           wxT("  LEFT OUTER JOIN pg_constraint con ON (con.tableoid = dep.refclassid AND con.oid = dep.refobjid)\n")
+           wxT("  WHERE schemaname = ") + qtDbString(GetTable()->GetSchema()->GetName())
+           + wxT(" AND stat.relname = ") + qtDbString(GetTable()->GetName())
+           + wxT(" AND con.contype IS NULL")
+           + wxT("\n ORDER BY indexrelname");
 
     pgSet *stats = GetDatabase()->ExecuteSet(sql);
 
     if (stats)
     {
-        long pos=0;
+        long pos = 0;
         while (!stats->Eof())
         {
             statistics->InsertItem(pos, stats->GetVal(wxT("indexrelname")), PGICON_STATISTICS);

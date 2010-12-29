@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,21 +19,21 @@ class pgsObjectGen
 
 protected:
 
-	long m_seed;
+    long m_seed;
 
-	pgsObjectGen(const long & seed = wxDateTime::GetTimeNow());
+    pgsObjectGen(const long &seed = wxDateTime::GetTimeNow());
 
-	/* pgsObjectGen & operator =(const pgsObjectGen & that); */
+    /* pgsObjectGen & operator =(const pgsObjectGen & that); */
 
-	/* pgsObjectGen(const pgsObjectGen & that); */
+    /* pgsObjectGen(const pgsObjectGen & that); */
 
 public:
 
-	virtual ~pgsObjectGen();
+    virtual ~pgsObjectGen();
 
-	virtual wxString random() = 0;
-	
-	virtual pgsObjectGen * clone() = 0;
+    virtual wxString random() = 0;
+
+    virtual pgsObjectGen *clone() = 0;
 
 };
 

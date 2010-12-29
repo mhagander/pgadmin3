@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -52,11 +52,11 @@ END_EVENT_TABLE()
 #define stOption            CTRL_STATIC("stOption")
 
 
-dlgHbaConfig::dlgHbaConfig(pgFrame *parent, pgHbaConfigLine *_line, pgConn *_conn) : 
-DialogWithHelp((frmMain*)parent)
+dlgHbaConfig::dlgHbaConfig(pgFrame *parent, pgHbaConfigLine *_line, pgConn *_conn) :
+    DialogWithHelp((frmMain *)parent)
 {
     wxWindowBase::SetFont(settings->GetSystemFont());
-    LoadResource((wxWindow*)parent, wxT("dlgHbaConfig"));
+    LoadResource((wxWindow *)parent, wxT("dlgHbaConfig"));
 
     conn = _conn;
 
@@ -120,7 +120,7 @@ DialogWithHelp((frmMain*)parent)
 
     if (conn)
     {
-        pgSet *set=conn->ExecuteSet(wxT("SELECT datname FROM pg_database"));
+        pgSet *set = conn->ExecuteSet(wxT("SELECT datname FROM pg_database"));
         if (set)
         {
             while (!set->Eof())
@@ -134,7 +134,7 @@ DialogWithHelp((frmMain*)parent)
         if (settings->GetShowUsersForPrivileges())
             sql += wxT("\nUNION\nSELECT usename FROM pg_user");
 
-        set=conn->ExecuteSet(sql);
+        set = conn->ExecuteSet(sql);
         if (set)
         {
             while (!set->Eof())
@@ -160,9 +160,9 @@ DialogWithHelp((frmMain*)parent)
         cbUser->SetValue(user);
         txtIPaddress->SetValue(line->ipaddress);
         txtOption->SetValue(line->option);
-	}
-	wxCommandEvent noEvent;
-	OnChange(noEvent);
+    }
+    wxCommandEvent noEvent;
+    OnChange(noEvent);
 }
 
 
@@ -179,7 +179,7 @@ wxString dlgHbaConfig::GetHelpPage() const
 }
 
 
-void dlgHbaConfig::OnAddDatabase(wxCommandEvent& ev)
+void dlgHbaConfig::OnAddDatabase(wxCommandEvent &ev)
 {
     int sel = cbDatabase->GetCurrentSelection();
     if (sel < 3)
@@ -193,16 +193,16 @@ void dlgHbaConfig::OnAddDatabase(wxCommandEvent& ev)
         newDatabase = wxT("@");
     else
     {
-        wxString str=cbDatabase->GetString(sel);
+        wxString str = cbDatabase->GetString(sel);
         if (str.Find(' ') >= 0)
             str = wxT("\"") + str + wxT("\"");
 
-        int pos=database.Find(str);
+        int pos = database.Find(str);
         if (pos >= 0)
         {
-            if (pos >0  && database.Mid(pos-1, 1) != wxT(","))
+            if (pos > 0  && database.Mid(pos - 1, 1) != wxT(","))
                 pos = -1;
-            if (database.Length() > str.Length() + pos && database.Mid(pos+str.Length(), 1) != wxT(","))
+            if (database.Length() > str.Length() + pos && database.Mid(pos + str.Length(), 1) != wxT(","))
                 pos = -1;
         }
         if (pos < 0)
@@ -212,7 +212,7 @@ void dlgHbaConfig::OnAddDatabase(wxCommandEvent& ev)
 
             newDatabase = database + str;
         }
-        else 
+        else
             newDatabase = database;
     }
 
@@ -225,7 +225,7 @@ void dlgHbaConfig::OnAddDatabase(wxCommandEvent& ev)
 }
 
 
-void dlgHbaConfig::OnAddUser(wxCommandEvent& ev)
+void dlgHbaConfig::OnAddUser(wxCommandEvent &ev)
 {
     int sel = cbUser->GetCurrentSelection();
     if (sel < 1)
@@ -233,7 +233,7 @@ void dlgHbaConfig::OnAddUser(wxCommandEvent& ev)
 
     wxString newUser;
 
-    wxString str=cbUser->GetString(sel);
+    wxString str = cbUser->GetString(sel);
     if (str.Left(6) == wxT("group "))
     {
         if (str.Find(' ', true) > 5)
@@ -251,19 +251,19 @@ void dlgHbaConfig::OnAddUser(wxCommandEvent& ev)
         newUser = str;
     else
     {
-        int pos=user.Find(str);
+        int pos = user.Find(str);
         if (pos >= 0)
         {
-            if (pos >0  && user.Mid(pos-1, 1) != wxT(","))
+            if (pos > 0  && user.Mid(pos - 1, 1) != wxT(","))
                 pos = -1;
-            if (user.Length() > str.Length() + pos && user.Mid(pos+str.Length(), 1) != wxT(","))
+            if (user.Length() > str.Length() + pos && user.Mid(pos + str.Length(), 1) != wxT(","))
                 pos = -1;
         }
 
         if (pos < 0)
         {
             if (!user.IsEmpty())
-               user += wxT(",");
+                user += wxT(",");
             newUser = user + str;
         }
         else
@@ -274,13 +274,13 @@ void dlgHbaConfig::OnAddUser(wxCommandEvent& ev)
 
     user = newUser;
     userAdding = true;
-	wxCommandEvent buttonEvent(wxEVT_COMMAND_BUTTON_CLICKED, wxID_REFRESH);
+    wxCommandEvent buttonEvent(wxEVT_COMMAND_BUTTON_CLICKED, wxID_REFRESH);
     AddPendingEvent(buttonEvent);
 }
 
 
 
-void dlgHbaConfig::OnAddValue(wxCommandEvent& ev)
+void dlgHbaConfig::OnAddValue(wxCommandEvent &ev)
 {
     if (databaseAdding)
     {
@@ -301,7 +301,7 @@ void dlgHbaConfig::OnAddValue(wxCommandEvent& ev)
 }
 
 
-void dlgHbaConfig::OnChange(wxCommandEvent& ev)
+void dlgHbaConfig::OnChange(wxCommandEvent &ev)
 {
     if (databaseAdding || userAdding)
         return;
@@ -309,7 +309,7 @@ void dlgHbaConfig::OnChange(wxCommandEvent& ev)
     database = cbDatabase->GetValue();
     user = cbUser->GetValue();
 
-    bool needIp= (cbType->GetCurrentSelection() != 0);
+    bool needIp = (cbType->GetCurrentSelection() != 0);
 
     stIPaddress->Enable(needIp);
     txtIPaddress->Enable(needIp);
@@ -317,7 +317,7 @@ void dlgHbaConfig::OnChange(wxCommandEvent& ev)
     bool needOption = false;
     // IDENT and LDAP always take an option
     if (cbMethod->GetCurrentSelection() == pgHbaConfigLine::PGC_IDENT ||
-        cbMethod->GetCurrentSelection() == pgHbaConfigLine::PGC_LDAP)
+            cbMethod->GetCurrentSelection() == pgHbaConfigLine::PGC_LDAP)
     {
         needOption = true;
     }
@@ -353,18 +353,18 @@ void dlgHbaConfig::OnChange(wxCommandEvent& ev)
     stOption->Enable(needOption);
     txtOption->Enable(needOption);
 
-    bool ipValid=!chkEnabled->GetValue() || !needIp;
+    bool ipValid = !chkEnabled->GetValue() || !needIp;
     if (!ipValid)
     {
         // we should check for validity of txtIPaddress->GetValue() here
         ipValid = true;
     }
-    btnOK->Enable(cbType->GetCurrentSelection() >= 0 && !database.IsEmpty() && !user.IsEmpty() && 
-            cbMethod->GetCurrentSelection() >= 0 && ipValid);
+    btnOK->Enable(cbType->GetCurrentSelection() >= 0 && !database.IsEmpty() && !user.IsEmpty() &&
+                  cbMethod->GetCurrentSelection() >= 0 && ipValid);
 }
 
 
-void dlgHbaConfig::OnOK(wxCommandEvent& ev)
+void dlgHbaConfig::OnOK(wxCommandEvent &ev)
 {
 #ifdef __WXGTK__
     if (!btnOK->IsEnabled())
@@ -386,7 +386,7 @@ void dlgHbaConfig::OnOK(wxCommandEvent& ev)
 }
 
 
-void dlgHbaConfig::OnCancel(wxCommandEvent& ev)
+void dlgHbaConfig::OnCancel(wxCommandEvent &ev)
 {
     EndModal(wxID_CANCEL);
 }

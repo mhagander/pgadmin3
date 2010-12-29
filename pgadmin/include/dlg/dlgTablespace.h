@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgTablespace.h - Tablespace property 
+// dlgTablespace.h - Tablespace property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +20,7 @@ class pgTablespace;
 class dlgTablespace : public dlgSecurityProperty
 {
 public:
-    dlgTablespace(pgaFactory *factory, frmMain *frame, pgTablespace *node=0);
+    dlgTablespace(pgaFactory *factory, frmMain *frame, pgTablespace *node = 0);
 
     void CheckChange();
     wxString GetSql();
@@ -34,7 +34,7 @@ public:
 private:
     pgTablespace *tablespace;
     wxArrayString varInfo;
-	bool dirtyVars;
+    bool dirtyVars;
 
 #ifdef __WXMAC__
     void OnChangeSize(wxSizeEvent &ev);

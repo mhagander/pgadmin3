@@ -1,5 +1,5 @@
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -30,13 +30,13 @@ END_EVENT_TABLE();
 
 dlgProperty *slNodeFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgRepNode(this, frame, (slNode*)node, (slCluster*)parent);
+    return new dlgRepNode(this, frame, (slNode *)node, (slCluster *)parent);
 }
 
 dlgRepNode::dlgRepNode(pgaFactory *f, frmMain *frame, slNode *s, slCluster *c)
-: dlgRepProperty(f, frame, c, wxT("dlgRepNode"))
+    : dlgRepProperty(f, frame, c, wxT("dlgRepNode"))
 {
-    node=s;
+    node = s;
 }
 
 
@@ -74,8 +74,8 @@ pgObject *dlgRepNode::CreateObject(pgCollection *collection)
     else
         restriction = wxT("(SELECT MAX(no_id) FROM ") + cluster->GetSchemaPrefix() + wxT("sl_node)");
 
-    pgObject *obj=nodeFactory.CreateObjects(collection, 0,
-         wxT(" WHERE no_id = ") + restriction);
+    pgObject *obj = nodeFactory.CreateObjects(collection, 0,
+                    wxT(" WHERE no_id = ") + restriction);
 
     return obj;
 }
@@ -89,7 +89,7 @@ void dlgRepNode::CheckChange()
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
 
         EnableOK(enable);
     }
@@ -107,8 +107,8 @@ wxString dlgRepNode::GetSql()
     if (StrToLong(txtID->GetValue()) > 0)
         sql += txtID->GetValue();
     else
-        sql += wxT("(SELECT COALESCE(MAX(no_id), 0) + 1 FROM ") 
-            +  cluster->GetSchemaPrefix() + wxT("sl_node)");
+        sql += wxT("(SELECT COALESCE(MAX(no_id), 0) + 1 FROM ")
+               +  cluster->GetSchemaPrefix() + wxT("sl_node)");
 
     sql += wxT(", ") + qtDbString(txtComment->GetValue());
 

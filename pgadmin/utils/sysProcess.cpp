@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -20,23 +20,23 @@
 
 
 sysProcess::sysProcess(wxEvtHandler *evh)
-: wxProcess(evh)
+    : wxProcess(evh)
 {
-    pid=0;
+    pid = 0;
     Redirect();
 }
 
 
 sysProcess *sysProcess::Create(const wxString &exec, wxEvtHandler *evh, wxArrayString *env)
 {
-    sysProcess *proc=new sysProcess(evh);
+    sysProcess *proc = new sysProcess(evh);
     if (env)
         proc->SetEnvironment(*env);
-    
+
     if (!proc->Run(exec))
     {
         delete proc;
-        proc=0;
+        proc = 0;
     }
     return proc;
 }
@@ -53,9 +53,9 @@ bool sysProcess::Run(const wxString &exec)
 void sysProcess::SetEnvironment(const wxArrayString &environment)
 {
     size_t i;
-    for (i=0 ; i < environment.GetCount() ; i++)
+    for (i = 0 ; i < environment.GetCount() ; i++)
     {
-        wxString str=environment.Item(i);
+        wxString str = environment.Item(i);
         wxSetEnv(str.BeforeFirst('='), str.AfterFirst('='));
     }
 }
@@ -89,15 +89,15 @@ wxString sysProcess::ReadStream(wxInputStream *input)
     wxString str;
 
     char buffer[1000+1];
-    size_t size=1;
+    size_t size = 1;
     while (size && !input->Eof())
     {
-        input->Read(buffer, sizeof(buffer)-1);
-        size=input->LastRead();
+        input->Read(buffer, sizeof(buffer) - 1);
+        size = input->LastRead();
         if (size)
         {
-            buffer[size]=0;
-            str.Append(wxString::Format(wxT("%s"),wxString(buffer,wxConvLibc).c_str()));
+            buffer[size] = 0;
+            str.Append(wxString::Format(wxT("%s"), wxString(buffer, wxConvLibc).c_str()));
         }
     }
     return str;

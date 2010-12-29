@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -26,24 +26,24 @@
 static void pgNoticeProcessor(void *arg, const char *message)
 {
     wxString str(message, wxConvUTF8);
-    
+
     wxLogNotice(wxT("%s"), str.Trim().c_str());
-    ((pgQueryThread*)arg)->appendMessage(str);
+    ((pgQueryThread *)arg)->appendMessage(str);
 }
 
-pgQueryThread::pgQueryThread(pgConn *_conn, const wxString &qry, int _resultToRetrieve, wxWindow *_caller, long _eventId, void *_data) 
-: wxThread(wxTHREAD_JOINABLE)
+pgQueryThread::pgQueryThread(pgConn *_conn, const wxString &qry, int _resultToRetrieve, wxWindow *_caller, long _eventId, void *_data)
+    : wxThread(wxTHREAD_JOINABLE)
 {
     query = qry;
-    conn=_conn;
-    dataSet=0;
-    result=0;
-    resultToRetrieve=_resultToRetrieve;
-    rc=-1;
-    insertedOid = (OID)-1;
-    caller=_caller;
-    eventId=_eventId;
-    data=_data;
+    conn = _conn;
+    dataSet = 0;
+    result = 0;
+    resultToRetrieve = _resultToRetrieve;
+    rc = -1;
+    insertedOid = (OID) - 1;
+    caller = _caller;
+    eventId = _eventId;
+    data = _data;
 
     wxLogSql(wxT("Thread query (%s:%d): %s"), conn->GetHost().c_str(), conn->GetPort(), qry.c_str());
 
@@ -66,7 +66,7 @@ wxString pgQueryThread::GetMessagesAndClear()
 
     {
         wxCriticalSectionLocker cs(criticalSection);
-        msg=messages;
+        msg = messages;
         messages.Empty();
     }
 
@@ -77,12 +77,12 @@ wxString pgQueryThread::GetMessagesAndClear()
 void pgQueryThread::appendMessage(const wxString &str)
 {
     wxCriticalSectionLocker cs(criticalSection);
-	if (messages.IsEmpty())
+    if (messages.IsEmpty())
     {
         if (str != wxT("\n"))
             messages.Append(str);
     }
-	else
+    else
         messages.Append(wxT("\n") + str);
 }
 
@@ -107,8 +107,8 @@ int pgQueryThread::execute()
         conn->IsAlive();
         return(raiseEvent(0));
     }
-    int resultsRetrieved=0;
-    PGresult *lastResult=0;
+    int resultsRetrieved = 0;
+    PGresult *lastResult = 0;
     while (true)
     {
         if (TestDestroy())
@@ -130,10 +130,10 @@ int pgQueryThread::execute()
             continue;
         }
 
-        // If resultToRetrieve is given, the nth result will be returned, 
+        // If resultToRetrieve is given, the nth result will be returned,
         // otherwise the last result set will be returned.
         // all others are discarded
-        PGresult *res=PQgetResult(conn->conn);
+        PGresult *res = PQgetResult(conn->conn);
 
         if (!res)
             break;
@@ -141,23 +141,23 @@ int pgQueryThread::execute()
         resultsRetrieved++;
         if (resultsRetrieved == resultToRetrieve)
         {
-            result=res;
-            insertedOid=PQoidValue(res);
-            if (insertedOid && insertedOid != (OID)-1)
+            result = res;
+            insertedOid = PQoidValue(res);
+            if (insertedOid && insertedOid != (OID) - 1)
                 appendMessage(wxString::Format(_("Query inserted one row with OID %d.\n"), insertedOid));
             else
-                appendMessage(wxString::Format(wxPLURAL("Query result with %d row will be returned.\n", "Query result with %d rows will be returned.\n", 
-                    PQntuples(result)), PQntuples(result)));
+                appendMessage(wxString::Format(wxPLURAL("Query result with %d row will be returned.\n", "Query result with %d rows will be returned.\n",
+                                                        PQntuples(result)), PQntuples(result)));
             continue;
         }
         if (lastResult)
         {
             if (PQntuples(lastResult))
-                appendMessage(wxString::Format(wxPLURAL("Query result with %d row discarded.\n", "Query result with %d rows discarded.\n", 
-                    PQntuples(lastResult)), PQntuples(lastResult)));
+                appendMessage(wxString::Format(wxPLURAL("Query result with %d row discarded.\n", "Query result with %d rows discarded.\n",
+                                                        PQntuples(lastResult)), PQntuples(lastResult)));
             PQclear(lastResult);
         }
-        lastResult=res;
+        lastResult = res;
     }
 
     if (!result)
@@ -166,10 +166,10 @@ int pgQueryThread::execute()
     conn->SetLastResultError(result);
 
     appendMessage(wxT("\n"));
-    rc=PQresultStatus(result);
-    insertedOid=PQoidValue(result);
-    if (insertedOid == (OID)-1)
-        insertedOid=0;
+    rc = PQresultStatus(result);
+    insertedOid = PQoidValue(result);
+    if (insertedOid == (OID) - 1)
+        insertedOid = 0;
 
     if (rc == PGRES_TUPLES_OK)
     {
@@ -178,7 +178,7 @@ int pgQueryThread::execute()
     }
     else if (rc == PGRES_COMMAND_OK)
     {
-        char *s=PQcmdTuples(result);
+        char *s = PQcmdTuples(result);
         if (*s)
             rowsInserted = atol(s);
     }
@@ -206,7 +206,7 @@ int pgQueryThread::raiseEvent(int retval)
 
 void *pgQueryThread::Entry()
 {
-    rc=-2;
+    rc = -2;
     execute();
 
     return(NULL);

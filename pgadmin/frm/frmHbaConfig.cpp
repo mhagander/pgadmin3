@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -46,7 +46,7 @@ END_EVENT_TABLE()
 
 
 frmHbaConfig::frmHbaConfig(frmMain *parent, pgServer *server)
-: frmConfig(parent, BACE_TITLE, 0)
+    : frmConfig(parent, BACE_TITLE, 0)
 {
     wxString applicationname = appearanceFactory->GetLongAppName() + _(" - Configuration Editor");
     if (server)
@@ -61,13 +61,13 @@ frmHbaConfig::frmHbaConfig(frmMain *parent, pgServer *server)
 
         wxString txt;
         txt.Printf(_(" - %s on %s (%s:%d)"),
-                serverFileName.c_str(), server->GetDescription().c_str(), 
-                server->GetName().c_str(), server->GetPort());
+                   serverFileName.c_str(), server->GetDescription().c_str(),
+                   server->GetName().c_str(), server->GetPort());
         SetTitle(BACE_TITLE + txt);
 
         wxString str;
         str = conn->ExecuteScalar(wxT("SELECT pg_file_read('") + serverFileName + wxT("', 0, ")
-                    wxT("pg_file_length('") + serverFileName + wxT("'))"));
+                                  wxT("pg_file_length('") + serverFileName + wxT("'))"));
 
         DisplayFile(str);
 
@@ -76,10 +76,10 @@ frmHbaConfig::frmHbaConfig(frmMain *parent, pgServer *server)
 }
 
 
-frmHbaConfig::frmHbaConfig(const wxString& title, const wxString &configFile)
-: frmConfig(title + wxT(" - ") + _("Backend Access Configuration Editor"), configFile)
+frmHbaConfig::frmHbaConfig(const wxString &title, const wxString &configFile)
+    : frmConfig(title + wxT(" - ") + _("Backend Access Configuration Editor"), configFile)
 {
-    
+
     Init();
 
     OpenLastFile();
@@ -117,18 +117,18 @@ void frmHbaConfig::Init()
 }
 
 
-void frmHbaConfig::OnSelectSetting(wxListEvent& event)
+void frmHbaConfig::OnSelectSetting(wxListEvent &event)
 {
     // Enable delete because an item has been selected
     if (event.GetIndex() != listEdit->GetItemCount() - 1)
     {
-    editMenu->Enable(MNU_DELETE, true);
-    toolBar->EnableTool(MNU_DELETE, true);
+        editMenu->Enable(MNU_DELETE, true);
+        toolBar->EnableTool(MNU_DELETE, true);
     }
     else
     {
-    editMenu->Enable(MNU_DELETE, false);
-    toolBar->EnableTool(MNU_DELETE, false);
+        editMenu->Enable(MNU_DELETE, false);
+        toolBar->EnableTool(MNU_DELETE, false);
     }
 
     // Disable undo because we don't want to undo the wrong line.
@@ -158,7 +158,7 @@ void frmHbaConfig::DisplayFile(const wxString &str)
 
     while (strtok.HasMoreTokens())
     {
-        pgHbaConfigLine *line=new pgHbaConfigLine(strtok.GetNextToken());
+        pgHbaConfigLine *line = new pgHbaConfigLine(strtok.GetNextToken());
         lines.Add(line);
     }
 
@@ -168,16 +168,16 @@ void frmHbaConfig::DisplayFile(const wxString &str)
 
     // make sure the last line is empty
 
-    for (i=0 ; i < lines.GetCount() ; i++)
+    for (i = 0 ; i < lines.GetCount() ; i++)
     {
         pgHbaConfigLine &line = lines.Item(i);
-        const wxChar *connTypeStr=line.GetConnectType();
+        const wxChar *connTypeStr = line.GetConnectType();
         if (connTypeStr)
         {
-            int imgIndex=0;
+            int imgIndex = 0;
             if (!line.isComment)
                 imgIndex = 1;
-            long pos=listEdit->AppendItem(imgIndex, connTypeStr, line.database, line.user);
+            long pos = listEdit->AppendItem(imgIndex, connTypeStr, line.database, line.user);
             listEdit->SetItem(pos, 3, line.ipaddress);
             listEdit->SetItem(pos, 4, line.GetMethod());
             listEdit->SetItem(pos, 5, line.option);
@@ -185,9 +185,9 @@ void frmHbaConfig::DisplayFile(const wxString &str)
             line.item = pos;
         }
     }
-    if (!i || !lines.Item(i-1).text.IsEmpty())
+    if (!i || !lines.Item(i - 1).text.IsEmpty())
     {
-        pgHbaConfigLine *line=new pgHbaConfigLine();
+        pgHbaConfigLine *line = new pgHbaConfigLine();
         lines.Add(line);
         line->item = listEdit->AppendItem(0, wxEmptyString);
     }
@@ -198,19 +198,19 @@ void frmHbaConfig::WriteFile(pgConn *conn)
 {
     wxString str;
     size_t i;
-    for (i=0 ; i < lines.GetCount()-1 ; i++)
+    for (i = 0 ; i < lines.GetCount() - 1 ; i++)
         str.Append(lines.Item(i).GetText() + wxT("\n"));
 
     if (DoWriteFile(str, conn))
     {
-        changed=false;
+        changed = false;
         fileMenu->Enable(MNU_SAVE, false);
         editMenu->Enable(MNU_UNDO, false);
         toolBar->EnableTool(MNU_SAVE, false);
         toolBar->EnableTool(MNU_UNDO, false);
 
         // make intermediate change current
-        for (i=0 ; i < lines.GetCount() ; i++)
+        for (i = 0 ; i < lines.GetCount() ; i++)
             lines.Item(i).Init(lines.Item(i).GetText());
     }
 }
@@ -225,24 +225,24 @@ wxString frmHbaConfig::GetHintString()
 
 wxString frmHbaConfig::GetHelpPage() const
 {
-    wxString page= wxT("client-authentication");
+    wxString page = wxT("client-authentication");
     return page;
 }
 
 
-void frmHbaConfig::OnContents(wxCommandEvent& event)
+void frmHbaConfig::OnContents(wxCommandEvent &event)
 {
     DisplayHelp(wxT("index"), HELP_PGADMIN);
 }
 
 
-void frmHbaConfig::OnUndo(wxCommandEvent& ev)
+void frmHbaConfig::OnUndo(wxCommandEvent &ev)
 {
-    int pos=listEdit->GetSelection();
+    int pos = listEdit->GetSelection();
     if (pos >= 0)
     {
         size_t i;
-        for (i=0 ; i < lines.GetCount() ; i++)
+        for (i = 0 ; i < lines.GetCount() ; i++)
         {
             pgHbaConfigLine &line = lines.Item(i);
 
@@ -264,7 +264,7 @@ void frmHbaConfig::OnDelete(wxCommandEvent &event)
     {
         listEdit->DeleteCurrentItem();
         size_t i;
-        for (i=0; i < lines.GetCount(); i++)
+        for (i = 0; i < lines.GetCount(); i++)
         {
             if (lines.Item(i).item == pos)
             {
@@ -280,10 +280,10 @@ void frmHbaConfig::OnDelete(wxCommandEvent &event)
                 break;
             }
         }
-        if (found) 
+        if (found)
         {
             /* Renumber all positions */
-            for (i=0; i < lines.GetCount(); i++)
+            for (i = 0; i < lines.GetCount(); i++)
             {
                 if (lines.Item(i).item > pos)
                     lines.Item(i).item--;
@@ -295,7 +295,7 @@ void frmHbaConfig::OnDelete(wxCommandEvent &event)
 
 void frmHbaConfig::UpdateDisplay(pgHbaConfigLine &line)
 {
-    long pos=line.item;
+    long pos = line.item;
     listEdit->SetItemImage(pos, (line.isComment ? 0 : 1));
     listEdit->SetItem(pos, 0, line.GetConnectType());
     listEdit->SetItem(pos, 1, line.database);
@@ -306,7 +306,7 @@ void frmHbaConfig::UpdateDisplay(pgHbaConfigLine &line)
 }
 
 
-void frmHbaConfig::OnEditSetting(wxListEvent& event)
+void frmHbaConfig::OnEditSetting(wxListEvent &event)
 {
     long pos = event.GetIndex();
     if (pos < 0)
@@ -314,12 +314,12 @@ void frmHbaConfig::OnEditSetting(wxListEvent& event)
 
     size_t i;
 
-    for (i=0 ; i < lines.GetCount() ; i++)
+    for (i = 0 ; i < lines.GetCount() ; i++)
     {
         if (lines.Item(i).item == pos)
         {
             pgHbaConfigLine &line = lines.Item(i);
-            bool isLastLine = (i == lines.GetCount()-1 && line.isComment && !line.GetConnectType());
+            bool isLastLine = (i == lines.GetCount() - 1 && line.isComment && !line.GetConnectType());
 
             dlgHbaConfig dlg(this, &line, conn);
             if (dlg.Go() == wxID_OK)
@@ -328,12 +328,12 @@ void frmHbaConfig::OnEditSetting(wxListEvent& event)
 
                 if (isLastLine)
                 {
-                    long pos=listEdit->AppendItem(0, wxEmptyString);
-                    pgHbaConfigLine *line=new pgHbaConfigLine();
+                    long pos = listEdit->AppendItem(0, wxEmptyString);
+                    pgHbaConfigLine *line = new pgHbaConfigLine();
                     line->item = pos;
                     lines.Add(line);
                 }
-                changed=true;
+                changed = true;
                 fileMenu->Enable(MNU_SAVE, true);
                 editMenu->Enable(MNU_UNDO, true);
                 toolBar->EnableTool(MNU_SAVE, true);
@@ -353,10 +353,10 @@ hbaConfigFactory::hbaConfigFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuTo
 
 wxWindow *hbaConfigFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    pgServer *server=obj->GetServer();
+    pgServer *server = obj->GetServer();
     if (server)
     {
-        frmHbaConfig *frm=new frmHbaConfig(form, server);
+        frmHbaConfig *frm = new frmHbaConfig(form, server);
         frm->Go();
         return frm;
     }
@@ -368,10 +368,10 @@ bool hbaConfigFactory::CheckEnable(pgObject *obj)
 {
     if (obj)
     {
-        pgServer *server=obj->GetServer();
+        pgServer *server = obj->GetServer();
         if (server)
         {
-            pgConn *conn=server->GetConnection();
+            pgConn *conn = server->GetConnection();
             return conn && server->GetSuperUser() &&  conn->HasFeature(FEATURE_FILEREAD);
         }
     }

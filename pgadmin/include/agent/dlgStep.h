@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -32,15 +32,24 @@ public:
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
 
-    void SetObject(pgObject *obj) { step = (pgaStep*)obj; }
+    void SetObject(pgObject *obj)
+    {
+        step = (pgaStep *)obj;
+    }
 
-    void SetJobId(long id) { jobId = id; }
+    void SetJobId(long id)
+    {
+        jobId = id;
+    }
 
-    wxString GetHelpPage(bool forCreate) const { return wxT("pgagent-steps"); }
+    wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pgagent-steps");
+    }
 
 private:
-    void OnSelRemoteConn(wxCommandEvent& ev);
-    void OnSelLocalConn(wxCommandEvent& ev);
+    void OnSelRemoteConn(wxCommandEvent &ev);
+    void OnSelLocalConn(wxCommandEvent &ev);
     void OnSelectDatabase(wxCommandEvent &ev);
 
     virtual bool IsUpToDate();

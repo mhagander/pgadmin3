@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,17 +23,17 @@
 class gqbGridOrderTable : public wxGridTableBase
 {
 public:
-    gqbGridOrderTable(int numColumns, gqbObjsArray* cols, gqbObjsArray* parent, charArray* orderBy);
+    gqbGridOrderTable(int numColumns, gqbObjsArray *cols, gqbObjsArray *parent, charArray *orderBy);
     ~gqbGridOrderTable();
     int GetNumberRows();
     int GetNumberCols();
     bool IsEmptyCell( int row, int col );
     wxString GetValue( int row, int col );
     wxString GetColLabelValue( int col);
-    void SetValue( int row, int col, const wxString& value );
+    void SetValue( int row, int col, const wxString &value );
     void AppendItem(gqbColumn *column, gqbQueryObject *parent, char kindOrder);
     void emptyTableData(gqbQueryObject *object);
-    gqbObject* getObjectAt(int pos, int col);
+    gqbObject *getObjectAt(int pos, int col);
     bool removeFirstRow(gqbObject *itemTable);
     void removeRowAt(int i);
     void changesRangeOnePos(int topPos, int bottomPos, int newTop);
@@ -41,11 +41,11 @@ public:
 
 private:
     int numberColumns;					// GQB-TODO: replace this with grid cols number function if possible
-    gqbObjsArray *columns;				// Here store position of the columns at Select projection clause 
-										// [Select c1,c2,c3...,cn from...]
-    gqbObjsArray *colsParents;			// Because above array only store a column object cannot be recovered 
-										// the object that store it (gqbQueryObject) [remember can be use same 
-										// table twice on a query].
+    gqbObjsArray *columns;				// Here store position of the columns at Select projection clause
+    // [Select c1,c2,c3...,cn from...]
+    gqbObjsArray *colsParents;			// Because above array only store a column object cannot be recovered
+    // the object that store it (gqbQueryObject) [remember can be use same
+    // table twice on a query].
     charArray *kindOfOrder;				// A [Asc] D [Desc]
 };
 #endif

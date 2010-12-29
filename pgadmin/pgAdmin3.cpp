@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -32,7 +32,7 @@
 
 // Windows headers
 #ifdef __WXMSW__
-  #include <winsock.h>
+#include <winsock.h>
 #endif
 
 // Linux headers
@@ -76,14 +76,14 @@
 #define SETTINGS_INI  wxT("/settings.ini")
 
 // Globals
-frmMain *winMain=0;
-wxThread *updateThread=0;
+frmMain *winMain = 0;
+wxThread *updateThread = 0;
 
 sysSettings *settings;
 wxArrayInt existingLangs;
 wxArrayString existingLangNames;
-wxLocale *locale=0;
-pgAppearanceFactory *appearanceFactory=0;
+wxLocale *locale = 0;
+pgAppearanceFactory *appearanceFactory = 0;
 
 wxString pgBackupExecutable;       // complete filename of PostgreSQL's pg_dump, pg_dumpall and pg_restore, if available
 wxString pgBackupAllExecutable;
@@ -108,7 +108,7 @@ wxString settingsIni;           // The settings.ini file
 
 wxLog *logger;
 
-bool dialogTestMode=false;
+bool dialogTestMode = false;
 
 #define LANG_FILE   wxT("pgadmin3.lng")
 
@@ -128,7 +128,7 @@ class pgRendererNative : public wxDelegateRendererNative
 public:
     pgRendererNative() : wxDelegateRendererNative(wxRendererNative::GetDefault()) {}
 
-    void DrawTreeItemButton(wxWindow* win,wxDC& dc, const wxRect& rect, int flags)
+    void DrawTreeItemButton(wxWindow *win, wxDC &dc, const wxRect &rect, int flags)
     {
         GetGeneric().DrawTreeItemButton(win, dc, rect, flags);
     }
@@ -154,18 +154,18 @@ END_EVENT_TABLE();
 
 frmDlgTest::frmDlgTest() : wxFrame(0, -1, wxT("pgAdmin III Translation test mode"))
 {
-    dlgList=new wxListBox(this, CTL_LB, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_SORT);
+    dlgList = new wxListBox(this, CTL_LB, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_SORT);
 
-    // unfortunately, the MemoryFS has no search functions implemented 
+    // unfortunately, the MemoryFS has no search functions implemented
     // so we can't extract the names in the EMBED_XRC case
 
     wxDir dir(uiPath);
     wxString filename;
 
-    bool found=dir.GetFirst(&filename, wxT("*.xrc"));
+    bool found = dir.GetFirst(&filename, wxT("*.xrc"));
     while (found)
     {
-        dlgList->Append(filename.Left(filename.Length()-4));
+        dlgList->Append(filename.Left(filename.Length() - 4));
         found = dir.GetNext(&filename);
     }
     if (!dlgList->GetCount())
@@ -179,12 +179,12 @@ frmDlgTest::frmDlgTest() : wxFrame(0, -1, wxT("pgAdmin III Translation test mode
 
 void frmDlgTest::OnSelect(wxCommandEvent &ev)
 {
-    wxString dlgName=dlgList->GetStringSelection();
+    wxString dlgName = dlgList->GetStringSelection();
     if (!dlgName.IsEmpty())
     {
-        pgDialog *dlg=new pgDialog;
+        pgDialog *dlg = new pgDialog;
         dlg->wxWindowBase::SetFont(settings->GetSystemFont());
-        dlg->LoadResource(this, dlgName); 
+        dlg->LoadResource(this, dlgName);
         dlg->SetTitle(dlgName);
         dlg->Show();
     }
@@ -195,9 +195,9 @@ void frmDlgTest::OnSelect(wxCommandEvent &ev)
 bool pgAdmin3::OnInit()
 {
     // Force logging off until we're ready
-    wxLog *seLog=new wxLogStderr();
+    wxLog *seLog = new wxLogStderr();
     wxLog::SetActiveTarget(seLog);
-      
+
     // Setup the basic paths for the app installation. Required by settings!
     InitAppPaths();
 
@@ -227,10 +227,10 @@ bool pgAdmin3::OnInit()
     }
 
 
-    long langCount=0;
+    long langCount = 0;
     const wxLanguageInfo *langInfo;
 
-    wxString langfile=FileRead(i18nPath + wxT("/") LANG_FILE, 1);
+    wxString langfile = FileRead(i18nPath + wxT("/") LANG_FILE, 1);
 
     if (!langfile.IsEmpty())
     {
@@ -238,19 +238,19 @@ bool pgAdmin3::OnInit()
 
         while (tk.HasMoreTokens())
         {
-            wxString line=tk.GetNextToken().Strip(wxString::both);
+            wxString line = tk.GetNextToken().Strip(wxString::both);
             if (line.IsEmpty() || line.StartsWith(wxT("#")))
                 continue;
 
-            wxString englishName=line.BeforeFirst(',').Trim(true);
-            wxString translatedName=line.AfterFirst(',').Trim(false);
+            wxString englishName = line.BeforeFirst(',').Trim(true);
+            wxString translatedName = line.AfterFirst(',').Trim(false);
 
-            langInfo=wxLocale::FindLanguageInfo(englishName);
+            langInfo = wxLocale::FindLanguageInfo(englishName);
             if (langInfo)
             {
-                if (langInfo->CanonicalName == wxT("en_US") || 
-                    (!langInfo->CanonicalName.IsEmpty() && 
-                     wxDir::Exists(i18nPath + wxT("/") + langInfo->CanonicalName)))
+                if (langInfo->CanonicalName == wxT("en_US") ||
+                        (!langInfo->CanonicalName.IsEmpty() &&
+                         wxDir::Exists(i18nPath + wxT("/") + langInfo->CanonicalName)))
                 {
                     existingLangs.Add(langInfo->Language);
                     existingLangNames.Add(translatedName);
@@ -260,7 +260,7 @@ bool pgAdmin3::OnInit()
         }
     }
 
-    static const wxCmdLineEntryDesc cmdLineDesc[] = 
+    static const wxCmdLineEntryDesc cmdLineDesc[] =
     {
         {wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), _("show this help message"), wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
         {wxCMD_LINE_OPTION, wxT("s"), wxT("server"), _("auto-connect to specified server"), wxCMD_LINE_VAL_STRING},
@@ -277,21 +277,21 @@ bool pgAdmin3::OnInit()
         {wxCMD_LINE_NONE}
     };
 
-    frmConfig::tryMode configMode=frmConfig::NONE;
+    frmConfig::tryMode configMode = frmConfig::NONE;
     wxString configFile;
 
     wxCmdLineParser cmdParser(cmdLineDesc, argc, argv);
-    if (cmdParser.Parse() != 0) 
+    if (cmdParser.Parse() != 0)
         return false;
 
     if ((cmdParser.Found(wxT("q")) && cmdParser.Found(wxT("qc"))) ||
-      (cmdParser.Found(wxT("S")) && cmdParser.Found(wxT("Sc"))))
+            (cmdParser.Found(wxT("S")) && cmdParser.Found(wxT("Sc"))))
     {
         cmdParser.Usage();
         return false;
     }
 
-    if (cmdParser.Found(wxT("cm"), &configFile)) 
+    if (cmdParser.Found(wxT("cm"), &configFile))
         configMode = frmConfig::MAINFILE;
     else if (cmdParser.Found(wxT("ch"), &configFile))
         configMode = frmConfig::HBAFILE;
@@ -348,7 +348,7 @@ bool pgAdmin3::OnInit()
     wxLogInfo(wxT("Greenplum pg_restore: %s"), gpRestoreExecutable.c_str());
 
 #ifdef __WXGTK__
-    static pgRendererNative *renderer=new pgRendererNative();
+    static pgRendererNative *renderer = new pgRendererNative();
     wxRendererNative::Get();
     wxRendererNative::Set(renderer);
 #endif
@@ -361,8 +361,8 @@ bool pgAdmin3::OnInit()
     // NOTE: We must *always* do this as in -q and -qc modes
     //       the splash screen becomes the top level window and
     //       allows the logon dialogs to be displayed!!
-    frmSplash* winSplash = new frmSplash((wxFrame *)NULL);
-    if (!winSplash) 
+    frmSplash *winSplash = new frmSplash((wxFrame *)NULL);
+    if (!winSplash)
         wxLogError(__("Couldn't create the splash screen!"));
     else
     {
@@ -371,7 +371,7 @@ bool pgAdmin3::OnInit()
         winSplash->Update();
         wxTheApp->Yield(true);
     }
-    
+
     // Startup the windows sockets if required
     InitNetwork();
 
@@ -438,7 +438,7 @@ bool pgAdmin3::OnInit()
         if (dialogTestMode)
         {
             wxLogInfo(wxT("Starting in dialog test mode."));
-            wxFrame *dtf=new frmDlgTest();
+            wxFrame *dtf = new frmDlgTest();
             dtf->Show();
             SetTopWindow(dtf);
         }
@@ -457,8 +457,8 @@ bool pgAdmin3::OnInit()
                 winSplash->Show(false);
                 dlgSelectConnection dlg(NULL, NULL);
                 dlg.CenterOnParent();
-                
-                int rc=dlg.Go(conn, NULL);
+
+                int rc = dlg.Go(conn, NULL);
                 if (rc != wxID_OK)
                     return false;
                 bool dummyRes;
@@ -468,7 +468,7 @@ bool pgAdmin3::OnInit()
             {
                 wxLogInfo(wxT("Starting in server status connect mode (-Sc)."), configFile.c_str());
                 wxString host, database, username, rolename, tmps;
-                int sslmode=0,port=0;
+                int sslmode = 0, port = 0;
                 wxStringTokenizer tkn(connstr, wxT(" "), wxTOKEN_STRTOK);
                 while (tkn.HasMoreTokens())
                 {
@@ -498,10 +498,10 @@ bool pgAdmin3::OnInit()
                             sslmode = 3;
                         else if (!tmps.Cmp(wxT("disable")))
                             sslmode = 4;
-						else if (!tmps.Cmp(wxT("verify-ca")))
-							sslmode = 5;
-						else if (!tmps.Cmp(wxT("verify-full")))
-							sslmode = 6;
+                        else if (!tmps.Cmp(wxT("verify-ca")))
+                            sslmode = 5;
+                        else if (!tmps.Cmp(wxT("verify-full")))
+                            sslmode = 6;
                         else
                         {
                             wxMessageBox(_("Unknown SSL mode: ") + tmps);
@@ -532,7 +532,7 @@ bool pgAdmin3::OnInit()
 
 #ifdef __WXMAC__
         else if (((cmdParser.Found(wxT("q")) || cmdParser.Found(wxT("qc"))) && !cmdParser.Found(wxT("s"))) || !macFileToOpen.IsEmpty())
-#else        
+#else
         else if ((cmdParser.Found(wxT("q")) || cmdParser.Found(wxT("qc"))) && !cmdParser.Found(wxT("s")))
 #endif
         {
@@ -552,8 +552,8 @@ bool pgAdmin3::OnInit()
                 winSplash->Show(false);
                 dlgSelectConnection dlg(NULL, NULL);
                 dlg.CenterOnParent();
-                
-                int rc=dlg.Go(conn, NULL);
+
+                int rc = dlg.Go(conn, NULL);
                 if (rc != wxID_OK)
                     return false;
                 bool dummyRes;
@@ -563,7 +563,7 @@ bool pgAdmin3::OnInit()
             {
                 wxLogInfo(wxT("Starting in query tool connect mode (-qc)."), configFile.c_str());
                 wxString host, database, username, rolename, tmps;
-                int sslmode=0,port=0;
+                int sslmode = 0, port = 0;
                 wxStringTokenizer tkn(connstr, wxT(" "), wxTOKEN_STRTOK);
                 while (tkn.HasMoreTokens())
                 {
@@ -593,10 +593,10 @@ bool pgAdmin3::OnInit()
                             sslmode = 3;
                         else if (!tmps.Cmp(wxT("disable")))
                             sslmode = 4;
-						else if (!tmps.Cmp(wxT("verify-ca")))
-							sslmode = 5;
-						else if (!tmps.Cmp(wxT("verify-full")))
-							sslmode = 6;
+                        else if (!tmps.Cmp(wxT("verify-ca")))
+                            sslmode = 5;
+                        else if (!tmps.Cmp(wxT("verify-full")))
+                            sslmode = 6;
                         else
                         {
                             wxMessageBox(_("Unknown SSL mode: ") + tmps);
@@ -642,7 +642,7 @@ bool pgAdmin3::OnInit()
             // Create & show the main form
             winMain = new frmMain(appearanceFactory->GetLongAppName());
 
-            if (!winMain) 
+            if (!winMain)
                 wxLogFatalError(__("Couldn't create the main window!"));
 
             winMain->Show();
@@ -708,7 +708,7 @@ int pgAdmin3::OnExit()
 // On the Mac, this function is called before Init, if the finder launches the app
 // via a registered filetype. Grab the filename here, and test for it in Init.
 #ifdef __WXMAC__
-void pgAdmin3::MacOpenFile(const wxString &fileName) 
+void pgAdmin3::MacOpenFile(const wxString &fileName)
 {
     macFileToOpen = fileName;
 }
@@ -760,7 +760,7 @@ void pgAdmin3::InitXtraPaths()
 #endif
 
     // Now, if either path is empty, start a search for helpers
-    // If we find apps, record the appropriate path *only* if it's 
+    // If we find apps, record the appropriate path *only* if it's
     // not already set
     if (settings->GetPostgresqlPath().IsEmpty() || settings->GetEnterprisedbPath().IsEmpty())
     {
@@ -787,7 +787,7 @@ void pgAdmin3::InitXtraPaths()
 #ifdef __WXMAC__
 
         if (wxDir::Exists(dataDir))
-        path.Add(dataDir) ;
+            path.Add(dataDir) ;
 
 #endif
 #endif
@@ -806,13 +806,13 @@ void pgAdmin3::InitXtraPaths()
                 settings->SetPostgresqlPath(tmp.GetPath());
             else if (isEdbApp(tmp.GetFullPath()) && settings->GetEnterprisedbPath().IsEmpty())
                 settings->SetEnterprisedbPath(tmp.GetPath());
-     
+
         }
     }
 
     if (settings->GetGPDBPath().IsEmpty())
     {
-         wxPathList path;
+        wxPathList path;
 
 #ifdef __WXMSW__
 
@@ -841,7 +841,7 @@ void pgAdmin3::InitXtraPaths()
 #ifdef __WXMAC__
 
         if (wxDir::Exists(dataDir))
-        path.Add(dataDir) ;
+            path.Add(dataDir) ;
 #endif
         path.AddEnvList(wxT("PATH"));
 
@@ -915,7 +915,7 @@ void pgAdmin3::InitXtraPaths()
         path.Add(wxT("/opt/bin"));
 
         wxFileName tmp = path.FindValidPath(wxT("pg_dump"));
-#endif 
+#endif
 
         if (tmp.FileExists())
         {
@@ -965,7 +965,7 @@ void pgAdmin3::InitXtraPaths()
         path.Add(wxT("/opt/local/bin"));
 
         wxFileName tmp = path.FindValidPath(wxT("pg_dump"));
-#endif 
+#endif
 
         if (tmp.FileExists())
         {
@@ -1031,10 +1031,10 @@ void pgAdmin3::InitXtraPaths()
         path.Add(wxT("/opt/local/greenplum-clients-3.2/lib"));
         path.Add(wxT("/usr/local/greenplum-clients-3.1.1.1/lib"));
         path.Add(wxT("/opt/local/greenplum-clients-3.1.1.1/lib"));
-        
+
 
         wxFileName tmp = path.FindValidPath(wxT("pg_dump"));
-#endif 
+#endif
 
         if (tmp.FileExists())
         {
@@ -1106,10 +1106,10 @@ wxString pgAdmin3::LocatePath(const wxString &pathToFind, const bool isFile)
     // Search for the right paths. We check the following locations:
     //
     // 1) ./xxx               - Running as a standalone install
-    // 2) ../pgAdmin/xxx      - Running in a pgInstaller 8.1 installation 
+    // 2) ../pgAdmin/xxx      - Running in a pgInstaller 8.1 installation
     //                          (with the .exe and dlls in the main bin dir)
     // 3) ../xxx or ../../xxx - Running in a development environment
-    
+
     if (!isFile)
     {
         if (wxDir::Exists(loadPath + pathToFind))
@@ -1133,7 +1133,7 @@ wxString pgAdmin3::LocatePath(const wxString &pathToFind, const bool isFile)
             return sanitizePath(loadPath + wxT("/..") + pathToFind);
         else if (wxFile::Exists(loadPath + wxT("/../..") + pathToFind))
             return sanitizePath(loadPath + wxT("/../..") + pathToFind);
-        else 
+        else
             return wxEmptyString;
     }
 
@@ -1156,7 +1156,7 @@ wxString pgAdmin3::LocatePath(const wxString &pathToFind, const bool isFile)
 
     dataDir = wxString::FromAscii(DATA_DIR);
 #endif
-  
+
     // On unix systems, the search path is as follows:
     //
     // 1) DATADIR/xxx              - DATADIR being defined by configure
@@ -1174,7 +1174,7 @@ wxString pgAdmin3::LocatePath(const wxString &pathToFind, const bool isFile)
             return sanitizePath(loadPath + pathToFind);
         else if (wxDir::Exists(loadPath + wxT("/..") + pathToFind))
             return sanitizePath(loadPath + wxT("/..") + pathToFind);
-        else 
+        else
             return wxEmptyString;
     }
     else
@@ -1187,7 +1187,7 @@ wxString pgAdmin3::LocatePath(const wxString &pathToFind, const bool isFile)
             return sanitizePath(loadPath + pathToFind);
         else if (wxFile::Exists(loadPath + wxT("/..") + pathToFind))
             return sanitizePath(loadPath + wxT("/..") + pathToFind);
-        else 
+        else
             return wxEmptyString;
     }
 
@@ -1202,7 +1202,7 @@ void pgAdmin3::InitHelp()
     wxString programFilesX86 = wxGetenv(wxT("ProgramFiles(x86)"));
 #endif
 
-    // Search for external docs. As Windows and *nix etc 
+    // Search for external docs. As Windows and *nix etc
     // are likely to be very different, we'll #ifdef them all.
     wxPathList stdPaths, noPaths, pgPaths, edbPaths, gpPaths, slonyPaths;
     wxString sep = wxFileName::GetPathSeparator();
@@ -1277,9 +1277,9 @@ void pgAdmin3::InitHelp()
         gpPaths.Add(programFilesX86 + wxT("\\Greenplum\\greenplum-clients-3.2\\docs"));
         gpPaths.Add(programFilesX86 + wxT("\\Greenplum\\greenplum-clients-3.1.1.1\\docs"));
     }
-;
-    
-    
+    ;
+
+
 #else
     pgPaths.Add(wxT("/usr/local/pgsql/doc"));
     pgPaths.Add(wxT("/usr/local/pgsql/doc/html"));
@@ -1320,7 +1320,7 @@ void pgAdmin3::InitHelp()
     pgPaths.Add(wxT("/usr/local/greenplum-clients-3.1.1.1/docs"));
     pgPaths.Add(wxT("/opt/local/greenplum-clients-3.1.1.1/docs"));
 
-#endif 
+#endif
 
     // Slony will be installed into one of the DBMS directories
     slonyPaths.Add(pgPaths);
@@ -1328,7 +1328,7 @@ void pgAdmin3::InitHelp()
     slonyPaths.Add(gpPaths);
 
     // First look for a chm, then a zip, then an hhp file. For PostgreSQL
-    // and EnterpriseDB we'll then look for an index.html. No point for 
+    // and EnterpriseDB we'll then look for an index.html. No point for
     // Slony as we'd most likely find the DBMS's help.
 
     wxString pgHelpPath = settings->GetPgHelpPath();
@@ -1352,7 +1352,7 @@ void pgAdmin3::InitHelp()
     gpHelpPath = GenerateHelpPath(wxT("GPClientToolsWin.pdf"), gpHelpPath, stdPaths, gpPaths);
     gpHelpPath = GenerateHelpPath(wxT("GPClientTools.pdf"), gpHelpPath, stdPaths, gpPaths);
     gpHelpPath = GenerateHelpPath(wxT("GPUserGuide.pdf"), gpHelpPath, stdPaths, gpPaths);
-    
+
     slonyHelpPath = GenerateHelpPath(wxT("Slony-I.chm"), slonyHelpPath, stdPaths, slonyPaths);
     slonyHelpPath = GenerateHelpPath(wxT("slony-i.chm"), slonyHelpPath, stdPaths, slonyPaths);
     slonyHelpPath = GenerateHelpPath(wxT("slony1.chm"), slonyHelpPath, stdPaths, slonyPaths);
@@ -1368,8 +1368,8 @@ void pgAdmin3::InitHelp()
     edbHelpPath = GenerateHelpPath(wxT("enterprisedb.zip"), edbHelpPath, stdPaths, edbPaths);
     edbHelpPath = GenerateHelpPath(wxT("edb.zip"), edbHelpPath, stdPaths, edbPaths);
 
-    gpHelpPath = GenerateHelpPath(wxT("Greenplum.zip"), gpHelpPath, stdPaths, gpPaths); 
-    gpHelpPath = GenerateHelpPath(wxT("GPSQL.zip"), gpHelpPath, stdPaths, gpPaths); 
+    gpHelpPath = GenerateHelpPath(wxT("Greenplum.zip"), gpHelpPath, stdPaths, gpPaths);
+    gpHelpPath = GenerateHelpPath(wxT("GPSQL.zip"), gpHelpPath, stdPaths, gpPaths);
 
     slonyHelpPath = GenerateHelpPath(wxT("Slony-I.zip"), slonyHelpPath, stdPaths, slonyPaths);
     slonyHelpPath = GenerateHelpPath(wxT("slony-i.zip"), slonyHelpPath, stdPaths, slonyPaths);
@@ -1472,20 +1472,20 @@ void pgAdmin3::InitXml()
 #define chkXRC(id) XRCID(#id) == id
     wxASSERT_MSG(
         chkXRC(wxID_OK) &&
-        chkXRC(wxID_CANCEL) && 
+        chkXRC(wxID_CANCEL) &&
         chkXRC(wxID_HELP) &&
         chkXRC(wxID_APPLY) &&
         chkXRC(wxID_ADD) &&
         chkXRC(wxID_STOP) &&
-        chkXRC(wxID_REMOVE)&&
+        chkXRC(wxID_REMOVE) &&
         chkXRC(wxID_REFRESH) &&
-        chkXRC(wxID_CLOSE), 
+        chkXRC(wxID_CLOSE),
         wxT("XRC ID not correctly assigned."));
     // if this assert fires, some event table uses XRCID(...) instead of wxID_... directly
-        
+
 #ifdef EMBED_XRC
-    wxLogInfo(__("Using embedded XRC data."));   
-    
+    wxLogInfo(__("Using embedded XRC data."));
+
     // resources are loaded from memory
     extern void InitXmlResource();
     InitXmlResource();
@@ -1502,7 +1502,7 @@ void pgAdmin3::InitXml()
 
 void pgAdmin3::InitLogger()
 {
-	sysLogger::logFile = settings->GetLogFile();
+    sysLogger::logFile = settings->GetLogFile();
     sysLogger::logLevel = settings->GetLogLevel();
 
     logger = new sysLogger();
@@ -1516,8 +1516,9 @@ void pgAdmin3::InitNetwork()
     // Startup the windows sockets if required
 #ifdef __WXMSW__
     WSADATA    wsaData;
-    if (WSAStartup(MAKEWORD(1, 1), &wsaData) != 0) {
-        wxLogFatalError(__("Cannot initialise the networking subsystem!"));   
+    if (WSAStartup(MAKEWORD(1, 1), &wsaData) != 0)
+    {
+        wxLogFatalError(__("Cannot initialise the networking subsystem!"));
     }
 #endif
     wxSocketBase::Initialize();
@@ -1612,7 +1613,7 @@ pgAppearanceFactory::pgAppearanceFactory()
 #ifdef __WXMAC__
             else if (token.Lower().StartsWith(wxT("splashfontsizemac=")))
 #else
-            else if (token.Lower().StartsWith(wxT("splashfontsizegtk=")))
+                else if (token.Lower().StartsWith(wxT("splashfontsizegtk=")))
 #endif
 #endif
             {
@@ -1680,8 +1681,8 @@ pgAppearanceFactory::pgAppearanceFactory()
 
 #ifdef __WXMSW__
 
-    // Set the MUI cache value for the grouped task bar title, 
-    // otherwise we get the value from the resources which is 
+    // Set the MUI cache value for the grouped task bar title,
+    // otherwise we get the value from the resources which is
     // definitely not what we want in branded mode!
     wxRegKey *pRegKey = new wxRegKey(wxT("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\ShellNoRoam\\MUICache"));
     if(!pRegKey->Exists())
@@ -1762,19 +1763,19 @@ wxFont pgAppearanceFactory::GetSplashTextFont()
 void pgAdmin3::InitLibpq()
 {
     HINSTANCE hinstLib;
- 
+
     // Get a handle to the DLL module.
-    hinstLib = LoadLibrary(TEXT("libpq")); 
- 
+    hinstLib = LoadLibrary(TEXT("libpq"));
+
     // If the handle is valid, try to get the function address.
-    if (hinstLib != NULL) 
-    { 
-        PQiGetOutResult = (PQGETOUTRESULT) GetProcAddress(hinstLib, "PQgetOutResult"); 
-        PQiPrepareOut = (PQPREPAREOUT) GetProcAddress(hinstLib, "PQprepareOut"); 
-        PQiSendQueryPreparedOut = (PQSENDQUERYPREPAREDOUT) GetProcAddress(hinstLib, "PQsendQueryPreparedOut"); 
- 
+    if (hinstLib != NULL)
+    {
+        PQiGetOutResult = (PQGETOUTRESULT) GetProcAddress(hinstLib, "PQgetOutResult");
+        PQiPrepareOut = (PQPREPAREOUT) GetProcAddress(hinstLib, "PQprepareOut");
+        PQiSendQueryPreparedOut = (PQSENDQUERYPREPAREDOUT) GetProcAddress(hinstLib, "PQsendQueryPreparedOut");
+
         // If the function address is valid, call the function.
-        if (PQiGetOutResult != NULL) 
+        if (PQiGetOutResult != NULL)
             wxLogInfo(wxT("Using runtime dynamically linked EDB libpq functions."));
         else
             wxLogInfo(wxT("EDB libpq functions are not available."));

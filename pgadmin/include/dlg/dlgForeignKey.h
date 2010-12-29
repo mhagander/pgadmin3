@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgForeignKey.h - ForeignKey property 
+// dlgForeignKey.h - ForeignKey property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,10 @@ public:
     wxString GetDefinition();
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
-    wxString GetHelpPage() const { return wxT("pg/sql-altertable"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("pg/sql-altertable");
+    }
 
     int Go(bool modal);
 

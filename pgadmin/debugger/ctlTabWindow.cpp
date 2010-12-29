@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// ctlTabWindow.cpp - debugger 
+// ctlTabWindow.cpp - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -25,18 +25,18 @@ IMPLEMENT_CLASS( ctlTabWindow, wxWindow )
 ////////////////////////////////////////////////////////////////////////////////
 // ctlTabWindow constructor
 //
-//    This constructor creates a new notebook (a tab control) and clears out the 
+//    This constructor creates a new notebook (a tab control) and clears out the
 //  rest of the data members.
 //
 
-ctlTabWindow::ctlTabWindow( wxWindow * parent, wxWindowID id, const wxPoint & pos, const wxSize & size, long style, const wxString& name )
-  : wxAuiNotebook( parent, id, pos, size, style ),
-    m_resultWindow( 0 ),
-    m_varWindow( 0 ),
-    m_pkgVarWindow( 0 ),
-    m_stackWindow( 0 ),
-    m_paramWindow( 0 ),
-    m_messageWindow( 0 )
+ctlTabWindow::ctlTabWindow( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style, const wxString &name )
+    : wxAuiNotebook( parent, id, pos, size, style ),
+      m_resultWindow( 0 ),
+      m_varWindow( 0 ),
+      m_pkgVarWindow( 0 ),
+      m_stackWindow( 0 ),
+      m_paramWindow( 0 ),
+      m_messageWindow( 0 )
 {
     wxWindowBase::SetFont(settings->GetSystemFont());
     m_tabMap   = new wsTabHash();
@@ -59,7 +59,7 @@ void ctlTabWindow::selectTab( wxWindowID id )
 //  and creates that window when we first need it.
 //
 
-ctlResultGrid * ctlTabWindow::getResultWindow( void )
+ctlResultGrid *ctlTabWindow::getResultWindow( void )
 {
     if( m_resultWindow == 0 )
     {
@@ -75,11 +75,11 @@ ctlResultGrid * ctlTabWindow::getResultWindow( void )
 ////////////////////////////////////////////////////////////////////////////////
 // getVarWindow()
 //
-//    This function returns a pointer to our child 'local-variables' window 
+//    This function returns a pointer to our child 'local-variables' window
 //  (m_varWindow) and creates that window when we first need it.
 //
 
-ctlVarWindow * ctlTabWindow::getVarWindow( bool create )
+ctlVarWindow *ctlTabWindow::getVarWindow( bool create )
 {
     if(( m_varWindow == NULL ) && create )
     {
@@ -97,11 +97,11 @@ ctlVarWindow * ctlTabWindow::getVarWindow( bool create )
 ////////////////////////////////////////////////////////////////////////////////
 // getPkgVarWindow()
 //
-//  This function returns a pointer to our child 'package-variables' window 
+//  This function returns a pointer to our child 'package-variables' window
 //  (m_varWindow) and creates that window when we first need it.
 //
 
-ctlVarWindow * ctlTabWindow::getPkgVarWindow( bool create )
+ctlVarWindow *ctlTabWindow::getPkgVarWindow( bool create )
 {
     if(( m_pkgVarWindow == NULL ) && create )
     {
@@ -119,11 +119,11 @@ ctlVarWindow * ctlTabWindow::getPkgVarWindow( bool create )
 ////////////////////////////////////////////////////////////////////////////////
 // getParamWindow()
 //
-//    This function returns a pointer to our child 'parameters' window 
+//    This function returns a pointer to our child 'parameters' window
 //  (m_paramWindow) and creates that window when we first need it.
 //
 
-ctlVarWindow * ctlTabWindow::getParamWindow( bool create )
+ctlVarWindow *ctlTabWindow::getParamWindow( bool create )
 {
     if(( m_paramWindow == NULL ) && create )
     {
@@ -141,11 +141,11 @@ ctlVarWindow * ctlTabWindow::getParamWindow( bool create )
 ////////////////////////////////////////////////////////////////////////////////
 // getMessageWindow()
 //
-//    This function returns a pointer to our child 'messages' window 
+//    This function returns a pointer to our child 'messages' window
 //  (m_messageWindow) and creates that window when we first need it.
 //
 
-ctlMessageWindow * ctlTabWindow::getMessageWindow( void )
+ctlMessageWindow *ctlTabWindow::getMessageWindow( void )
 {
     if( m_messageWindow == 0 )
     {
@@ -162,11 +162,11 @@ ctlMessageWindow * ctlTabWindow::getMessageWindow( void )
 ////////////////////////////////////////////////////////////////////////////////
 // getStackWindow()
 //
-//    This function returns a pointer to our child stack-trace window 
+//    This function returns a pointer to our child stack-trace window
 //  (m_stackWindow) and creates that window when we first need it.
 //
 
-ctlStackWindow * ctlTabWindow::getStackWindow( )
+ctlStackWindow *ctlTabWindow::getStackWindow( )
 {
     if( m_stackWindow == 0 )
     {

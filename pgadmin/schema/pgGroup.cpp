@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,16 +18,16 @@
 #include "schema/pgGroup.h"
 
 
-pgGroup::pgGroup(const wxString& newName)
-: pgServerObject(groupFactory, newName)
+pgGroup::pgGroup(const wxString &newName)
+    : pgServerObject(groupFactory, newName)
 {
-    memberCount=0;
+    memberCount = 0;
 }
 
 wxString pgGroup::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -44,11 +44,11 @@ wxString pgGroup::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop group \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop group \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop group cascaded?");
@@ -99,11 +99,11 @@ wxString pgGroup::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Group: ") + GetName() + wxT("\n\n")
-            + wxT("DROP GROUP ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE Group ") + GetQuotedIdentifier()
-            + wxT("\n  WITH SYSID ") + NumToStr(groupId)
-            + wxT("\n  USER ") + quotedMembers
-            +wxT(";\n");
+              + wxT("DROP GROUP ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE Group ") + GetQuotedIdentifier()
+              + wxT("\n  WITH SYSID ") + NumToStr(groupId)
+              + wxT("\n  USER ") + quotedMembers
+              + wxT(";\n");
     }
     return sql;
 }
@@ -113,19 +113,19 @@ void pgGroup::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         if (!memberIds.IsEmpty())
         {
-            wxString ml=memberIds;
+            wxString ml = memberIds;
             ml.Replace(wxT(" "), wxT(","));
-            pgSet *set=server->ExecuteSet(wxT(
-                "SELECT usename FROM pg_user WHERE usesysid IN (") + ml + wxT(")"));
+            pgSet *set = server->ExecuteSet(wxT(
+                                                "SELECT usename FROM pg_user WHERE usesysid IN (") + ml + wxT(")"));
             if (set)
             {
                 while (!set->Eof())
                 {
-                    wxString user=set->GetVal(0);
+                    wxString user = set->GetVal(0);
                     if (memberCount)
                     {
                         members += wxT(", ");
@@ -157,8 +157,8 @@ void pgGroup::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 
 pgObject *pgGroup::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *group=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *group = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         group = groupFactory.CreateObjects(coll, 0, wxT("\n WHERE grosysid=") + NumToStr(GetGroupId()));
 
@@ -169,10 +169,10 @@ pgObject *pgGroup::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgGroupFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgGroup *group=0;
+    pgGroup *group = 0;
 
-    pgSet *groups= collection->GetServer()->ExecuteSet(wxT(
-        "SELECT * from pg_group") + restriction + wxT(" ORDER BY groname"));
+    pgSet *groups = collection->GetServer()->ExecuteSet(wxT(
+                        "SELECT * from pg_group") + restriction + wxT(" ORDER BY groname"));
 
     if (groups)
     {
@@ -181,20 +181,20 @@ pgObject *pgGroupFactory::CreateObjects(pgCollection *collection, ctlTree *brows
             group = new pgGroup(groups->GetVal(wxT("groname")));
             group->iSetGroupId(groups->GetLong(wxT("grosysid")));
             group->iSetServer(collection->GetServer());
-            wxString mids=groups->GetVal(wxT("grolist"));
-            mids = mids.Mid(1, mids.Length()-2);
+            wxString mids = groups->GetVal(wxT("grolist"));
+            mids = mids.Mid(1, mids.Length() - 2);
             group->iSetMemberIds(mids);
 
             if (browser)
             {
                 browser->AppendObject(collection, group);
-	    		groups->MoveNext();
+                groups->MoveNext();
             }
             else
                 break;
         }
 
-		delete groups;
+        delete groups;
     }
     return group;
 }
@@ -202,7 +202,7 @@ pgObject *pgGroupFactory::CreateObjects(pgCollection *collection, ctlTree *brows
 wxString pgGroupCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -215,15 +215,15 @@ wxString pgGroupCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Groups list report");
             break;
     }
-    
+
     return message;
 }
 
 #include "images/group.xpm"
 #include "images/groups.xpm"
 
-pgGroupFactory::pgGroupFactory() 
-: pgServerObjFactory(__("Group"), __("New Group..."), __("Create a new Group."), group_xpm)
+pgGroupFactory::pgGroupFactory()
+    : pgServerObjFactory(__("Group"), __("New Group..."), __("Create a new Group."), group_xpm)
 {
 }
 

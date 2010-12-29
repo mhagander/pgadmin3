@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,20 +22,20 @@
 #include "schema/pgDatabase.h"
 
 
-gpResQueue::gpResQueue(pgaFactory &factory, const wxString& newName)
-: pgServerObject(factory, newName)
+gpResQueue::gpResQueue(pgaFactory &factory, const wxString &newName)
+    : pgServerObject(factory, newName)
 {
 }
 
-gpResQueue::gpResQueue(const wxString& newName)
-: pgServerObject(resQueueFactory, newName)
+gpResQueue::gpResQueue(const wxString &newName)
+    : pgServerObject(resQueueFactory, newName)
 {
 }
 
 wxString gpResQueue::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -48,11 +48,11 @@ wxString gpResQueue::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop resource queue \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop resource queue \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop resource queue cascaded?");
@@ -97,7 +97,7 @@ int gpResQueue::GetIconId()
 {
     return resQueueFactory.GetIconId();
 }
- 
+
 
 
 bool gpResQueue::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
@@ -111,8 +111,8 @@ wxString gpResQueue::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Resource Queue: \"") + GetName() + wxT("\"\n\n")
-            + wxT("-- DROP RESOURCE QUEUE ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE RESOURCE QUEUE ") + GetQuotedIdentifier();
+              + wxT("-- DROP RESOURCE QUEUE ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE RESOURCE QUEUE ") + GetQuotedIdentifier();
 
         if (GetCountLimit() != -1.0)
         {
@@ -139,30 +139,30 @@ wxString gpResQueue::GetSql(ctlTree *browser)
 
 
 
- 
+
 
 
 void gpResQueue::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *properties, ctlSQLBox *sqlPane)
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
         wxString queuesquery;
 
-        queuesquery = wxT("SELECT rolname,\n") 
-                         wxT(" pg_catalog.shobj_description(r.oid, 'pg_authid') AS description\n");
-        
-        queuesquery += wxT("  FROM pg_roles r\n") 
-                      wxT("  JOIN pg_resqueue q ON  rolresqueue=q.oid\n") 
-                      wxT(" WHERE  rolresqueue=") + GetOidStr() + wxT("\n") 
-                      wxT(" ORDER BY rolname");
+        queuesquery = wxT("SELECT rolname,\n")
+                      wxT(" pg_catalog.shobj_description(r.oid, 'pg_authid') AS description\n");
+
+        queuesquery += wxT("  FROM pg_roles r\n")
+                       wxT("  JOIN pg_resqueue q ON  rolresqueue=q.oid\n")
+                       wxT(" WHERE  rolresqueue=") + GetOidStr() + wxT("\n")
+                       wxT(" ORDER BY rolname");
 
         pgSetIterator queues(GetConnection(), queuesquery);
 
         while (queues.RowsLeft())
         {
-            wxString queue=queues.GetVal(wxT("rolname"));
-             
+            wxString queue = queues.GetVal(wxT("rolname"));
+
             queuesIn.Add(queue);
         }
     }
@@ -180,7 +180,7 @@ void gpResQueue::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
         wxString roleList;
 
         size_t index;
-        for (index=0 ; index < queuesIn.GetCount() ; index++)
+        for (index = 0 ; index < queuesIn.GetCount() ; index++)
         {
             if (!roleList.IsEmpty())
                 roleList += wxT(", ");
@@ -188,17 +188,17 @@ void gpResQueue::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
         }
         properties->AppendItem(_("Roles using this"), roleList);
         properties->AppendItem(_("Comment"), firstLineOnly(GetComment()));
-    
+
     }
 }
 
- 
+
 
 
 pgObject *gpResQueue::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *queue=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *queue = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         queue = resQueueFactory.CreateObjects(coll, 0, wxT("\n WHERE oid=") + GetOidStr());
 
@@ -209,17 +209,17 @@ pgObject *gpResQueue::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *gpResQueueFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    gpResQueue *queue=0;
-    pgSet *queues=0;
+    gpResQueue *queue = 0;
+    pgSet *queues = 0;
 
 
-  
+
     queues = collection->GetServer()->ExecuteSet(wxT("SELECT rsqname, rsqcountlimit, rsqcostlimit, rsqovercommit, rsqignorecostlimit, oid FROM pg_resqueue ORDER BY 1"));
-    
+
     if (queues)
     {
         while (!queues->Eof())
-        { 
+        {
             queue = new gpResQueue(queues->GetVal(wxT("rsqname")));
 
             queue->iSetServer(collection->GetServer());
@@ -242,13 +242,13 @@ pgObject *gpResQueueFactory::CreateObjects(pgCollection *collection, ctlTree *br
     }
     return queue;
 }
- 
+
 /////////////////////////////
 
 wxString gpResQueueCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -264,7 +264,7 @@ wxString gpResQueueCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Ressource queues list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -275,11 +275,11 @@ wxString gpResQueueCollection::GetTranslatedMessage(int kindOfMessage) const
 
 
 gpResQueueFactory::gpResQueueFactory()
-: pgServerObjFactory(__("Resource Queue"), __("New Resource Queue..."), __("Create a new Resource Queue."), group_xpm)
+    : pgServerObjFactory(__("Resource Queue"), __("New Resource Queue..."), __("Create a new Resource Queue."), group_xpm)
 {
     metaType = GP_RESOURCE_QUEUE;
 }
- 
+
 
 gpResQueueFactory resQueueFactory;
 static pgaCollectionFactory lcf(&resQueueFactory, __("Resource Queues"), roles_xpm);

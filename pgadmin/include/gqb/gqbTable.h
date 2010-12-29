@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,9 +25,9 @@ class gqbTable : public gqbObjectCollection
 public:
     gqbTable(gqbObject *parent, wxString name, pgConn *connection, type_gqbObject type, OID oid);
     void createObjects(gqbBrowser *_tablesBrowser,  pgConn *_conn, OID oidVal, wxTreeItemId parentNode);
-    gqbIteratorBase* createColumnsIterator();
+    gqbIteratorBase *createColumnsIterator();
     int countCols();
-    gqbColumn* getColumnAtIndex(int index);
+    gqbColumn *getColumnAtIndex(int index);
     int indexColumn(gqbColumn *col);
 
 private:

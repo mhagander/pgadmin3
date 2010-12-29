@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,8 +19,8 @@
 #include "schema/pgDatatype.h"
 
 
-pgDomain::pgDomain(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, domainFactory, newName)
+pgDomain::pgDomain(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, domainFactory, newName)
 {
 }
 
@@ -31,7 +31,7 @@ pgDomain::~pgDomain()
 wxString pgDomain::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -44,11 +44,11 @@ wxString pgDomain::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop domain \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop domain \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop domain cascaded?");
@@ -92,7 +92,7 @@ wxString pgDomain::GetTranslatedMessage(int kindOfMessage) const
 
 bool pgDomain::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP DOMAIN ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
+    wxString sql = wxT("DROP DOMAIN ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
     if (cascaded)
         sql += wxT(" CASCADE");
     return GetDatabase()->ExecuteVoid(sql);
@@ -103,9 +103,9 @@ wxString pgDomain::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Domain: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP DOMAIN ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE DOMAIN ") + GetQuotedFullIdentifier() 
-            + wxT("\n  AS ") + GetQuotedBasetype();
+              + wxT("-- DROP DOMAIN ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE DOMAIN ") + GetQuotedFullIdentifier()
+              + wxT("\n  AS ") + GetQuotedBasetype();
         AppendIfFilled(sql, wxT("\n  DEFAULT "), GetDefault());
         // CONSTRAINT Name Dont know where it's stored, may be omitted anyway
         if (notNull)
@@ -113,8 +113,8 @@ wxString pgDomain::GetSql(ctlTree *browser)
         AppendIfFilled(sql, wxT("\n   "), GetCheck());
 
         sql += wxT(";\n")
-            + GetOwnerSql(7, 4)
-            + GetCommentSql();
+               + GetOwnerSql(7, 4)
+               + GetCommentSql();
     }
 
     return sql;
@@ -129,8 +129,8 @@ void pgDomain::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
         expandedKids = true;
         if (GetConnection()->BackendMinimumVersion(7, 4))
         {
-            pgSet *set=ExecuteSet(
-                wxT("SELECT conname, pg_get_constraintdef(oid) AS consrc FROM pg_constraint WHERE contypid=") + GetOidStr());
+            pgSet *set = ExecuteSet(
+                             wxT("SELECT conname, pg_get_constraintdef(oid) AS consrc FROM pg_constraint WHERE contypid=") + GetOidStr());
             if (set)
             {
                 while (!set->Eof())
@@ -139,7 +139,7 @@ void pgDomain::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
                     {
                         check += wxT(" ");
                     }
-                    wxString conname=set->GetVal(wxT("conname"));
+                    wxString conname = set->GetVal(wxT("conname"));
                     if (!conname.StartsWith(wxT("$")))
                         check += wxT("CONSTRAINT ") + qtIdent(conname) + wxT(" ");
                     check += set->GetVal(wxT("consrc"));
@@ -172,9 +172,9 @@ void pgDomain::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
 
 pgObject *pgDomain::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *domain=0;
+    pgObject *domain = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         domain = domainFactory.CreateObjects(coll, 0, wxT("   AND d.oid=") + GetOidStr() + wxT("\n"));
 
@@ -188,22 +188,22 @@ pgObject *pgDomain::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgDomainFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgDomain *domain=0;
+    pgDomain *domain = 0;
 
-    pgDatabase *db=collection->GetDatabase();
+    pgDatabase *db = collection->GetDatabase();
 
-    pgSet *domains= db->ExecuteSet(
-        wxT("SELECT d.oid, d.typname as domname, d.typbasetype, format_type(b.oid,NULL) as basetype, pg_get_userbyid(d.typowner) as domainowner, \n")
-        wxT("       d.typlen, d.typtypmod, d.typnotnull, d.typdefault, d.typndims, d.typdelim, bn.nspname as basensp,\n")
-        wxT("       description, (SELECT COUNT(1) FROM pg_type t2 WHERE t2.typname=d.typname) > 1 AS domisdup,\n")
-        wxT("       (SELECT COUNT(1) FROM pg_type t3 WHERE t3.typname=b.typname) > 1 AS baseisdup\n")
-        wxT("  FROM pg_type d\n")
-        wxT("  JOIN pg_type b ON b.oid = CASE WHEN d.typndims>0 then d.typelem ELSE d.typbasetype END\n")
-        wxT("  JOIN pg_namespace bn ON bn.oid=b.typnamespace\n")
-        wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=d.oid\n")
-        wxT(" WHERE d.typtype = 'd' AND d.typnamespace = ") + NumToStr(collection->GetSchema()->GetOid()) + wxT("::oid\n")
-        + restriction +
-        wxT(" ORDER BY d.typname"));
+    pgSet *domains = db->ExecuteSet(
+                         wxT("SELECT d.oid, d.typname as domname, d.typbasetype, format_type(b.oid,NULL) as basetype, pg_get_userbyid(d.typowner) as domainowner, \n")
+                         wxT("       d.typlen, d.typtypmod, d.typnotnull, d.typdefault, d.typndims, d.typdelim, bn.nspname as basensp,\n")
+                         wxT("       description, (SELECT COUNT(1) FROM pg_type t2 WHERE t2.typname=d.typname) > 1 AS domisdup,\n")
+                         wxT("       (SELECT COUNT(1) FROM pg_type t3 WHERE t3.typname=b.typname) > 1 AS baseisdup\n")
+                         wxT("  FROM pg_type d\n")
+                         wxT("  JOIN pg_type b ON b.oid = CASE WHEN d.typndims>0 then d.typelem ELSE d.typbasetype END\n")
+                         wxT("  JOIN pg_namespace bn ON bn.oid=b.typnamespace\n")
+                         wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=d.oid\n")
+                         wxT(" WHERE d.typtype = 'd' AND d.typnamespace = ") + NumToStr(collection->GetSchema()->GetOid()) + wxT("::oid\n")
+                         + restriction +
+                         wxT(" ORDER BY d.typname"));
 
     if (domains)
     {
@@ -216,10 +216,10 @@ pgObject *pgDomainFactory::CreateObjects(pgCollection *collection, ctlTree *brow
             domain->iSetBasetype(domains->GetVal(wxT("basetype")));
             domain->iSetBasetypeOid(domains->GetOid(wxT("typbasetype")));
             domain->iSetComment(domains->GetVal(wxT("description")));
-            long typmod=domains->GetLong(wxT("typtypmod"));
+            long typmod = domains->GetLong(wxT("typtypmod"));
 
-            pgDatatype dt(domains->GetVal(wxT("basensp")), domains->GetVal(wxT("basetype")), 
-                domains->GetBool(wxT("baseisdup")), domains->GetLong(wxT("typndims")), typmod);
+            pgDatatype dt(domains->GetVal(wxT("basensp")), domains->GetVal(wxT("basetype")),
+                          domains->GetBool(wxT("baseisdup")), domains->GetLong(wxT("typndims")), typmod);
 
             domain->iSetTyplen(domains->GetLong(wxT("typlen")));
             domain->iSetTypmod(typmod);
@@ -236,13 +236,13 @@ pgObject *pgDomainFactory::CreateObjects(pgCollection *collection, ctlTree *brow
             if (browser)
             {
                 browser->AppendObject(collection, domain);
-    			domains->MoveNext();
+                domains->MoveNext();
             }
             else
                 break;
         }
 
-		delete domains;
+        delete domains;
     }
     return domain;
 }
@@ -252,7 +252,7 @@ pgObject *pgDomainFactory::CreateObjects(pgCollection *collection, ctlTree *brow
 wxString pgDomainCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -265,7 +265,7 @@ wxString pgDomainCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Domains list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -275,8 +275,8 @@ wxString pgDomainCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/domain-sm.xpm"
 #include "images/domains.xpm"
 
-pgDomainFactory::pgDomainFactory() 
-: pgSchemaObjFactory(__("Domain"), __("New Domain..."), __("Create a new Domain."), domain_xpm, domain_sm_xpm)
+pgDomainFactory::pgDomainFactory()
+    : pgSchemaObjFactory(__("Domain"), __("New Domain..."), __("Create a new Domain."), domain_xpm, domain_sm_xpm)
 {
 }
 

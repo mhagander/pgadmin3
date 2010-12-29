@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,32 +22,32 @@
 #include "frm/frmReport.h"
 #include "frm/frmHint.h"
 
-pgFunction::pgFunction(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, functionFactory, newName)
+pgFunction::pgFunction(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, functionFactory, newName)
 {
 }
 
 
-pgFunction::pgFunction(pgSchema *newSchema, pgaFactory &factory, const wxString& newName)
-: pgSchemaObject(newSchema, factory, newName)
+pgFunction::pgFunction(pgSchema *newSchema, pgaFactory &factory, const wxString &newName)
+    : pgSchemaObject(newSchema, factory, newName)
 {
 }
 
 
-pgTriggerFunction::pgTriggerFunction(pgSchema *newSchema, const wxString& newName)
-: pgFunction(newSchema, triggerFunctionFactory, newName)
+pgTriggerFunction::pgTriggerFunction(pgSchema *newSchema, const wxString &newName)
+    : pgFunction(newSchema, triggerFunctionFactory, newName)
 {
 }
 
-pgProcedure::pgProcedure(pgSchema *newSchema, const wxString& newName)
-: pgFunction(newSchema, procedureFactory, newName)
+pgProcedure::pgProcedure(pgSchema *newSchema, const wxString &newName)
+    : pgFunction(newSchema, procedureFactory, newName)
 {
 }
 
 wxString pgFunction::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -60,11 +60,11 @@ wxString pgFunction::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop function \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop function \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop function cascaded?");
@@ -108,7 +108,7 @@ wxString pgFunction::GetTranslatedMessage(int kindOfMessage) const
 wxString pgTriggerFunction::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -121,11 +121,11 @@ wxString pgTriggerFunction::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop trigger function \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop trigger function \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop trigger function cascaded?");
@@ -169,7 +169,7 @@ wxString pgTriggerFunction::GetTranslatedMessage(int kindOfMessage) const
 wxString pgProcedure::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -182,11 +182,11 @@ wxString pgProcedure::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop procedure \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop procedure \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop procedure cascaded?");
@@ -231,28 +231,28 @@ void pgFunction::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
     if (GetConnection()->BackendMinimumVersion(8, 4))
     {
-		wxString sql=wxT("SELECT calls AS ") + qtIdent(_("Number of calls")) +
-	      wxT(", total_time AS ") + qtIdent(_("Total Time")) +
-	      wxT(", self_time AS ") + qtIdent(_("Self Time")) +
-          wxT(" FROM pg_stat_user_functions") +
-          wxT(" WHERE schemaname = ") + qtDbString(GetSchema()->GetName()) +
-		  wxT(" AND funcname = ") + qtDbString(GetName());
-		DisplayStatistics(statistics, sql);
-	}
+        wxString sql = wxT("SELECT calls AS ") + qtIdent(_("Number of calls")) +
+                       wxT(", total_time AS ") + qtIdent(_("Total Time")) +
+                       wxT(", self_time AS ") + qtIdent(_("Self Time")) +
+                       wxT(" FROM pg_stat_user_functions") +
+                       wxT(" WHERE schemaname = ") + qtDbString(GetSchema()->GetName()) +
+                       wxT(" AND funcname = ") + qtDbString(GetName());
+        DisplayStatistics(statistics, sql);
+    }
 }
 
 bool pgFunction::IsUpToDate()
 {
     wxString sql = wxT("SELECT xmin FROM pg_proc WHERE oid = ") + this->GetOidStr();
-	if (!this->GetDatabase()->GetConnection() || this->GetDatabase()->ExecuteScalar(sql) != NumToStr(GetXid()))
-		return false;
-	else
-		return true;
+    if (!this->GetDatabase()->GetConnection() || this->GetDatabase()->ExecuteScalar(sql) != NumToStr(GetXid()))
+        return false;
+    else
+        return true;
 }
 
 bool pgFunction::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP FUNCTION ")  + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier() + wxT("(") + GetArgSigList() + wxT(")");
+    wxString sql = wxT("DROP FUNCTION ")  + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier() + wxT("(") + GetArgSigList() + wxT(")");
     if (cascaded)
         sql += wxT(" CASCADE");
     return GetDatabase()->ExecuteVoid(sql);
@@ -261,18 +261,18 @@ bool pgFunction::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 bool pgFunction::ResetStats()
 {
     wxString sql = wxT("SELECT pg_stat_reset_single_function_counters(")
-      + NumToStr(this->GetOid())
-      + wxT(")");
+                   + NumToStr(this->GetOid())
+                   + wxT(")");
     return GetDatabase()->ExecuteVoid(sql);
 }
 
 wxString pgFunction::GetFullName()
-{ 
+{
     return GetName() + wxT("(") + GetArgSigList() + wxT(")");
 }
 
 wxString pgProcedure::GetFullName()
-{ 
+{
     if (GetArgSigList().IsEmpty())
         return GetName();
     else
@@ -288,8 +288,8 @@ wxString pgFunction::GetSql(ctlTree *browser)
         wxString qtSig = GetQuotedFullIdentifier()  + wxT("(") + GetArgSigList() + wxT(")");
 
         sql = wxT("-- Function: ") + qtSig + wxT("\n\n")
-            + wxT("-- DROP FUNCTION ") + qtSig + wxT(";")
-            + wxT("\n\nCREATE OR REPLACE FUNCTION ") + qtName;
+              + wxT("-- DROP FUNCTION ") + qtSig + wxT(";")
+              + wxT("\n\nCREATE OR REPLACE FUNCTION ") + qtName;
 
         // Use Oracle style syntax for edb-spl functions
         if (GetLanguage() == wxT("edbspl") && GetProcType() == 2)
@@ -299,7 +299,7 @@ wxString pgFunction::GetSql(ctlTree *browser)
 
             sql += wxT(" AS");
             if (GetSource().StartsWith(wxT("\n")))
-                sql += GetSource(); 
+                sql += GetSource();
             else
                 sql += wxT("\n") + GetSource();
         }
@@ -311,7 +311,7 @@ wxString pgFunction::GetSql(ctlTree *browser)
             sql += GetReturnType();
 
             sql += wxT(" AS\n");
-            
+
             if (GetLanguage().IsSameAs(wxT("C"), false))
             {
                 sql += qtDbString(GetBin()) + wxT(", ") + qtDbString(GetSource());
@@ -347,25 +347,25 @@ wxString pgFunction::GetSql(ctlTree *browser)
             sql += wxT(";");
 
         size_t i;
-        for (i=0 ; i < configList.GetCount() ; i++)
+        for (i = 0 ; i < configList.GetCount() ; i++)
         {
             if (configList.Item(i).BeforeFirst('=') != wxT("search_path") &&
-                configList.Item(i).BeforeFirst('=') != wxT("temp_tablespaces"))
+                    configList.Item(i).BeforeFirst('=') != wxT("temp_tablespaces"))
                 sql += wxT("\nALTER FUNCTION ") + qtSig
-                    + wxT(" SET ") + configList.Item(i).BeforeFirst('=') + wxT("='") + configList.Item(i).AfterFirst('=') + wxT("';\n");
+                       + wxT(" SET ") + configList.Item(i).BeforeFirst('=') + wxT("='") + configList.Item(i).AfterFirst('=') + wxT("';\n");
             else
                 sql += wxT("\nALTER FUNCTION ") + qtSig
-                    + wxT(" SET ") + configList.Item(i).BeforeFirst('=') + wxT("=") + configList.Item(i).AfterFirst('=') + wxT(";\n");
+                       + wxT(" SET ") + configList.Item(i).BeforeFirst('=') + wxT("=") + configList.Item(i).AfterFirst('=') + wxT(";\n");
         }
 
         sql += wxT("\n")
-            +  GetOwnerSql(8, 0, wxT("FUNCTION ") + qtSig)
-            +  GetGrant(wxT("X"), wxT("FUNCTION ") + qtSig);
+               +  GetOwnerSql(8, 0, wxT("FUNCTION ") + qtSig)
+               +  GetGrant(wxT("X"), wxT("FUNCTION ") + qtSig);
 
         if (!GetComment().IsNull())
         {
             sql += wxT("COMMENT ON FUNCTION ") + qtSig
-                + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+                   + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
         }
     }
 
@@ -407,13 +407,13 @@ void pgFunction::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
         properties->AppendItem(_("Volatility"), GetVolatility());
         properties->AppendItem(_("Security of definer?"), GetSecureDefiner());
         properties->AppendItem(_("Strict?"), GetIsStrict());
-		if (GetConnection()->BackendMinimumVersion(8, 4))
-	        properties->AppendItem(_("Window?"), GetIsWindow());
+        if (GetConnection()->BackendMinimumVersion(8, 4))
+            properties->AppendItem(_("Window?"), GetIsWindow());
 
         size_t i;
-        for (i=0 ; i < configList.GetCount() ; i++)
+        for (i = 0 ; i < configList.GetCount() ; i++)
         {
-            wxString item=configList.Item(i);
+            wxString item = configList.Item(i);
             properties->AppendItem(item.BeforeFirst('='), item.AfterFirst('='));
         }
 
@@ -425,8 +425,8 @@ void pgFunction::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 
 void pgFunction::ShowHint(frmMain *form, bool force)
 {
-	wxArrayString hints;
-	hints.Add(HINT_OBJECT_EDITING);
+    wxArrayString hints;
+    hints.Add(HINT_OBJECT_EDITING);
     frmHint::ShowHint((wxWindow *)form, hints, GetFullIdentifier(), force);
 }
 
@@ -451,19 +451,19 @@ wxString pgProcedure::GetSql(ctlTree *browser)
         }
 
         sql = wxT("-- Procedure: ") + qtSig + wxT("\n\n")
-            + wxT("-- DROP PROCEDURE ") + qtSig + wxT(";")
-            + wxT("\n\nCREATE OR REPLACE PROCEDURE ") + qtName;
+              + wxT("-- DROP PROCEDURE ") + qtSig + wxT(";")
+              + wxT("\n\nCREATE OR REPLACE PROCEDURE ") + qtName;
 
 
         sql += wxT(" AS")
-            + GetSource()
-            + wxT("\n\n")
-            + GetGrant(wxT("X"), wxT("PROCEDURE ") + qtSig);
+               + GetSource()
+               + wxT("\n\n")
+               + GetGrant(wxT("X"), wxT("PROCEDURE ") + qtSig);
 
         if (!GetComment().IsNull())
         {
             sql += wxT("COMMENT ON PROCEDURE ") + GetQuotedFullIdentifier()
-                + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+                   + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
         }
     }
 
@@ -476,7 +476,7 @@ bool pgProcedure::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
     if (!GetConnection()->EdbMinimumVersion(8, 0))
         return pgFunction::DropObject(frame, browser, cascaded);
 
-    wxString sql=wxT("DROP PROCEDURE ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
+    wxString sql = wxT("DROP PROCEDURE ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
     return GetDatabase()->ExecuteVoid(sql);
 }
 
@@ -484,7 +484,7 @@ wxString pgFunction::GetArgListWithNames()
 {
     wxString args;
 
-    for (unsigned int i=0; i < argTypesArray.Count(); i++)
+    for (unsigned int i = 0; i < argTypesArray.Count(); i++)
     {
         /*
         * All Table arguments lies at the end of the list
@@ -556,7 +556,7 @@ wxString pgFunction::GetArgSigList(const bool forScript)
 {
     wxString args;
 
-    for (unsigned int i=0; i < argTypesArray.Count(); i++)
+    for (unsigned int i = 0; i < argTypesArray.Count(); i++)
     {
         // OUT parameters are not considered part of the signature, except for EDB-SPL
         if (argModesArray.Item(i) != wxT("OUT") && argModesArray.Item(i) != wxT("TABLE"))
@@ -601,7 +601,7 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
     // Caches
     cacheMap typeCache, exprCache;
 
-    pgFunction *function=0;
+    pgFunction *function = 0;
     wxString argNamesCol, argDefsCol, proConfigCol, proType;
     if (obj->GetConnection()->BackendMinimumVersion(8, 0))
         argNamesCol = wxT("proargnames, ");
@@ -615,19 +615,19 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
         proType = wxT("protype, ");
 
     pgSet *functions = obj->GetDatabase()->ExecuteSet(
-            wxT("SELECT pr.oid, pr.xmin, pr.*, format_type(TYP.oid, NULL) AS typname, typns.nspname AS typnsp, lanname, ") +
-            argNamesCol  + argDefsCol + proConfigCol + proType +
-            wxT("       pg_get_userbyid(proowner) as funcowner, description\n")
-            wxT("  FROM pg_proc pr\n")
-            wxT("  JOIN pg_type typ ON typ.oid=prorettype\n")
-            wxT("  JOIN pg_namespace typns ON typns.oid=typ.typnamespace\n")
-            wxT("  JOIN pg_language lng ON lng.oid=prolang\n")
-            wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=pr.oid\n")
-            + restriction +
-            wxT(" ORDER BY proname"));
+                           wxT("SELECT pr.oid, pr.xmin, pr.*, format_type(TYP.oid, NULL) AS typname, typns.nspname AS typnsp, lanname, ") +
+                           argNamesCol  + argDefsCol + proConfigCol + proType +
+                           wxT("       pg_get_userbyid(proowner) as funcowner, description\n")
+                           wxT("  FROM pg_proc pr\n")
+                           wxT("  JOIN pg_type typ ON typ.oid=prorettype\n")
+                           wxT("  JOIN pg_namespace typns ON typns.oid=typ.typnamespace\n")
+                           wxT("  JOIN pg_language lng ON lng.oid=prolang\n")
+                           wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=pr.oid\n")
+                           + restriction +
+                           wxT(" ORDER BY proname"));
 
     pgSet *types = obj->GetDatabase()->ExecuteSet(wxT(
-                    "SELECT oid, format_type(oid, NULL) AS typname FROM pg_type"));
+                       "SELECT oid, format_type(oid, NULL) AS typname FROM pg_type"));
 
     if (types)
     {
@@ -642,10 +642,10 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
     {
         while (!functions->Eof())
         {
-            bool isProcedure=false;
+            bool isProcedure = false;
             bool hasDefValSupport = false;
-            wxString lanname=functions->GetVal(wxT("lanname"));
-            wxString typname=functions->GetVal(wxT("typname"));
+            wxString lanname = functions->GetVal(wxT("lanname"));
+            wxString typname = functions->GetVal(wxT("typname"));
 
             // Is this an EDB Stored Procedure?
             if (obj->GetConnection()->EdbMinimumVersion(8, 0) && lanname == wxT("edbspl") && typname == wxT("void"))
@@ -658,7 +658,7 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
                 function = new pgTriggerFunction(schema, functions->GetVal(wxT("proname")));
             else
                 function = new pgFunction(schema, functions->GetVal(wxT("proname")));
-            
+
             // Tokenize the arguments
             wxStringTokenizer argTypesTkz(wxEmptyString), argModesTkz(wxEmptyString);
             queryTokenizer argNamesTkz(wxEmptyString, (wxChar)','), argDefsTkz(wxEmptyString, (wxChar)',');
@@ -675,7 +675,7 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
             {
                 tmp = functions->GetVal(wxT("proargnames"));
                 if (!tmp.IsEmpty())
-                    argNamesTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                    argNamesTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
             }
 
             // EDB 8.0 had modes in pg_proc.proargdirs
@@ -690,20 +690,20 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
             {
                 tmp = functions->GetVal(wxT("proallargtypes"));
                 if (!tmp.IsEmpty())
-                    argTypesTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                    argTypesTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
 
                 tmp = functions->GetVal(wxT("proargmodes"));
                 if (!tmp.IsEmpty())
-                    argModesTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                    argModesTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
             }
 
             // EDB 8.3: Function defaults
             if (obj->GetConnection()->HasFeature(FEATURE_FUNCTION_DEFAULTS) &&
-                !obj->GetConnection()->BackendMinimumVersion(8, 4))
+                    !obj->GetConnection()->BackendMinimumVersion(8, 4))
             {
                 tmp = functions->GetVal(wxT("proargdefvals"));
                 if (!tmp.IsEmpty())
-                    argDefsTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                    argDefsTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
             }
 
             if (obj->GetConnection()->BackendMinimumVersion(8, 4))
@@ -723,21 +723,21 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
             // Now iterate the arguments and build the arrays
             wxString type, name, mode, def;
             size_t nArgsIN = 0;
-            
+
             while (argTypesTkz.HasMoreTokens())
             {
-                // Add the arg type. This is a type oid, so 
+                // Add the arg type. This is a type oid, so
                 // look it up in the hashmap
                 type = argTypesTkz.GetNextToken();
                 function->iAddArgType(typeCache[type]);
 
                 // Now add the name, stripping the quotes and \" if
-                // necessary. 
+                // necessary.
                 name = argNamesTkz.GetNextToken();
                 if (!name.IsEmpty())
                 {
                     if (name[0] == '"')
-                        name = name.Mid(1, name.Length()-2);
+                        name = name.Mid(1, name.Length() - 2);
                     name.Replace(wxT("\\\""), wxT("\""));
                     function->iAddArgName(name);
                 }
@@ -789,7 +789,7 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
                 else if (!def.IsEmpty() && !def.IsSameAs(wxT("-")))
                 {
                     if (def[0] == '"')
-                        def = def.Mid(1, def.Length()-2);
+                        def = def.Mid(1, def.Length() - 2);
 
                     // Check the cache first - if we don't have a value, get it and cache for next time
                     wxString val = exprCache[def];
@@ -803,7 +803,7 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
                 else
                     function->iAddArgDef(wxEmptyString);
             }
-            
+
             function->iSetArgCount(functions->GetLong(wxT("pronargs")));
 
             wxString strReturnTableArgs;
@@ -814,12 +814,12 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
                 for (size_t index = 0; index < function->GetArgModesArray().Count(); index++)
                 {
                     if (function->GetArgModesArray()[index] == wxT("IN") ||
-                        function->GetArgModesArray()[index] == wxT("INOUT") ||
-                        function->GetArgModesArray()[index].IsEmpty())
+                            function->GetArgModesArray()[index] == wxT("INOUT") ||
+                            function->GetArgModesArray()[index].IsEmpty())
                     {
                         nArgsIN--;
                         if (function->GetArgDefValCount() != 0 &&
-                            nArgsIN < (size_t)function->GetArgDefValCount())
+                                nArgsIN < (size_t)function->GetArgDefValCount())
                         {
                             if (argDefValArray[currINindex++] != wxT("-"))
                                 function->iAddArgDef(argDefValArray[currINindex-1]);
@@ -846,8 +846,8 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
             function->iSetOid(functions->GetOid(wxT("oid")));
             function->iSetXid(functions->GetOid(wxT("xmin")));
 
-			if (browser)
-	            function->UpdateSchema(browser, functions->GetOid(wxT("pronamespace")));
+            if (browser)
+                function->UpdateSchema(browser, functions->GetOid(wxT("pronamespace")));
 
             function->iSetOwner(functions->GetVal(wxT("funcowner")));
             function->iSetAcl(functions->GetVal(wxT("proacl")));
@@ -866,9 +866,9 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
             function->iSetSource(functions->GetVal(wxT("prosrc")));
             function->iSetBin(functions->GetVal(wxT("probin")));
 
-            wxString vol=functions->GetVal(wxT("provolatile"));
+            wxString vol = functions->GetVal(wxT("provolatile"));
             function->iSetVolatility(
-                vol.IsSameAs(wxT("i")) ? wxT("IMMUTABLE") : 
+                vol.IsSameAs(wxT("i")) ? wxT("IMMUTABLE") :
                 vol.IsSameAs(wxT("s")) ? wxT("STABLE") :
                 vol.IsSameAs(wxT("v")) ? wxT("VOLATILE") : wxT("unknown"));
 
@@ -877,9 +877,9 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
             {
                 function->iSetCost(functions->GetLong(wxT("procost")));
                 function->iSetRows(functions->GetLong(wxT("prorows")));
-                wxString cfg=functions->GetVal(wxT("proconfig"));
+                wxString cfg = functions->GetVal(wxT("proconfig"));
                 if (!cfg.IsEmpty())
-                    FillArray(function->GetConfigList(), cfg.Mid(1, cfg.Length()-2));
+                    FillArray(function->GetConfigList(), cfg.Mid(1, cfg.Length() - 2));
             }
 
             if (browser)
@@ -901,13 +901,13 @@ pgFunction *pgFunctionFactory::AppendFunctions(pgObject *obj, pgSchema *schema, 
 
 pgObject *pgFunction::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *function=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *function = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         function = functionFactory.AppendFunctions(coll, GetSchema(), 0, wxT(" WHERE pr.oid=") + GetOidStr() + wxT("\n"));
 
     // We might be linked to trigger....
-    pgObject *trigger=browser->GetParentObject(item);
+    pgObject *trigger = browser->GetParentObject(item);
     if (trigger->GetMetaType() == PGM_TRIGGER)
         function = functionFactory.AppendFunctions(trigger, GetSchema(), 0, wxT(" WHERE pr.oid=") + GetOidStr() + wxT("\n"));
 
@@ -946,9 +946,9 @@ wxString pgProcedure::GetExecSql(ctlTree *browser)
 
 pgObject *pgFunctionFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restr)
 {
-    wxString funcRestriction=wxT(
-        " WHERE proisagg = FALSE AND pronamespace = ") + NumToStr(collection->GetSchema()->GetOid()) 
-        + wxT("::oid\n   AND typname <> 'trigger'\n");
+    wxString funcRestriction = wxT(
+                                   " WHERE proisagg = FALSE AND pronamespace = ") + NumToStr(collection->GetSchema()->GetOid())
+                               + wxT("::oid\n   AND typname <> 'trigger'\n");
 
     if (collection->GetConnection()->EdbMinimumVersion(8, 0))
         funcRestriction += wxT("   AND NOT (lanname = 'edbspl' AND typname = 'void')\n");
@@ -960,15 +960,15 @@ pgObject *pgFunctionFactory::CreateObjects(pgCollection *collection, ctlTree *br
 
 pgCollection *pgFunctionFactory::CreateCollection(pgObject *obj)
 {
-    return new pgFunctionCollection(GetCollectionFactory(), (pgSchema*)obj);
+    return new pgFunctionCollection(GetCollectionFactory(), (pgSchema *)obj);
 }
 
 pgObject *pgTriggerFunctionFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restr)
 {
-    wxString funcRestriction=wxT(
-        " WHERE proisagg = FALSE AND pronamespace = ") + NumToStr(collection->GetSchema()->GetOid()) 
-        + wxT("::oid\n   AND typname = 'trigger'\n")
-        + wxT("   AND lanname != 'edbspl'\n");
+    wxString funcRestriction = wxT(
+                                   " WHERE proisagg = FALSE AND pronamespace = ") + NumToStr(collection->GetSchema()->GetOid())
+                               + wxT("::oid\n   AND typname = 'trigger'\n")
+                               + wxT("   AND lanname != 'edbspl'\n");
 
     // Get the Functions
     return AppendFunctions(collection, collection->GetSchema(), browser, funcRestriction);
@@ -977,9 +977,9 @@ pgObject *pgTriggerFunctionFactory::CreateObjects(pgCollection *collection, ctlT
 
 pgObject *pgProcedureFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restr)
 {
-    wxString funcRestriction=wxT(
-        " WHERE proisagg = FALSE AND pronamespace = ") + NumToStr(collection->GetSchema()->GetOid()) 
-        + wxT("::oid AND lanname = 'edbspl' AND typname = 'void'\n");
+    wxString funcRestriction = wxT(
+                                   " WHERE proisagg = FALSE AND pronamespace = ") + NumToStr(collection->GetSchema()->GetOid())
+                               + wxT("::oid AND lanname = 'edbspl' AND typname = 'void'\n");
 
     // Get the Functions
     return AppendFunctions(collection, collection->GetSchema(), browser, funcRestriction);
@@ -989,8 +989,8 @@ pgObject *pgProcedureFactory::CreateObjects(pgCollection *collection, ctlTree *b
 #include "images/function.xpm"
 #include "images/functions.xpm"
 
-pgFunctionFactory::pgFunctionFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img) 
-: pgSchemaObjFactory(tn, ns, nls, img)
+pgFunctionFactory::pgFunctionFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img)
+    : pgSchemaObjFactory(tn, ns, nls, img)
 {
     metaType = PGM_FUNCTION;
 }
@@ -1002,8 +1002,8 @@ static pgaCollectionFactory cf(&functionFactory, __("Functions"), functions_xpm)
 #include "images/triggerfunction.xpm"
 #include "images/triggerfunctions.xpm"
 
-pgTriggerFunctionFactory::pgTriggerFunctionFactory() 
-: pgFunctionFactory(__("Trigger Function"), __("New Trigger Function..."), __("Create a new Trigger Function."), triggerfunction_xpm)
+pgTriggerFunctionFactory::pgTriggerFunctionFactory()
+    : pgFunctionFactory(__("Trigger Function"), __("New Trigger Function..."), __("Create a new Trigger Function."), triggerfunction_xpm)
 {
 }
 
@@ -1013,8 +1013,8 @@ static pgaCollectionFactory cft(&triggerFunctionFactory, __("Trigger Functions")
 #include "images/procedure.xpm"
 #include "images/procedures.xpm"
 
-pgProcedureFactory::pgProcedureFactory() 
-: pgFunctionFactory(__("Procedure"), __("New Procedure"), __("Create a new Procedure."), procedure_xpm)
+pgProcedureFactory::pgProcedureFactory()
+    : pgFunctionFactory(__("Procedure"), __("New Procedure"), __("Create a new Procedure."), procedure_xpm)
 {
 }
 
@@ -1022,14 +1022,14 @@ pgProcedureFactory procedureFactory;
 static pgaCollectionFactory cfp(&procedureFactory, __("Procedures"), procedures_xpm);
 
 pgFunctionCollection::pgFunctionCollection(pgaFactory *factory, pgSchema *sch)
-: pgSchemaObjCollection(factory, sch)
+    : pgSchemaObjCollection(factory, sch)
 {
 }
 
 wxString pgFunctionCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -1045,7 +1045,7 @@ wxString pgFunctionCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Functions list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -1053,36 +1053,36 @@ void pgFunctionCollection::ShowStatistics(frmMain *form, ctlListView *statistics
 {
     if (GetConnection()->BackendMinimumVersion(8, 4))
     {
-		wxLogInfo(wxT("Displaying statistics for functions on ") + GetSchema()->GetName());
+        wxLogInfo(wxT("Displaying statistics for functions on ") + GetSchema()->GetName());
 
-		wxString sql=wxT("SELECT funcname, calls, total_time, self_time")
-                 wxT(" FROM pg_stat_user_functions")
-                 wxT(" WHERE schemaname = ") + qtDbString(GetSchema()->GetName())
-                 + wxT(" ORDER BY funcname");
+        wxString sql = wxT("SELECT funcname, calls, total_time, self_time")
+                       wxT(" FROM pg_stat_user_functions")
+                       wxT(" WHERE schemaname = ") + qtDbString(GetSchema()->GetName())
+                       + wxT(" ORDER BY funcname");
 
-		// Add the statistics view columns
-		statistics->ClearAll();
-		statistics->AddColumn(_("Function"), 60);
-		statistics->AddColumn(_("Calls"), 50);
-		statistics->AddColumn(_("Total Time"), 60);
-		statistics->AddColumn(_("Self Time"), 60);
+        // Add the statistics view columns
+        statistics->ClearAll();
+        statistics->AddColumn(_("Function"), 60);
+        statistics->AddColumn(_("Calls"), 50);
+        statistics->AddColumn(_("Total Time"), 60);
+        statistics->AddColumn(_("Self Time"), 60);
 
-		pgSet *stats = GetDatabase()->ExecuteSet(sql);
-		if (stats)
-		{
-			long pos=0;
-			while (!stats->Eof())
-			{
-				statistics->InsertItem(pos, stats->GetVal(wxT("funcname")), PGICON_STATISTICS);
-				statistics->SetItem(pos, 1, stats->GetVal(wxT("calls")));
-				statistics->SetItem(pos, 2, stats->GetVal(wxT("total_time")));
-				statistics->SetItem(pos, 3, stats->GetVal(wxT("self_time")));
-				stats->MoveNext();
-				pos++;
-			}
+        pgSet *stats = GetDatabase()->ExecuteSet(sql);
+        if (stats)
+        {
+            long pos = 0;
+            while (!stats->Eof())
+            {
+                statistics->InsertItem(pos, stats->GetVal(wxT("funcname")), PGICON_STATISTICS);
+                statistics->SetItem(pos, 1, stats->GetVal(wxT("calls")));
+                statistics->SetItem(pos, 2, stats->GetVal(wxT("total_time")));
+                statistics->SetItem(pos, 3, stats->GetVal(wxT("self_time")));
+                stats->MoveNext();
+                pos++;
+            }
 
-			delete stats;
-		}
+            delete stats;
+        }
     }
 }
 
@@ -1098,8 +1098,8 @@ wxWindow *resetFunctionStatsFactory::StartDialog(frmMain *form, pgObject *obj)
     if (wxMessageBox(_("Are you sure you wish to reset statistics of this function?"), _("Reset function statistics"), wxYES_NO) == wxNO)
         return 0;
 
-    ((pgFunction*)obj)->ResetStats();
-    ((pgFunction*)obj)->ShowStatistics(form, form->GetStatistics());
+    ((pgFunction *)obj)->ResetStats();
+    ((pgFunction *)obj)->ShowStatistics(form, form->GetStatistics());
 
     return 0;
 }
@@ -1107,13 +1107,13 @@ wxWindow *resetFunctionStatsFactory::StartDialog(frmMain *form, pgObject *obj)
 
 bool resetFunctionStatsFactory::CheckEnable(pgObject *obj)
 {
-    return obj && obj->IsCreatedBy(functionFactory) && ((pgFunction*)obj)->GetConnection()->BackendMinimumVersion(9, 0);
+    return obj && obj->IsCreatedBy(functionFactory) && ((pgFunction *)obj)->GetConnection()->BackendMinimumVersion(9, 0);
 }
 
 wxString pgTriggerFunctionCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -1129,14 +1129,14 @@ wxString pgTriggerFunctionCollection::GetTranslatedMessage(int kindOfMessage) co
             message = _("Trigger functions list report");
             break;
     }
-    
+
     return message;
 }
 
 wxString pgProcedureCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -1152,7 +1152,7 @@ wxString pgProcedureCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Procedures list report");
             break;
     }
-    
+
     return message;
 }
 

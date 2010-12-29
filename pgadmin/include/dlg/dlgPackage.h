@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -27,15 +27,21 @@ public:
     wxString GetSql();
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
-    void SetObject(pgObject *obj) { package = (edbPackage*)obj; }
+    void SetObject(pgObject *obj)
+    {
+        package = (edbPackage *)obj;
+    }
 
-    wxString GetHelpPage(bool forCreate) const { return wxT("pg/packages-create"); }
+    wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pg/packages-create");
+    }
 
 private:
     edbPackage *package;
     pgSchema *schema;
 
-	virtual bool IsUpToDate();
+    virtual bool IsUpToDate();
     void OnApply(wxCommandEvent &ev);
 #ifdef __WXMAC__
     void OnChangeSize(wxSizeEvent &ev);

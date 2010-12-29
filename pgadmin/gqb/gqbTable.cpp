@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,13 +22,13 @@
 #include "gqb/gqbArrayCollection.h"
 
 gqbTable::gqbTable(gqbObject *parent, wxString name, pgConn *connection, type_gqbObject type, OID oid)
-: gqbObjectCollection(name, parent, connection, oid)
+    : gqbObjectCollection(name, parent, connection, oid)
 {
     setType(type);
 }
 
 
-gqbIteratorBase* gqbTable::createColumnsIterator()
+gqbIteratorBase *gqbTable::createColumnsIterator()
 {
     return createIterator();
 }
@@ -52,7 +52,7 @@ void gqbTable::createColumns(pgConn *conn, gqbBrowser *tablesBrowser, wxTreeItem
     if (!settings->GetShowSystemObjects())
         systemRestriction = wxT("\n   AND attnum > 0");
 
-    wxString sql=
+    wxString sql =
         wxT("SELECT attname FROM pg_attribute att\n")
         wxT(" WHERE attrelid = ")
         + NumToStr(oidVal)
@@ -60,7 +60,7 @@ void gqbTable::createColumns(pgConn *conn, gqbBrowser *tablesBrowser, wxTreeItem
         wxT("   AND attisdropped IS FALSE\n")
         wxT(" ORDER BY attnum");
 
-    pgSet *columns= conn->ExecuteSet(sql);
+    pgSet *columns = conn->ExecuteSet(sql);
     if (columns)
     {
         while (!columns->Eof())
@@ -90,7 +90,7 @@ int gqbTable::countCols()
 
 
 //work as a synonym for function & return correct type
-gqbColumn* gqbTable::getColumnAtIndex(int index)
+gqbColumn *gqbTable::getColumnAtIndex(int index)
 {
     return (gqbColumn *)this->getObjectAtIndex(index);
 }

@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dbgPgConn.cpp - debugger 
+// dbgPgConn.cpp - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -38,19 +38,19 @@ typedef u_long in_addr_t;
 // dbgPgConn constructors
 //
 //    A dbgPgConn object encapsulates the connection to a PostgreSQL server.  This
-//  class is a wrapper around a Pgconn that provides a convenient constructor 
-//  and a few member functions.  
+//  class is a wrapper around a Pgconn that provides a convenient constructor
+//  and a few member functions.
 //
 //    The constructor creates a new thread and connects to the specified server
 
 dbgPgConn::dbgPgConn(frmDebugger *frame, const wxString &server, const wxString &database, const wxString &userName, const wxString &password, const wxString &port, int sslmode, const wxString &applicationname)
-   : m_frame(frame)
+    : m_frame(frame)
 {
     Init( server, database, userName, password, port, sslmode, applicationname, true );
 }
 
-dbgPgConn::dbgPgConn(frmDebugger *frame, const dbgConnProp & props, bool startThread )
-   : m_frame(frame)
+dbgPgConn::dbgPgConn(frmDebugger *frame, const dbgConnProp &props, bool startThread )
+    : m_frame(frame)
 {
     Init(  props.m_host, props.m_database, props.m_userName, props.m_password, props.m_port, props.m_sslMode, props.m_applicationName, startThread );
 }
@@ -74,10 +74,10 @@ void dbgPgConn::Init( const wxString &server, const wxString &database, const wx
     wxString 	msg;
     wxString	delimiter;
 
-    // To keep the user interface thread responsive while we're waiting for the 
-    // PostgreSQL server, we create a separate thread to interact with the 
+    // To keep the user interface thread responsive while we're waiting for the
+    // PostgreSQL server, we create a separate thread to interact with the
     // database - the worker thread sleeps until the GUI thread signals that it
-    // has some work to do.  When the result set arrives from the server, the 
+    // has some work to do.  When the result set arrives from the server, the
     // worker thread creates a DBResult event and posts it to the GUI thread's
     // event queue.
 
@@ -97,7 +97,7 @@ void dbgPgConn::Init( const wxString &server, const wxString &database, const wx
 #else
     unsigned long ipaddr;
 #endif
-    
+
 #ifndef __WXMSW__
     if (!(server.IsEmpty() || server.StartsWith(wxT("/"))))
     {
@@ -112,8 +112,8 @@ void dbgPgConn::Init( const wxString &server, const wxString &database, const wx
                 return;
             }
 
-            memcpy(&(ipaddr),host->h_addr,host->h_length); 
-            hostip = wxString::FromAscii(inet_ntoa(*((struct in_addr*) host->h_addr_list[0])));
+            memcpy(&(ipaddr), host->h_addr, host->h_length);
+            hostip = wxString::FromAscii(inet_ntoa(*((struct in_addr *) host->h_addr_list[0])));
             hostname = server;
         }
         else
@@ -130,46 +130,50 @@ void dbgPgConn::Init( const wxString &server, const wxString &database, const wx
     // Build up a connection string
     wxString connectParams;
 
-    if(hostname.Length()) 
+    if(hostname.Length())
     {
         connectParams.Append(wxT( "host="));
         connectParams.Append(hostname);
 
-        msg += delimiter + server; delimiter = _(":");
+        msg += delimiter + server;
+        delimiter = _(":");
     }
 
-    if (hostip.Length()) 
+    if (hostip.Length())
     {
-      connectParams.Append(wxT(" hostaddr="));
-      connectParams.Append(hostip);
+        connectParams.Append(wxT(" hostaddr="));
+        connectParams.Append(hostip);
     }
 
-    if( port.Length()) 
+    if( port.Length())
     {
         connectParams += wxT(" port=");
         connectParams += port;
 
-        msg += delimiter + port; delimiter = _(":");
+        msg += delimiter + port;
+        delimiter = _(":");
     }
 
 
-    if( database.Length()) 
+    if( database.Length())
     {
         connectParams.Append(wxT(" dbname="));
         connectParams.Append(qtConnString(database));
 
-        msg += delimiter + database; delimiter = _(":");
+        msg += delimiter + database;
+        delimiter = _(":");
     }
 
-    if(username.Length()) 
+    if(username.Length())
     {
         connectParams.Append(wxT(" user="));
         connectParams.Append(username );
 
-        msg += delimiter + username; delimiter =  _(":");
+        msg += delimiter + username;
+        delimiter =  _(":");
     }
 
-    if(password.Length()) 
+    if(password.Length())
     {
         connectParams.Append(wxT(" password="));
         connectParams.Append(password);
@@ -177,34 +181,34 @@ void dbgPgConn::Init( const wxString &server, const wxString &database, const wx
 
     switch (sslmode)
     {
-        case 1: 
-            connectParams.Append(wxT(" sslmode=require"));   
+        case 1:
+            connectParams.Append(wxT(" sslmode=require"));
             break;
 
-        case 2: 
+        case 2:
             connectParams.Append(wxT(" sslmode=prefer"));
             break;
 
-        case 3: 
+        case 3:
             connectParams.Append(wxT(" sslmode=allow"));
             break;
 
-        case 4: 
+        case 4:
             connectParams.Append(wxT(" sslmode=disable"));
             break;
 
-		case 5:
-			connectParams.Append(wxT(" sslmode=verify-ca"));
-			break;
+        case 5:
+            connectParams.Append(wxT(" sslmode=verify-ca"));
+            break;
 
-		case 6:
-			connectParams.Append(wxT(" sslmode=verify-full"));
-			break;
+        case 6:
+            connectParams.Append(wxT(" sslmode=verify-full"));
+            break;
 
         default:
             break;
     }
-    
+
     connectParams.Trim(true);
     connectParams.Trim(false);
 
@@ -226,10 +230,10 @@ void dbgPgConn::Init( const wxString &server, const wxString &database, const wx
         }
     }
 #endif
-	
-    m_frame->getStatusBar()->SetStatusText( wxString::Format(_( "Connecting to %s" ), msg.c_str()), 1 );	
-    wxCharBuffer cstrUTF=connectParams.mb_str(wxConvUTF8);
-    wxCharBuffer cstrLibc=connectParams.mb_str(wxConvLibc);
+
+    m_frame->getStatusBar()->SetStatusText( wxString::Format(_( "Connecting to %s" ), msg.c_str()), 1 );
+    wxCharBuffer cstrUTF = connectParams.mb_str(wxConvUTF8);
+    wxCharBuffer cstrLibc = connectParams.mb_str(wxConvLibc);
 
     if (!libcConnectString)
         m_pgConn = PQconnectdb(cstrUTF);
@@ -314,7 +318,7 @@ const wxString dbgPgConn::getDatabase() const
 //
 //    Returns the libpq connection handle for this dbgPgConn
 
-PGconn * dbgPgConn::getConnection()
+PGconn *dbgPgConn::getConnection()
 {
     return( m_pgConn );
 }
@@ -325,18 +329,18 @@ PGconn * dbgPgConn::getConnection()
 //     The GUI thread invokes startCommand() when the user asks us to execute a
 //    command.  We pass off the real work to the worker thread.
 
-void dbgPgConn::startCommand( const wxString &command, wxEvtHandler * caller, wxEventType eventType, dbgPgParams *params )
+void dbgPgConn::startCommand( const wxString &command, wxEvtHandler *caller, wxEventType eventType, dbgPgParams *params )
 {
     wxLogSql(wxT("%s"), command.c_str());
 
     m_workerThread->startCommand(command, caller, eventType, params);
 }
 
-PGresult * dbgPgConn::waitForCommand( const wxString &command )
+PGresult *dbgPgConn::waitForCommand( const wxString &command )
 {
     wxLogSql(wxT("%s"), command.c_str());
 
-    PGresult * result = PQexec( m_pgConn, command.mb_str( wxConvUTF8 ));
+    PGresult *result = PQexec( m_pgConn, command.mb_str( wxConvUTF8 ));
 
     return( result );
 }
@@ -346,14 +350,14 @@ PGresult * dbgPgConn::waitForCommand( const wxString &command )
 //
 //     Register a NOTICE handler with the libpq library - libpq will invoke the
 //  given handler whenever a NOTICE arrives on this connection. libpq will
-//    pass 'arg' to the handler. 'handler' is typically a static function and 
-//    'arg' is often a pointer to an object.  That lets you use a regular member 
-//    function as a callback (because 'arg' is mapped into a 'this' pointer by the 
+//    pass 'arg' to the handler. 'handler' is typically a static function and
+//    'arg' is often a pointer to an object.  That lets you use a regular member
+//    function as a callback (because 'arg' is mapped into a 'this' pointer by the
 //     callback function).
 
-void dbgPgConn::setNoticeHandler( PQnoticeProcessor handler, void * arg )
+void dbgPgConn::setNoticeHandler( PQnoticeProcessor handler, void *arg )
 {
-    PQnoticeProcessor p=NULL;
+    PQnoticeProcessor p = NULL;
     p = PQsetNoticeProcessor( m_pgConn, handler, arg );
 }
 
@@ -398,7 +402,7 @@ bool dbgPgConn::BackendMinimumVersion(int major, int minor)
 {
     if (!m_majorVersion)
     {
-        wxString version=GetVersionString();
+        wxString version = GetVersionString();
         sscanf(version.ToAscii(), "%*s %d.%d", &m_majorVersion, &m_minorVersion);
         m_isEdb = version.Upper().Matches(wxT("ENTERPRISEDB*"));
 
@@ -416,13 +420,13 @@ bool dbgPgConn::BackendMinimumVersion(int major, int minor)
             if (PQresultStatus(res) == PGRES_TUPLES_OK)
             {
                 // Retrieve the query result and return it.
-                result=wxString(PQgetvalue(res, 0, 0), wxConvUTF8);
+                result = wxString(PQgetvalue(res, 0, 0), wxConvUTF8);
 
                 // Cleanup & exit
                 PQclear(res);
             }
             if (result == wxT("0"))
-                m_minorVersion = 2; 
+                m_minorVersion = 2;
         }
         else
             m_isGreenplum = version.Upper().Matches(wxT("*GREENPLUM DATABASE*"));
@@ -495,7 +499,7 @@ wxString dbgPgConn::GetVersionString()
     if (PQresultStatus(res) == PGRES_TUPLES_OK)
     {
         // Retrieve the query result and return it.
-        result=wxString(PQgetvalue(res, 0, 0), wxConvUTF8);
+        result = wxString(PQgetvalue(res, 0, 0), wxConvUTF8);
 
         // Cleanup & exit
         PQclear(res);
@@ -507,15 +511,15 @@ wxString dbgPgConn::GetVersionString()
 bool dbgPgConn::GetIsEdb()
 {
     // to retrieve edb flag
-    BackendMinimumVersion(0,0);
-    return m_isEdb; 
+    BackendMinimumVersion(0, 0);
+    return m_isEdb;
 }
 
 bool dbgPgConn::GetIsGreenplum()
 {
     // to retrieve edb flag
-    BackendMinimumVersion(0,0);
-    return m_isGreenplum; 
+    BackendMinimumVersion(0, 0);
+    return m_isGreenplum;
 }
 
 

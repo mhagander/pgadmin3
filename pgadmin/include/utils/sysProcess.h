@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -26,7 +26,7 @@ public:
     wxString ReadInputStream();
     wxString ReadErrorStream();
 
-    static sysProcess *Create(const wxString &exec, wxEvtHandler *evh=0, wxArrayString *env=0);
+    static sysProcess *Create(const wxString &exec, wxEvtHandler *evh = 0, wxArrayString *env = 0);
 
 private:
     int pid;

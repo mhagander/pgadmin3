@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -36,7 +36,7 @@
 BEGIN_EVENT_TABLE(frmExport, pgDialog)
     EVT_TEXT(XRCID("txtFilename"),          frmExport::OnChange)
     EVT_RADIOBUTTON(XRCID("rbQuoteNone"),   frmExport::OnChange)
-    EVT_RADIOBUTTON(XRCID("rbQuoteStrings"),frmExport::OnChange)
+    EVT_RADIOBUTTON(XRCID("rbQuoteStrings"), frmExport::OnChange)
     EVT_RADIOBUTTON(XRCID("rbQuoteAll"),    frmExport::OnChange)
     EVT_BUTTON(XRCID("btnFilename"),        frmExport::OnBrowseFile)
     EVT_BUTTON(wxID_HELP,                   frmExport::OnHelp)
@@ -48,7 +48,7 @@ END_EVENT_TABLE()
 
 frmExport::frmExport(wxWindow *p)
 {
-    parent=p;
+    parent = p;
 
     wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(p, wxT("frmExport"));
@@ -60,16 +60,16 @@ frmExport::frmExport(wxWindow *p)
     btnOK->Disable();
 
 
-    bool uc=settings->GetExportUnicode();
+    bool uc = settings->GetExportUnicode();
     rbUnicode->SetValue(uc);
     rbLocal->SetValue(!uc);
 
-    bool isCrLf=settings->GetExportRowSeparator() == wxT("\r\n");
+    bool isCrLf = settings->GetExportRowSeparator() == wxT("\r\n");
     rbCRLF->SetValue(isCrLf);
     rbLF->SetValue(!isCrLf);
 
-    int qt=settings->GetExportQuoting();
-    
+    int qt = settings->GetExportQuoting();
+
     rbQuoteNone->SetValue(qt == 0);
     rbQuoteStrings->SetValue(qt == 1);
     rbQuoteAll->SetValue(qt == 2);
@@ -131,18 +131,18 @@ void frmExport::OnOK(wxCommandEvent &ev)
         Destroy();
 }
 
-    
+
 
 bool frmExport::Export(pgSet *set)
 {
-	ctlSQLResult *grid=0;
-	if (!set)
-	{
-		wxLogInfo(wxT("Exporting data from the grid"));
-		grid = (ctlSQLResult *)parent;
-	}
-	else
-		wxLogInfo(wxT("Exporting data from a resultset"));
+    ctlSQLResult *grid = 0;
+    if (!set)
+    {
+        wxLogInfo(wxT("Exporting data from the grid"));
+        grid = (ctlSQLResult *)parent;
+    }
+    else
+        wxLogInfo(wxT("Exporting data from a resultset"));
 
     wxFile file(txtFilename->GetValue(), wxFile::write);
     if (!file.IsOpened())
@@ -157,47 +157,47 @@ bool frmExport::Export(pgSet *set)
 
     int colCount, rowCount;
 
-	if (set)
-	{
-		colCount = set->NumCols();
-		rowCount = set->NumRows();
-	}
-	else
-	{
-		colCount = grid->GetNumberCols();
-		rowCount = grid->NumRows();
-	}
+    if (set)
+    {
+        colCount = set->NumCols();
+        rowCount = set->NumRows();
+    }
+    else
+    {
+        colCount = grid->GetNumberCols();
+        rowCount = grid->NumRows();
+    }
 
     int col;
     if (chkColnames->GetValue())
     {
-        for (col=0 ; col < colCount ; col++)
+        for (col = 0 ; col < colCount ; col++)
         {
             if (!col)
-                line=wxEmptyString;
+                line = wxEmptyString;
             else
                 line += cbColSeparator->GetValue();
-            
+
             if (rbQuoteStrings->GetValue() || rbQuoteAll->GetValue())
             {
                 wxString qc = cbQuoteChar->GetValue();
-				
-				wxString hdr;
-				if (set)
-                    hdr = set->ColName(col);
-				else
-					hdr = grid->OnGetItemText(-1, col+1).BeforeFirst('\n');
 
-                hdr.Replace(qc, qc+qc);
+                wxString hdr;
+                if (set)
+                    hdr = set->ColName(col);
+                else
+                    hdr = grid->OnGetItemText(-1, col + 1).BeforeFirst('\n');
+
+                hdr.Replace(qc, qc + qc);
                 line += qc + hdr + qc;
             }
             else
-			{
-				if (set)
+            {
+                if (set)
                     line += set->ColName(col);
-				else
-					line += grid->OnGetItemText(-1, col+1).BeforeFirst('\n');
-			}
+                else
+                    line += grid->OnGetItemText(-1, col + 1).BeforeFirst('\n');
+            }
         }
         if (rbCRLF->GetValue())
             line += wxT("\r\n");
@@ -221,27 +221,27 @@ bool frmExport::Export(pgSet *set)
     OID typOid;
 
     int row;
-    for (row=0 ; row < rowCount ; row++)
+    for (row = 0 ; row < rowCount ; row++)
     {
-        for (col=0 ; col < colCount ; col++)
+        for (col = 0 ; col < colCount ; col++)
         {
             if (!col)
-                line=wxEmptyString;
+                line = wxEmptyString;
             else
                 line += cbColSeparator->GetValue();
 
-            bool needQuote=rbQuoteAll->GetValue();
+            bool needQuote = rbQuoteAll->GetValue();
 
-			if (set)
-			{
+            if (set)
+            {
                 text = set->GetVal(col);
                 typOid = set->ColTypClass(col);
-			}
-			else
-			{
-				text = grid->OnGetItemText(row, col+1);
-				typOid = grid->colTypClasses[col];
-			}
+            }
+            else
+            {
+                text = grid->OnGetItemText(row, col + 1);
+                typOid = grid->colTypClasses[col];
+            }
 
             if (!needQuote && rbQuoteStrings->GetValue())
             {
@@ -252,14 +252,14 @@ bool frmExport::Export(pgSet *set)
                     case PGTYPCLASS_BOOL:
                         break;
                     default:
-                        needQuote=true;
+                        needQuote = true;
                         break;
                 }
             }
             if (needQuote)
             {
                 wxString qc = cbQuoteChar->GetValue();
-                text.Replace(qc, qc+qc);
+                text.Replace(qc, qc + qc);
                 line += qc + text + qc;
             }
             else
@@ -281,16 +281,16 @@ bool frmExport::Export(pgSet *set)
                 file.Write(line, wxConvLibc);
         }
 
-		if (set)
-			set->MoveNext();
+        if (set)
+            set->MoveNext();
     }
     file.Close();
 
     if (skipped)
         wxLogError(wxPLURAL(
-            "Data export incomplete.\n\n%d row contained characters that could not be converted to the local charset.\n\nPlease correct the data or try using UTF8 instead.", 
-            "Data export incomplete.\n\n%d rows contained characters that could not be converted to the local charset.\n\nPlease correct the data or try using UTF8 instead.", 
-            skipped), skipped);
+                       "Data export incomplete.\n\n%d row contained characters that could not be converted to the local charset.\n\nPlease correct the data or try using UTF8 instead.",
+                       "Data export incomplete.\n\n%d rows contained characters that could not be converted to the local charset.\n\nPlease correct the data or try using UTF8 instead.",
+                       skipped), skipped);
     else
         wxMessageBox(_("Data export completed successfully."), _("Export data"), wxICON_INFORMATION | wxOK);
 
@@ -320,11 +320,11 @@ void frmExport::OnBrowseFile(wxCommandEvent &ev)
     }
 
 #ifdef __WXMSW__
-    wxFileDialog file(this, _("Select export filename"), directory, filename, 
-        _("CSV files (*.csv)|*.csv|Data files (*.dat)|*.dat|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+    wxFileDialog file(this, _("Select export filename"), directory, filename,
+                      _("CSV files (*.csv)|*.csv|Data files (*.dat)|*.dat|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #else
-    wxFileDialog file(this, _("Select export filename"), directory, filename, 
-        _("CSV files (*.csv)|*.csv|Data files (*.dat)|*.dat|All files (*)|*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+    wxFileDialog file(this, _("Select export filename"), directory, filename,
+                      _("CSV files (*.csv)|*.csv|Data files (*.dat)|*.dat|All files (*)|*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 #endif
 
     if (file.ShowModal() == wxID_OK)

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,11 +23,11 @@
 
 
 
-ctlSQLResult::ctlSQLResult(wxWindow *parent, pgConn *_conn, wxWindowID id, const wxPoint& pos, const wxSize& size)
-: ctlSQLGrid(parent, id, pos, size)
+ctlSQLResult::ctlSQLResult(wxWindow *parent, pgConn *_conn, wxWindowID id, const wxPoint &pos, const wxSize &size)
+    : ctlSQLGrid(parent, id, pos, size)
 {
-    conn=_conn;
-    thread=0;
+    conn = _conn;
+    thread = 0;
 
     SetTable(new sqlResultTable(), true);
 
@@ -47,7 +47,7 @@ ctlSQLResult::~ctlSQLResult()
 
 void ctlSQLResult::SetConnection(pgConn *_conn)
 {
-    conn=_conn;
+    conn = _conn;
 }
 
 
@@ -75,21 +75,21 @@ bool ctlSQLResult::ToFile()
 
 bool ctlSQLResult::ToFile(frmExport *frm)
 {
-	if (NumRows() > 0)
-	{
-		return frm->Export(thread->DataSet());
-	}
-	return false;
+    if (NumRows() > 0)
+    {
+        return frm->Export(thread->DataSet());
+    }
+    return false;
 }
 
 bool ctlSQLResult::IsColText(int col)
 {
-	switch (colTypClasses.Item(col))
-	{
-	case PGTYPCLASS_NUMERIC:
-	case PGTYPCLASS_BOOL:
-		return false;
-	}
+    switch (colTypClasses.Item(col))
+    {
+        case PGTYPCLASS_NUMERIC:
+        case PGTYPCLASS_BOOL:
+            return false;
+    }
 
     return true;
 }
@@ -99,7 +99,7 @@ int ctlSQLResult::Execute(const wxString &query, int resultToRetrieve, wxWindow 
 {
     colSizes.Empty();
     colHeaders.Empty();
-    for (int col=0 ; col < GetNumberCols() ; col++)
+    for (int col = 0 ; col < GetNumberCols() ; col++)
     {
         colSizes.Add(GetColSize(col));
         colHeaders.Add(this->GetColLabelValue(col));
@@ -144,7 +144,7 @@ int ctlSQLResult::Abort()
         thread->Delete();
         delete thread;
     }
-    thread=0;
+    thread = 0;
     return 0;
 }
 
@@ -156,9 +156,9 @@ void ctlSQLResult::DisplayData(bool single)
         return;
 
     if (thread->ReturnCode() != PGRES_TUPLES_OK)
-		return;
+        return;
 
-	rowcountSuppressed = single;
+    rowcountSuppressed = single;
     Freeze();
 
     /*
@@ -181,7 +181,7 @@ void ctlSQLResult::DisplayData(bool single)
     ProcessTableMessage(*msg);
     delete msg;
 
-	if (single)
+    if (single)
     {
         int w, h;
         if (colSizes.GetCount() == 1)
@@ -195,28 +195,28 @@ void ctlSQLResult::DisplayData(bool single)
 
         SetColSize(0, w);
     }
-	else
+    else
     {
         wxString colName, colType;
         int w;
 
-        size_t hdrIndex=0;
-		long col, nCols=thread->DataSet()->NumCols();
+        size_t hdrIndex = 0;
+        long col, nCols = thread->DataSet()->NumCols();
 
-        for (col=0 ; col < nCols ; col++)
+        for (col = 0 ; col < nCols ; col++)
         {
             colName = thread->DataSet()->ColName(col);
             colType = thread->DataSet()->ColFullType(col);
             colNames.Add(colName);
             colTypes.Add(colType);
             colTypClasses.Add(thread->DataSet()->ColTypClass(col));
-            
+
             wxString colHeader = colName + wxT("\n") + colType;
 
             if (hdrIndex < colHeaders.GetCount() && colHeaders.Item(hdrIndex) == colHeader)
                 w = colSizes.Item(hdrIndex++);
             else
-                w=-1;
+                w = -1;
 
             SetColSize(col, w);
         }
@@ -264,7 +264,7 @@ OID ctlSQLResult::InsertedOid() const
 {
     if (thread)
         return thread->InsertedOid();
-    return (OID)-1;
+    return (OID) - 1;
 }
 
 
@@ -272,7 +272,7 @@ int ctlSQLResult::RunStatus()
 {
     if (!thread)
         return -1;
-    
+
     if (thread->IsRunning())
         return CTLSQL_RUNNING;
 
@@ -283,26 +283,26 @@ int ctlSQLResult::RunStatus()
 wxString ctlSQLResult::OnGetItemText(long item, long col) const
 {
     if (thread && thread->DataValid())
-	{
-		if (!rowcountSuppressed)
-		{
-			if (col)
-				col--;
-			else
-				return NumToStr(item+1L);
-		}
-		if (item >= 0)
-		{
-			thread->DataSet()->Locate(item+1);
-			return thread->DataSet()->GetVal(col);
-		}
-		else
-			return thread->DataSet()->ColName(col);
-	}
-	return wxEmptyString;
+    {
+        if (!rowcountSuppressed)
+        {
+            if (col)
+                col--;
+            else
+                return NumToStr(item + 1L);
+        }
+        if (item >= 0)
+        {
+            thread->DataSet()->Locate(item + 1);
+            return thread->DataSet()->GetVal(col);
+        }
+        else
+            return thread->DataSet()->ColName(col);
+    }
+    return wxEmptyString;
 }
 
-void ctlSQLResult::OnGridSelect(wxGridRangeSelectEvent& event)
+void ctlSQLResult::OnGridSelect(wxGridRangeSelectEvent &event)
 {
     SetFocus();
 }
@@ -310,19 +310,19 @@ void ctlSQLResult::OnGridSelect(wxGridRangeSelectEvent& event)
 wxString sqlResultTable::GetValue(int row, int col)
 {
     if (thread && thread->DataValid())
-	{
-		if (col >= 0)
-		{
-			thread->DataSet()->Locate(row+1);
+    {
+        if (col >= 0)
+        {
+            thread->DataSet()->Locate(row + 1);
             if (settings->GetIndicateNull() && thread->DataSet()->IsNull(col))
                 return wxT("<NULL>");
             else
-			    return thread->DataSet()->GetVal(col);
-		}
-		else
-			return thread->DataSet()->ColName(col);
-	}
-	return wxEmptyString;
+                return thread->DataSet()->GetVal(col);
+        }
+        else
+            return thread->DataSet()->ColName(col);
+    }
+    return wxEmptyString;
 }
 
 sqlResultTable::sqlResultTable()
@@ -342,7 +342,7 @@ wxString sqlResultTable::GetColLabelValue(int col)
 {
     if (thread && thread->DataValid())
         return thread->DataSet()->ColName(col) + wxT("\n") +
-            thread->DataSet()->ColFullType(col);
+               thread->DataSet()->ColFullType(col);
     return wxEmptyString;
 }
 

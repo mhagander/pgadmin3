@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,12 +23,12 @@ class gqbGraphSimple : public gqbGraphBehavior
 {
 public:
     gqbGraphSimple();
-    void drawTable(wxMemoryDC& bdc, wxPoint *origin, gqbQueryObject *queryTable);
-    void drawTempJoinLine(wxMemoryDC& bdc, wxPoint &origin, wxPoint &end);
+    void drawTable(wxMemoryDC &bdc, wxPoint *origin, gqbQueryObject *queryTable);
+    void drawTempJoinLine(wxMemoryDC &bdc, wxPoint &origin, wxPoint &end);
     void calcAnchorPoint(gqbQueryJoin *join);
-    void drawJoin(wxMemoryDC& bdc, wxPoint& origin, wxPoint& dest, wxPoint& anchorUsed, bool selected, type_Join joinKind);
+    void drawJoin(wxMemoryDC &bdc, wxPoint &origin, wxPoint &dest, wxPoint &anchorUsed, bool selected, type_Join joinKind);
     void UpdatePosObject(gqbQueryObject *queryTable, int x, int y, int cursorAdjustment);
-    gqbColumn* getColumnAtPosition(wxPoint *clickPoint, gqbQueryObject *queryTable, int sensibility=17);
+    gqbColumn *getColumnAtPosition(wxPoint *clickPoint, gqbQueryObject *queryTable, int sensibility = 17);
     bool clickOnJoin(gqbQueryJoin *join, wxPoint &pt, wxPoint &origin, wxPoint &dest);
     int getTitleRowHeight();
 
@@ -38,7 +38,7 @@ private:
     int minTableWidth, minTableHeight;
     int rowHeight, rowLeftMargin, rowRightMargin, rowTopMargin, lineClickThreshold;
     wxPen selectedPen;
-    wxBitmap imgSelBoxEmpty,imgSelBoxSelected;
+    wxBitmap imgSelBoxEmpty, imgSelBoxSelected;
     bool insideLine(wxPoint &pt, wxPoint &p1, wxPoint &p2, int threshold);
     double distanceToLine(wxPoint pt, wxPoint p1, wxPoint p2);
     wxPoint findLineMiddle(wxPoint p1, wxPoint p2);

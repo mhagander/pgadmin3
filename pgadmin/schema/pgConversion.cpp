@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,8 +18,8 @@
 #include "schema/pgConversion.h"
 
 
-pgConversion::pgConversion(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, conversionFactory, newName)
+pgConversion::pgConversion(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, conversionFactory, newName)
 {
 }
 
@@ -30,7 +30,7 @@ pgConversion::~pgConversion()
 wxString pgConversion::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -43,11 +43,11 @@ wxString pgConversion::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop conversion \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop conversion \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop conversion cascaded?");
@@ -91,7 +91,7 @@ wxString pgConversion::GetTranslatedMessage(int kindOfMessage) const
 
 bool pgConversion::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP CONVERSION ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
+    wxString sql = wxT("DROP CONVERSION ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier();
     if (cascaded)
         sql += wxT(" CASCADE");
     return GetDatabase()->ExecuteVoid(sql);
@@ -102,16 +102,16 @@ wxString pgConversion::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Conversion: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP CONVERSION ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE ");
+              + wxT("-- DROP CONVERSION ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE ");
         if (GetDefaultConversion())
             sql += wxT("DEFAULT ");
         sql += wxT("CONVERSION ") + qtIdent(GetName())
-            + wxT("\n  FOR '") + GetForEncoding() + wxT("'")
-            + wxT("\n  TO '") + GetToEncoding() + wxT("'")
-            + wxT("\n  FROM ") + GetDatabase()->GetQuotedSchemaPrefix(GetProcNamespace()) 
-                + qtIdent(GetProc()) + wxT(";\n")
-            + GetOwnerSql(8, 0);
+               + wxT("\n  FOR '") + GetForEncoding() + wxT("'")
+               + wxT("\n  TO '") + GetToEncoding() + wxT("'")
+               + wxT("\n  FROM ") + GetDatabase()->GetQuotedSchemaPrefix(GetProcNamespace())
+               + qtIdent(GetProc()) + wxT(";\n")
+               + GetOwnerSql(8, 0);
     }
 
     return sql;
@@ -141,9 +141,9 @@ void pgConversion::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
 
 pgObject *pgConversion::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *conversion=0;
+    pgObject *conversion = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         conversion = conversionFactory.CreateObjects(coll, 0, wxT("\n   AND co.oid=") + GetOidStr());
 
@@ -154,25 +154,25 @@ pgObject *pgConversion::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgConversionFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgConversion *conversion=0;
+    pgConversion *conversion = 0;
 
-        pgSet *conversions= collection->GetDatabase()->ExecuteSet(
-            wxT("SELECT co.oid, co.*, pg_encoding_to_char(conforencoding) as forencoding, pg_get_userbyid(conowner) as owner,")
-            wxT("pg_encoding_to_char(contoencoding) as toencoding, proname, nspname, description\n")
-            wxT("  FROM pg_conversion co\n")
-            wxT("  JOIN pg_proc pr ON pr.oid=conproc\n")
-            wxT("  JOIN pg_namespace na ON na.oid=pr.pronamespace\n")
-            wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=co.oid AND des.objsubid=0\n")
-            wxT(" WHERE connamespace = ") + collection->GetSchema()->GetOidStr()
-            + restriction + wxT("\n")
-            wxT(" ORDER BY conname"));
+    pgSet *conversions = collection->GetDatabase()->ExecuteSet(
+                             wxT("SELECT co.oid, co.*, pg_encoding_to_char(conforencoding) as forencoding, pg_get_userbyid(conowner) as owner,")
+                             wxT("pg_encoding_to_char(contoencoding) as toencoding, proname, nspname, description\n")
+                             wxT("  FROM pg_conversion co\n")
+                             wxT("  JOIN pg_proc pr ON pr.oid=conproc\n")
+                             wxT("  JOIN pg_namespace na ON na.oid=pr.pronamespace\n")
+                             wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=co.oid AND des.objsubid=0\n")
+                             wxT(" WHERE connamespace = ") + collection->GetSchema()->GetOidStr()
+                             + restriction + wxT("\n")
+                             wxT(" ORDER BY conname"));
 
     if (conversions)
     {
         while (!conversions->Eof())
         {
-            conversion = new pgConversion(collection->GetSchema(), 
-                        conversions->GetVal(wxT("conname")));
+            conversion = new pgConversion(collection->GetSchema(),
+                                          conversions->GetVal(wxT("conname")));
 
             conversion->iSetOid(conversions->GetOid(wxT("oid")));
             conversion->iSetOwner(conversions->GetVal(wxT("owner")));
@@ -186,13 +186,13 @@ pgObject *pgConversionFactory::CreateObjects(pgCollection *collection, ctlTree *
             if (browser)
             {
                 browser->AppendObject(collection, conversion);
-			    conversions->MoveNext();
+                conversions->MoveNext();
             }
             else
                 break;
         }
 
-		delete conversions;
+        delete conversions;
     }
     return conversion;
 }
@@ -202,7 +202,7 @@ pgObject *pgConversionFactory::CreateObjects(pgCollection *collection, ctlTree *
 wxString pgConversionCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -215,7 +215,7 @@ wxString pgConversionCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Conversions list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -224,8 +224,8 @@ wxString pgConversionCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/conversion.xpm"
 #include "images/conversions.xpm"
 
-pgConversionFactory::pgConversionFactory() 
-: pgSchemaObjFactory(__("Conversion"), __("New Conversion..."), __("Create a new Conversion."), conversion_xpm)
+pgConversionFactory::pgConversionFactory()
+    : pgSchemaObjFactory(__("Conversion"), __("New Conversion..."), __("Create a new Conversion."), conversion_xpm)
 {
 }
 

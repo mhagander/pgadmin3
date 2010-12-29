@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgClasses.cpp - Some dialogue base classes 
+// dlgClasses.cpp - Some dialogue base classes
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -43,12 +43,12 @@ void pgDialog::AddStatusBar()
 {
     if (!statusBar)
     {
-        long flags=0;
+        long flags = 0;
         if (GetWindowStyle() & wxRESIZE_BORDER)
             flags = wxST_SIZEGRIP;
         statusBar = new wxStatusBar(this, -1, flags);
 
-        wxWindow *statusBarContainer=FindWindow(STATUSBAR_CONTAINER);
+        wxWindow *statusBarContainer = FindWindow(STATUSBAR_CONTAINER);
 
         if (statusBarContainer)
         {
@@ -62,7 +62,7 @@ void pgDialog::AddStatusBar()
             SetSize(size);
 
             size = GetClientSize();
-            statusBar->Move(0, size.y-sbHeight);
+            statusBar->Move(0, size.y - sbHeight);
         }
     }
 }
@@ -81,48 +81,48 @@ void pgDialog::PostCreation()
 
     wxSize  size = btnCancel->GetSize();
     wxPoint pos = btnCancel->GetPosition();
-    int height = pos.y + size.GetHeight() + ConvertDialogToPixels(wxSize(0,3)).y;
+    int height = pos.y + size.GetHeight() + ConvertDialogToPixels(wxSize(0, 3)).y;
     if (statusBar)
         height += statusBar->GetSize().GetHeight();
 
-    int right = pos.x + ConvertDialogToPixels(wxSize(50,0)).x - size.GetWidth();
+    int right = pos.x + ConvertDialogToPixels(wxSize(50, 0)).x - size.GetWidth();
     btnCancel->Move(right, pos.y);
-    
+
     if (btnOK)
     {
         size = btnOK->GetSize();
-        right -= size.GetWidth() + ConvertDialogToPixels(wxSize(3,0)).x;
+        right -= size.GetWidth() + ConvertDialogToPixels(wxSize(3, 0)).x;
         btnOK->Move(right, pos.y);
     }
     if (btnApply)
     {
         size = btnApply->GetSize();
-        right -= size.GetWidth() - ConvertDialogToPixels(wxSize(3,0)).x;
+        right -= size.GetWidth() - ConvertDialogToPixels(wxSize(3, 0)).x;
         btnApply->Move(right, pos.y);
     }
-	
+
 // On OS X, reverse the buttons for UI consistency
 #ifdef __WXMAC__
-	wxPoint pos2;
-	pos = btnCancel->GetPosition();
-	
-	if (btnOK)
-	{
-		pos2 = btnOK->GetPosition();
-		btnOK->Move(pos.x, pos.y);
-	}
-	
-	if (btnApply)
-	{
-		pos2 = btnApply->GetPosition();
-		btnApply->Move(pos.x, pos.y);
-	}
-	
-	btnCancel->Move(pos2.x, pos2.y);
+    wxPoint pos2;
+    pos = btnCancel->GetPosition();
+
+    if (btnOK)
+    {
+        pos2 = btnOK->GetPosition();
+        btnOK->Move(pos.x, pos.y);
+    }
+
+    if (btnApply)
+    {
+        pos2 = btnApply->GetPosition();
+        btnApply->Move(pos.x, pos.y);
+    }
+
+    btnCancel->Move(pos2.x, pos2.y);
 #endif
 
     int w, h;
-    size=GetSize();
+    size = GetSize();
     GetClientSize(&w, &h);
 
     SetSize(size.GetWidth(), size.GetHeight() + height - h);
@@ -162,21 +162,21 @@ void pgDialog::RestorePosition(int defaultX, int defaultY, int defaultW, int def
 
 void pgDialog::SavePosition()
 {
-	if (!IsIconized())
-		settings->Write(dlgName, GetSize(), GetPosition());
+    if (!IsIconized())
+        settings->Write(dlgName, GetSize(), GetPosition());
 }
 
 void pgDialog::LoadResource(wxWindow *parent, const wxChar *name)
 {
     if (name)
         dlgName = name;
-    wxXmlResource::Get()->LoadDialog(this, parent, dlgName); 
+    wxXmlResource::Get()->LoadDialog(this, parent, dlgName);
     PostCreation();
 }
 
 
 
-void pgDialog::OnClose(wxCloseEvent& event)
+void pgDialog::OnClose(wxCloseEvent &event)
 {
     if (IsModal())
         EndModal(wxID_CANCEL);
@@ -185,7 +185,7 @@ void pgDialog::OnClose(wxCloseEvent& event)
 }
 
 
-void pgDialog::OnCancel(wxCommandEvent& ev)
+void pgDialog::OnCancel(wxCommandEvent &ev)
 {
     if (IsModal())
         EndModal(wxID_CANCEL);
@@ -199,23 +199,23 @@ void pgDialog::OnCancel(wxCommandEvent& ev)
 
 BEGIN_EVENT_TABLE(pgFrame, wxFrame)
     EVT_MENU(MNU_EXIT,                  pgFrame::OnExit)
-    EVT_MENU(MNU_RECENT+1,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+2,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+3,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+4,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+5,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+6,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+7,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+8,              pgFrame::OnRecent)
-    EVT_MENU(MNU_RECENT+9,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 1,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 2,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 3,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 4,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 5,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 6,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 7,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 8,              pgFrame::OnRecent)
+    EVT_MENU(MNU_RECENT + 9,              pgFrame::OnRecent)
 #ifdef __WXGTK__
     EVT_KEY_DOWN(                       pgFrame::OnKeyDown)
 #endif
 END_EVENT_TABLE()
 
 
-pgFrame::pgFrame(wxFrame *parent, const wxString &title, const wxPoint& pos, const wxSize& size, long flags)
-: wxFrame(parent, -1, title, pos, size, flags)
+pgFrame::pgFrame(wxFrame *parent, const wxString &title, const wxPoint &pos, const wxSize &size, long flags)
+    : wxFrame(parent, -1, title, pos, size, flags)
 {
     changed = false;
     recentFileMenu = 0;
@@ -241,10 +241,10 @@ void pgFrame::RemoveFrame(wxWindow *frame)
 
 void pgFrame::OnAction(wxCommandEvent &ev)
 {
-    actionFactory *af=menuFactories->GetFactory(ev.GetId());
+    actionFactory *af = menuFactories->GetFactory(ev.GetId());
     if (af)
     {
-        wxWindow *wnd=af->StartDialog((frmMain*)this, 0);
+        wxWindow *wnd = af->StartDialog((frmMain *)this, 0);
         if (wnd)
             AddFrame(wnd);
     }
@@ -252,29 +252,29 @@ void pgFrame::OnAction(wxCommandEvent &ev)
 
 
 // Event handlers
-void pgFrame::OnKeyDown(wxKeyEvent& event)
+void pgFrame::OnKeyDown(wxKeyEvent &event)
 {
-    event.m_metaDown=false;
+    event.m_metaDown = false;
     event.Skip();
 }
 
 
-void pgFrame::OnExit(wxCommandEvent& event)
+void pgFrame::OnExit(wxCommandEvent &event)
 {
     Close();
 }
 
 
-void pgFrame::OnHelp(wxCommandEvent& WXUNUSED(event))
+void pgFrame::OnHelp(wxCommandEvent &WXUNUSED(event))
 {
-    wxString page=GetHelpPage();
+    wxString page = GetHelpPage();
     DisplayHelp(page, HELP_PGADMIN);
 }
 
 
-void pgFrame::OnRecent(wxCommandEvent& event)
+void pgFrame::OnRecent(wxCommandEvent &event)
 {
-    int fileNo=event.GetId() - MNU_RECENT;
+    int fileNo = event.GetId() - MNU_RECENT;
     wxString newPath = settings->Read(recentKey + wxString::Format(wxT("/%d"), fileNo), wxT(""));
 
     if (!newPath.IsNull())
@@ -286,7 +286,7 @@ void pgFrame::OnRecent(wxCommandEvent& event)
         int dirsep;
         dirsep = lastPath.Find(wxFILE_SEP_PATH, true);
         lastDir = lastPath.Mid(0, dirsep);
-        lastFilename = lastPath.Mid(dirsep+1);
+        lastFilename = lastPath.Mid(dirsep + 1);
         OpenLastFile();
     }
 }
@@ -302,48 +302,48 @@ void pgFrame::UpdateRecentFiles(bool updatefile)
         recentKey = dlgName + wxT("/RecentFiles");
 
     wxString lastFiles[10]; // 0 will be unused for convenience
-    int i, maxFiles=9;
-    int recentIndex=maxFiles;
+    int i, maxFiles = 9;
+    int recentIndex = maxFiles;
 
-    for (i=1 ; i <= maxFiles ; i++)
+    for (i = 1 ; i <= maxFiles ; i++)
     {
         lastFiles[i] = settings->Read(recentKey + wxString::Format(wxT("/%d"), i), wxT(""));
         if (!lastPath.IsNull() && lastPath.IsSameAs(lastFiles[i], wxARE_FILENAMES_CASE_SENSITIVE))
-            recentIndex=i;
+            recentIndex = i;
     }
     while (i <= maxFiles)
         lastFiles[i++] = wxT("");
 
     if (recentIndex > 1 && !lastPath.IsNull() && updatefile)
     {
-        for (i=recentIndex ; i > 1 ; i--)
+        for (i = recentIndex ; i > 1 ; i--)
             lastFiles[i] = lastFiles[i-1];
         lastFiles[1] = lastPath;
     }
 
-    i=recentFileMenu->GetMenuItemCount();
+    i = recentFileMenu->GetMenuItemCount();
     while (i)
     {
-        wxMenuItem *item = recentFileMenu->Remove(MNU_RECENT+i);
+        wxMenuItem *item = recentFileMenu->Remove(MNU_RECENT + i);
         if (item)
             delete item;
         i--;
     }
 
-    for (i=1 ; i <= maxFiles ; i++)
+    for (i = 1 ; i <= maxFiles ; i++)
     {
         if (updatefile)
             settings->Write(recentKey + wxString::Format(wxT("/%d"), i), lastFiles[i]);
 
         if (!lastFiles[i].IsNull())
-            recentFileMenu->Append(MNU_RECENT+i, wxT("&") + wxString::Format(wxT("%d"), i) + wxT("  ") + lastFiles[i]);
+            recentFileMenu->Append(MNU_RECENT + i, wxT("&") + wxString::Format(wxT("%d"), i) + wxT("  ") + lastFiles[i]);
     }
 }
 
 
 void pgFrame::RestorePosition(int defaultX, int defaultY, int defaultW, int defaultH, int minW, int minH)
 {
-    bool maximized=false;
+    bool maximized = false;
     wxPoint pos(settings->Read(dlgName, wxPoint(defaultX, defaultY)));
     wxSize size;
     if (defaultW < 0)
@@ -358,7 +358,7 @@ void pgFrame::RestorePosition(int defaultX, int defaultY, int defaultW, int defa
     if (posDefault)
         CenterOnParent();
 
-    settings->Read(dlgName+wxT("/Maximized"), &maximized, false);
+    settings->Read(dlgName + wxT("/Maximized"), &maximized, false);
     if (maximized)
         Maximize();
 }
@@ -367,11 +367,11 @@ void pgFrame::RestorePosition(int defaultX, int defaultY, int defaultW, int defa
 void pgFrame::SavePosition()
 {
 #ifndef __WXGTK__
-	if (!IsIconized())
+    if (!IsIconized())
     {
 #endif
-	    settings->Write(dlgName, GetSize(), GetPosition());
-        settings->Write(dlgName+wxT("/Maximized"), IsMaximized());
+        settings->Write(dlgName, GetSize(), GetPosition());
+        settings->Write(dlgName + wxT("/Maximized"), IsMaximized());
 #ifndef __WXGTK__
     }
 #endif
@@ -402,9 +402,9 @@ DialogWithHelp::DialogWithHelp(frmMain *frame) : pgDialog()
 }
 
 
-void DialogWithHelp::OnHelp(wxCommandEvent& ev)
+void DialogWithHelp::OnHelp(wxCommandEvent &ev)
 {
-    wxString page=GetHelpPage();
+    wxString page = GetHelpPage();
 
     if (!page.IsEmpty())
     {
@@ -431,22 +431,22 @@ END_EVENT_TABLE()
 
 ExecutionDialog::ExecutionDialog(frmMain *frame, pgObject *_object) : DialogWithHelp(frame)
 {
-    thread=0;
+    thread = 0;
     object = _object;
     txtMessages = 0;
 
-    pgDatabase *db=object->GetDatabase();
+    pgDatabase *db = object->GetDatabase();
     wxString applicationname = appearanceFactory->GetLongAppName() + _(" - Execution Tool");
     conn = db->CreateConn(applicationname);
 }
 
-void ExecutionDialog::EnableOK(const bool enable) 
-{ 
-    btnOK->Enable(enable); 
+void ExecutionDialog::EnableOK(const bool enable)
+{
+    btnOK->Enable(enable);
 }
 
 
-void ExecutionDialog::OnClose(wxCloseEvent& event)
+void ExecutionDialog::OnClose(wxCloseEvent &event)
 {
     Abort();
     delete conn;
@@ -457,7 +457,7 @@ void ExecutionDialog::OnClose(wxCloseEvent& event)
 }
 
 
-void ExecutionDialog::OnCancel(wxCommandEvent& ev)
+void ExecutionDialog::OnCancel(wxCommandEvent &ev)
 {
     if (thread)
     {
@@ -465,7 +465,7 @@ void ExecutionDialog::OnCancel(wxCommandEvent& ev)
         Abort();
         btnCancel->Enable();
         btnOK->Enable();
-        wxButton *btn=btnApply;
+        wxButton *btn = btnApply;
         if (btn)
             btn->Enable();
     }
@@ -487,12 +487,12 @@ void ExecutionDialog::Abort()
         if (thread->IsRunning())
             thread->Delete();
         delete thread;
-        thread=0;
+        thread = 0;
     }
 }
 
 
-void ExecutionDialog::OnOK(wxCommandEvent& ev)
+void ExecutionDialog::OnOK(wxCommandEvent &ev)
 {
 #ifdef __WXGTK__
     if (!btnOK->IsEnabled())
@@ -500,24 +500,24 @@ void ExecutionDialog::OnOK(wxCommandEvent& ev)
 #endif
     if (!thread)
     {
-        wxString sql=GetSql();
+        wxString sql = GetSql();
         if (sql.IsEmpty())
             return;
 
         btnOK->Disable();
 
-        thread=new pgQueryThread(conn, sql);
+        thread = new pgQueryThread(conn, sql);
         if (thread->Create() != wxTHREAD_NO_ERROR)
         {
             Abort();
             return;
         }
 
-        wxLongLong startTime=wxGetLocalTimeMillis();
+        wxLongLong startTime = wxGetLocalTimeMillis();
         thread->Run();
-        wxNotebook *nb=CTRL_NOTEBOOK("nbNotebook");
+        wxNotebook *nb = CTRL_NOTEBOOK("nbNotebook");
         if (nb)
-            nb->SetSelection(nb->GetPageCount()-1);
+            nb->SetSelection(nb->GetPageCount() - 1);
 
         while (thread && thread->IsRunning())
         {
@@ -546,8 +546,8 @@ void ExecutionDialog::OnOK(wxCommandEvent& ev)
             if (isOk)
             {
                 if (txtMessages)
-                    txtMessages->AppendText(_("Total query runtime: ") 
-                        + (wxGetLocalTimeMillis()-startTime).ToString() + wxT(" ms."));
+                    txtMessages->AppendText(_("Total query runtime: ")
+                                            + (wxGetLocalTimeMillis() - startTime).ToString() + wxT(" ms."));
 
                 btnOK->SetLabel(_("Done"));
                 btnCancel->Disable();
@@ -559,12 +559,11 @@ void ExecutionDialog::OnOK(wxCommandEvent& ev)
                 Abort();
             }
         }
-        else
-            if (txtMessages)
-                txtMessages->AppendText(_("\nCancelled.\n"));
+        else if (txtMessages)
+            txtMessages->AppendText(_("\nCancelled.\n"));
 
         btnOK->Enable();
-        wxButton *btn=btnApply;
+        wxButton *btn = btnApply;
         if (btn)
             btn->Enable();
     }
@@ -596,7 +595,7 @@ ExternProcessDialog::ExternProcessDialog(frmMain *frame) : DialogWithHelp(frame)
     process = 0;
     done = false;
 
-    timer=new wxTimer(this, TIMER_ID);
+    timer = new wxTimer(this, TIMER_ID);
 }
 
 
@@ -608,7 +607,7 @@ ExternProcessDialog::~ExternProcessDialog()
 }
 
 
-void ExternProcessDialog::OnOK(wxCommandEvent& ev)
+void ExternProcessDialog::OnOK(wxCommandEvent &ev)
 {
 #ifdef __WXGTK__
     if (!btnOK->IsEnabled())
@@ -627,7 +626,7 @@ void ExternProcessDialog::OnOK(wxCommandEvent& ev)
 bool ExternProcessDialog::Execute(int step, bool finalStep)
 {
     btnOK->Disable();
-    final=finalStep;
+    final = finalStep;
 
     if (txtMessages)
         txtMessages->AppendText(GetDisplayCmd(step) + END_OF_LINE);
@@ -640,9 +639,9 @@ bool ExternProcessDialog::Execute(int step, bool finalStep)
 
     if (wxExecute(GetCmd(step), wxEXEC_ASYNC, process))
     {
-        wxNotebook *nb=CTRL_NOTEBOOK("nbNotebook");
+        wxNotebook *nb = CTRL_NOTEBOOK("nbNotebook");
         if (nb)
-            nb->SetSelection(nb->GetPageCount()-1);
+            nb->SetSelection(nb->GetPageCount() - 1);
         if (txtMessages)
         {
             checkStreams();
@@ -681,7 +680,7 @@ void ExternProcessDialog::OnClose(wxCloseEvent &ev)
 }
 
 
-void ExternProcessDialog::OnPollProcess(wxTimerEvent& event)
+void ExternProcessDialog::OnPollProcess(wxTimerEvent &event)
 {
     checkStreams();
 }
@@ -705,7 +704,7 @@ void ExternProcessDialog::OnEndProcess(wxProcessEvent &ev)
         {
             if (final)
                 btnOK->SetLabel(_("Done"));
-            done=true;
+            done = true;
         }
     }
     timer->Stop();
@@ -714,14 +713,14 @@ void ExternProcessDialog::OnEndProcess(wxProcessEvent &ev)
     {
         checkStreams();
         txtMessages->AppendText(END_OF_LINE
-                              + wxString::Format(_("Process returned exit code %d."), ev.GetExitCode())
-                              + END_OF_LINE);
+                                + wxString::Format(_("Process returned exit code %d."), ev.GetExitCode())
+                                + END_OF_LINE);
     }
 
     if (process)
     {
         delete process;
-        process=0;
+        process = 0;
     }
     btnOK->Enable();
     btnCancel->Enable();
@@ -733,9 +732,9 @@ void ExternProcessDialog::Abort()
     timer->Stop();
     if (process)
     {
-        done=false;
-        sysProcess *tmpProcess=process;
-        process=0;
+        done = false;
+        sysProcess *tmpProcess = process;
+        process = 0;
         tmpProcess->Abort();
         delete tmpProcess;
     }

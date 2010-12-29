@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -48,7 +48,7 @@
 
 
 BEGIN_EVENT_TABLE(dlgServer, dlgProperty)
-    EVT_NOTEBOOK_PAGE_CHANGED(XRCID("nbNotebook"),  dlgServer::OnPageSelect)  
+    EVT_NOTEBOOK_PAGE_CHANGED(XRCID("nbNotebook"),  dlgServer::OnPageSelect)
     EVT_TEXT(XRCID("txtDescription"),               dlgProperty::OnChange)
     EVT_TEXT(XRCID("txtService"),                   dlgProperty::OnChange)
     EVT_TEXT(XRCID("cbDatabase"),                   dlgProperty::OnChange)
@@ -70,29 +70,29 @@ END_EVENT_TABLE();
 
 dlgProperty *pgServerFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgServer(this, frame, (pgServer*)node);
+    return new dlgServer(this, frame, (pgServer *)node);
 }
 
 
 dlgServer::dlgServer(pgaFactory *f, frmMain *frame, pgServer *node)
-: dlgProperty(f, frame, wxT("dlgServer"))
+    : dlgProperty(f, frame, wxT("dlgServer"))
 {
-    server=node;
-    dbRestrictionOk=true;
+    server = node;
+    dbRestrictionOk = true;
 
     cbDatabase->Append(wxT("postgres"));
     cbDatabase->Append(wxT("edb"));
     cbDatabase->Append(wxT("template1"));
     wxString lastDB = settings->GetLastDatabase();
-    if (lastDB != wxT("postgres")&& lastDB != wxT("edb") && lastDB != wxT("template1"))
+    if (lastDB != wxT("postgres") && lastDB != wxT("edb") && lastDB != wxT("template1"))
         cbDatabase->Append(lastDB);
     cbDatabase->SetSelection(0);
 
-    txtPort->SetValue(NumToStr((long)settings->GetLastPort()));    
+    txtPort->SetValue(NumToStr((long)settings->GetLastPort()));
     if (!cbSSL->IsEmpty())
         cbSSL->SetSelection(settings->GetLastSSL());
     txtUsername->SetValue(settings->GetLastUsername());
- 
+
     chkTryConnect->SetValue(true);
     chkStorePwd->SetValue(true);
     chkRestore->SetValue(true);
@@ -113,7 +113,7 @@ dlgServer::dlgServer(pgaFactory *f, frmMain *frame, pgServer *node)
         groupitem = browser->GetFirstChild(browser->GetRootItem(), groupcookie);
         while (groupitem)
         {
-            firstserver = (pgServer*)browser->GetObject(browser->GetFirstChild(groupitem, servercookie));
+            firstserver = (pgServer *)browser->GetObject(browser->GetFirstChild(groupitem, servercookie));
             if (!firstserver->GetGroup().IsEmpty() && firstserver->GetGroup() != _("Servers"))
                 cbGroup->Append(firstserver->GetGroup());
             groupitem = browser->GetNextChild(browser->GetRootItem(), groupcookie);
@@ -150,7 +150,7 @@ void dlgServer::OnOK(wxCommandEvent &ev)
     if(chkStorePwd->GetValue())
     {
         if (frmHint::ShowHint(this, HINT_SAVING_PASSWORDS) == wxID_CANCEL)
-                return;
+            return;
     }
 
     // notice: changes active after reconnect
@@ -194,14 +194,14 @@ void dlgServer::OnOK(wxCommandEvent &ev)
             pgServer *newserver = new pgServer(
                 server->GetName(),
                 server->GetDescription(),
-                server->GetDatabaseName(), 
-                server->GetUsername(), 
-                server->GetPort(), 
+                server->GetDatabaseName(),
+                server->GetUsername(),
+                server->GetPort(),
                 server->GetStorePwd(),
                 server->GetRolename(),
                 server->GetRestore(),
                 server->GetSSL(),
-	        	server->GetColour(),
+                server->GetColour(),
                 server->GetGroup());
             newserver->iSetDbRestriction(server->GetDbRestriction().Trim());
             newserver->iSetServiceID(server->GetServiceID().Trim());
@@ -291,11 +291,11 @@ void dlgServer::OnChangeRestr(wxCommandEvent &ev)
         dbRestrictionOk = true;
     else
     {
-        wxString sql=wxT("EXPLAIN SELECT 1 FROM pg_database\n")
-                     wxT("WHERE datname IN (") + txtDbRestriction->GetValue() + wxT(")");
+        wxString sql = wxT("EXPLAIN SELECT 1 FROM pg_database\n")
+                       wxT("WHERE datname IN (") + txtDbRestriction->GetValue() + wxT(")");
 
         wxLogNull nix;
-        wxString result=connection->ExecuteScalar(sql);
+        wxString result = connection->ExecuteScalar(sql);
 
         dbRestrictionOk = !result.IsEmpty();
     }
@@ -341,11 +341,11 @@ int dlgServer::Go(bool modal)
         cbSSL->Append(_("disable"));
     }
 
-	if (pgConn::GetLibpqVersion() >= 8.4)
-	{
-		cbSSL->Append(_("verify-ca"));
-		cbSSL->Append(_("verify-full"));
-	}
+    if (pgConn::GetLibpqVersion() >= 8.4)
+    {
+        cbSSL->Append(_("verify-ca"));
+        cbSSL->Append(_("verify-full"));
+    }
 #endif
 
     if (server)
@@ -382,8 +382,8 @@ int dlgServer::Go(bool modal)
     {
         SetTitle(_("Add server"));
         cbGroup->SetValue(_("Servers"));
-		wxString colour = wxT("#FFFFFF");
-		colourPicker->SetColour(colour);
+        wxString colour = wxT("#FFFFFF");
+        colourPicker->SetColour(colour);
     }
 
     return dlgProperty::Go(modal);
@@ -404,13 +404,13 @@ wxString dlgServer::GetPassword()
 
 pgObject *dlgServer::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgServer *obj=new pgServer(GetName(), txtDescription->GetValue(), cbDatabase->GetValue(), 
-        txtUsername->GetValue(), StrToLong(txtPort->GetValue()), 
-        chkTryConnect->GetValue() && chkStorePwd->GetValue(), 
-        txtRolename->GetValue(), chkRestore->GetValue(), cbSSL->GetCurrentSelection(),
-		colourPicker->GetColourString(), cbGroup->GetValue());
+    pgServer *obj = new pgServer(GetName(), txtDescription->GetValue(), cbDatabase->GetValue(),
+                                 txtUsername->GetValue(), StrToLong(txtPort->GetValue()),
+                                 chkTryConnect->GetValue() && chkStorePwd->GetValue(),
+                                 txtRolename->GetValue(), chkRestore->GetValue(), cbSSL->GetCurrentSelection(),
+                                 colourPicker->GetColourString(), cbGroup->GetValue());
 
     obj->iSetDbRestriction(txtDbRestriction->GetValue().Trim());
 
@@ -428,8 +428,8 @@ void dlgServer::OnChangeTryConnect(wxCommandEvent &ev)
 
 void dlgServer::CheckChange()
 {
-    wxString name=GetName();
-    bool enable=true;
+    wxString name = GetName();
+    bool enable = true;
 
     if (server)
     {
@@ -444,18 +444,18 @@ void dlgServer::CheckChange()
         wxString sColour2 = colourPicker->GetColourString();
 
         enable =  name != server->GetName()
-               || txtDescription->GetValue() != server->GetDescription()
-               || txtService->GetValue() != server->GetServiceID()
-               || StrToLong(txtPort->GetValue()) != server->GetPort()
-               || cbDatabase->GetValue() != server->GetDatabaseName()
-               || txtUsername->GetValue() != server->GetUsername()
-               || cbSSL->GetCurrentSelection() != server->GetSSL()
-               || chkStorePwd->GetValue() != server->GetStorePwd()
-               || txtRolename->GetValue() != server->GetRolename()
-               || chkRestore->GetValue() != server->GetRestore()
-               || txtDbRestriction->GetValue() != server->GetDbRestriction()
-               || sColour != sColour2
-               || cbGroup->GetValue() != server->GetGroup();
+                  || txtDescription->GetValue() != server->GetDescription()
+                  || txtService->GetValue() != server->GetServiceID()
+                  || StrToLong(txtPort->GetValue()) != server->GetPort()
+                  || cbDatabase->GetValue() != server->GetDatabaseName()
+                  || txtUsername->GetValue() != server->GetUsername()
+                  || cbSSL->GetCurrentSelection() != server->GetSSL()
+                  || chkStorePwd->GetValue() != server->GetStorePwd()
+                  || txtRolename->GetValue() != server->GetRolename()
+                  || chkRestore->GetValue() != server->GetRestore()
+                  || txtDbRestriction->GetValue() != server->GetDbRestriction()
+                  || sColour != sColour2
+                  || cbGroup->GetValue() != server->GetGroup();
     }
 
 

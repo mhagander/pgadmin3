@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,11 +25,11 @@ wxWindowID TCSERVER_ID = ::wxNewId();
 
 BEGIN_EVENT_TABLE(dlgSelectDatabase, wxDialog)
     EVT_TREE_ITEM_ACTIVATED (TCSERVER_ID, dlgSelectDatabase::OnSelActivate)
-    EVT_TREE_SEL_CHANGED    (TCSERVER_ID, dlgSelectDatabase::OnSelect) 
+    EVT_TREE_SEL_CHANGED    (TCSERVER_ID, dlgSelectDatabase::OnSelect)
 END_EVENT_TABLE()
 
 
-dlgSelectDatabase::dlgSelectDatabase(wxWindow* parent, int id, const wxPoint& pos, const wxSize& size, long style):
+dlgSelectDatabase::dlgSelectDatabase(wxWindow *parent, int id, const wxPoint &pos, const wxSize &size, long style):
     wxDialog(parent, id, wxT("Select Database"), pos, size, wxDEFAULT_DIALOG_STYLE)
 {
 
@@ -48,11 +48,11 @@ dlgSelectDatabase::dlgSelectDatabase(wxWindow* parent, int id, const wxPoint& po
 
     wxButton *btnOk = new wxButton(this, wxID_OK, wxT("&OK"));
     bottomSizer->Add(btnOk);
- 
+
     wxButton *btnCANCEL = new wxButton(this, wxID_CANCEL, wxT("&Cancel"));
     bottomSizer->Add(btnCANCEL, 0, wxLEFT, 10);
 
-    mainSizer->Add(bottomSizer, 0, wxALL|wxALIGN_RIGHT, 5);
+    mainSizer->Add(bottomSizer, 0, wxALL | wxALIGN_RIGHT, 5);
     SetSizer(mainSizer);
 
     SetSize(wxSize(200, 240));
@@ -68,23 +68,23 @@ void dlgSelectDatabase::Initialize()
     // Add the root node
     pgServerCollection *serversObj = new pgServerCollection(serverFactory.GetCollectionFactory());
     wxTreeItemId rootItemID = tcServers->AddRoot(wxGetTranslation(serverFactory.GetCollectionFactory()->GetTypeName()),
-           serversObj->GetIconId(), -1, serversObj);
+                              serversObj->GetIconId(), -1, serversObj);
     tcServers->SetImageList(imageList);
- 
-    ctlTree *browser=winMain->GetBrowser();
+
+    ctlTree *browser = winMain->GetBrowser();
     wxCookieType cookie;
 
-    wxTreeItemId servers=browser->GetRootItem();
-    wxTreeItemId serverItem=browser->GetFirstChild(servers, cookie);
+    wxTreeItemId servers = browser->GetRootItem();
+    wxTreeItemId serverItem = browser->GetFirstChild(servers, cookie);
     while (serverItem)
     {
-        pgServer *server = (pgServer*)browser->GetObject(serverItem);
+        pgServer *server = (pgServer *)browser->GetObject(serverItem);
 
         dlgSelDBNode *cnInfo = new dlgSelDBNode(server);
         wxTreeItemId itm = tcServers->AppendItem(rootItemID, server->GetFullName(), server->GetIconId(), -1, cnInfo);
 
-        pgConn* conn = server->connection();
-        
+        pgConn *conn = server->connection();
+
         if (conn && conn->GetStatus() == PGCONN_OK)
         {
             pgSet *res = conn->ExecuteSet(wxT("SELECT datname, datallowconn FROM pg_catalog.pg_database"));
@@ -110,7 +110,7 @@ void dlgSelectDatabase::Initialize()
     selectedConn = NULL;
 }
 
-void dlgSelectDatabase::OnSelect(wxTreeEvent& ev)
+void dlgSelectDatabase::OnSelect(wxTreeEvent &ev)
 {
     wxTreeItemId sel = tcServers->GetSelection();
 
@@ -120,11 +120,11 @@ void dlgSelectDatabase::OnSelect(wxTreeEvent& ev)
     }
     else
     {
-       selectedConn = NULL;
+        selectedConn = NULL;
     }
 }
 
-void dlgSelectDatabase::OnSelActivate(wxTreeEvent& ev)
+void dlgSelectDatabase::OnSelActivate(wxTreeEvent &ev)
 {
     wxTreeItemId selID = tcServers->GetSelection();
 
@@ -136,7 +136,7 @@ void dlgSelectDatabase::OnSelActivate(wxTreeEvent& ev)
         {
             winMain->ReconnectServer(selectedConn->server, true);
 
-            pgConn* conn = selectedConn->server->connection();
+            pgConn *conn = selectedConn->server->connection();
             if (conn && conn->GetStatus() == PGCONN_OK)
             {
                 pgSet *res = conn->ExecuteSet(wxT("SELECT datname, datallowconn FROM pg_catalog.pg_database"));
@@ -149,7 +149,7 @@ void dlgSelectDatabase::OnSelActivate(wxTreeEvent& ev)
                             dlgSelDBNode *cnInfo = new dlgSelDBNode(selectedConn->server, res->GetVal(wxT("datname")));
                             tcServers->AppendItem(selID, cnInfo->getDatabase(), databaseFactory.GetIconId(), -1, cnInfo);
                         }
-    
+
                         res->MoveNext();
                     }
                 }
@@ -159,7 +159,7 @@ void dlgSelectDatabase::OnSelActivate(wxTreeEvent& ev)
     }
     else
     {
-       selectedConn = NULL;
+        selectedConn = NULL;
     }
 }
 
@@ -174,17 +174,17 @@ wxString dlgSelectDatabase::getConnInfo()
     return wxEmptyString;
 }
 
-bool dlgSelectDatabase::getValidConnectionString(wxString connStr, wxString& resultStr)
+bool dlgSelectDatabase::getValidConnectionString(wxString connStr, wxString &resultStr)
 {
     wxString      user;
     wxString      dbname;
     wxString      host;
     unsigned long port = 0;
     wxString      password;
-    unsigned long connection_timeout = 0; 
+    unsigned long connection_timeout = 0;
 
     wxRegEx propertyExp;
-    
+
     // Remove white-spaces ahead the '="
     bool res = propertyExp.Compile(wxT("(([ ]*[\t]*)+)="));
     propertyExp.ReplaceAll(&connStr, wxT("="));
@@ -198,18 +198,18 @@ bool dlgSelectDatabase::getValidConnectionString(wxString connStr, wxString& res
     while (index < tokens.Count())
     {
         wxString prop, value;
-        
+
         // Find pairs
         //   i.e. user=xxx
         //        password=xxx
         wxArrayString pairs = wxStringTokenize(tokens[index++], wxT("="));
 
         // pair must exist in pair=value format
-        if (pairs.GetCount()!= 2)
+        if (pairs.GetCount() != 2)
             return false;
 
-        prop=pairs[0];
-        value=pairs[1];
+        prop = pairs[0];
+        value = pairs[1];
 
         if (prop.CmpNoCase(wxT("user")) == 0)
             user = value;
@@ -271,13 +271,13 @@ bool dlgSelectDatabase::getValidConnectionString(wxString connStr, wxString& res
     {
         resultStr += wxT("password=") + password + wxT(" ");
     }
-    
+
     resultStr = resultStr.Trim();
-    
+
     return true;
 }
 
-dlgSelDBNode::dlgSelDBNode (pgServer *_server, const wxString& _dbname)
+dlgSelDBNode::dlgSelDBNode (pgServer *_server, const wxString &_dbname)
 {
     server = _server;
     dbname = _dbname;

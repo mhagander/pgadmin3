@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -9,7 +9,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-#include "pgAdmin3.h" 
+#include "pgAdmin3.h"
 
 // wxWindows headers
 #include <wx/wx.h>
@@ -24,8 +24,8 @@
 
 #include "utils/sysLogger.h"
 
-wxLogLevel sysLogger::logLevel=LOG_ERRORS;
-wxString sysLogger::logFile=wxT("debug.log");
+wxLogLevel sysLogger::logLevel = LOG_ERRORS;
+wxString sysLogger::logFile = wxT("debug.log");
 
 // IMPLEMENT_LOG_FUNCTION(Sql) from wx../common/log.c
 void wxVLogQuietError(const wxChar *szFormat, va_list argptr)
@@ -134,7 +134,8 @@ void sysLogger::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
     wxString msgtype, preamble;
     int icon = 0;
 
-    switch (level) {
+    switch (level)
+    {
         case wxLOG_FatalError:
             msgtype = wxT("FATAL  ");
             preamble = _("A fatal error has occurred:\n\n");
@@ -206,11 +207,11 @@ void sysLogger::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
     wxString fullmsg;
 
     // Build the message.
-    fullmsg << time->FormatISODate() << wxT(" ") << 
-		time->FormatISOTime() << wxT(" ") << msgtype << wxT(": ") << msg;
+    fullmsg << time->FormatISODate() << wxT(" ") <<
+            time->FormatISOTime() << wxT(" ") << msgtype << wxT(": ") << msg;
 
-	// Make sure to delete the time that we allocated
-	delete time;
+    // Make sure to delete the time that we allocated
+    delete time;
 
     // Display the message if required
     switch (logLevel)
@@ -219,29 +220,29 @@ void sysLogger::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
             break;
 
         case LOG_ERRORS:
-            if (level == wxLOG_FatalError || 
-                level == wxLOG_Error ||
-                level == wxLOG_QuietError)
+            if (level == wxLOG_FatalError ||
+                    level == wxLOG_Error ||
+                    level == wxLOG_QuietError)
                 WriteLog(fullmsg);
             break;
 
         case LOG_NOTICE:
-            if (level == wxLOG_FatalError || 
-                level == wxLOG_Error ||
-                level == wxLOG_QuietError ||
-                level == wxLOG_Notice)
+            if (level == wxLOG_FatalError ||
+                    level == wxLOG_Error ||
+                    level == wxLOG_QuietError ||
+                    level == wxLOG_Notice)
                 WriteLog(fullmsg);
             break;
 
         case LOG_SQL:
             if (level == wxLOG_FatalError ||
-                level == wxLOG_Error ||
-                level == wxLOG_QuietError ||
-                level == wxLOG_Message ||
-                level == wxLOG_Status ||
-                level == wxLOG_Notice ||
-                level == wxLOG_Sql ||
-                level == wxLOG_Script)
+                    level == wxLOG_Error ||
+                    level == wxLOG_QuietError ||
+                    level == wxLOG_Message ||
+                    level == wxLOG_Status ||
+                    level == wxLOG_Notice ||
+                    level == wxLOG_Sql ||
+                    level == wxLOG_Script)
                 WriteLog(fullmsg);
             break;
 
@@ -252,13 +253,13 @@ void sysLogger::DoLog(wxLogLevel level, const wxChar *msg, time_t timestamp)
 
     // Display a messagebox if required.
 #if !defined(PGSCLI)
-	if (icon != 0 && !SilenceMessage(msg)) 
+    if (icon != 0 && !SilenceMessage(msg))
         wxMessageBox(preamble + wxGetTranslation(msg), appearanceFactory->GetLongAppName(), wxOK | wxCENTRE | icon);
 #endif // PGSCLI
 }
 
 
-void sysLogger::WriteLog(const wxString& msg)
+void sysLogger::WriteLog(const wxString &msg)
 {
     wxString pid, logfile;
 
@@ -272,14 +273,15 @@ void sysLogger::WriteLog(const wxString& msg)
     wxFFile file(logfile, wxT("a"));
 
 #if !defined(PGSCLI)
-    if (!file.IsOpened()) {
+    if (!file.IsOpened())
+    {
         wxMessageBox(_("Cannot open the logfile!"), _("FATAL"), wxOK | wxCENTRE | wxICON_ERROR);
         return;
     }
 #endif // PGSCLI
 
-   file.Write(msg + wxT("\n"));
-   file.Close();
+    file.Write(msg + wxT("\n"));
+    file.Close();
 }
 
 // Check to see if a message should be silenced (because it's meaningless

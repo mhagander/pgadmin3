@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,22 +21,40 @@
 class queryFavouriteItem
 {
 public:
-	queryFavouriteItem(const wxString newtitle, const wxString newcontents);
+    queryFavouriteItem(const wxString newtitle, const wxString newcontents);
 
-	wxString GetTitle() { return title; };
-	void SetTitle(const wxString &newtitle) { if (!newtitle.IsEmpty()) title=newtitle; };
+    wxString GetTitle()
+    {
+        return title;
+    };
+    void SetTitle(const wxString &newtitle)
+    {
+        if (!newtitle.IsEmpty()) title = newtitle;
+    };
 
-	int GetId() { return id; };
-	wxString GetContents() { return contents; };
+    int GetId()
+    {
+        return id;
+    };
+    wxString GetContents()
+    {
+        return contents;
+    };
 
-	wxTreeItemId& GetTreeId() { return treeid; };
-	void SetTreeId(const wxTreeItemId& newtreeid) { treeid = newtreeid; };
+    wxTreeItemId &GetTreeId()
+    {
+        return treeid;
+    };
+    void SetTreeId(const wxTreeItemId &newtreeid)
+    {
+        treeid = newtreeid;
+    };
 
-	void AppendToMenu(wxMenu *menu, int newid);
+    void AppendToMenu(wxMenu *menu, int newid);
 protected:
-	int id;
-	wxString title, contents;
-	wxTreeItemId treeid;
+    int id;
+    wxString title, contents;
+    wxTreeItemId treeid;
 };
 
 
@@ -44,33 +62,33 @@ WX_DEFINE_ARRAY_PTR(queryFavouriteItem *, queryFavouriteArray);
 class queryFavouriteFolder : public queryFavouriteItem
 {
 public:
-	queryFavouriteFolder(wxString title = wxT(""));
-	queryFavouriteFolder(xmlTextReaderPtr reader, wxString title);
+    queryFavouriteFolder(wxString title = wxT(""));
+    queryFavouriteFolder(xmlTextReaderPtr reader, wxString title);
 
-	int AppendAllToMenu(wxMenu *menu, int startid);
-	void AppendAllToTree(wxTreeCtrl *tree, const wxTreeItemId& parent, bool onlyfolders);
-	bool DeleteTreeItem(const wxTreeItemId& treeitem);
+    int AppendAllToMenu(wxMenu *menu, int startid);
+    void AppendAllToTree(wxTreeCtrl *tree, const wxTreeItemId &parent, bool onlyfolders);
+    bool DeleteTreeItem(const wxTreeItemId &treeitem);
 
-	queryFavouriteItem *FindFavourite(int id);
-	queryFavouriteItem *FindTreeItem(const wxTreeItemId& treeitem);
+    queryFavouriteItem *FindFavourite(int id);
+    queryFavouriteItem *FindTreeItem(const wxTreeItemId &treeitem);
 
-	void AddNewFavourite(const wxString& title, const wxString& contents);
-	queryFavouriteFolder *AddNewFolder(const wxString& title);
+    void AddNewFavourite(const wxString &title, const wxString &contents);
+    queryFavouriteFolder *AddNewFolder(const wxString &title);
 
-	bool ContainsFolder(const wxString &title);
+    bool ContainsFolder(const wxString &title);
 
-	void saveFolder(xmlTextWriterPtr writer);
+    void saveFolder(xmlTextWriterPtr writer);
 
-	~queryFavouriteFolder();
+    ~queryFavouriteFolder();
 protected:
-	queryFavouriteArray favourites;
+    queryFavouriteArray favourites;
 };
 
 class queryFavouriteFileProvider
 {
 public:
-	static queryFavouriteFolder *LoadFavourites(bool emptyonfailure = false);
-	static void SaveFavourites(queryFavouriteFolder *favourites);
+    static queryFavouriteFolder *LoadFavourites(bool emptyonfailure = false);
+    static void SaveFavourites(queryFavouriteFolder *favourites);
 };
 
 #endif

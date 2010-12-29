@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -30,15 +30,15 @@ END_EVENT_TABLE();
 
 dlgProperty *pgCheckFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgCheck(this, frame, (pgCheck*)node, (pgTable*)parent);
+    return new dlgCheck(this, frame, (pgCheck *)node, (pgTable *)parent);
 }
 
 
 dlgCheck::dlgCheck(pgaFactory *f, frmMain *frame, pgCheck *node, pgTable *parentNode)
-: dlgProperty(f, frame, wxT("dlgCheck"))
+    : dlgProperty(f, frame, wxT("dlgCheck"))
 {
-    check=node;
-    table=parentNode;
+    check = node;
+    table = parentNode;
 }
 
 void dlgCheck::CheckChange()
@@ -49,7 +49,7 @@ void dlgCheck::CheckChange()
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
         txtComment->Enable(!GetName().IsEmpty());
         CheckValid(enable, !txtWhere->GetValue().IsEmpty(), _("Please specify condition."));
         EnableOK(enable);
@@ -65,14 +65,14 @@ pgObject *dlgCheck::GetObject()
 
 pgObject *dlgCheck::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
     if (name.IsEmpty())
         return 0;
 
-    pgObject *obj=checkFactory.CreateObjects(collection, 0, wxT(
-        "\n   AND conname=") + qtDbString(name) + wxT(
-        "\n   AND relnamespace=") + table->GetSchema()->GetOidStr());
+    pgObject *obj = checkFactory.CreateObjects(collection, 0, wxT(
+                        "\n   AND conname=") + qtDbString(name) + wxT(
+                        "\n   AND relnamespace=") + table->GetSchema()->GetOidStr());
     return obj;
 }
 
@@ -104,19 +104,19 @@ int dlgCheck::Go(bool modal)
 wxString dlgCheck::GetSql()
 {
     wxString sql;
-    wxString name=GetName();
+    wxString name = GetName();
 
     if (!check)
     {
         sql = wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-            + wxT(" ADD");
+              + wxT(" ADD");
         AppendIfFilled(sql, wxT(" CONSTRAINT "), qtIdent(name));
-        sql +=wxT(" CHECK ") + GetDefinition()
-            + wxT(";\n");
+        sql += wxT(" CHECK ") + GetDefinition()
+               + wxT(";\n");
     }
     if (!name.IsEmpty())
-        AppendComment(sql, wxT("CONSTRAINT ") + qtIdent(name) 
-            + wxT(" ON ") + table->GetQuotedFullIdentifier(), check);
+        AppendComment(sql, wxT("CONSTRAINT ") + qtIdent(name)
+                      + wxT(" ON ") + table->GetQuotedFullIdentifier(), check);
     return sql;
 }
 

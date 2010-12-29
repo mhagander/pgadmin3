@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,27 +19,27 @@ class pgsCast : public pgsExpression
 
 private:
 
-	int m_cast_type;
-	
-	const pgsExpression * m_var;
+    int m_cast_type;
+
+    const pgsExpression *m_var;
 
 public:
 
-	pgsCast(const int & cast_type, const pgsExpression * var);
+    pgsCast(const int &cast_type, const pgsExpression *var);
 
-	virtual ~pgsCast();
-	
-	virtual pgsExpression * clone() const;
+    virtual ~pgsCast();
 
-	pgsCast(const pgsCast & that);
+    virtual pgsExpression *clone() const;
 
-	pgsCast & operator=(const pgsCast & that);
-	
+    pgsCast(const pgsCast &that);
+
+    pgsCast &operator=(const pgsCast &that);
+
 public:
-	
-	virtual wxString value() const;
 
-	virtual pgsOperand eval(pgsVarMap & vars) const;
+    virtual wxString value() const;
+
+    virtual pgsOperand eval(pgsVarMap &vars) const;
 
 };
 

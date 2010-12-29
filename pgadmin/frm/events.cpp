@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -52,7 +52,7 @@ BEGIN_EVENT_TABLE(frmMain, pgFrame)
     EVT_MENU(MNU_TOOLBAR,                   frmMain::OnToggleToolBar)
     EVT_MENU(MNU_DEFAULTVIEW,               frmMain::OnDefaultView)
     EVT_MENU(MNU_CHECKALIVE,                frmMain::OnCheckAlive)
-    EVT_MENU(MNU_CONTEXTMENU,               frmMain::OnContextMenu) 
+    EVT_MENU(MNU_CONTEXTMENU,               frmMain::OnContextMenu)
 
     EVT_LIST_ITEM_SELECTED(CTL_PROPVIEW,    frmMain::OnPropSelChanged)
     EVT_LIST_ITEM_ACTIVATED(CTL_PROPVIEW,   frmMain::OnPropSelActivated)
@@ -64,7 +64,7 @@ BEGIN_EVENT_TABLE(frmMain, pgFrame)
     EVT_TREE_ITEM_EXPANDING(CTL_BROWSER,    frmMain::OnExpand)
     EVT_TREE_ITEM_COLLAPSING(CTL_BROWSER,   frmMain::OnCollapse)
     EVT_TREE_ITEM_ACTIVATED(CTL_BROWSER,    frmMain::OnSelActivated)
-    EVT_TREE_ITEM_RIGHT_CLICK(CTL_BROWSER,  frmMain::OnSelRightClick) 
+    EVT_TREE_ITEM_RIGHT_CLICK(CTL_BROWSER,  frmMain::OnSelRightClick)
     EVT_STC_UPDATEUI(CTL_SQLPANE,           frmMain::OnPositionStc)
     EVT_CLOSE(                              frmMain::OnClose)
 
@@ -76,38 +76,38 @@ BEGIN_EVENT_TABLE(frmMain, pgFrame)
 #endif
 END_EVENT_TABLE()
 
-void frmMain::OnEraseBackground(wxEraseEvent& event)
+void frmMain::OnEraseBackground(wxEraseEvent &event)
 {
     event.Skip();
 }
 
-void frmMain::OnSize(wxSizeEvent& event)
+void frmMain::OnSize(wxSizeEvent &event)
 {
     event.Skip();
 }
 
 // unfortunately, under GTK we won't get the original wxKeyEvent
 // to reset m_metaDown
-void frmMain::OnTreeKeyDown(wxTreeEvent& event)
+void frmMain::OnTreeKeyDown(wxTreeEvent &event)
 {
     switch (event.GetKeyCode())
     {
-	case WXK_F1:
-	    OnHelp(event);
-	    break;
-	case WXK_F5:
-	    Refresh(currentObject);
-	    break;
-	case WXK_DELETE:
-	    OnDelete(event);
-	    break;
-	default:
-	    event.Skip();
-	    break;
+        case WXK_F1:
+            OnHelp(event);
+            break;
+        case WXK_F5:
+            Refresh(currentObject);
+            break;
+        case WXK_DELETE:
+            OnDelete(event);
+            break;
+        default:
+            event.Skip();
+            break;
     }
 }
 
-void frmMain::OnExit(wxCommandEvent& event)
+void frmMain::OnExit(wxCommandEvent &event)
 {
     Close(false);   // Allow sub windows to stop us
     event.Skip();
@@ -115,14 +115,14 @@ void frmMain::OnExit(wxCommandEvent& event)
 
 
 
-void frmMain::OnClose(wxCloseEvent& event)
+void frmMain::OnClose(wxCloseEvent &event)
 {
     wxWindow *fr;
     windowList::Node *node;
-    while ((node=frames.GetFirst()) != NULL)
+    while ((node = frames.GetFirst()) != NULL)
     {
-        fr=node->GetData();
-        
+        fr = node->GetData();
+
         // if crashes occur here when closing the app,
         // some actionFactory::StartDialog returned a wxWindow* (which is registered in frames)
         // without code to handle OnClose (esp. removing itself with RemoveFrame)
@@ -149,8 +149,8 @@ void frmMain::UpdateAllRecentFiles()
     node = frames.GetFirst();
     while (node)
     {
-        fr=node->GetData();
-        ((frmQuery*)fr)->UpdateRecentFiles(false);
+        fr = node->GetData();
+        ((frmQuery *)fr)->UpdateRecentFiles(false);
         node = node->GetNext();
     }
 }
@@ -163,8 +163,8 @@ void frmMain::UpdateAllFavouritesList()
     node = frames.GetFirst();
     while (node)
     {
-        fr=node->GetData();
-        ((frmQuery*)fr)->UpdateFavouritesList();
+        fr = node->GetData();
+        ((frmQuery *)fr)->UpdateFavouritesList();
         node = node->GetNext();
     }
 }
@@ -176,8 +176,8 @@ void frmMain::UpdateAllMacrosList()
     node = frames.GetFirst();
     while (node)
     {
-        fr=node->GetData();
-        ((frmQuery*)fr)->UpdateMacrosList();
+        fr = node->GetData();
+        ((frmQuery *)fr)->UpdateMacrosList();
         node = node->GetNext();
     }
 }
@@ -185,10 +185,10 @@ void frmMain::UpdateAllMacrosList()
 
 void frmMain::OnAction(wxCommandEvent &ev)
 {
-    actionFactory *af=menuFactories->GetFactory(ev.GetId());
+    actionFactory *af = menuFactories->GetFactory(ev.GetId());
     if (af)
     {
-        wxWindow *wnd=af->StartDialog(this, currentObject);
+        wxWindow *wnd = af->StartDialog(this, currentObject);
         if (wnd)
             AddFrame(wnd);
     }
@@ -199,7 +199,7 @@ wxString frmMain::GetHelpPage() const
     wxString page;
 
     if (currentObject)
-        page=currentObject->GetHelpPage(true);
+        page = currentObject->GetHelpPage(true);
 
     if (page.IsEmpty())
         page = wxT("pg/sql-commands");
@@ -212,18 +212,18 @@ void frmMain::OnCollapse(wxTreeEvent &event)
 #ifdef WIN32
     // This is weird stuff, but somewhere comes a collapse after we have done
     // connecting the server and expanding the tree.
-    // Possibly not necessary 
+    // Possibly not necessary
     if (event.GetItem() == denyCollapseItem)
         event.Veto();
 #endif
-    denyCollapseItem=wxTreeItemId();
+    denyCollapseItem = wxTreeItemId();
 }
 
 
 void frmMain::OnExpand(wxTreeEvent &event)
 {
     wxCookieType cookie;
-    wxTreeItemId item=browser->GetFirstChild(event.GetItem(), cookie);
+    wxTreeItemId item = browser->GetFirstChild(event.GetItem(), cookie);
     if (item && !browser->GetItemData(item))
     {
         // the expanding node has a dummy item.
@@ -244,17 +244,17 @@ void frmMain::OnCheckAlive(wxCommandEvent &event)
 
 
 
-void frmMain::OnPropSelChanged(wxListEvent& event)
+void frmMain::OnPropSelChanged(wxListEvent &event)
 {
     if (properties->GetSelectedItemCount() == 1)
     {
-        wxTreeItemId item=browser->GetSelection();
+        wxTreeItemId item = browser->GetSelection();
         if (item)
         {
-            pgObject *data=browser->GetObject(item);
+            pgObject *data = browser->GetObject(item);
             if (data && data->IsCollection())
             {
-                currentObject=((pgCollection*)data)->FindChild(browser, event.GetIndex());
+                currentObject = ((pgCollection *)data)->FindChild(browser, event.GetIndex());
                 if (currentObject)
                 {
                     setDisplay(currentObject);
@@ -277,7 +277,7 @@ void frmMain::OnPropSelChanged(wxListEvent& event)
 void frmMain::OnSelectItem(wxListEvent &event)
 {
     ctlListView *list;
-    
+
     switch(listViews->GetSelection())
     {
         case NBP_STATISTICS:
@@ -295,7 +295,7 @@ void frmMain::OnSelectItem(wxListEvent &event)
             return;
             break;
     }
-    
+
     editMenu->Enable(MNU_COPY, list->GetSelectedItemCount() > 0);
     if(list->GetSelectedItemCount() > 0)
     {
@@ -303,14 +303,14 @@ void frmMain::OnSelectItem(wxListEvent &event)
     }
 }
 
-void frmMain::OnPropSelActivated(wxListEvent& event)
+void frmMain::OnPropSelActivated(wxListEvent &event)
 {
     if (propFactory->CheckEnable(currentObject))
         propFactory->StartDialog(this, currentObject);
 }
 
 
-void frmMain::OnPropRightClick(wxListEvent& event)
+void frmMain::OnPropRightClick(wxListEvent &event)
 {
     OnPropSelChanged(event);
 
@@ -319,10 +319,10 @@ void frmMain::OnPropRightClick(wxListEvent& event)
 }
 
 
-void frmMain::OnTreeSelChanged(wxTreeEvent& event)
+void frmMain::OnTreeSelChanged(wxTreeEvent &event)
 {
-    denyCollapseItem=wxTreeItemId();
-	// Reset the listviews/SQL pane
+    denyCollapseItem = wxTreeItemId();
+    // Reset the listviews/SQL pane
     if (event.GetItem())
         execSelChange(event.GetItem(), true);
 }
@@ -343,7 +343,7 @@ void frmMain::execSelChange(wxTreeItemId item, bool currentNode)
     // cast as required.
     currentObject = browser->GetObject(item);
 
-    // If we didn't get an object, then we may have a right click, or 
+    // If we didn't get an object, then we may have a right click, or
     // invalid click, so ignore.
     if (!currentObject)
     {
@@ -366,12 +366,12 @@ void frmMain::execSelChange(wxTreeItemId item, bool currentNode)
 
 void frmMain::setDisplay(pgObject *data, ctlListView *props, ctlSQLBox *sqlbox)
 {
-    pgServer *server=0;
+    pgServer *server = 0;
 
 
     bool showTree;
 
-    pgaFactory *factory=data->GetFactory();
+    pgaFactory *factory = data->GetFactory();
     if (factory)
     {
         if (factory == &serverFactory)
@@ -379,13 +379,13 @@ void frmMain::setDisplay(pgObject *data, ctlListView *props, ctlSQLBox *sqlbox)
             server = (pgServer *)data;
 
             data->ShowTree(this, browser, props, sqlbox);
-            showTree=false;
+            showTree = false;
         }
         else
-            showTree=true;
+            showTree = true;
     }
     else
-        showTree=false;
+        showTree = false;
 
     if (showTree)
         data->ShowTree(this, browser, props, sqlbox);
@@ -397,7 +397,7 @@ void frmMain::setDisplay(pgObject *data, ctlListView *props, ctlSQLBox *sqlbox)
         sqlbox->SetReadOnly(true);
     }
 
-    pgConn *conn=data->GetConnection();
+    pgConn *conn = data->GetConnection();
     if (conn && (conn->GetStatus() == PGCONN_BROKEN || conn->GetStatus() == PGCONN_BAD))
     {
         CheckAlive();
@@ -406,34 +406,34 @@ void frmMain::setDisplay(pgObject *data, ctlListView *props, ctlSQLBox *sqlbox)
 
     unsigned int i;
     wxMenuItem *menuItem;
-    i=newMenu->GetMenuItemCount();
+    i = newMenu->GetMenuItemCount();
     while (i--)
     {
-        menuItem=newMenu->GetMenuItems().Item(i)->GetData();
+        menuItem = newMenu->GetMenuItems().Item(i)->GetData();
         if (menuItem)
             delete newMenu->Remove(menuItem);
     }
 
-    i=newContextMenu->GetMenuItemCount();
+    i = newContextMenu->GetMenuItemCount();
     while (i--)
     {
-        menuItem=newContextMenu->GetMenuItems().Item(i)->GetData();
+        menuItem = newContextMenu->GetMenuItems().Item(i)->GetData();
         if (menuItem)
             delete newContextMenu->Remove(menuItem);
     }
 
     editMenu->Enable(newMenuFactory->GetId(), false);
 
-    wxMenu *indivMenu=data->GetNewMenu();
+    wxMenu *indivMenu = data->GetNewMenu();
     if (indivMenu)
     {
         if (indivMenu->GetMenuItemCount())
         {
             editMenu->Enable(newMenuFactory->GetId(), true);
 
-            for (i=0 ; i < indivMenu->GetMenuItemCount() ; i++)
+            for (i = 0 ; i < indivMenu->GetMenuItemCount() ; i++)
             {
-                menuItem=indivMenu->GetMenuItems().Item(i)->GetData();
+                menuItem = indivMenu->GetMenuItems().Item(i)->GetData();
                 newMenu->Append(menuItem->GetId(), menuItem->GetLabel(), menuItem->GetHelp());
                 newContextMenu->Append(menuItem->GetId(), menuItem->GetLabel(), menuItem->GetHelp());
             }
@@ -472,7 +472,7 @@ void frmMain::OnSelActivated(wxTreeEvent &event)
             {
                 // prevent from being collapsed immediately
 
-                denyCollapseItem=item;
+                denyCollapseItem = item;
             }
         }
     }
@@ -500,14 +500,14 @@ void frmMain::doPopup(wxWindow *win, wxPoint point, pgObject *object)
 
     menuFactories->AppendEnabledMenus(menuBar, treeContextMenu);
 
-    wxMenuItem *newItem=treeContextMenu->FindItem(newMenuFactory->GetId());
+    wxMenuItem *newItem = treeContextMenu->FindItem(newMenuFactory->GetId());
 
     if (newItem)
     {
         size_t newItemPos;
 
         wxMenuItemList mil = treeContextMenu->GetMenuItems();
-        for (newItemPos=0 ; newItemPos < mil.GetCount() ; newItemPos++)
+        for (newItemPos = 0 ; newItemPos < mil.GetCount() ; newItemPos++)
         {
             if (mil.Item(newItemPos)->GetData()->GetId() == newItem->GetId())
                 break;
@@ -515,7 +515,7 @@ void frmMain::doPopup(wxWindow *win, wxPoint point, pgObject *object)
 
         if (object)
         {
-            wxMenu *indivMenu=object->GetNewMenu();
+            wxMenu *indivMenu = object->GetNewMenu();
             if (indivMenu)
             {
                 if (indivMenu->GetMenuItemCount() > 1)
@@ -527,7 +527,7 @@ void frmMain::doPopup(wxWindow *win, wxPoint point, pgObject *object)
                 {
                     if (indivMenu->GetMenuItemCount() == 1)
                     {
-                        wxMenuItem *menuItem=indivMenu->GetMenuItems().Item(0)->GetData();
+                        wxMenuItem *menuItem = indivMenu->GetMenuItems().Item(0)->GetData();
                         treeContextMenu->Insert(newItemPos, menuItem->GetId(), menuItem->GetLabel(), menuItem->GetHelp());
                     }
                     delete indivMenu;
@@ -545,23 +545,23 @@ void frmMain::doPopup(wxWindow *win, wxPoint point, pgObject *object)
 ////////////////////////////////////////////////////////////////////////////////
 // This handler will display a popup menu for the currently selected item
 ////////////////////////////////////////////////////////////////////////////////
-void frmMain::OnContextMenu(wxCommandEvent& event)
+void frmMain::OnContextMenu(wxCommandEvent &event)
 {
     wxPoint point;
 
     if (FindFocus() == browser)
     {
         wxRect rect;
-        wxTreeItemId item=browser->GetSelection();
+        wxTreeItemId item = browser->GetSelection();
 
         browser->GetBoundingRect(item, rect);
         point = rect.GetPosition();
-	    wxPoint origin = GetClientAreaOrigin();
+        wxPoint origin = GetClientAreaOrigin();
 
-	    // Because this Tree is inside a vertical splitter, we
-	    // must compensate for the size of the other elements
-	    point.x += origin.x;
-	    point.y += origin.y;
+        // Because this Tree is inside a vertical splitter, we
+        // must compensate for the size of the other elements
+        point.x += origin.x;
+        point.y += origin.y;
 
         doPopup(this, point, browser->GetObject(item));
     }
@@ -572,7 +572,7 @@ void frmMain::OnContextMenu(wxCommandEvent& event)
 ////////////////////////////////////////////////////////////////////////////////
 // This handler will display a popup menu for the item at the mouse position
 ////////////////////////////////////////////////////////////////////////////////
-void frmMain::OnSelRightClick(wxTreeEvent& event)
+void frmMain::OnSelRightClick(wxTreeEvent &event)
 {
     wxTreeItemId item = event.GetItem();
     if (item != browser->GetSelection())
@@ -595,46 +595,46 @@ void frmMain::OnDelete(wxCommandEvent &ev)
 
 void frmMain::ExecDrop(bool cascaded)
 {
-    wxTreeItemId item=browser->GetSelection();
-    pgCollection *collection = (pgCollection*)browser->GetObject(item);
+    wxTreeItemId item = browser->GetSelection();
+    pgCollection *collection = (pgCollection *)browser->GetObject(item);
 
     // Get any table object for later update
     wxTreeItemId owneritem;
-    pgObject *node = (pgObject*)browser->GetObject(item);
+    pgObject *node = (pgObject *)browser->GetObject(item);
 
-	int metatype = node->GetMetaType();
+    int metatype = node->GetMetaType();
 
-	switch (metatype)
-	{
-		case PGM_CHECK:
-		case PGM_COLUMN: 
-		case PGM_CONSTRAINT:
-		case PGM_EXCLUDE:
-		case PGM_FOREIGNKEY:
-		case PGM_INDEX:
-		case PGM_PRIMARYKEY:
-		case PGM_TRIGGER:
-		case PGM_UNIQUE:
-			owneritem=node->GetTable()->GetId();
-			break;
+    switch (metatype)
+    {
+        case PGM_CHECK:
+        case PGM_COLUMN:
+        case PGM_CONSTRAINT:
+        case PGM_EXCLUDE:
+        case PGM_FOREIGNKEY:
+        case PGM_INDEX:
+        case PGM_PRIMARYKEY:
+        case PGM_TRIGGER:
+        case PGM_UNIQUE:
+            owneritem = node->GetTable()->GetId();
+            break;
 
-		case PGM_RULE: // Rules are technically table objects! Yeuch
-		case EDB_PACKAGEFUNCTION:
-		case EDB_PACKAGEVARIABLE: 
-		case PGM_SCHEDULE:
-		case PGM_STEP:
-			if (node->IsCollection())
-				owneritem = browser->GetParentObject(node->GetId())->GetId();
-			else
-				owneritem = browser->GetParentObject(browser->GetParentObject(node->GetId())->GetId())->GetId();
-			break;
+        case PGM_RULE: // Rules are technically table objects! Yeuch
+        case EDB_PACKAGEFUNCTION:
+        case EDB_PACKAGEVARIABLE:
+        case PGM_SCHEDULE:
+        case PGM_STEP:
+            if (node->IsCollection())
+                owneritem = browser->GetParentObject(node->GetId())->GetId();
+            else
+                owneritem = browser->GetParentObject(browser->GetParentObject(node->GetId())->GetId())->GetId();
+            break;
 
-		default:
-			break;
-	}
+        default:
+            break;
+    }
 
-	// Grab the parent item to re-focus on.
-	wxString parent = GetNodePath(item).BeforeLast('/');
+    // Grab the parent item to re-focus on.
+    wxString parent = GetNodePath(item).BeforeLast('/');
 
     bool success = false;
     if (collection == currentObject)
@@ -643,11 +643,11 @@ void frmMain::ExecDrop(bool cascaded)
     {
         if (collection && collection->IsCollection())
         {
-            long index=properties->GetFirstSelected();
+            long index = properties->GetFirstSelected();
 
             if (index >= 0)
             {
-                pgObject *data=collection->FindChild(browser, index);
+                pgObject *data = collection->FindChild(browser, index);
 
                 if (!data || !data->CanDrop())
                     return;
@@ -678,15 +678,15 @@ void frmMain::ExecDrop(bool cascaded)
                         }
                     }
 
-                    bool done=true;
-                    long count=0;
+                    bool done = true;
+                    long count = 0;
                     while (done && data && index >= 0)
                     {
                         if (data->GetSystemObject())
                         {
                             wxMessageDialog msg(this,
-                                data->GetTranslatedMessage(CANNOTDROPSYSTEM), 
-                                _("Trying to drop system object"), wxICON_EXCLAMATION);
+                                                data->GetTranslatedMessage(CANNOTDROPSYSTEM),
+                                                _("Trying to drop system object"), wxICON_EXCLAMATION);
                             msg.ShowModal();
                             return;
                         }
@@ -700,7 +700,7 @@ void frmMain::ExecDrop(bool cascaded)
                             index = properties->GetFirstSelected();
 
                             if (index >= 0)
-                                data=collection->FindChild(browser, index);
+                                data = collection->FindChild(browser, index);
 
                             success = true;
                         }
@@ -716,9 +716,9 @@ void frmMain::ExecDrop(bool cascaded)
         if (owneritem)
             Refresh(browser->GetObject(owneritem));
 
-	    // Now re-focus on the parent of the deleted node
-	    if (!parent.IsEmpty())
-	    	SetCurrentNode(browser->GetRootItem(), parent);
+        // Now re-focus on the parent of the deleted node
+        if (!parent.IsEmpty())
+            SetCurrentNode(browser->GetRootItem(), parent);
     }
 }
 
@@ -734,7 +734,7 @@ bool frmMain::dropSingleObject(pgObject *data, bool updateFinal, bool cascaded)
         if (data->GetSystemObject())
         {
             wxMessageDialog msg(this, data->GetTranslatedMessage(CANNOTDROPSYSTEM),
-                _("Trying to drop system object"), wxICON_EXCLAMATION);
+                                _("Trying to drop system object"), wxICON_EXCLAMATION);
             msg.ShowModal();
             return false;
         }
@@ -753,14 +753,14 @@ bool frmMain::dropSingleObject(pgObject *data, bool updateFinal, bool cascaded)
                 *  currentObject is set using the following command.
                 *  i.e. currentObject = browser->GetObject(item);
                 *  While fetching this object using this code, somehow it looses its virtual table pointer.
-                *  Hence, it is not able to call the GetFullIdentifier - virtual function from the 
+                *  Hence, it is not able to call the GetFullIdentifier - virtual function from the
                 *  particular class, but it will always call this functions from pgObject class always.
                 *  To rectify this problem, we need to explicitly check the meta data type and call the
                 *  function from the particular class.
                 */
                 if (data->GetMetaType() == PGM_SERVER)
                     text = wxString::Format(_("Are you sure you wish to drop server \"%s\"?"),
-                        ((pgServer*)data)->GetFullIdentifier().c_str());
+                                            ((pgServer *)data)->GetFullIdentifier().c_str());
                 else
                     text = data->GetTranslatedMessage(DROPEXCLUDINGDEPS);
                 caption = data->GetTranslatedMessage(DROPTITLE);
@@ -772,73 +772,73 @@ bool frmMain::dropSingleObject(pgObject *data, bool updateFinal, bool cascaded)
             }
         }
     }
-    bool done=data->DropObject(this, browser, cascaded);
+    bool done = data->DropObject(this, browser, cascaded);
 
     if (done)
     {
         wxLogInfo(wxT("Dropping %s %s"), data->GetTypeName().c_str(), data->GetIdentifier().c_str());
 
-        wxTreeItemId parentItem=browser->GetItemParent(data->GetId());
+        wxTreeItemId parentItem = browser->GetItemParent(data->GetId());
 
         if (updateFinal)
         {
             wxTreeItemId nextItem;
             if (browser->IsVisible(data->GetId()))
-                nextItem=browser->GetNextVisible(data->GetId());
+                nextItem = browser->GetNextVisible(data->GetId());
 
             if (nextItem)
             {
-                pgObject *nextData=browser->GetObject(nextItem);
+                pgObject *nextData = browser->GetObject(nextItem);
                 if (!nextData || nextData->GetType() != data->GetType())
-                    nextItem=browser->GetPrevSibling(data->GetId());
+                    nextItem = browser->GetPrevSibling(data->GetId());
             }
             else
-                nextItem=browser->GetPrevSibling(data->GetId());
+                nextItem = browser->GetPrevSibling(data->GetId());
 
             if (nextItem)
                 browser->SelectItem(nextItem);
         }
         pgaFactory *droppedCollFactory = data->GetFactory()->GetCollectionFactory();
 
-		wxTreeItemId oldgroupitem;
-		wxString oldgroupname;
-		if (data->IsCreatedBy(serverFactory))
-		{
-			oldgroupname = ((pgServer*)data)->GetGroup();
-			oldgroupitem = browser->GetItemParent(data->GetId());
-		}
+        wxTreeItemId oldgroupitem;
+        wxString oldgroupname;
+        if (data->IsCreatedBy(serverFactory))
+        {
+            oldgroupname = ((pgServer *)data)->GetGroup();
+            oldgroupitem = browser->GetItemParent(data->GetId());
+        }
 
-		browser->Delete(data->GetId());
+        browser->Delete(data->GetId());
         // data is invalid now
 
         if (updateFinal)
         {
-			if (!oldgroupname.IsEmpty())
-			{
-				int total = browser->GetChildrenCount(oldgroupitem, false);
-				if (total == 0)
-					browser->Delete(oldgroupitem);
-				else
-				{
-					wxString label = oldgroupname + wxT(" (") + NumToStr((long)total) + wxT(")");
-					browser->SetItemText(oldgroupitem, label);
-				}
-			}
-			else
-			{
-				pgCollection *collection=0;
+            if (!oldgroupname.IsEmpty())
+            {
+                int total = browser->GetChildrenCount(oldgroupitem, false);
+                if (total == 0)
+                    browser->Delete(oldgroupitem);
+                else
+                {
+                    wxString label = oldgroupname + wxT(" (") + NumToStr((long)total) + wxT(")");
+                    browser->SetItemText(oldgroupitem, label);
+                }
+            }
+            else
+            {
+                pgCollection *collection = 0;
 
-				while (parentItem)
-				{
-					collection = (pgCollection*)browser->GetObject(parentItem);
-					if (collection && collection->IsCollection() && collection->GetFactory() == droppedCollFactory)
-					{
-						collection->UpdateChildCount(browser);
-						break;
-					}
-					parentItem=browser->GetItemParent(parentItem);
-				}
-			}
+                while (parentItem)
+                {
+                    collection = (pgCollection *)browser->GetObject(parentItem);
+                    if (collection && collection->IsCollection() && collection->GetFactory() == droppedCollFactory)
+                    {
+                        collection->UpdateChildCount(browser);
+                        break;
+                    }
+                    parentItem = browser->GetItemParent(parentItem);
+                }
+            }
         }
 
         // Update the server list, if we dropped a server
@@ -850,13 +850,13 @@ bool frmMain::dropSingleObject(pgObject *data, bool updateFinal, bool cascaded)
 
 void frmMain::OnNew(wxCommandEvent &ev)
 {
-    pgaFactory *factory=pgaFactory::GetFactory(ev.GetId() - MNU_NEW);
-    
+    pgaFactory *factory = pgaFactory::GetFactory(ev.GetId() - MNU_NEW);
+
     if (factory == &serverFactory)
     {
         if (currentObject && currentObject->IsCreatedBy(serverFactory))
         {
-            pgServer *server=(pgServer*)currentObject;
+            pgServer *server = (pgServer *)currentObject;
             if (!server->GetConnected())
                 ReconnectServer(server);
         }
@@ -871,12 +871,13 @@ void frmMain::OnNew(wxCommandEvent &ev)
 }
 
 
-void frmMain::OnSaveDefinition(wxCommandEvent& event)
+void frmMain::OnSaveDefinition(wxCommandEvent &event)
 {
 
     wxLogInfo(wxT("Saving object definition"));
 
-    if (sqlPane->GetText().IsNull()) {
+    if (sqlPane->GetText().IsNull())
+    {
         wxLogError(__("There is nothing in the SQL pane to save!"));
         return;
     }
@@ -905,7 +906,7 @@ void frmMain::OnSaveDefinition(wxCommandEvent& event)
     settings->Write(wxT("frmMain/LastFile"), filename.GetPath());
 }
 
-void frmMain::OnToggleSqlPane(wxCommandEvent& event)
+void frmMain::OnToggleSqlPane(wxCommandEvent &event)
 {
     if (viewMenu->IsChecked(MNU_SQLPANE))
         manager.GetPane(wxT("sqlPane")).Show(true);
@@ -914,7 +915,7 @@ void frmMain::OnToggleSqlPane(wxCommandEvent& event)
     manager.Update();
 }
 
-void frmMain::OnToggleObjectBrowser(wxCommandEvent& event)
+void frmMain::OnToggleObjectBrowser(wxCommandEvent &event)
 {
     if (viewMenu->IsChecked(MNU_OBJECTBROWSER))
         manager.GetPane(wxT("objectBrowser")).Show(true);
@@ -923,7 +924,7 @@ void frmMain::OnToggleObjectBrowser(wxCommandEvent& event)
     manager.Update();
 }
 
-void frmMain::OnToggleToolBar(wxCommandEvent& event)
+void frmMain::OnToggleToolBar(wxCommandEvent &event)
 {
     if (viewMenu->IsChecked(MNU_TOOLBAR))
         manager.GetPane(wxT("toolBar")).Show(true);
@@ -932,7 +933,7 @@ void frmMain::OnToggleToolBar(wxCommandEvent& event)
     manager.Update();
 }
 
-void frmMain::OnAuiUpdate(wxAuiManagerEvent& event)
+void frmMain::OnAuiUpdate(wxAuiManagerEvent &event)
 {
     if(event.pane->name == wxT("objectBrowser"))
     {
@@ -949,20 +950,20 @@ void frmMain::OnAuiUpdate(wxAuiManagerEvent& event)
     event.Skip();
 }
 
-void frmMain::OnAuiNotebookPageClose(wxAuiNotebookEvent& event)
+void frmMain::OnAuiNotebookPageClose(wxAuiNotebookEvent &event)
 {
-	// Prevent the user closing the four main tabs.
-	if (event.GetSelection() < 4)
-	{
-	    wxMessageBox(_("This tab cannot be closed."), _("Close tab"), wxICON_INFORMATION);
-		event.Veto();
-		return;
-	}
-	
-	event.Skip();
+    // Prevent the user closing the four main tabs.
+    if (event.GetSelection() < 4)
+    {
+        wxMessageBox(_("This tab cannot be closed."), _("Close tab"), wxICON_INFORMATION);
+        event.Veto();
+        return;
+    }
+
+    event.Skip();
 }
 
-void frmMain::OnDefaultView(wxCommandEvent& event)
+void frmMain::OnDefaultView(wxCommandEvent &event)
 {
     manager.LoadPerspective(FRMMAIN_DEFAULT_PERSPECTIVE, true);
 
@@ -981,10 +982,10 @@ void frmMain::OnDefaultView(wxCommandEvent& event)
     viewMenu->Check(MNU_TOOLBAR, manager.GetPane(wxT("toolBar")).IsShown());
 }
 
-void frmMain::OnPositionStc(wxStyledTextEvent& event)
+void frmMain::OnPositionStc(wxStyledTextEvent &event)
 {
     if (sqlPane->GetSelectedText().IsNull())
         editMenu->Enable(MNU_COPY, false);
-	else
+    else
         editMenu->Enable(MNU_COPY, true);
 }

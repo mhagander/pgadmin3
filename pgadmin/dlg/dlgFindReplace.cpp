@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -44,7 +44,7 @@ END_EVENT_TABLE()
 #define chkOptionsUseRegexps CTRL_CHECKBOX("chkOptionsUseRegexps")
 
 dlgFindReplace::dlgFindReplace(ctlSQLBox *parent) :
-pgDialog()
+    pgDialog()
 {
     sqlbox = parent;
 
@@ -113,7 +113,7 @@ pgDialog()
 
     wxCommandEvent ev;
     OnChange(ev);
-	ResetTabOrder();
+    ResetTabOrder();
 }
 
 dlgFindReplace::~dlgFindReplace()
@@ -127,7 +127,7 @@ void dlgFindReplace::FocusSearch()
     txtFind->SetSelection(-1, -1);
 }
 
-void dlgFindReplace::OnClose(wxCloseEvent& ev)
+void dlgFindReplace::OnClose(wxCloseEvent &ev)
 {
     // Save settings
     settings->Write(wxT("FindReplace/Find"), txtFind->GetValue());
@@ -152,12 +152,12 @@ void dlgFindReplace::OnClose(wxCloseEvent& ev)
         ev.Veto();
 }
 
-void dlgFindReplace::OnCancel(wxCommandEvent& ev)
+void dlgFindReplace::OnCancel(wxCommandEvent &ev)
 {
     this->Hide();
 }
 
-void dlgFindReplace::OnChange(wxCommandEvent& ev)
+void dlgFindReplace::OnChange(wxCommandEvent &ev)
 {
     if (chkOptionsUseRegexps->GetValue() == true || rdOriginTop->GetValue() == true)
     {
@@ -169,7 +169,7 @@ void dlgFindReplace::OnChange(wxCommandEvent& ev)
     {
         rdDirectionBackward->Enable(true);
     }
-    
+
     if (chkOptionsUseRegexps->GetValue() == true)
     {
         chkOptionsWholeWord->Enable(false);
@@ -182,14 +182,14 @@ void dlgFindReplace::OnChange(wxCommandEvent& ev)
     }
 }
 
-void dlgFindReplace::OnFind(wxCommandEvent& ev)
+void dlgFindReplace::OnFind(wxCommandEvent &ev)
 {
     if (txtFind->GetValue().IsEmpty())
         return;
 
-    bool wholeWord = false, 
-         matchCase = false, 
-         useRegexps = false, 
+    bool wholeWord = false,
+         matchCase = false,
+         useRegexps = false,
          startAtTop = false,
          reverse = false;
 
@@ -220,14 +220,14 @@ void dlgFindReplace::OnFind(wxCommandEvent& ev)
     }
 }
 
-void dlgFindReplace::OnReplace(wxCommandEvent& ev)
+void dlgFindReplace::OnReplace(wxCommandEvent &ev)
 {
     if (txtFind->GetValue().IsEmpty())
         return;
 
-    bool wholeWord = false, 
-         matchCase = false, 
-         useRegexps = false, 
+    bool wholeWord = false,
+         matchCase = false,
+         useRegexps = false,
          startAtTop = false,
          reverse = false;
 
@@ -258,13 +258,13 @@ void dlgFindReplace::OnReplace(wxCommandEvent& ev)
     }
 }
 
-void dlgFindReplace::OnReplaceAll(wxCommandEvent& ev)
+void dlgFindReplace::OnReplaceAll(wxCommandEvent &ev)
 {
     if (txtFind->GetValue().IsEmpty())
         return;
 
-    bool wholeWord = false, 
-         matchCase = false, 
+    bool wholeWord = false,
+         matchCase = false,
          useRegexps = false;
 
     if (chkOptionsWholeWord->GetValue() == true)
@@ -279,25 +279,25 @@ void dlgFindReplace::OnReplaceAll(wxCommandEvent& ev)
     sqlbox->ReplaceAll(txtFind->GetValue(), txtReplace->GetValue(), wholeWord, matchCase, useRegexps);
 }
 
-void dlgFindReplace::FindNext() 
-{ 
+void dlgFindReplace::FindNext()
+{
     if (btnFind->IsEnabled() && !txtFind->IsEmpty())
     {
-        wxCommandEvent ev; 
+        wxCommandEvent ev;
         OnFind(ev);
     }
 }
 
 void dlgFindReplace::SetFindString(const wxString &val)
 {
-	txtFind->SetValue(val);
+    txtFind->SetValue(val);
 }
 
 void dlgFindReplace::ResetTabOrder()
 {
-	btnFind->MoveAfterInTabOrder(chkOptionsUseRegexps);
-	btnReplace->MoveAfterInTabOrder(btnFind);
-	btnReplaceAll->MoveAfterInTabOrder(btnReplace);
-	btnCancel->MoveAfterInTabOrder(btnReplaceAll);
+    btnFind->MoveAfterInTabOrder(chkOptionsUseRegexps);
+    btnReplace->MoveAfterInTabOrder(btnFind);
+    btnReplaceAll->MoveAfterInTabOrder(btnReplace);
+    btnCancel->MoveAfterInTabOrder(btnReplaceAll);
 }
 

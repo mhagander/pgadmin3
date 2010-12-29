@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -38,14 +38,14 @@ END_EVENT_TABLE();
 
 dlgProperty *gpExtTableFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgExtTable(this, frame, (gpExtTable*)node, (pgSchema*)parent);
+    return new dlgExtTable(this, frame, (gpExtTable *)node, (pgSchema *)parent);
 }
 
 dlgExtTable::dlgExtTable(pgaFactory *f, frmMain *frame, gpExtTable *node, pgSchema *sch)
-: dlgSecurityProperty(f, frame, node, wxT("dlgExtTable"), wxT("SELECT"), "r")
+    : dlgSecurityProperty(f, frame, node, wxT("dlgExtTable"), wxT("SELECT"), "r")
 {
-    schema=sch;
-    extTable=node;
+    schema = sch;
+    extTable = node;
 
 }
 
@@ -59,7 +59,7 @@ pgObject *dlgExtTable::GetObject()
 int dlgExtTable::Go(bool modal)
 {
     int returncode;
-    
+
     AddGroups(cbOwner);
     AddUsers(cbOwner);
 
@@ -78,12 +78,12 @@ int dlgExtTable::Go(bool modal)
         // create mode
     }
 
-     returncode = dlgSecurityProperty::Go(modal);
+    returncode = dlgSecurityProperty::Go(modal);
 
     // This fixes a UI glitch on MacOS X and Windows
     // Because of the new layout code, the Privileges pane don't size itself properly
-    SetSize(GetSize().GetWidth()+1, GetSize().GetHeight());
-    SetSize(GetSize().GetWidth()-1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() + 1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() - 1, GetSize().GetHeight());
 
     return returncode;
 }
@@ -91,31 +91,31 @@ int dlgExtTable::Go(bool modal)
 
 pgObject *dlgExtTable::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=extTableFactory.CreateObjects(collection, 0, 
-        wxT("\n   AND c.relname=") + qtDbString(txtName->GetValue()) +
-        wxT("\n   AND c.relnamespace=") + schema->GetOidStr());
+    pgObject *obj = extTableFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND c.relname=") + qtDbString(txtName->GetValue()) +
+                    wxT("\n   AND c.relnamespace=") + schema->GetOidStr());
     return obj;
 }
 
 
 void dlgExtTable::CheckChange()
 {
-    wxString name=GetName();
-    if (name) 
+    wxString name = GetName();
+    if (name)
     {
         if (extTable)
-             EnableOK(txtComment->GetValue() != extTable->GetComment()
-              || txtSqlBox->GetText() != oldDefinition
-              || cbOwner->GetValue() != extTable->GetOwner()
-              || name != extTable->GetName());
-         else
-         EnableOK(!txtComment->GetValue().IsEmpty()
-              || !txtSqlBox->GetText().IsEmpty()
-              || !cbOwner->GetValue().IsEmpty());
+            EnableOK(txtComment->GetValue() != extTable->GetComment()
+                     || txtSqlBox->GetText() != oldDefinition
+                     || cbOwner->GetValue() != extTable->GetOwner()
+                     || name != extTable->GetName());
+        else
+            EnableOK(!txtComment->GetValue().IsEmpty()
+                     || !txtSqlBox->GetText().IsEmpty()
+                     || !cbOwner->GetValue().IsEmpty());
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
 
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
         CheckValid(enable, txtSqlBox->GetText().Length() > 0 , _("Please enter external table definition."));
@@ -127,7 +127,7 @@ void dlgExtTable::CheckChange()
 
 wxString dlgExtTable::GetSql()
 {
-    wxString sql, name=GetName();
+    wxString sql, name = GetName();
 
 
     if (extTable)
@@ -137,15 +137,15 @@ wxString dlgExtTable::GetSql()
         if (name != extTable->GetName())
         {
             sql += wxT("ALTER TABLE ") + extTable->GetQuotedFullIdentifier()
-                +  wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
+                   +  wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
         }
     }
 
     if (!extTable || txtSqlBox->GetText() != oldDefinition)
     {
         sql += wxT("CREATE EXTERNAL TABLE ") + schema->GetQuotedPrefix() + qtIdent(name) + wxT("\n")
-            + txtSqlBox->GetText()
-            + wxT(";\n");
+               + txtSqlBox->GetText()
+               + wxT(";\n");
     }
 
     if (extTable)
@@ -167,12 +167,12 @@ bool dlgExtTable::IsUpToDate()
     else
         return true;
 }
-  
+
 void dlgExtTable::OnApply(wxCommandEvent &ev)
 {
     dlgProperty::OnApply(ev);
 
     wxString sql = wxT("SELECT xmin FROM pg_class WHERE oid = ") + extTable->GetOidStr();
-	extTable->iSetXid(StrToOid(connection->ExecuteScalar(sql)));
+    extTable->iSetXid(StrToOid(connection->ExecuteScalar(sql)));
 }
 

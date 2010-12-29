@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -68,9 +68,9 @@ ExplainShape::ExplainShape(const char *bmp[], const wxString &description, long 
 {
     SetBitmap(wxBitmap(bmp));
     SetLabel(description, tokenNo, detailNo);
-    kidCount=0;
-    totalShapes=0;
-    usedShapes=0;
+    kidCount = 0;
+    totalShapes = 0;
+    usedShapes = 0;
 }
 
 
@@ -93,7 +93,7 @@ void ExplainShape::SetLabel(const wxString &str, int tokenNo, int detailNo)
             {
                 if (!description.IsEmpty())
                     description.Append(wxT(" "));
-            
+
                 description.Append(label);
             }
         }
@@ -105,7 +105,7 @@ void ExplainShape::SetLabel(const wxString &str, int tokenNo, int detailNo)
             {
                 if (!description.IsEmpty())
                     description.Append(wxT(" "));
-                
+
                 description.Append(tokens.GetNextToken());
             }
             detail = tokens.GetString();
@@ -113,9 +113,9 @@ void ExplainShape::SetLabel(const wxString &str, int tokenNo, int detailNo)
     }
 }
 
-void ExplainShape::OnDraw(wxDC& dc)
+void ExplainShape::OnDraw(wxDC &dc)
 {
-    wxBitmap &bmp=GetBitmap();
+    wxBitmap &bmp = GetBitmap();
     if (!bmp.Ok())
         return;
 
@@ -130,7 +130,7 @@ void ExplainShape::OnDraw(wxDC& dc)
     dc.GetTextExtent(label, &w, &h);
 
     x = WXROUND(m_xpos - w / 2.0);
-    y +=bmp.GetHeight() + BMP_BORDER;
+    y += bmp.GetHeight() + BMP_BORDER;
 
     dc.DrawText(label, x, y);
 }
@@ -138,21 +138,21 @@ void ExplainShape::OnDraw(wxDC& dc)
 
 void ExplainShape::OnLeftClick(double x, double y, int keys, int attachment)
 {
-    ((ExplainCanvas*)GetCanvas())->ShowPopup(this);
+    ((ExplainCanvas *)GetCanvas())->ShowPopup(this);
 }
 
 
 #define ARROWMARGIN 5
 wxRealPoint ExplainShape::GetStartPoint()
 {
-    wxRealPoint rp(GetX() + GetBitmap().GetWidth() / 2.0 + ARROWMARGIN, GetY() - (GetHeight()-GetBitmap().GetHeight()) / 2.);
+    wxRealPoint rp(GetX() + GetBitmap().GetWidth() / 2.0 + ARROWMARGIN, GetY() - (GetHeight() - GetBitmap().GetHeight()) / 2.);
     return rp;
 }
 
 
 wxRealPoint ExplainShape::GetEndPoint(int kidNo)
 {
-    wxRealPoint rp(GetX() - GetBitmap().GetWidth() / 2.0 - ARROWMARGIN, GetY() - (GetHeight()-GetBitmap().GetHeight()) / 2. + (kidCount>1 ? GetBitmap().GetHeight() * 2. /3. * kidNo / (2*kidCount-2) : 0 ));
+    wxRealPoint rp(GetX() - GetBitmap().GetWidth() / 2.0 - ARROWMARGIN, GetY() - (GetHeight() - GetBitmap().GetHeight()) / 2. + (kidCount > 1 ? GetBitmap().GetHeight() * 2. / 3. * kidNo / (2 * kidCount - 2) : 0 ));
     return rp;
 }
 
@@ -160,9 +160,9 @@ wxRealPoint ExplainShape::GetEndPoint(int kidNo)
 
 ExplainShape *ExplainShape::Create(long level, ExplainShape *last, const wxString &str)
 {
-    ExplainShape *s=0;
+    ExplainShape *s = 0;
 
-    int costPos=str.Find(wxT("(cost="));
+    int costPos = str.Find(wxT("(cost="));
     int actPos = str.Find(wxT("(actual"));
 
     wxStringTokenizer tokens(str, wxT(" "));
@@ -186,7 +186,7 @@ ExplainShape *ExplainShape::Create(long level, ExplainShape *last, const wxStrin
     else if (token == wxT("Trigger"))       return 0;
     else if (token == wxT("Settings:"))		return 0;		/* Greenplum */
     else if (token == wxT("Slice"))			return 0;		/* Greenplum */
-    else if (token.Mid(0,6) == wxT("(slice"))	return 0;	/* Greenplum */
+    else if (token.Mid(0, 6) == wxT("(slice"))	return 0;	/* Greenplum */
     else if (token == wxT("Result"))        s = new ExplainShape(ex_result_xpm, descr);
     else if (token == wxT("Append"))        s = new ExplainShape(ex_append_xpm, descr);
     else if (token == wxT("Nested"))
@@ -288,8 +288,8 @@ ExplainShape *ExplainShape::Create(long level, ExplainShape *last, const wxStrin
         }
         else
         {
-           // HashSetOp ???
-           s = new ExplainShape(ex_hash_setop_unknown_xpm, descr);
+            // HashSetOp ???
+            s = new ExplainShape(ex_hash_setop_unknown_xpm, descr);
         }
     }
     else if (token == wxT("Subquery"))      s = new ExplainShape(ex_subplan_xpm, descr, 0, 2);
@@ -328,23 +328,23 @@ ExplainShape *ExplainShape::Create(long level, ExplainShape *last, const wxStrin
             s = new ExplainShape(ex_scan_xpm, descr, 3, 2);
     }
     else if (token2 == wxT("Seek"))         s = new ExplainShape(ex_seek_xpm, descr, 3, 2);
-     // Recursive Union
+    // Recursive Union
     else if (token == wxT("Recursive") && token2 == wxT("Union"))
         s = new ExplainShape(ex_recursive_union_xpm, descr);
     else if (token == wxT("WindowAgg"))
         s = new ExplainShape(ex_window_aggregate_xpm, descr);
 
     // Greenplum additions
-    else if (token == wxT("Gather") && token2 ==wxT("Motion"))
+    else if (token == wxT("Gather") && token2 == wxT("Motion"))
         s = new ExplainShape(ex_gather_motion_xpm, descr);
-    else if (token == wxT("Broadcast") && token2 ==wxT("Motion"))
+    else if (token == wxT("Broadcast") && token2 == wxT("Motion"))
         s = new ExplainShape(ex_broadcast_motion_xpm, descr);
-    else if (token == wxT("Redistribute") && token2 ==wxT("Motion"))
+    else if (token == wxT("Redistribute") && token2 == wxT("Motion"))
         s = new ExplainShape(ex_redistribute_motion_xpm, descr);
 
     if (!s)
         s = new ExplainShape(ex_unknown_xpm, descr);
-    
+
     s->SetDraggable(false);
 
     s->level = level;
@@ -354,17 +354,17 @@ ExplainShape *ExplainShape::Create(long level, ExplainShape *last, const wxStrin
         if (actPos > 0)
         {
             s->actual = str.Mid(actPos);
-            s->cost = str.Mid(costPos, actPos-costPos);
+            s->cost = str.Mid(costPos, actPos - costPos);
         }
         else
             s->cost = str.Mid(costPos);
     }
     else if (actPos > 0)
         s->actual = str.Mid(actPos);
-    
-    int w=50, h=20;
 
-    wxBitmap &bmp=s->GetBitmap();
+    int w = 50, h = 20;
+
+    wxBitmap &bmp = s->GetBitmap();
     if (w < bmp.GetWidth())
         w = bmp.GetWidth();
 
@@ -382,29 +382,29 @@ ExplainShape *ExplainShape::Create(long level, ExplainShape *last, const wxStrin
 
     if (costPos > 0)
     {
-        wxChar *cl=(wxChar*)str.c_str() + costPos+6;
-        wxChar *ch=wxStrstr(cl, wxT(".."));
+        wxChar *cl = (wxChar *)str.c_str() + costPos + 6;
+        wxChar *ch = wxStrstr(cl, wxT(".."));
         if (ch)
         {
-            *ch=0;
+            *ch = 0;
             ch += 2;
         }
         s->costLow = StrToDouble(cl);
         if (ch)
         {
-            wxChar *r=wxStrstr(ch, wxT(" rows="));
+            wxChar *r = wxStrstr(ch, wxT(" rows="));
             if (r)
             {
-                *r=0;
+                *r = 0;
                 r += 6;
             }
             s->costHigh = StrToDouble(ch);
             if (r)
             {
-                wxChar *w=wxStrstr(r, wxT(" width="));
+                wxChar *w = wxStrstr(r, wxT(" width="));
                 if (w)
                 {
-                    *w=0;
+                    *w = 0;
                     w += 7;
                 }
                 s->rows = StrToLong(r);
@@ -438,12 +438,12 @@ ExplainLine::ExplainLine(ExplainShape *from, ExplainShape *to, double weight)
     *(wxRealPoint *)first->GetData() = from->GetStartPoint();
     *(wxRealPoint *)last->GetData() = to->GetEndPoint(from->GetKidno());
 
-    wxRealPoint *p1=(wxRealPoint *)first->GetNext()->GetData();
-    wxRealPoint *p2=(wxRealPoint *)last->GetPrevious()->GetData();
+    wxRealPoint *p1 = (wxRealPoint *)first->GetNext()->GetData();
+    wxRealPoint *p2 = (wxRealPoint *)last->GetPrevious()->GetData();
     *p1 = from->GetStartPoint();
     *p2 = to->GetEndPoint(from->GetKidno());
-    p1->x -= (p1->x - p2->x)/3. +8;
-    p2->x += (p1->x - p2->x)/3. -8;
+    p1->x -= (p1->x - p2->x) / 3. + 8;
+    p2->x += (p1->x - p2->x) / 3. - 8;
 
     Initialise();
 }
@@ -452,7 +452,7 @@ ExplainLine::ExplainLine(ExplainShape *from, ExplainShape *to, double weight)
 #define ARROWWIDTH  4
 
 
-void ExplainLine::OnDraw(wxDC& dc)
+void ExplainLine::OnDraw(wxDC &dc)
 {
     if (m_lineControlPoints)
     {
@@ -460,13 +460,13 @@ void ExplainLine::OnDraw(wxDC& dc)
         dc.SetBrush(*wxTheBrushList->FindOrCreateBrush(*wxLIGHT_GREY, wxSOLID));
 
         wxPoint *points = new wxPoint[11];
-        wxRealPoint *point0 = (wxRealPoint*) m_lineControlPoints->Item(0)->GetData();
-        wxRealPoint *point1 = (wxRealPoint*) m_lineControlPoints->Item(1)->GetData();
-        wxRealPoint *point2 = (wxRealPoint*) m_lineControlPoints->Item(2)->GetData();
-        wxRealPoint *point3 = (wxRealPoint*) m_lineControlPoints->Item(3)->GetData();
-    
+        wxRealPoint *point0 = (wxRealPoint *) m_lineControlPoints->Item(0)->GetData();
+        wxRealPoint *point1 = (wxRealPoint *) m_lineControlPoints->Item(1)->GetData();
+        wxRealPoint *point2 = (wxRealPoint *) m_lineControlPoints->Item(2)->GetData();
+        wxRealPoint *point3 = (wxRealPoint *) m_lineControlPoints->Item(3)->GetData();
+
         double phi  = atan2(point2->y - point1->y, point2->x - point1->x);
-        double offs = width * tan(phi/2);
+        double offs = width * tan(phi / 2);
 
         points[0].x  = WXROUND(point0->x);
         points[0].y  = WXROUND(point0->y) - width;

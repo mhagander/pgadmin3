@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -64,7 +64,7 @@ wxString CSVTokenizer::GetNextToken()
                 break;
 
             // Last token is delimited by '\n' or by end of string.
-            if (m_string[pos] == wxT('\n') && pos == m_string.length()-1)
+            if (m_string[pos] == wxT('\n') && pos == m_string.length() - 1)
                 break;
         }
     }
@@ -74,13 +74,13 @@ wxString CSVTokenizer::GetNextToken()
         token.assign(m_string, m_pos + 1, pos - m_pos - 2);  // Remove leading and trailing quotes
 
         // Remove double doublequote chars, replace with single doublequote chars
-        token.Replace(wxT("\"\""),wxT("\""),true);
+        token.Replace(wxT("\"\""), wxT("\""), true);
     }
     else
         token.assign(m_string, m_pos, pos - m_pos);
 
     if (quoted_string && inquote)
-            wxLogNotice(wxT("unterminated double quoted string: %s\n"), token.c_str());
+        wxLogNotice(wxT("unterminated double quoted string: %s\n"), token.c_str());
 
     m_pos = pos + 1;    // Skip token and delimiter
 
@@ -98,7 +98,7 @@ bool CSVLineTokenizer::HasMoreLines() const
     return false;
 }
 
-wxString CSVLineTokenizer::GetNextLine(bool & partial)
+wxString CSVLineTokenizer::GetNextLine(bool &partial)
 {
     wxString token;
     partial = true;
@@ -106,7 +106,7 @@ wxString CSVLineTokenizer::GetNextLine(bool & partial)
     if ( !HasMoreLines() )
         return token;
 
-    // find the end of this line.  CSV lines end in "\n", but 
+    // find the end of this line.  CSV lines end in "\n", but
     // CSV lines may have "\n" chars inside double-quoted strings, so we need to find that out.
 
     bool inquote = false;
@@ -117,7 +117,7 @@ wxString CSVLineTokenizer::GetNextLine(bool & partial)
 
         if (m_string[pos] == wxT('\n') && !inquote)
         {
-            // Good, we found a complete log line terminated 
+            // Good, we found a complete log line terminated
             // by "\n", and the "\n" wasn't in a quoted string.
 
             size_t len = pos - m_pos + 1;   // return the line, including the trailing "\n"
@@ -130,11 +130,11 @@ wxString CSVLineTokenizer::GetNextLine(bool & partial)
 
     // no more delimiters, so the line is everything till the end of
     // string, but we don't have all of the CSV the line... Some must still be coming.
-     
+
     token.assign(m_string, m_pos, wxString::npos);
     partial = true;
 
     m_pos = m_string.length();
-  
+
     return token;
 }

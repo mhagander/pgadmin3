@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -73,14 +73,14 @@ END_EVENT_TABLE()
 
 frmRestore::frmRestore(frmMain *_form, pgObject *obj) : ExternProcessDialog(form)
 {
-    object=obj;
+    object = obj;
 
     if (object->GetMetaType() == PGM_SERVER)
-        server = (pgServer*)object;
+        server = (pgServer *)object;
     else
-        server=object->GetDatabase()->GetServer();
+        server = object->GetDatabase()->GetServer();
 
-    form=_form;
+    form = _form;
 
     wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(_form, wxT("frmRestore"));
@@ -88,20 +88,20 @@ frmRestore::frmRestore(frmMain *_form, pgObject *obj) : ExternProcessDialog(form
 
     SetTitle(object->GetTranslatedMessage(RESTORETITLE));
 
-    if (object->GetConnection()->EdbMinimumVersion(8,0))
-        restoreExecutable=edbRestoreExecutable;
+    if (object->GetConnection()->EdbMinimumVersion(8, 0))
+        restoreExecutable = edbRestoreExecutable;
     else if (object->GetConnection()->GetIsGreenplum())
-        restoreExecutable=gpRestoreExecutable;
+        restoreExecutable = gpRestoreExecutable;
     else
-        restoreExecutable=pgRestoreExecutable;
+        restoreExecutable = pgRestoreExecutable;
 
     if (object->GetMetaType() != PGM_DATABASE)
     {
         chkOnlySchema->SetValue(object->GetMetaType() == PGM_FUNCTION
-                             || object->GetMetaType() == PGM_INDEX
-                             || object->GetMetaType() == PGM_TRIGGER);
+                                || object->GetMetaType() == PGM_INDEX
+                                || object->GetMetaType() == PGM_TRIGGER);
         chkOnlyData->SetValue(object->GetMetaType() == PGM_TABLE
-                             || object->GetMetaType() == GP_PARTITION);
+                              || object->GetMetaType() == GP_PARTITION);
         if (object->GetMetaType() != PGM_SCHEMA)
         {
             chkOnlyData->Disable();
@@ -125,13 +125,13 @@ frmRestore::frmRestore(frmMain *_form, pgObject *obj) : ExternProcessDialog(form
     txtMessages = CTRL_TEXT("txtMessages");
     txtMessages->SetMaxLength(0L);
     btnOK->Disable();
-    filenameValid=false;
+    filenameValid = false;
 
     if (!server->GetPasswordIsStored())
         environment.Add(wxT("PGPASSWORD=") + server->GetPassword());
 
-	// Pass the SSL mode via the environment
-	environment.Add(wxT("PGSSLMODE=") + server->GetConnection()->GetSslModeName());
+    // Pass the SSL mode via the environment
+    environment.Add(wxT("PGSSLMODE=") + server->GetConnection()->GetSslModeName());
 
     if (!pgAppMinimumVersion(restoreExecutable, 8, 4))
     {
@@ -146,9 +146,9 @@ frmRestore::frmRestore(frmMain *_form, pgObject *obj) : ExternProcessDialog(form
         if (server->GetConnection()->BackendMinimumVersion(8, 1))
         {
             pgSetIterator set(server->GetConnection(),
-                wxT("SELECT DISTINCT rolname\n")
-                wxT("FROM pg_roles db\n")
-                wxT("ORDER BY rolname"));
+                              wxT("SELECT DISTINCT rolname\n")
+                              wxT("FROM pg_roles db\n")
+                              wxT("ORDER BY rolname"));
 
             cbRolename->Append(wxEmptyString);
 
@@ -191,16 +191,16 @@ wxString frmRestore::GetHelpPage() const
 
 void frmRestore::OnSelectFilename(wxCommandEvent &ev)
 {
-    
-    wxString FilenameOnly;    
+
+    wxString FilenameOnly;
     wxFileName::SplitPath(txtFilename->GetValue(), NULL, NULL, &FilenameOnly, NULL);
-    
+
 #ifdef __WXMSW__
-    wxFileDialog file(this, _("Select backup filename"), ::wxPathOnly(txtFilename->GetValue()), FilenameOnly, 
-        _("Backup files (*.backup)|*.backup|All files (*.*)|*.*"));
+    wxFileDialog file(this, _("Select backup filename"), ::wxPathOnly(txtFilename->GetValue()), FilenameOnly,
+                      _("Backup files (*.backup)|*.backup|All files (*.*)|*.*"));
 #else
-    wxFileDialog file(this, _("Select backup filename"), ::wxPathOnly(txtFilename->GetValue()), FilenameOnly, 
-        _("Backup files (*.backup)|*.backup|All files (*)|*"));
+    wxFileDialog file(this, _("Select backup filename"), ::wxPathOnly(txtFilename->GetValue()), FilenameOnly,
+                      _("Backup files (*.backup)|*.backup|All files (*)|*"));
 #endif
 
     if (file.ShowModal() == wxID_OK)
@@ -241,28 +241,28 @@ void frmRestore::OnChangeSchema(wxCommandEvent &ev)
 
 void frmRestore::OnChangeName(wxCommandEvent &ev)
 {
-    wxString name=txtFilename->GetValue();
+    wxString name = txtFilename->GetValue();
     if (name.IsEmpty() || !wxFile::Exists(name))
-        filenameValid=false;
+        filenameValid = false;
     else
     {
         wxFile file(name, wxFile::read);
         if (file.IsOpened())
         {
             char buffer[8];
-            off_t size=file.Read(buffer, 8);
+            off_t size = file.Read(buffer, 8);
             if (size == 8)
             {
                 if (memcmp(buffer, "PGDMP", 5) && !memcmp(buffer, "toc.dat", 8))
                 {
                     // tar format?
                     file.Seek(512);
-                    size=file.Read(buffer, 8);
+                    size = file.Read(buffer, 8);
                 }
                 if (size == 8 && !memcmp(buffer, "PGDMP", 5))
                 {
                     // check version here?
-                    filenameValid=true;
+                    filenameValid = true;
                 }
             }
         }
@@ -304,11 +304,11 @@ wxString frmRestore::getCmdPart1()
         cmd += wxT(" --host ") + server->GetName();
 
     cmd += wxT(" --port ") + NumToStr((long)server->GetPort())
-         + wxT(" --username ") + qtIdent(server->GetUsername())
-         + wxT(" --dbname ") + commandLineCleanOption(object->GetDatabase()->GetQuotedIdentifier());
+           + wxT(" --username ") + qtIdent(server->GetUsername())
+           + wxT(" --dbname ") + commandLineCleanOption(object->GetDatabase()->GetQuotedIdentifier());
 
     if (!cbRolename->GetValue().IsEmpty())
-         cmd += wxT(" --role ") + commandLineCleanOption(qtIdent(cbRolename->GetValue()));
+        cmd += wxT(" --role ") + commandLineCleanOption(qtIdent(cbRolename->GetValue()));
 
     if (pgAppMinimumVersion(restoreExecutable, 8, 4))
         cmd += wxT(" --no-password ");
@@ -322,12 +322,12 @@ wxString frmRestore::getCmdPart2(int step)
     wxString cmd;
 
     wxString restoreExecutable;
-    if (object->GetConnection()->EdbMinimumVersion(8,0))
-        restoreExecutable=edbBackupExecutable;
+    if (object->GetConnection()->EdbMinimumVersion(8, 0))
+        restoreExecutable = edbBackupExecutable;
     else if (object->GetConnection()->GetIsGreenplum())
-        restoreExecutable=gpBackupExecutable;
+        restoreExecutable = gpBackupExecutable;
     else
-        restoreExecutable=pgBackupExecutable;
+        restoreExecutable = pgBackupExecutable;
 
     if (step)
     {
@@ -396,7 +396,7 @@ wxString frmRestore::getCmdPart2(int step)
                 if (ctvObjects->IsChecked(firstLevelObject))
                 {
                     // Write the file
-                    data = (restoreTreeItemData*)ctvObjects->GetItemData(firstLevelObject);
+                    data = (restoreTreeItemData *)ctvObjects->GetItemData(firstLevelObject);
                     restoreStrings[data->GetId()] = data->GetDesc();
 
                     // Loop through second level objects
@@ -406,7 +406,7 @@ wxString frmRestore::getCmdPart2(int step)
                         if (ctvObjects->IsChecked(secondLevelObject))
                         {
                             // Write the file
-                            data = (restoreTreeItemData*)ctvObjects->GetItemData(secondLevelObject);
+                            data = (restoreTreeItemData *)ctvObjects->GetItemData(secondLevelObject);
                             restoreStrings[data->GetId()] = data->GetDesc();
                         }
                         else
@@ -425,7 +425,7 @@ wxString frmRestore::getCmdPart2(int step)
             tocFile.Open(restoreTOCFilename.c_str(), wxFile::write);
 
             // Write all selected items in it
-            for (int i=0; i<numberOfTOCItems; i++)
+            for (int i = 0; i < numberOfTOCItems; i++)
             {
                 if (restoreStrings[i] != wxEmptyString)
                 {
@@ -484,7 +484,7 @@ void frmRestore::OnView(wxCommandEvent &ev)
     viewRunning = true;
     Execute(1, false);
     btnOK->SetLabel(_("OK"));
-    done=0;
+    done = 0;
 }
 
 
@@ -510,7 +510,7 @@ void frmRestore::OnOK(wxCommandEvent &ev)
 }
 
 
-void frmRestore::OnEndProcess(wxProcessEvent& ev)
+void frmRestore::OnEndProcess(wxProcessEvent &ev)
 {
     ExternProcessDialog::OnEndProcess(ev);
 
@@ -518,11 +518,11 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
     {
         done = false;
 
-        wxString str=wxTextBuffer::Translate(txtMessages->GetValue(), wxTextFileType_Unix);
+        wxString str = wxTextBuffer::Translate(txtMessages->GetValue(), wxTextFileType_Unix);
 
         wxStringTokenizer line(str, wxT("\n"));
         line.GetNextToken();
-        
+
         wxBeginBusyCursor();
 
         wxString i18nbackup = _("Backup");
@@ -536,7 +536,7 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
         while (line.HasMoreTokens())
         {
             // Read the next line
-            str=line.GetNextToken();
+            str = line.GetNextToken();
 
             // Skip the few lines of comments
             if (str.Left(1) == wxT(";") || str.Left(1) == wxT("P"))
@@ -556,7 +556,7 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
 
             // Column 4 (desc)
             // First interesting information: object's type
-            wxString type=col.GetNextToken();
+            wxString type = col.GetNextToken();
 
             if (type == wxT("PROCEDURAL"))
             {
@@ -574,7 +574,7 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
             {
                 // type for an operator class is OPERATOR CLASS
                 // we'll keep the two columns for the object's type
-                wxString tmp = str.Mid(str.Find(type)+type.Length()+1, 5);
+                wxString tmp = str.Mid(str.Find(type) + type.Length() + 1, 5);
                 if (tmp == wxT("CLASS"))
                     type += wxT(" ") + col.GetNextToken();
             }
@@ -582,7 +582,7 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
             {
                 // type for a sequence can be SEQUENCE, SEQUENCE OWNED BY or SEQUENCE SET
                 // we'll keep all these columns for the object's type
-                wxString tmp = str.Mid(str.Find(type)+type.Length()+1, 3);
+                wxString tmp = str.Mid(str.Find(type) + type.Length() + 1, 3);
                 if (tmp == wxT("OWN") || tmp == wxT("SET"))
                 {
                     type += wxT(" ") + col.GetNextToken();
@@ -607,25 +607,25 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
 
             // Column 5 (namespace)
             // Second interesting information: object's schema
-            wxString schema=col.GetNextToken();
+            wxString schema = col.GetNextToken();
 
             // Column 6 (tag)
             // Third interesting information: object's qualified name
             //wxString name=col.GetNextToken();
-            wxString name = str.Mid(str.Find(schema)+schema.Length()+1).BeforeLast(' ');
+            wxString name = str.Mid(str.Find(schema) + schema.Length() + 1).BeforeLast(' ');
 
             // Column 7 (owner)
             // Fourth interesting information: object's owner
-            wxString owner = str.Mid(str.Find(name)+name.Length()+1);
+            wxString owner = str.Mid(str.Find(name) + name.Length() + 1);
 
             // New method
             if (type == wxT("LANGUAGE"))
             {
-                lastItem = ctvObjects->AppendItem(root, wxT("Language ")+name+wxT(" [") + _("owner") + wxT(": ")+owner+wxT("]"), 1);
+                lastItem = ctvObjects->AppendItem(root, wxT("Language ") + name + wxT(" [") + _("owner") + wxT(": ") + owner + wxT("]"), 1);
             }
             else if (type == wxT("ACL") && schema == wxT("-"))
             {
-                lastItem = ctvObjects->AppendItem(root, type+wxT(" ")+name, 1);
+                lastItem = ctvObjects->AppendItem(root, type + wxT(" ") + name, 1);
             }
             else if (type == wxT("CAST"))
             {
@@ -634,7 +634,7 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
             else if (type == wxT("SCHEMA"))
             {
                 currentSchema = name;
-                lastItem = currentSchemaNode = ctvObjects->AppendItem(root, wxT("Schema ")+name, 1);
+                lastItem = currentSchemaNode = ctvObjects->AppendItem(root, wxT("Schema ") + name, 1);
             }
             else
             {
@@ -645,8 +645,8 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
                     bool found = false;
                     while (schemaNode.IsOk() && !found)
                     {
-                        if (ctvObjects->GetItemText(schemaNode) == wxT("Schema ")+schema)
-                            found=true;
+                        if (ctvObjects->GetItemText(schemaNode) == wxT("Schema ") + schema)
+                            found = true;
                         else
                             schemaNode = ctvObjects->GetNextChild(root, schemaNodeData);
                     }
@@ -660,11 +660,11 @@ void frmRestore::OnEndProcess(wxProcessEvent& ev)
                     // if we are treating a comment, we use the schema of its
                     // object (ie, the previous line)
                     else if (type != wxT("COMMENT"))
-                        wxLogError(_("Schema node not found for object ") + type+wxT(" ")+name+wxT(" [")+_("owner")+wxT(": ")+owner+wxT("]"));
+                        wxLogError(_("Schema node not found for object ") + type + wxT(" ") + name + wxT(" [") + _("owner") + wxT(": ") + owner + wxT("]"));
                 }
-                lastItem = ctvObjects->AppendItem(currentSchemaNode, type+wxT(" ")+name+wxT(" [")+_("owner")+wxT(": ")+owner+wxT("]"), 1);
+                lastItem = ctvObjects->AppendItem(currentSchemaNode, type + wxT(" ") + name + wxT(" [") + _("owner") + wxT(": ") + owner + wxT("]"), 1);
             }
-            ctvObjects->SetItemData(lastItem, new restoreTreeItemData(numberOfTOCItems,str));
+            ctvObjects->SetItemData(lastItem, new restoreTreeItemData(numberOfTOCItems, str));
             numberOfTOCItems++;
         }
 
@@ -694,7 +694,7 @@ restoreFactory::restoreFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolba
 
 wxWindow *restoreFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmRestore *frm=new frmRestore(form, obj);
+    frmRestore *frm = new frmRestore(form, obj);
     frm->Go();
     return 0;
 }
@@ -714,7 +714,7 @@ bool restoreFactory::CheckEnable(pgObject *obj)
 }
 
 
-restoreTreeItemData::restoreTreeItemData(int id, const wxString& desc)
+restoreTreeItemData::restoreTreeItemData(int id, const wxString &desc)
 {
     restoreId = id;
     restoreDesc = desc;

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,7 +21,7 @@
 
 
 ExplainCanvas::ExplainCanvas(wxWindow *parent)
-: wxShapeCanvas(parent)
+    : wxShapeCanvas(parent)
 {
     SetDiagram(new wxDiagram);
     GetDiagram()->SetCanvas(this);
@@ -45,40 +45,40 @@ void ExplainCanvas::SetExplainString(const wxString &str)
 {
     Clear();
 
-    ExplainShape *last=0;
-    int maxLevel=0;
+    ExplainShape *last = 0;
+    int maxLevel = 0;
 
     wxStringTokenizer lines(str, wxT("\n"));
 
     while (lines.HasMoreTokens())
     {
-        wxString tmp=lines.GetNextToken();
-        wxString line=tmp.Strip(wxString::both);
+        wxString tmp = lines.GetNextToken();
+        wxString line = tmp.Strip(wxString::both);
 
-		int braceCount=0;
-		do
-		{
-			const wxChar *cp=line.c_str();
-			while (*cp)
-			{
-				if (*cp == '(')
-					braceCount++;
-				else if (*cp == ')')
-					braceCount--;
-				cp++;
-			}
-			if (braceCount > 0)
-			{
-		        wxString tmp=lines.GetNextToken();
-				line += wxT(" ") + tmp.Strip(wxString::both);
-				braceCount=0;
-			}
-			else
-				break;
-		}
-		while (lines.HasMoreTokens());
+        int braceCount = 0;
+        do
+        {
+            const wxChar *cp = line.c_str();
+            while (*cp)
+            {
+                if (*cp == '(')
+                    braceCount++;
+                else if (*cp == ')')
+                    braceCount--;
+                cp++;
+            }
+            if (braceCount > 0)
+            {
+                wxString tmp = lines.GetNextToken();
+                line += wxT(" ") + tmp.Strip(wxString::both);
+                braceCount = 0;
+            }
+            else
+                break;
+        }
+        while (lines.HasMoreTokens());
 
-        long level = (tmp.Length() - line.Length() +4) / 6;
+        long level = (tmp.Length() - line.Length() + 4) / 6;
 
         if (last)
         {
@@ -98,7 +98,7 @@ void ExplainCanvas::SetExplainString(const wxString &str)
         }
 
 
-        ExplainShape *s=ExplainShape::Create(level, last, line);
+        ExplainShape *s = ExplainShape::Create(level, last, line);
         if (!s)
             continue;
         s->SetCanvas(this);
@@ -107,22 +107,22 @@ void ExplainCanvas::SetExplainString(const wxString &str)
 
         if (level > maxLevel)
             maxLevel = level;
-        
+
         if (!last)
             rootShape = s;
-        last=s;
+        last = s;
     }
 
 
-    int x0 = (int)(rootShape->GetWidth()*3);
-    int y0 = (int)(rootShape->GetHeight()*3/2);
-    int xoffs = (int)(rootShape->GetWidth()*3);
-    int yoffs = (int)(rootShape->GetHeight()*5/4);
+    int x0 = (int)(rootShape->GetWidth() * 3);
+    int y0 = (int)(rootShape->GetHeight() * 3 / 2);
+    int xoffs = (int)(rootShape->GetWidth() * 3);
+    int yoffs = (int)(rootShape->GetHeight() * 5 / 4);
 
     wxNode *current = GetDiagram()->GetShapeList()->GetFirst();
     while (current)
     {
-        ExplainShape *s = (ExplainShape*)current->GetData();
+        ExplainShape *s = (ExplainShape *)current->GetData();
 
         if (!s->totalShapes)
             s->totalShapes = 1;
@@ -134,7 +134,7 @@ void ExplainCanvas::SetExplainString(const wxString &str)
     current = GetDiagram()->GetShapeList()->GetLast();
     while (current)
     {
-        ExplainShape *s = (ExplainShape*)current->GetData();
+        ExplainShape *s = (ExplainShape *)current->GetData();
 
         s->SetX(y0 + (maxLevel - s->GetLevel()) * xoffs);
         ExplainShape *upper = s->GetUpper();
@@ -144,7 +144,7 @@ void ExplainCanvas::SetExplainString(const wxString &str)
             s->SetY(upper->GetY() + upper->usedShapes * yoffs);
             upper->usedShapes += s->totalShapes;
 
-            wxLineShape *l=new ExplainLine(s, upper);
+            wxLineShape *l = new ExplainLine(s, upper);
             l->Show(true);
             AddShape(l);
         }
@@ -157,8 +157,8 @@ void ExplainCanvas::SetExplainString(const wxString &str)
     }
 
 #define PIXPERUNIT  20
-    int w=(maxLevel * xoffs + x0*2 + PIXPERUNIT - 1) / PIXPERUNIT;
-    int h=(rootShape->totalShapes * yoffs + y0*2 + PIXPERUNIT - 1) / PIXPERUNIT;
+    int w = (maxLevel * xoffs + x0 * 2 + PIXPERUNIT - 1) / PIXPERUNIT;
+    int h = (rootShape->totalShapes * yoffs + y0 * 2 + PIXPERUNIT - 1) / PIXPERUNIT;
 
     SetScrollbars(PIXPERUNIT, PIXPERUNIT, w, h);
 }
@@ -171,17 +171,17 @@ void ExplainCanvas::ShowPopup(ExplainShape *s)
 
     popup->SetShape(s);
 
-    if (sy > GetClientSize().y*2/3)
+    if (sy > GetClientSize().y * 2 / 3)
         sy -= popup->GetSize().y;
     sx -= popup->GetSize().x / 2;
-    if (sx < 0) sx=0;
+    if (sx < 0) sx = 0;
 
     popup->Popup();
     popup->Move(ClientToScreen(wxPoint(sx, sy)));
 }
 
 
-void ExplainCanvas::SaveAsImage(const wxString& fileName, wxBitmapType imageType)
+void ExplainCanvas::SaveAsImage(const wxString &fileName, wxBitmapType imageType)
 {
     if (GetDiagram()->GetCount() == 0)
     {
@@ -191,19 +191,19 @@ void ExplainCanvas::SaveAsImage(const wxString& fileName, wxBitmapType imageType
 
     int width = 0, height = 0;
     GetVirtualSize(&width, &height);
-    
+
     /*
     * Create the bitmap from the Explain window
     */
     wxMemoryDC memDC;
     wxBitmap tempBitmap(width, height);
-    
+
     memDC.SelectObject(tempBitmap);
     memDC.Clear();
-    
+
     // Draw the diagram on the bitmap (Memory Device Context)
     GetDiagram()->Redraw(memDC);
-    
+
     memDC.SelectObject(wxNullBitmap);
 
     if (!tempBitmap.SaveFile(fileName, imageType))
@@ -231,9 +231,9 @@ END_EVENT_TABLE()
 
 ExplainText::ExplainText(wxWindow *parent, ExplainShape *s) : wxWindow(parent, -1)
 {
-    SetBackgroundColour(wxColour(255,255,224));
+    SetBackgroundColour(wxColour(255, 255, 224));
 
-    shape=s;
+    shape = s;
 
     wxWindowDC dc(this);
     dc.SetFont(settings->GetSystemFont());
@@ -242,15 +242,15 @@ ExplainText::ExplainText(wxWindow *parent, ExplainShape *s) : wxWindow(parent, -
     dc.GetTextExtent(shape->description, &w1, &h);
 
     dc.GetTextExtent(shape->detail, &w2, &h);
-    if (w1 < w2)    w1=w2;
+    if (w1 < w2)    w1 = w2;
     dc.GetTextExtent(shape->condition, &w2, &h);
-    if (w1 < w2)    w1=w2;
+    if (w1 < w2)    w1 = w2;
     dc.GetTextExtent(shape->cost, &w2, &h);
-    if (w1 < w2)    w1=w2;
+    if (w1 < w2)    w1 = w2;
     dc.GetTextExtent(shape->actual, &w2, &h);
-    if (w1 < w2)    w1=w2;
+    if (w1 < w2)    w1 = w2;
 
-    int n=2;
+    int n = 2;
     if (!shape->detail.IsEmpty())
         n++;
     if (!shape->condition.IsEmpty())
@@ -263,10 +263,10 @@ ExplainText::ExplainText(wxWindow *parent, ExplainShape *s) : wxWindow(parent, -
     if (!h)
         h = GetCharHeight();
 
-    SetSize(GetCharHeight() + w1, GetCharHeight() + h * n + h/3);
+    SetSize(GetCharHeight() + w1, GetCharHeight() + h * n + h / 3);
 }
 
-    
+
 void ExplainText::OnPaint(wxPaintEvent &ev)
 {
     wxPaintDC dc(this);
@@ -291,7 +291,7 @@ void ExplainText::OnPaint(wxPaintEvent &ev)
         dc.DrawText(shape->detail, x, y);
 
     }
-    y += yoffs/3;
+    y += yoffs / 3;
 
     if (!shape->condition.IsEmpty())
     {
@@ -312,12 +312,12 @@ void ExplainText::OnPaint(wxPaintEvent &ev)
 
 
 BEGIN_EVENT_TABLE(ExplainPopup, wxDialog)
-EVT_MOTION(ExplainPopup::OnMouseMove)
+    EVT_MOTION(ExplainPopup::OnMouseMove)
 END_EVENT_TABLE()
 
 ExplainPopup::ExplainPopup(wxWindow *w) : wxDialog(w, -1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSIMPLE_BORDER)
 {
-    explainText=0;
+    explainText = 0;
 }
 
 
@@ -333,7 +333,7 @@ void ExplainPopup::SetShape(ExplainShape *s)
 void ExplainPopup::Popup()
 {
     Show();
-	Raise();
+    Raise();
     wxTheApp->Yield(true);
 
     popupPoint = wxDefaultPosition;
@@ -355,7 +355,7 @@ void ExplainPopup::OnMouseMove(wxMouseEvent &ev)
         {
             ReleaseMouse();
             delete explainText;
-            explainText=0;
+            explainText = 0;
             wxDialog::Hide();
         }
     }

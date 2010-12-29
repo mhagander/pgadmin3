@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgColumn.h - Column property 
+// dlgColumn.h - Column property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -28,13 +28,25 @@ public:
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
     wxString GetDefinition();
-    wxString GetPreviousDefinition() { return previousDefinition; }
-	wxString GetComment() {	return txtComment->GetValue(); }
-	wxString GetStatistics() {	return CTRL_TEXT("txtAttstattarget")->GetValue(); }
+    wxString GetPreviousDefinition()
+    {
+        return previousDefinition;
+    }
+    wxString GetComment()
+    {
+        return txtComment->GetValue();
+    }
+    wxString GetStatistics()
+    {
+        return CTRL_TEXT("txtAttstattarget")->GetValue();
+    }
 
     int Go(bool modal);
 
-    wxString GetHelpPage(bool forCreate) const { return wxT("pg/sql-createtable"); }
+    wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pg/sql-createtable");
+    }
 
 protected:
     /*
@@ -50,8 +62,8 @@ protected:
 
     wxString GetGrant(const wxString &allPattern, const wxString &grantObject);
 
-    void OnAddPriv(wxCommandEvent& ev);
-    void OnDelPriv(wxCommandEvent& ev);
+    void OnAddPriv(wxCommandEvent &ev);
+    void OnDelPriv(wxCommandEvent &ev);
 
 #ifdef __WXMAC__
     void OnChangeSize(wxSizeEvent &ev);
@@ -66,11 +78,11 @@ protected:
 private:
     pgColumn *column;
     pgTable *table;
-    wxArrayString varInfo; 
-    bool dirtyVars; 
+    wxArrayString varInfo;
+    bool dirtyVars;
 
     void OnSelChangeTyp(wxCommandEvent &ev);
- 
+
     wxString previousDefinition;
     wxArrayString sequences;
 

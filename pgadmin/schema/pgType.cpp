@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,8 +19,8 @@
 #include "schema/pgDatatype.h"
 
 
-pgType::pgType(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, typeFactory, newName)
+pgType::pgType(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, typeFactory, newName)
 {
 }
 
@@ -31,7 +31,7 @@ pgType::~pgType()
 wxString pgType::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -44,11 +44,11 @@ wxString pgType::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop type \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop type \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop type cascaded?");
@@ -103,8 +103,8 @@ wxString pgType::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Type: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP TYPE ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE TYPE ") + GetQuotedFullIdentifier();
+              + wxT("-- DROP TYPE ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE TYPE ") + GetQuotedFullIdentifier();
         if (GetTypeClass() == TYPE_COMPOSITE)
         {
             sql += wxT(" AS\n   (");
@@ -117,33 +117,33 @@ wxString pgType::GetSql(ctlTree *browser)
         }
         else
         {
-            sql += wxT("\n   (INPUT=") + qtIdent(GetInputFunction()) 
-                + wxT(", OUTPUT=") + qtIdent(GetOutputFunction());
+            sql += wxT("\n   (INPUT=") + qtIdent(GetInputFunction())
+                   + wxT(", OUTPUT=") + qtIdent(GetOutputFunction());
             AppendIfFilled(sql, wxT(", DEFAULT="), qtDbString(GetDefault()));
             if (!GetElement().IsNull())
             {
                 sql += wxT(",\n       ELEMENT=") + GetElement()
-                    + wxT(", DELIMITER='") + GetDelimiter() + wxT("'");
+                       + wxT(", DELIMITER='") + GetDelimiter() + wxT("'");
             }
-            sql +=wxT(",\n       INTERNALLENGTH=") + NumToStr(GetInternalLength())
-                + wxT(", ALIGNMENT=" + GetAlignment()
-                + wxT(", STORAGE=") + GetStorage());
+            sql += wxT(",\n       INTERNALLENGTH=") + NumToStr(GetInternalLength())
+                   + wxT(", ALIGNMENT=" + GetAlignment()
+                         + wxT(", STORAGE=") + GetStorage());
             if (GetConnection()->BackendMinimumVersion(8, 3))
             {
                 if (GetTypmodinFunction() != wxEmptyString && GetTypmodoutFunction() != wxEmptyString)
                 {
-                    sql +=wxT(",\n       TYPMOD_IN=") + GetTypmodinFunction()
-                         +wxT(", TYPMOD_OUT=") + GetTypmodoutFunction();
+                    sql += wxT(",\n       TYPMOD_IN=") + GetTypmodinFunction()
+                           + wxT(", TYPMOD_OUT=") + GetTypmodoutFunction();
                 }
                 else if (GetTypmodinFunction() != wxEmptyString)
-                    sql +=wxT(",\n       TYPMOD_IN=") + GetTypmodinFunction();
+                    sql += wxT(",\n       TYPMOD_IN=") + GetTypmodinFunction();
                 else if (GetTypmodoutFunction() != wxEmptyString)
-                    sql +=wxT(",\n       TYPMOD_OUT=") + GetTypmodoutFunction();
+                    sql += wxT(",\n       TYPMOD_OUT=") + GetTypmodoutFunction();
             }
         }
         sql += wxT(");\n")
-            + GetOwnerSql(8, 0)
-            + GetCommentSql();
+               + GetOwnerSql(8, 0)
+               + GetCommentSql();
     }
 
     return sql;
@@ -155,21 +155,21 @@ void pgType::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
         if (GetTypeClass() == TYPE_COMPOSITE)
         {
-            pgSet *set=ExecuteSet(
-                wxT("SELECT attname, format_type(t.oid,NULL) AS typname, attndims, atttypmod, nspname,\n")
-                wxT("       (SELECT COUNT(1) from pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup\n")
-                wxT("  FROM pg_attribute att\n")
-                wxT("  JOIN pg_type t ON t.oid=atttypid\n")
-                wxT("  JOIN pg_namespace nsp ON t.typnamespace=nsp.oid\n")
-                wxT("  LEFT OUTER JOIN pg_type b ON t.typelem=b.oid\n")
-                wxT(" WHERE att.attrelid=") + NumToStr(relOid) + wxT("\n")
-                wxT(" ORDER by attnum"));
+            pgSet *set = ExecuteSet(
+                             wxT("SELECT attname, format_type(t.oid,NULL) AS typname, attndims, atttypmod, nspname,\n")
+                             wxT("       (SELECT COUNT(1) from pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup\n")
+                             wxT("  FROM pg_attribute att\n")
+                             wxT("  JOIN pg_type t ON t.oid=atttypid\n")
+                             wxT("  JOIN pg_namespace nsp ON t.typnamespace=nsp.oid\n")
+                             wxT("  LEFT OUTER JOIN pg_type b ON t.typelem=b.oid\n")
+                             wxT(" WHERE att.attrelid=") + NumToStr(relOid) + wxT("\n")
+                             wxT(" ORDER by attnum"));
             if (set)
             {
-                int anzvar=0;
+                int anzvar = 0;
                 while (!set->Eof())
                 {
                     wxString element;
@@ -183,9 +183,9 @@ void pgType::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
                     quotedTypesList += qtIdent(set->GetVal(wxT("attname"))) + wxT(" ");
 
                     pgDatatype dt(set->GetVal(wxT("nspname")), set->GetVal(wxT("typname")),
-                        set->GetBool(wxT("isdup")), set->GetLong(wxT("attndims")) > 0, set->GetLong(wxT("atttypmod")));
+                                  set->GetBool(wxT("isdup")), set->GetLong(wxT("attndims")) > 0, set->GetLong(wxT("atttypmod")));
 
-                    wxString nspname=set->GetVal(wxT("nspname"));
+                    wxString nspname = set->GetVal(wxT("nspname"));
 
                     typesList += dt.GetSchemaPrefix(GetDatabase()) + dt.FullName();
                     typesArray.Add(dt.GetSchemaPrefix(GetDatabase()) + dt.FullName());
@@ -205,10 +205,10 @@ void pgType::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
                 query += wxT(" ORDER by enumsortorder");
             else
                 query += wxT(" ORDER by oid");
-            pgSet *set=ExecuteSet(query);
+            pgSet *set = ExecuteSet(query);
             if (set)
             {
-                int anzvar=0;
+                int anzvar = 0;
                 while (!set->Eof())
                 {
                     wxString element;
@@ -259,8 +259,8 @@ void pgType::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
             properties->AppendItem(_("Output function"), GetOutputFunction());
             if (GetConnection()->BackendMinimumVersion(7, 4))
             {
-            properties->AppendItem(_("Receive function"), GetReceiveFunction());
-            properties->AppendItem(_("Send function"), GetSendFunction());
+                properties->AppendItem(_("Receive function"), GetReceiveFunction());
+                properties->AppendItem(_("Send function"), GetSendFunction());
             }
             if (GetConnection()->BackendMinimumVersion(8, 3))
             {
@@ -280,8 +280,8 @@ void pgType::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 
 pgObject *pgType::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *type=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *type = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         type = typeFactory.CreateObjects(coll, 0, wxT("\n   AND t.oid=") + GetOidStr());
 
@@ -292,7 +292,7 @@ pgObject *pgType::Refresh(ctlTree *browser, const wxTreeItemId item)
 wxString pgTypeCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -305,7 +305,7 @@ wxString pgTypeCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Types list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -315,28 +315,28 @@ wxString pgTypeCollection::GetTranslatedMessage(int kindOfMessage) const
 
 pgObject *pgTypeFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgType *type=0;
+    pgType *type = 0;
     wxString systemRestriction;
     if (!settings->GetShowSystemObjects())
         systemRestriction = wxT("   AND ct.oid IS NULL\n");
 
-	wxString sql =	wxT("SELECT t.oid, t.*, format_type(t.oid, null) AS alias, pg_get_userbyid(t.typowner) as typeowner, e.typname as element, description, ct.oid AS taboid\n")
-			        wxT("  FROM pg_type t\n")
-					wxT("  LEFT OUTER JOIN pg_type e ON e.oid=t.typelem\n")
-					wxT("  LEFT OUTER JOIN pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'\n")
-					wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=t.oid\n");
+    wxString sql =	wxT("SELECT t.oid, t.*, format_type(t.oid, null) AS alias, pg_get_userbyid(t.typowner) as typeowner, e.typname as element, description, ct.oid AS taboid\n")
+                    wxT("  FROM pg_type t\n")
+                    wxT("  LEFT OUTER JOIN pg_type e ON e.oid=t.typelem\n")
+                    wxT("  LEFT OUTER JOIN pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'\n")
+                    wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=t.oid\n");
 
-	if (collection->GetDatabase()->BackendMinimumVersion(8, 1))
-		sql += wxT(" WHERE t.typtype != 'd' AND t.typname NOT LIKE E'\\\\_%' AND t.typnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n");
-	else
-		sql += wxT(" WHERE t.typtype != 'd' AND t.typname NOT LIKE '\\\\_%' AND t.typnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n");
+    if (collection->GetDatabase()->BackendMinimumVersion(8, 1))
+        sql += wxT(" WHERE t.typtype != 'd' AND t.typname NOT LIKE E'\\\\_%' AND t.typnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n");
+    else
+        sql += wxT(" WHERE t.typtype != 'd' AND t.typname NOT LIKE '\\\\_%' AND t.typnamespace = ") + collection->GetSchema()->GetOidStr() + wxT("\n");
 
-	sql += restriction + systemRestriction +
-			wxT(" ORDER BY t.typname");
+    sql += restriction + systemRestriction +
+           wxT(" ORDER BY t.typname");
 
-	pgSet *types = collection->GetDatabase()->ExecuteSet(sql);
-		
-	if (types)
+    pgSet *types = collection->GetDatabase()->ExecuteSet(sql);
+
+    if (types)
     {
         while (!types->Eof())
         {
@@ -374,14 +374,14 @@ pgObject *pgTypeFactory::CreateObjects(pgCollection *collection, ctlTree *browse
                 if (types->GetVal(wxT("typmodout")) != wxT("-"))
                     type->iSetTypmodoutFunction(types->GetVal(wxT("typmodout")));
             }
-            wxString align=types->GetVal(wxT("typalign"));
-            type->iSetAlignment( 
+            wxString align = types->GetVal(wxT("typalign"));
+            type->iSetAlignment(
                 align == wxT("c") ? wxT("char") :
                 align == wxT("s") ? wxT("int2") :
                 align == wxT("i") ? wxT("int4") :
                 align == wxT("d") ? wxT("double") : wxT("unknown"));
             type->iSetDefault(types->GetVal(wxT("typdefault")));
-            wxString storage=types->GetVal(wxT("typstorage"));
+            wxString storage = types->GetVal(wxT("typstorage"));
             type->iSetStorage(
                 storage == wxT("p") ? wxT("PLAIN") :
                 storage == wxT("e") ? wxT("EXTERNAL") :
@@ -391,13 +391,13 @@ pgObject *pgTypeFactory::CreateObjects(pgCollection *collection, ctlTree *browse
             if (browser)
             {
                 browser->AppendObject(collection, type);
-    			types->MoveNext();
+                types->MoveNext();
             }
             else
                 break;
         }
 
-		delete types;
+        delete types;
     }
     return type;
 }
@@ -406,8 +406,8 @@ pgObject *pgTypeFactory::CreateObjects(pgCollection *collection, ctlTree *browse
 #include "images/type.xpm"
 #include "images/types.xpm"
 
-pgTypeFactory::pgTypeFactory() 
-: pgSchemaObjFactory(__("Type"), __("New Type..."), __("Create a new Type."), type_xpm)
+pgTypeFactory::pgTypeFactory()
+    : pgSchemaObjFactory(__("Type"), __("New Type..."), __("Create a new Type."), type_xpm)
 {
 }
 

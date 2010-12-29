@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,10 +22,10 @@
 #include "schema/pgFunction.h"
 
 
-pgTrigger::pgTrigger(pgSchema *newSchema, const wxString& newName)
-: pgTriggerObject(newSchema, triggerFactory, newName)
+pgTrigger::pgTrigger(pgSchema *newSchema, const wxString &newName)
+    : pgTriggerObject(newSchema, triggerFactory, newName)
 {
-    triggerFunction=0;
+    triggerFunction = 0;
 }
 
 
@@ -33,7 +33,7 @@ pgTrigger::~pgTrigger()
 {
     if (!expandedKids && triggerFunction)
     {
-        // triggerFunction wasn't appended to tree, so we 
+        // triggerFunction wasn't appended to tree, so we
         // need to delete it manually
         delete triggerFunction;
     }
@@ -42,7 +42,7 @@ pgTrigger::~pgTrigger()
 wxString pgTrigger::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -59,11 +59,11 @@ wxString pgTrigger::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop trigger \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop trigger \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop trigger cascaded?");
@@ -107,10 +107,10 @@ wxString pgTrigger::GetTranslatedMessage(int kindOfMessage) const
 bool pgTrigger::IsUpToDate()
 {
     wxString sql = wxT("SELECT xmin FROM pg_trigger WHERE oid = ") + this->GetOidStr();
-	if (!this->GetDatabase()->GetConnection() || this->GetDatabase()->ExecuteScalar(sql) != NumToStr(GetXid()))
-		return false;
-	else
-		return true;
+    if (!this->GetDatabase()->GetConnection() || this->GetDatabase()->ExecuteScalar(sql) != NumToStr(GetXid()))
+        return false;
+    else
+        return true;
 }
 
 bool pgTrigger::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
@@ -135,14 +135,14 @@ void pgTrigger::SetEnabled(const bool b)
         GetDatabase()->ExecuteVoid(sql);
     }
 
-    enabled=b;
+    enabled = b;
 }
 
 
 void pgTrigger::SetDirty()
 {
     if (expandedKids)
-        triggerFunction=0;
+        triggerFunction = 0;
     pgObject::SetDirty();
 }
 
@@ -152,22 +152,22 @@ wxString pgTrigger::GetSql(ctlTree *browser)
     if (sql.IsNull() && (this->triggerFunction || GetLanguage() == wxT("edbspl")))
     {
         sql = wxT("-- Trigger: ") + GetName() + wxT(" on ") + GetQuotedFullTable() + wxT("\n\n")
-            + wxT("-- DROP TRIGGER ") + qtIdent(GetName())
-            + wxT(" ON ") + GetQuotedFullTable() +wxT(";\n\n");
+              + wxT("-- DROP TRIGGER ") + qtIdent(GetName())
+              + wxT(" ON ") + GetQuotedFullTable() + wxT(";\n\n");
 
         if (GetLanguage() == wxT("edbspl"))
             sql += wxT("CREATE OR REPLACE TRIGGER ") + qtIdent(GetName());
         else
             sql += wxT("CREATE TRIGGER ") + qtIdent(GetName());
 
-        sql += wxT("\n  ") + GetFireWhen() 
-            + wxT(" ") + GetEvent();
+        sql += wxT("\n  ") + GetFireWhen()
+               + wxT(" ") + GetEvent();
 
         sql += wxT("\n  ON ") + GetQuotedFullTable()
-            + wxT("\n  FOR EACH ") + GetForEach();
-        
+               + wxT("\n  FOR EACH ") + GetForEach();
+
         if (GetConnection()->BackendMinimumVersion(8, 5)
-            && !GetWhen().IsEmpty())
+                && !GetWhen().IsEmpty())
             sql += wxT("\n  WHEN (") + GetWhen() + wxT(")");
 
         if (GetLanguage() == wxT("edbspl"))
@@ -179,21 +179,21 @@ wxString pgTrigger::GetSql(ctlTree *browser)
         }
         else
         {
-            sql += wxT("\n  EXECUTE PROCEDURE ") + triggerFunction->GetQuotedFullIdentifier() 
-                + wxT("(") + GetArguments() + wxT(")")
-                + wxT(";\n");
+            sql += wxT("\n  EXECUTE PROCEDURE ") + triggerFunction->GetQuotedFullIdentifier()
+                   + wxT("(") + GetArguments() + wxT(")")
+                   + wxT(";\n");
         }
 
         if (!GetComment().IsEmpty())
             sql += wxT("COMMENT ON TRIGGER ") + GetQuotedIdentifier() + wxT(" ON ") + GetQuotedFullTable()
-                +  wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+                   +  wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
     }
 
     return sql;
 }
 
 
-wxString pgTrigger::GetFireWhen() const 
+wxString pgTrigger::GetFireWhen() const
 {
     wxString when = wxEmptyString;
 
@@ -248,17 +248,17 @@ void pgTrigger::ReadColumnDetails()
     {
         expandedKids = true;
 
-		if (GetConnection()->BackendMinimumVersion(8, 5))
+        if (GetConnection()->BackendMinimumVersion(8, 5))
         {
             pgSet *res = ExecuteSet(
-                wxT("SELECT attname\n")
-                wxT("FROM pg_attribute,\n")
-                wxT("(SELECT tgrelid, unnest(tgattr) FROM pg_trigger\n")
-                wxT(" WHERE oid=") + GetOidStr() + wxT(") AS columns(tgrelid, colnum)\n")
-                wxT("WHERE colnum=attnum AND tgrelid=attrelid"));
+                             wxT("SELECT attname\n")
+                             wxT("FROM pg_attribute,\n")
+                             wxT("(SELECT tgrelid, unnest(tgattr) FROM pg_trigger\n")
+                             wxT(" WHERE oid=") + GetOidStr() + wxT(") AS columns(tgrelid, colnum)\n")
+                             wxT("WHERE colnum=attnum AND tgrelid=attrelid"));
 
-		    // Allocate memory to store column def
-		    if (res->NumRows()>0) columnList.Alloc(res->NumRows());
+            // Allocate memory to store column def
+            if (res->NumRows() > 0) columnList.Alloc(res->NumRows());
 
             long i = 1;
             columns = wxT("");
@@ -274,7 +274,7 @@ void pgTrigger::ReadColumnDetails()
 
                 columns += res->GetVal(wxT("attname"));
                 quotedColumns += res->GetVal(wxT("attname"));
-				columnList.Add(res->GetVal(wxT("attname")));
+                columnList.Add(res->GetVal(wxT("attname")));
 
                 i++;
                 res->MoveNext();
@@ -304,8 +304,8 @@ void pgTrigger::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pro
             delete triggerFunction;
 
         // append function here
-        triggerFunction=functionFactory.AppendFunctions(this, GetSchema(), browser, wxT(
-            "WHERE pr.oid=") + NumToStr(functionOid) + wxT("::oid\n"));
+        triggerFunction = functionFactory.AppendFunctions(this, GetSchema(), browser, wxT(
+                              "WHERE pr.oid=") + NumToStr(functionOid) + wxT("::oid\n"));
         if (triggerFunction)
         {
             iSetFunction(triggerFunction->GetName());
@@ -339,12 +339,12 @@ void pgTrigger::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pro
 
 pgObject *pgTrigger::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *trigger=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *trigger = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
     {
-        wxString restr = wxT("\n   AND t.tgname=") + qtDbString(GetName()) + 
-                         wxT(" AND cl.oid=") + GetTable()->GetOidStr() + 
+        wxString restr = wxT("\n   AND t.tgname=") + qtDbString(GetName()) +
+                         wxT(" AND cl.oid=") + GetTable()->GetOidStr() +
                          wxT("::oid AND cl.relnamespace=") + GetSchema()->GetOidStr() + wxT("::oid");
         trigger = triggerFactory.CreateObjects(coll, 0, restr);
     }
@@ -356,20 +356,20 @@ pgObject *pgTrigger::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgTriggerFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restriction)
 {
-    pgSchemaObjCollection *collection=(pgSchemaObjCollection*)coll;
-    pgTrigger *trigger=0;
+    pgSchemaObjCollection *collection = (pgSchemaObjCollection *)coll;
+    pgTrigger *trigger = 0;
 
     wxString trig_sql;
     trig_sql = wxT("SELECT t.oid, t.xmin, t.*, relname, CASE WHEN relkind = 'r' THEN TRUE ELSE FALSE END AS parentistable, ")
-        wxT("  nspname, des.description, l.lanname, p.prosrc, \n")
-        wxT("  trim(substring(pg_get_triggerdef(t.oid), 'WHEN (.*) EXECUTE PROCEDURE'), '()') AS whenclause\n")
-        wxT("  FROM pg_trigger t\n")
-        wxT("  JOIN pg_class cl ON cl.oid=tgrelid\n")
-        wxT("  JOIN pg_namespace na ON na.oid=relnamespace\n")
-        wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=t.oid\n")
-        wxT("  LEFT OUTER JOIN pg_proc p ON p.oid=t.tgfoid\n")
-        wxT("  LEFT OUTER JOIN pg_language l ON l.oid=p.prolang\n")
-        wxT(" WHERE ");
+               wxT("  nspname, des.description, l.lanname, p.prosrc, \n")
+               wxT("  trim(substring(pg_get_triggerdef(t.oid), 'WHEN (.*) EXECUTE PROCEDURE'), '()') AS whenclause\n")
+               wxT("  FROM pg_trigger t\n")
+               wxT("  JOIN pg_class cl ON cl.oid=tgrelid\n")
+               wxT("  JOIN pg_namespace na ON na.oid=relnamespace\n")
+               wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=t.oid\n")
+               wxT("  LEFT OUTER JOIN pg_proc p ON p.oid=t.tgfoid\n")
+               wxT("  LEFT OUTER JOIN pg_language l ON l.oid=p.prolang\n")
+               wxT(" WHERE ");
     if (collection->GetDatabase()->connection()->BackendMinimumVersion(9, 0))
         trig_sql += wxT("NOT tgisinternal\n");
     else
@@ -379,7 +379,7 @@ pgObject *pgTriggerFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
     else
         trig_sql += restriction + wxT("\n");
     trig_sql += wxT(" ORDER BY tgname");
-    pgSet *triggers= collection->GetDatabase()->ExecuteSet(trig_sql);
+    pgSet *triggers = collection->GetDatabase()->ExecuteSet(trig_sql);
 
     if (triggers)
     {
@@ -405,25 +405,25 @@ pgObject *pgTriggerFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
 
             trigger->iSetTriggerType(triggers->GetLong(wxT("tgtype")));
             trigger->iSetParentIsTable(triggers->GetBool(wxT("parentistable")));
-            
+
             trigger->iSetLanguage(triggers->GetVal(wxT("lanname")));
             trigger->iSetSource(triggers->GetVal(wxT("prosrc")));
             trigger->iSetQuotedFullTable(collection->GetDatabase()->GetQuotedSchemaPrefix(triggers->GetVal(wxT("nspname"))) + qtIdent(triggers->GetVal(wxT("relname"))));
             wxString arglist = wxEmptyString;
             if (triggers->GetLong(wxT("tgnargs")) > 0)
-                arglist=triggers->GetVal(wxT("tgargs"));
+                arglist = triggers->GetVal(wxT("tgargs"));
             wxString args = wxEmptyString;
 
             while (!arglist.IsEmpty())
             {
-                int pos=arglist.Find(wxT("\\000"));
+                int pos = arglist.Find(wxT("\\000"));
                 if (pos != 0)
                 {
                     wxString arg;
                     if (pos > 0)
-                        arg=arglist.Left(pos);
+                        arg = arglist.Left(pos);
                     else
-                        arg=arglist;
+                        arg = arglist;
 
                     if (!args.IsEmpty())
                         args += wxT(", ");
@@ -433,7 +433,7 @@ pgObject *pgTriggerFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
                         args += collection->GetDatabase()->GetConnection()->qtDbString(arg);
                 }
                 if (pos >= 0)
-                    arglist = arglist.Mid(pos+4);
+                    arglist = arglist.Mid(pos + 4);
                 else
                     break;
             }
@@ -445,13 +445,13 @@ pgObject *pgTriggerFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
             if (browser)
             {
                 browser->AppendObject(collection, trigger);
-    			triggers->MoveNext();
+                triggers->MoveNext();
             }
             else
                 break;
         }
 
-		delete triggers;
+        delete triggers;
     }
     return trigger;
 }
@@ -461,7 +461,7 @@ pgObject *pgTriggerFactory::CreateObjects(pgCollection *coll, ctlTree *browser, 
 wxString pgTriggerCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -474,7 +474,7 @@ wxString pgTriggerCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Triggers list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -483,8 +483,8 @@ wxString pgTriggerCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/trigger.xpm"
 #include "images/triggers.xpm"
 
-pgTriggerFactory::pgTriggerFactory() 
-: pgSchemaObjFactory(__("Trigger"), __("New Trigger..."), __("Create a new Trigger."), trigger_xpm)
+pgTriggerFactory::pgTriggerFactory()
+    : pgSchemaObjFactory(__("Trigger"), __("New Trigger..."), __("Create a new Trigger."), trigger_xpm)
 {
     metaType = PGM_TRIGGER;
 }
@@ -501,9 +501,9 @@ enabledisableTriggerFactory::enabledisableTriggerFactory(menuFactoryList *list, 
 
 wxWindow *enabledisableTriggerFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    ((pgTrigger*)obj)->SetEnabled(!((pgTrigger*)obj)->GetEnabled());
+    ((pgTrigger *)obj)->SetEnabled(!((pgTrigger *)obj)->GetEnabled());
 
-    wxTreeItemId item=form->GetBrowser()->GetSelection();
+    wxTreeItemId item = form->GetBrowser()->GetSelection();
     if (obj == form->GetBrowser()->GetObject(item))
         obj->ShowTreeDetail(form->GetBrowser(), 0, form->GetProperties());
     form->GetMenuFactories()->CheckMenu(obj, form->GetMenuBar(), (ctlMenuToolbar *)form->GetToolBar());
@@ -515,11 +515,11 @@ wxWindow *enabledisableTriggerFactory::StartDialog(frmMain *form, pgObject *obj)
 bool enabledisableTriggerFactory::CheckEnable(pgObject *obj)
 {
     return obj && obj->IsCreatedBy(triggerFactory) && obj->CanEdit()
-               && ((pgTrigger*)obj)->GetConnection()->BackendMinimumVersion(8, 1)
-               && ((pgTrigger*)obj)->GetParentIsTable();
+           && ((pgTrigger *)obj)->GetConnection()->BackendMinimumVersion(8, 1)
+           && ((pgTrigger *)obj)->GetParentIsTable();
 }
 
 bool enabledisableTriggerFactory::CheckChecked(pgObject *obj)
 {
-    return obj && obj->IsCreatedBy(triggerFactory) && ((pgTrigger*)obj)->GetEnabled();
+    return obj && obj->IsCreatedBy(triggerFactory) && ((pgTrigger *)obj)->GetEnabled();
 }

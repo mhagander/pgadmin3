@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,8 +22,8 @@
 
 
 pgConstraintCollection::pgConstraintCollection(pgaFactory *factory, pgTable *table)
-: pgTableObjCollection(factory, table)
-{ 
+    : pgTableObjCollection(factory, table)
+{
 }
 
 wxMenu *pgConstraintCollection::GetNewMenu()
@@ -31,7 +31,7 @@ wxMenu *pgConstraintCollection::GetNewMenu()
     if (!GetSchema()->GetCreatePrivilege())
         return 0;
 
-    wxMenu *menu=new wxMenu();
+    wxMenu *menu = new wxMenu();
     if (table->GetPrimaryKey().IsEmpty())
         primaryKeyFactory.AppendMenu(menu);
     foreignKeyFactory.AppendMenu(menu);
@@ -46,9 +46,9 @@ void pgConstraintCollection::ShowTreeDetail(ctlTree *browser, frmMain *form, ctl
 {
     if (browser->GetChildrenCount(GetId(), false) == 0)
     {
-        wxTreeItemId id=browser->GetItemParent(GetId());
+        wxTreeItemId id = browser->GetItemParent(GetId());
         wxASSERT(id);
-        table = (pgTable*)browser->GetObject(id);
+        table = (pgTable *)browser->GetObject(id);
         wxASSERT(table && (table->GetMetaType() == PGM_TABLE || table->GetMetaType() == GP_PARTITION));
 
         primaryKeyFactory.CreateObjects(this, browser);
@@ -68,15 +68,15 @@ void pgConstraintCollection::ShowTreeDetail(ctlTree *browser, frmMain *form, ctl
 
 #include "images/constraints.xpm"
 
-pgConstraintFactory::pgConstraintFactory() 
-: pgTableObjFactory(__("Constraint"), 0, 0, 0)
+pgConstraintFactory::pgConstraintFactory()
+    : pgTableObjFactory(__("Constraint"), 0, 0, 0)
 {
     metaType = PGM_CONSTRAINT;
 }
 
 pgCollection *pgConstraintFactory::CreateCollection(pgObject *obj)
 {
-    return new pgConstraintCollection(GetCollectionFactory(), (pgTable*)obj);
+    return new pgConstraintCollection(GetCollectionFactory(), (pgTable *)obj);
 }
 
 

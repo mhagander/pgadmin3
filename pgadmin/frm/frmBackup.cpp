@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -68,7 +68,7 @@ END_EVENT_TABLE()
 
 frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
 {
-    object=obj;
+    object = obj;
 
     wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(form, wxT("frmBackup"));
@@ -76,12 +76,12 @@ frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
 
     SetTitle(object->GetTranslatedMessage(BACKUPTITLE));
 
-    if (object->GetConnection()->EdbMinimumVersion(8,0))
-        backupExecutable=edbBackupExecutable;
+    if (object->GetConnection()->EdbMinimumVersion(8, 0))
+        backupExecutable = edbBackupExecutable;
     else if (object->GetConnection()->GetIsGreenplum())
-        backupExecutable=gpBackupExecutable;
+        backupExecutable = gpBackupExecutable;
     else
-        backupExecutable=pgBackupExecutable;
+        backupExecutable = pgBackupExecutable;
 
     canBlob = (obj->GetMetaType() == PGM_DATABASE);
     chkBlobs->SetValue(canBlob);
@@ -101,7 +101,7 @@ frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
     SetIcon(wxIcon(backup_xpm));
 
     // fix translation problem
-    wxString dollarLabel=wxGetTranslation(_("$$ quoting"));
+    wxString dollarLabel = wxGetTranslation(_("$$ quoting"));
     dollarLabel.Replace(wxT("$$"), wxT("$"));
     chkDisableDollar->SetLabel(dollarLabel);
     chkDisableDollar->SetSize(chkDisableDollar->GetBestSize());
@@ -110,13 +110,13 @@ frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
     txtMessages->SetMaxLength(0L);
     btnOK->Disable();
 
-    long encNo=0;
+    long encNo = 0;
     wxString encStr;
     cbEncoding->Append(wxT(""));
     do
     {
-        encStr=object->GetConnection()->ExecuteScalar(
-            wxT("SELECT pg_encoding_to_char(") + NumToStr(encNo) + wxT(")"));
+        encStr = object->GetConnection()->ExecuteScalar(
+                     wxT("SELECT pg_encoding_to_char(") + NumToStr(encNo) + wxT(")"));
         if (pgConn::IsValidServerEncoding(encNo) && !encStr.IsEmpty())
             cbEncoding->Append(encStr);
 
@@ -131,9 +131,9 @@ frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
     bool checked;
 
     wxString query = wxT("SELECT nspname, relname ")
-      wxT("FROM pg_namespace n ")
-      wxT("LEFT JOIN pg_class c ON n.oid=c.relnamespace AND relkind='r' ")
-      wxT("WHERE nspname NOT LIKE 'pg_%' AND nspname <> 'information_schema' ");
+                     wxT("FROM pg_namespace n ")
+                     wxT("LEFT JOIN pg_class c ON n.oid=c.relnamespace AND relkind='r' ")
+                     wxT("WHERE nspname NOT LIKE 'pg_%' AND nspname <> 'information_schema' ");
     if (!object->GetDatabase()->GetSchemaRestriction().IsEmpty())
         query += wxT("AND nspname IN (") + object->GetDatabase()->GetSchemaRestriction() + wxT(")");
     query += wxT("ORDER BY nspname, relname");
@@ -151,33 +151,33 @@ frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
                 currentSchema = objects->GetVal(wxT("nspname"));
                 if (object->GetMetaType() == PGM_SCHEMA)
                 {
-                    checked = ((pgSchema*)object)->GetIdentifier() == currentSchema;
+                    checked = ((pgSchema *)object)->GetIdentifier() == currentSchema;
                 }
                 else
                 {
                     checked = true;
                 }
-                currentSchemaNode = ctvObjects->AppendItem(db, currentSchema, checked? 1:0);
+                currentSchemaNode = ctvObjects->AppendItem(db, currentSchema, checked ? 1 : 0);
             }
             if (!objects->GetVal(wxT("relname")).IsNull())
             {
-                if (object->GetMetaType() == PGM_TABLE || object->GetMetaType() == GP_PARTITION) 
+                if (object->GetMetaType() == PGM_TABLE || object->GetMetaType() == GP_PARTITION)
                 {
-                    checked = ((pgTable*)object)->GetSchema()->GetIdentifier() == currentSchema
-                           && ((pgTable*)object)->GetIdentifier() == objects->GetVal(wxT("relname"));
+                    checked = ((pgTable *)object)->GetSchema()->GetIdentifier() == currentSchema
+                              && ((pgTable *)object)->GetIdentifier() == objects->GetVal(wxT("relname"));
                 }
                 else
                 {
                     if (object->GetMetaType() == PGM_SCHEMA)
                     {
-                        checked = ((pgSchema*)object)->GetIdentifier() == currentSchema;
+                        checked = ((pgSchema *)object)->GetIdentifier() == currentSchema;
                     }
                     else
                     {
                         checked = true;
                     }
                 }
-                ctvObjects->AppendItem(currentSchemaNode, objects->GetVal(wxT("relname")), checked? 1:0);
+                ctvObjects->AppendItem(currentSchemaNode, objects->GetVal(wxT("relname")), checked ? 1 : 0);
             }
             objects->MoveNext();
         }
@@ -186,7 +186,7 @@ frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
         delete objects;
     }
 
-    if (!pgAppMinimumVersion(backupExecutable, 9,1))
+    if (!pgAppMinimumVersion(backupExecutable, 9, 1))
     {
         chkForceQuoteForIdent->Disable();
     }
@@ -201,9 +201,9 @@ frmBackup::frmBackup(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
         if (object->GetServer()->GetConnection()->BackendMinimumVersion(8, 1))
         {
             pgSetIterator set(object->GetServer()->GetConnection(),
-                wxT("SELECT DISTINCT rolname\n")
-                wxT("FROM pg_roles db\n")
-                wxT("ORDER BY rolname"));
+                              wxT("SELECT DISTINCT rolname\n")
+                              wxT("FROM pg_roles db\n")
+                              wxT("ORDER BY rolname"));
 
             cbRolename->Append(wxEmptyString);
 
@@ -318,7 +318,7 @@ wxString frmBackup::GetDisplayCmd(int step)
 
 wxString frmBackup::getCmdPart1()
 {
-    pgServer *server=object->GetDatabase()->GetServer();
+    pgServer *server = object->GetDatabase()->GetServer();
 
     wxString cmd = backupExecutable;
 
@@ -326,7 +326,7 @@ wxString frmBackup::getCmdPart1()
         cmd += wxT(" --host ") + server->GetName();
 
     cmd +=  wxT(" --port ") + NumToStr((long)server->GetPort())
-         +  wxT(" --username \"") + commandLineCleanOption(qtIdent(server->GetUsername())) + wxT("\"");
+            +  wxT(" --username \"") + commandLineCleanOption(qtIdent(server->GetUsername())) + wxT("\"");
 
     if (!cbRolename->GetValue().IsEmpty())
         cmd += wxT(" --role ") + commandLineCleanOption(qtIdent(cbRolename->GetValue()));
@@ -437,11 +437,11 @@ wxString frmBackup::getCmdPart2()
                     // The syntax changed in 8.2 :-(
                     if (pgAppMinimumVersion(backupExecutable, 8, 2))
                     {
-                        tmpTables.Append(wxT(" --table \"") + 
-                                    commandLineCleanOption(qtIdent(ctvObjects->GetItemText(schema))) +
-                                    wxT(".") +
-                                    commandLineCleanOption(qtIdent(ctvObjects->GetItemText(table))) +
-                                    wxT("\""));
+                        tmpTables.Append(wxT(" --table \"") +
+                                         commandLineCleanOption(qtIdent(ctvObjects->GetItemText(schema))) +
+                                         wxT(".") +
+                                         commandLineCleanOption(qtIdent(ctvObjects->GetItemText(table))) +
+                                         wxT("\""));
                     }
                     else
                     {
@@ -525,7 +525,7 @@ backupFactory::backupFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar 
 
 wxWindow *backupFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmBackup *frm=new frmBackup(form, obj);
+    frmBackup *frm = new frmBackup(form, obj);
     frm->Go();
     return 0;
 }

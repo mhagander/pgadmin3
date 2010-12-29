@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgTable.h - Table property 
+// dlgTable.h - Table property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -60,8 +60,8 @@ private:
     void OnChangeVacuum(wxCommandEvent &ev);
 
     void FillConstraint();
-    void FillAutoVacuumParameters(wxString& setString, wxString& resetStr,
-                                 const wxString& parameter, const wxString& val);
+    void FillAutoVacuumParameters(wxString &setString, wxString &resetStr,
+                                  const wxString &parameter, const wxString &val);
     void PopulateDatatypeCache();
     wxString GetItemConstraintType(ctlListView *list, long pos);
     bool hasPK;

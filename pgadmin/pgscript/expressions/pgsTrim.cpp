@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -13,45 +13,45 @@
 
 #include "pgscript/objects/pgsString.h"
 
-pgsTrim::pgsTrim(const pgsExpression * exp) :
-	pgsExpression(), m_exp(exp)
+pgsTrim::pgsTrim(const pgsExpression *exp) :
+    pgsExpression(), m_exp(exp)
 {
 
 }
 
 pgsTrim::~pgsTrim()
 {
-	pdelete(m_exp);
+    pdelete(m_exp);
 }
 
-pgsTrim::pgsTrim(const pgsTrim & that) :
-	pgsExpression(that)
+pgsTrim::pgsTrim(const pgsTrim &that) :
+    pgsExpression(that)
 {
-	m_exp = that.m_exp->clone();
+    m_exp = that.m_exp->clone();
 }
 
-pgsTrim & pgsTrim::operator=(const pgsTrim & that)
+pgsTrim &pgsTrim::operator=(const pgsTrim &that)
 {
-	if (this != &that)
-	{
-		pgsExpression::operator=(that);
-		pdelete(m_exp);
-		m_exp = that.m_exp->clone();
-	}
-	return (*this);
+    if (this != &that)
+    {
+        pgsExpression::operator=(that);
+        pdelete(m_exp);
+        m_exp = that.m_exp->clone();
+    }
+    return (*this);
 }
 
-pgsExpression * pgsTrim::clone() const
+pgsExpression *pgsTrim::clone() const
 {
-	return pnew pgsTrim(*this);
+    return pnew pgsTrim(*this);
 }
 
 wxString pgsTrim::value() const
 {
-	return wxString() << wxT("TRIM(") << m_exp->value() << wxT(")");
+    return wxString() << wxT("TRIM(") << m_exp->value() << wxT(")");
 }
 
-pgsOperand pgsTrim::eval(pgsVarMap & vars) const
+pgsOperand pgsTrim::eval(pgsVarMap &vars) const
 {
-	return pnew pgsString(m_exp->eval(vars)->value().Strip(wxString::both));
+    return pnew pgsString(m_exp->eval(vars)->value().Strip(wxString::both));
 }

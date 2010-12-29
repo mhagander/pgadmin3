@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -17,7 +17,7 @@ enum type_gqbObject
     GQB_DATABASE,
     GQB_SCHEMA,
     GQB_TABLE,
-	GQB_VIEW,
+    GQB_VIEW,
     GQB_COLUMN,
     GQB_QUERYOBJ,
     GQB_QUERY,
@@ -31,12 +31,30 @@ class gqbObject : public wxTreeItemData
 public:
     gqbObject(wxString name, wxTreeItemData *owner, pgConn *connection, OID oid = 0);
     virtual ~gqbObject();
-    const wxString& getName() { return Name; }
-    wxTreeItemData *getOwner() { return Owner; }
-    const type_gqbObject getType() { return Type; }
-    void setType(const type_gqbObject type) { Type = type; }
-    pgConn *getConnection() { return conn; }
-    OID getOid() { return Oid; }
+    const wxString &getName()
+    {
+        return Name;
+    }
+    wxTreeItemData *getOwner()
+    {
+        return Owner;
+    }
+    const type_gqbObject getType()
+    {
+        return Type;
+    }
+    void setType(const type_gqbObject type)
+    {
+        Type = type;
+    }
+    pgConn *getConnection()
+    {
+        return conn;
+    }
+    OID getOid()
+    {
+        return Oid;
+    }
 
 protected:
     pgConn *conn;

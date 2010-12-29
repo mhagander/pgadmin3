@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -17,15 +17,15 @@
 #include "utils/misc.h"
 #include "schema/edbSynonym.h"
 
-edbSynonym::edbSynonym(const wxString& newName)
-: pgDatabaseObject(synonymFactory, newName)
+edbSynonym::edbSynonym(const wxString &newName)
+    : pgDatabaseObject(synonymFactory, newName)
 {
 }
 
 wxString edbSynonym::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -38,11 +38,11 @@ wxString edbSynonym::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop synonym \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop synonym \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop synonym cascaded?");
@@ -85,7 +85,7 @@ wxString edbSynonym::GetTranslatedMessage(int kindOfMessage) const
 
 bool edbSynonym::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP PUBLIC SYNONYM ") + GetQuotedIdentifier();
+    wxString sql = wxT("DROP PUBLIC SYNONYM ") + GetQuotedIdentifier();
 
     return GetDatabase()->ExecuteVoid(sql);
 }
@@ -127,9 +127,9 @@ void edbSynonym::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 
 pgObject *edbSynonym::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *synonym=0;
+    pgObject *synonym = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         synonym = synonymFactory.CreateObjects(coll, 0, wxT(" WHERE synname=") + qtDbString(GetName()));
 
@@ -140,12 +140,12 @@ pgObject *edbSynonym::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *edbSynonymFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    edbSynonym *synonym=0;
+    edbSynonym *synonym = 0;
 
-    wxString sql = wxT("SELECT *, pg_get_userbyid(synowner) AS owner,\n") 
+    wxString sql = wxT("SELECT *, pg_get_userbyid(synowner) AS owner,\n")
                    wxT("  COALESCE((SELECT relkind \n")
                    wxT("  FROM pg_class c, pg_namespace n\n")
-                   wxT("  WHERE c.relnamespace = n.oid\n") 
+                   wxT("  WHERE c.relnamespace = n.oid\n")
                    wxT("    AND n.nspname = synobjschema\n")
                    wxT("    AND c.relname = synobjname), '') AS targettype\n")
                    wxT("  FROM pg_synonym")
@@ -158,7 +158,7 @@ pgObject *edbSynonymFactory::CreateObjects(pgCollection *collection, ctlTree *br
     {
         while (!synonyms->Eof())
         {
-            wxString name=synonyms->GetVal(wxT("synname"));
+            wxString name = synonyms->GetVal(wxT("synname"));
             synonym = new edbSynonym(name);
 
             synonym->iSetDatabase(collection->GetDatabase());
@@ -179,12 +179,12 @@ pgObject *edbSynonymFactory::CreateObjects(pgCollection *collection, ctlTree *br
             if (browser)
             {
                 browser->AppendObject(collection, synonym);
-			    synonyms->MoveNext();
+                synonyms->MoveNext();
             }
             else
                 break;
         }
-		delete synonyms;
+        delete synonyms;
     }
     return synonym;
 }
@@ -194,7 +194,7 @@ pgObject *edbSynonymFactory::CreateObjects(pgCollection *collection, ctlTree *br
 wxString edbSynonymCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -210,7 +210,7 @@ wxString edbSynonymCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Synonyms list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -220,7 +220,7 @@ wxString edbSynonymCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/synonyms.xpm"
 
 edbSynonymFactory::edbSynonymFactory()
-: pgDatabaseObjFactory(__("Public Synonym"), __("New Public Synonym..."), __("Create a new Public Synonym."), synonym_xpm)
+    : pgDatabaseObjFactory(__("Public Synonym"), __("New Public Synonym..."), __("Create a new Public Synonym."), synonym_xpm)
 {
 }
 

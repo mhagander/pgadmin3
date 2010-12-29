@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -72,27 +72,27 @@ void dataType::SetTypename(wxString name)
 
 OID dataType::GetOid()
 {
-   return oid;
+    return oid;
 }
 
 wxString dataType::GetTypename()
 {
-   return typeName;
+    return typeName;
 }
 
 #define CTRLID_CHKSQLTEXTFIELD 1000
 
 
 BEGIN_EVENT_TABLE(dlgProperty, DialogWithHelp)
-    EVT_NOTEBOOK_PAGE_CHANGED(XRCID("nbNotebook"),  dlgProperty::OnPageSelect)  
+    EVT_NOTEBOOK_PAGE_CHANGED(XRCID("nbNotebook"),  dlgProperty::OnPageSelect)
 
     EVT_TEXT(XRCID("txtName"),                      dlgProperty::OnChange)
     EVT_TEXT(XRCID("cbOwner"),                      dlgProperty::OnChangeOwner)
     EVT_COMBOBOX(XRCID("cbOwner"),                  dlgProperty::OnChange)
     EVT_TEXT(XRCID("txtComment"),                   dlgProperty::OnChange)
-    
+
     EVT_CHECKBOX(CTRLID_CHKSQLTEXTFIELD,            dlgProperty::OnChangeReadOnly)
-    
+
     EVT_BUTTON(wxID_HELP,                           dlgProperty::OnHelp)
     EVT_BUTTON(wxID_OK,                             dlgProperty::OnOK)
     EVT_BUTTON(wxID_APPLY,                          dlgProperty::OnApply)
@@ -101,15 +101,15 @@ END_EVENT_TABLE();
 
 dlgProperty::dlgProperty(pgaFactory *f, frmMain *frame, const wxString &resName) : DialogWithHelp(frame)
 {
-    readOnly=false;
-    sqlPane=0;
-    sqlTextField1=0;
-    sqlTextField2=0;
-    processing=false;
-    mainForm=frame;
-    database=0;
-    connection=0;
-    factory=f;
+    readOnly = false;
+    sqlPane = 0;
+    sqlTextField1 = 0;
+    sqlTextField2 = 0;
+    processing = false;
+    mainForm = frame;
+    database = 0;
+    connection = 0;
+    factory = f;
     item = (void *)NULL;
     owneritem = (void *)NULL;
     chkReadOnly = (wxCheckBox *)NULL;
@@ -133,13 +133,13 @@ dlgProperty::dlgProperty(pgaFactory *f, frmMain *frame, const wxString &resName)
     txtComment = CTRL_TEXT("txtComment");
     cbOwner = CTRL_COMBOBOX2("cbOwner");
     cbClusterSet = CTRL_COMBOBOX1("cbClusterSet");
-    
+
     wxString db = wxT("Database");
     wxString ts = wxT("Tablespace");
     enableSQL2 = db.Cmp(factory->GetTypeName()) == 0
-        || ts.Cmp(factory->GetTypeName()) == 0;
+                 || ts.Cmp(factory->GetTypeName()) == 0;
 
-    wxNotebookPage *page=nbNotebook->GetPage(0);
+    wxNotebookPage *page = nbNotebook->GetPage(0);
     wxASSERT(page != NULL);
     page->GetClientSize(&width, &height);
 
@@ -152,7 +152,7 @@ dlgProperty::dlgProperty(pgaFactory *f, frmMain *frame, const wxString &resName)
 
 dlgProperty::~dlgProperty()
 {
-    wxString prop=wxT("Properties/") + wxString(factory->GetTypeName());
+    wxString prop = wxT("Properties/") + wxString(factory->GetTypeName());
     settings->Write(prop, GetPosition());
 
     if (GetWindowStyle() & wxRESIZE_BORDER)
@@ -164,20 +164,20 @@ wxString dlgProperty::GetHelpPage() const
 {
     wxString page;
 
-    pgObject *obj=((dlgProperty*)this)->GetObject();
+    pgObject *obj = ((dlgProperty *)this)->GetObject();
     if (obj)
-        page=obj->GetHelpPage(false);
+        page = obj->GetHelpPage(false);
     else
     {
         // Attempt to get he page from the dialogue, otherwise, take a shot at it!
-        page=this->GetHelpPage(true);
+        page = this->GetHelpPage(true);
         if (page.Length() == 0)
         {
-            page=wxT("pg/sql-create");
+            page = wxT("pg/sql-create");
             page += wxString(factory->GetTypeName()).Lower();
         }
     }
-            
+
     return page;
 }
 
@@ -190,7 +190,7 @@ void dlgProperty::CheckValid(bool &enable, const bool condition, const wxString 
         {
             if (statusBar)
                 statusBar->SetStatusText(msg);
-            enable=false;
+            enable = false;
         }
     }
 }
@@ -198,19 +198,19 @@ void dlgProperty::CheckValid(bool &enable, const bool condition, const wxString 
 
 void dlgProperty::SetDatabase(pgDatabase *db)
 {
-    database=db;
+    database = db;
     if (db)
-        connection=db->GetConnection();
+        connection = db->GetConnection();
 }
 
 void dlgProperty::SetDatatypeCache(dataTypeCache cache)
 {
-   dtCache = cache;
+    dtCache = cache;
 }
-    
+
 void dlgProperty::EnableOK(bool enable)
 {
-    wxButton *btn=btnApply;
+    wxButton *btn = btnApply;
     if (btn)
         btn->Enable(enable);
 
@@ -242,15 +242,15 @@ int dlgProperty::Go(bool modal)
     if (GetWindowStyle() & wxRESIZE_BORDER)
         SetSize(settings->Read(prop, GetSize()));
 
-    wxPoint pos=settings->Read(prop, GetPosition());
+    wxPoint pos = settings->Read(prop, GetPosition());
     if (pos.x >= 0 && pos.y >= 0)
         Move(pos);
 
     wxSize size = GetSize();
     CheckOnScreen(this, pos, size, origSize.GetWidth(), origSize.GetHeight());
-        Move(pos);
+    Move(pos);
 
-    ctlComboBoxFix *cbowner = (ctlComboBoxFix*)cbOwner;
+    ctlComboBoxFix *cbowner = (ctlComboBoxFix *)cbOwner;
 
     if (cbClusterSet)
     {
@@ -259,24 +259,24 @@ int dlgProperty::Go(bool modal)
 
         if (mainForm && database)
         {
-            wxArrayString clusters=database->GetSlonyClusters(mainForm->GetBrowser());
+            wxArrayString clusters = database->GetSlonyClusters(mainForm->GetBrowser());
 
             size_t i;
-            for (i=0 ; i < clusters.GetCount() ; i++)
+            for (i = 0 ; i < clusters.GetCount() ; i++)
             {
-                wxString cluster=wxT("_") + clusters.Item(i);
-                pgSetIterator sets(connection, 
-                    wxT("SELECT set_id, ") + qtIdent(cluster) + wxT(".slonyversionmajor(), ") + qtIdent(cluster) + wxT(".slonyversionminor()\n")
-                    wxT("  FROM ") + qtIdent(cluster) + wxT(".sl_set\n")
-                    wxT(" WHERE set_origin = ") + qtIdent(cluster) + 
-                    wxT(".getlocalnodeid(") + qtDbString(cluster) + wxT(");"));
-                
+                wxString cluster = wxT("_") + clusters.Item(i);
+                pgSetIterator sets(connection,
+                                   wxT("SELECT set_id, ") + qtIdent(cluster) + wxT(".slonyversionmajor(), ") + qtIdent(cluster) + wxT(".slonyversionminor()\n")
+                                   wxT("  FROM ") + qtIdent(cluster) + wxT(".sl_set\n")
+                                   wxT(" WHERE set_origin = ") + qtIdent(cluster) +
+                                   wxT(".getlocalnodeid(") + qtDbString(cluster) + wxT(");"));
+
                 while (sets.RowsLeft())
                 {
                     wxString str;
-                    long setId=sets.GetLong(wxT("set_id"));
-                    long majorVer=sets.GetLong(wxT("slonyversionmajor"));
-                    long minorVer=sets.GetLong(wxT("slonyversionminor"));
+                    long setId = sets.GetLong(wxT("set_id"));
+                    long majorVer = sets.GetLong(wxT("slonyversionmajor"));
+                    long minorVer = sets.GetLong(wxT("slonyversionminor"));
                     str.Printf(_("Cluster \"%s\", set %ld"), clusters.Item(i).c_str(), setId);
                     cbClusterSet->Append(str, new replClientData(cluster, setId, majorVer, minorVer));
                 }
@@ -311,7 +311,7 @@ int dlgProperty::Go(bool modal)
         if (!readOnly && !GetObject()->CanCreate())
         {
             // users who can't create will usually not be allowed to change either.
-            readOnly=false;
+            readOnly = false;
         }
 
         wxString typeName = factory->GetTypeName();
@@ -319,7 +319,7 @@ int dlgProperty::Go(bool modal)
     }
     else
     {
-        wxButton *btn=btnApply;
+        wxButton *btn = btnApply;
         if (btn)
             btn->Hide();
         if (factory)
@@ -330,7 +330,7 @@ int dlgProperty::Go(bool modal)
 
     if (nbNotebook)
     {
-        wxNotebookPage *pg=nbNotebook->GetPage(0);
+        wxNotebookPage *pg = nbNotebook->GetPage(0);
         if (pg)
             pg->SetFocus();
     }
@@ -341,8 +341,8 @@ int dlgProperty::Go(bool modal)
 
     // This fixes a UI glitch on MacOS X and Windows
     // Because of the new layout code, the Privileges pane don't size itself properly
-    SetSize(GetSize().GetWidth()+1, GetSize().GetHeight());
-    SetSize(GetSize().GetWidth()-1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() + 1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() - 1, GetSize().GetHeight());
 
     return 0;
 }
@@ -352,42 +352,42 @@ void dlgProperty::CreateAdditionalPages()
 {
     if (wxString(factory->GetTypeName()).Cmp(wxT("Server")))
     {
-    // create a panel
-    sqlPane = new wxPanel(nbNotebook);
-    
-    // add panel to the notebook
-    nbNotebook->AddPage(sqlPane, wxT("SQL"));
+        // create a panel
+        sqlPane = new wxPanel(nbNotebook);
 
-    // create a flex grid sizer
-    wxFlexGridSizer *fgsizer = new wxFlexGridSizer(1, 5, 5);
+        // add panel to the notebook
+        nbNotebook->AddPage(sqlPane, wxT("SQL"));
 
-    // add checkbox to the panel
-    chkReadOnly = new wxCheckBox(sqlPane, CTRLID_CHKSQLTEXTFIELD, _("Read only"));
-    chkReadOnly->SetValue(true);
-    fgsizer->Add(chkReadOnly, 1, wxALL | wxALIGN_LEFT, 5);
+        // create a flex grid sizer
+        wxFlexGridSizer *fgsizer = new wxFlexGridSizer(1, 5, 5);
 
-    // text entry box
-    sqlTextField1 = new ctlSQLBox(sqlPane, CTL_PROPSQL,
-        wxDefaultPosition, wxDefaultSize,
-        wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_RICH2);
-    fgsizer->Add(sqlTextField1, 1, wxALL | wxEXPAND, 5);
+        // add checkbox to the panel
+        chkReadOnly = new wxCheckBox(sqlPane, CTRLID_CHKSQLTEXTFIELD, _("Read only"));
+        chkReadOnly->SetValue(true);
+        fgsizer->Add(chkReadOnly, 1, wxALL | wxALIGN_LEFT, 5);
 
-    // text entry box
-    if (enableSQL2)
-    {
-        sqlTextField2 = new ctlSQLBox(sqlPane, CTL_PROPSQL,
-            wxDefaultPosition, wxDefaultSize,
-            wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_RICH2);
-        fgsizer->Add(sqlTextField2, 1, wxALL | wxEXPAND, 5);
+        // text entry box
+        sqlTextField1 = new ctlSQLBox(sqlPane, CTL_PROPSQL,
+                                      wxDefaultPosition, wxDefaultSize,
+                                      wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_RICH2);
+        fgsizer->Add(sqlTextField1, 1, wxALL | wxEXPAND, 5);
+
+        // text entry box
+        if (enableSQL2)
+        {
+            sqlTextField2 = new ctlSQLBox(sqlPane, CTL_PROPSQL,
+                                          wxDefaultPosition, wxDefaultSize,
+                                          wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_RICH2);
+            fgsizer->Add(sqlTextField2, 1, wxALL | wxEXPAND, 5);
+        }
+
+        fgsizer->AddGrowableCol(0);
+        fgsizer->AddGrowableRow(1);
+        fgsizer->AddGrowableRow(2);
+
+        sqlPane->SetAutoLayout(true);
+        sqlPane->SetSizer(fgsizer);
     }
-
-    fgsizer->AddGrowableCol(0);
-    fgsizer->AddGrowableRow(1);
-    fgsizer->AddGrowableRow(2);
-
-    sqlPane->SetAutoLayout(true);
-    sqlPane->SetSizer(fgsizer);
-}
 }
 
 
@@ -418,13 +418,15 @@ void dlgProperty::AppendNameChange(wxString &sql, const wxString &objName)
         if (objName.Length() > 0)
         {
             sql += wxT("ALTER ") + objName
-                +  wxT(" RENAME TO ") + qtIdent(GetName())
-                +  wxT(";\n");
-        } else {
+                   +  wxT(" RENAME TO ") + qtIdent(GetName())
+                   +  wxT(";\n");
+        }
+        else
+        {
             sql += wxT("ALTER ") + GetObject()->GetTypeName().MakeUpper()
-                +  wxT(" ") + GetObject()->GetQuotedFullIdentifier()
-                +  wxT(" RENAME TO ") + qtIdent(GetName())
-                +  wxT(";\n");
+                   +  wxT(" ") + GetObject()->GetQuotedFullIdentifier()
+                   +  wxT(" RENAME TO ") + qtIdent(GetName())
+                   +  wxT(";\n");
         }
     }
 }
@@ -435,8 +437,8 @@ void dlgProperty::AppendOwnerChange(wxString &sql, const wxString &objName)
     if (GetObject()->GetOwner() != cbOwner->GetValue())
     {
         sql += wxT("ALTER ") + objName
-            +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue()) 
-            +  wxT(";\n");
+               +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue())
+               +  wxT(";\n");
     }
 }
 
@@ -445,30 +447,30 @@ void dlgProperty::AppendOwnerNew(wxString &sql, const wxString &objName)
 {
     if (cbOwner->GetGuessedSelection() > 0)
         sql += wxT("ALTER ") + objName
-            +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue())
-            +  wxT(";\n");
+               +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue())
+               +  wxT(";\n");
 }
 
 
 void dlgProperty::AppendComment(wxString &sql, const wxString &objName, pgObject *obj)
 {
-    wxString comment=txtComment->GetValue();
-    if ((!obj && !comment.IsEmpty()) ||(obj && obj->GetComment() != comment))
+    wxString comment = txtComment->GetValue();
+    if ((!obj && !comment.IsEmpty()) || (obj && obj->GetComment() != comment))
     {
         sql += wxT("COMMENT ON ") + objName
-            + wxT(" IS ") + qtDbString(comment) + wxT(";\n");
+               + wxT(" IS ") + qtDbString(comment) + wxT(";\n");
     }
 }
 
 
 void dlgProperty::AppendComment(wxString &sql, const wxString &objType, pgSchema *schema, pgObject *obj)
 {
-    wxString comment=txtComment->GetValue();
-    if ((!obj && !comment.IsEmpty()) ||(obj && obj->GetComment() != comment))
+    wxString comment = txtComment->GetValue();
+    if ((!obj && !comment.IsEmpty()) || (obj && obj->GetComment() != comment))
     {
         sql += wxT("COMMENT ON ") + objType + wxT(" ");
         if (schema)
-           sql += schema->GetQuotedPrefix();
+            sql += schema->GetQuotedPrefix();
         sql += qtIdent(GetName()) + wxT(" IS ") + qtDbString(comment) + wxT(";\n");
     }
 }
@@ -503,7 +505,7 @@ void dlgProperty::FillCombobox(const wxString &query, ctlComboBoxFix *cb1, ctlCo
     if (!cb1 && !cb2)
         return;
 
-    pgSet *set=connection->ExecuteSet(query);
+    pgSet *set = connection->ExecuteSet(query);
     if (set)
     {
         while (!set->Eof())
@@ -587,7 +589,7 @@ void dlgProperty::OnChange(wxCommandEvent &ev)
 
 void dlgProperty::OnChangeOwner(wxCommandEvent &ev)
 {
-    ctlComboBox *cb=cbOwner;
+    ctlComboBox *cb = cbOwner;
     if (cb)
         cb->GuessSelection(ev);
     CheckChange();
@@ -598,17 +600,17 @@ void dlgProperty::OnChangeReadOnly(wxCommandEvent &ev)
 {
     size_t pos;
     bool showmessage;
-    
+
     showmessage = chkReadOnly->GetValue()
-        && ! (!enableSQL2 && GetSql().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- nothing to change")) == 0)
-        && ! (!enableSQL2 && GetSql().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- definition incomplete")) == 0)
-        && ! (enableSQL2 && GetSql().Length() == 0 && GetSql2().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- nothing to change")) == 0 && sqlTextField2->GetText().Length() == 0)
-        && ! (enableSQL2 && GetSql().Length() == 0 && GetSql2().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- definition incomplete")) == 0 && sqlTextField2->GetText().Length() == 0)
-        && (sqlTextField1->GetText().Cmp(GetSql()) != 0 || (enableSQL2 && sqlTextField2->GetText().Cmp(GetSql2()) != 0));
-    
+                  && ! (!enableSQL2 && GetSql().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- nothing to change")) == 0)
+                  && ! (!enableSQL2 && GetSql().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- definition incomplete")) == 0)
+                  && ! (enableSQL2 && GetSql().Length() == 0 && GetSql2().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- nothing to change")) == 0 && sqlTextField2->GetText().Length() == 0)
+                  && ! (enableSQL2 && GetSql().Length() == 0 && GetSql2().Length() == 0 && sqlTextField1->GetText().Cmp(_("-- definition incomplete")) == 0 && sqlTextField2->GetText().Length() == 0)
+                  && (sqlTextField1->GetText().Cmp(GetSql()) != 0 || (enableSQL2 && sqlTextField2->GetText().Cmp(GetSql2()) != 0));
+
     if (showmessage)
     {
-        if (wxMessageBox(_("Are you sure you wish to cancel your edit?"), _("SQL editor"), wxYES_NO|wxNO_DEFAULT) == wxNO)
+        if (wxMessageBox(_("Are you sure you wish to cancel your edit?"), _("SQL editor"), wxYES_NO | wxNO_DEFAULT) == wxNO)
         {
             chkReadOnly->SetValue(false);
             return;
@@ -624,7 +626,7 @@ void dlgProperty::OnChangeReadOnly(wxCommandEvent &ev)
     {
         nbNotebook->GetPage(pos)->Enable(chkReadOnly->GetValue());
     }
-    
+
     if (chkReadOnly->GetValue())
     {
         FillSQLTextfield();
@@ -633,7 +635,7 @@ void dlgProperty::OnChangeReadOnly(wxCommandEvent &ev)
 
 
 void dlgProperty::FillSQLTextfield()
-{    
+{
     // create a function because this is a duplicated code
     sqlTextField1->SetReadOnly(false);
     if (enableSQL2)
@@ -645,7 +647,7 @@ void dlgProperty::FillSQLTextfield()
         wxString tmp;
         if (cbClusterSet && cbClusterSet->GetSelection() > 0)
         {
-            replClientData *data=(replClientData*)cbClusterSet->GetClientData(cbClusterSet->GetSelection());
+            replClientData *data = (replClientData *)cbClusterSet->GetClientData(cbClusterSet->GetSelection());
             tmp.Printf(_("-- Execute replicated using cluster \"%s\", set %ld\n"), data->cluster.c_str(), data->setId);
         }
         sqlTextField1->SetText(tmp + GetSql());
@@ -675,8 +677,8 @@ void dlgProperty::FillSQLTextfield()
 
 bool dlgProperty::tryUpdate(wxTreeItemId collectionItem)
 {
-    ctlTree *browser=mainForm->GetBrowser();
-    pgCollection *collection = (pgCollection*)browser->GetObject(collectionItem);
+    ctlTree *browser = mainForm->GetBrowser();
+    pgCollection *collection = (pgCollection *)browser->GetObject(collectionItem);
     if (collection && collection->IsCollection() && factory->GetCollectionFactory() == collection->GetFactory())
     {
         pgObject *data = CreateObject(collection);
@@ -687,7 +689,7 @@ bool dlgProperty::tryUpdate(wxTreeItemId collectionItem)
             if (nodeName.IsEmpty())
                 nodeName = data->GetDisplayName();
 
-            size_t pos=0;
+            size_t pos = 0;
             wxTreeItemId newItem;
 
             if (!data->IsCreatedBy(columnFactory))
@@ -695,19 +697,19 @@ bool dlgProperty::tryUpdate(wxTreeItemId collectionItem)
                 // columns should be appended, not inserted alphabetically
 
                 wxCookieType cookie;
-                newItem=browser->GetFirstChild(collectionItem, cookie);
+                newItem = browser->GetFirstChild(collectionItem, cookie);
                 while (newItem)
                 {
                     if (browser->GetItemText(newItem) > nodeName)
                         break;
                     pos++;
-                    newItem=browser->GetNextChild(collectionItem, cookie);
+                    newItem = browser->GetNextChild(collectionItem, cookie);
                 }
             }
 
             if (newItem)
                 browser->InsertItem(collectionItem, pos, nodeName, data->GetIconId(), -1, data);
-            else    
+            else
                 browser->AppendItem(collectionItem, nodeName, data->GetIconId(), -1, data);
 
             if (data->WantDummyChild())
@@ -732,7 +734,7 @@ bool dlgProperty::tryUpdate(wxTreeItemId collectionItem)
 
 void dlgProperty::ShowObject()
 {
-    pgObject *data=GetObject();
+    pgObject *data = GetObject();
 
     // We might have a parent to refresh. If so, the children will
     // inherently get refreshed as well. Yay :-)
@@ -741,9 +743,9 @@ void dlgProperty::ShowObject()
         // Stash the selected items path
         wxString currentPath = mainForm->GetCurrentNodePath();
 
-        pgObject *tblobj = mainForm->GetBrowser()->GetObject(owneritem); 
+        pgObject *tblobj = mainForm->GetBrowser()->GetObject(owneritem);
 
-        if (tblobj) 
+        if (tblobj)
             mainForm->Refresh(tblobj);
 
         // Restore the previous selection...
@@ -751,7 +753,7 @@ void dlgProperty::ShowObject()
     }
     else if (data)
     {
-        pgObject *newData=data->Refresh(mainForm->GetBrowser(), item);
+        pgObject *newData = data->Refresh(mainForm->GetBrowser(), item);
         if (newData && newData != data)
         {
             mainForm->SetCurrentObject(newData);
@@ -777,21 +779,21 @@ void dlgProperty::ShowObject()
     }
     else if (item && chkReadOnly->GetValue())
     {
-        wxTreeItemId collectionItem=item;
+        wxTreeItemId collectionItem = item;
 
         while (collectionItem)
         {
             // search up the tree for our collection
             if (tryUpdate(collectionItem))
                 break;
-            collectionItem=mainForm->GetBrowser()->GetItemParent(collectionItem);
+            collectionItem = mainForm->GetBrowser()->GetItemParent(collectionItem);
         }
     }
     else // Brute force update the current item
     {
-        pgObject *currobj = mainForm->GetBrowser()->GetObject(mainForm->GetBrowser()->GetSelection()); 
+        pgObject *currobj = mainForm->GetBrowser()->GetObject(mainForm->GetBrowser()->GetSelection());
 
-        if (currobj) 
+        if (currobj)
             mainForm->Refresh(currobj);
     }
 }
@@ -832,7 +834,7 @@ bool dlgProperty::apply(const wxString &sql, const wxString &sql2)
     }
 
     // Process the second SQL statement. This is primarily only used by
-    // CREATE DATABASE which cannot be run in a multi-statement query in 
+    // CREATE DATABASE which cannot be run in a multi-statement query in
     // PostgreSQL 8.3+
     if (!sql2.IsEmpty())
     {
@@ -841,7 +843,7 @@ bool dlgProperty::apply(const wxString &sql, const wxString &sql2)
         if (!myConn->ExecuteVoid(tmp))
         {
             // error message is displayed inside ExecuteVoid
-            // Warn the user about partially applied changes, but don't bail out. 
+            // Warn the user about partially applied changes, but don't bail out.
             // Carry on as if everything was successful (because the most important
             // change was!!
             wxMessageBox(_("An error occured executing the second stage SQL statement.\n\nChanges may have been partially applied."), _("Warning"), wxICON_EXCLAMATION | wxOK, this);
@@ -865,21 +867,21 @@ wxString dlgProperty::BuildSql(const wxString &sql)
 
     if (cbClusterSet && cbClusterSet->GetSelection() > 0)
     {
-        replClientData *data=(replClientData*)cbClusterSet->GetClientData(cbClusterSet->GetSelection());
+        replClientData *data = (replClientData *)cbClusterSet->GetClientData(cbClusterSet->GetSelection());
 
         if (data->majorVer > 1 || (data->majorVer == 1 && data->minorVer >= 2))
         {
             tmp = wxT("SELECT ") + qtIdent(data->cluster)
-                + wxT(".ddlscript_prepare(") + NumToStr(data->setId) + wxT(", 0);\n")
-                + wxT("SELECT ") + qtIdent(data->cluster)
-                + wxT(".ddlscript_complete(") + NumToStr(data->setId) + wxT(", ")
-                + qtDbString(sql) + wxT(", 0);\n");
+                  + wxT(".ddlscript_prepare(") + NumToStr(data->setId) + wxT(", 0);\n")
+                  + wxT("SELECT ") + qtIdent(data->cluster)
+                  + wxT(".ddlscript_complete(") + NumToStr(data->setId) + wxT(", ")
+                  + qtDbString(sql) + wxT(", 0);\n");
         }
         else
         {
             tmp = wxT("SELECT ") + qtIdent(data->cluster)
-                + wxT(".ddlscript(") + NumToStr(data->setId) + wxT(", ")
-                + qtDbString(sql) + wxT(", 0);\n");
+                  + wxT(".ddlscript(") + NumToStr(data->setId) + wxT(", ")
+                  + qtDbString(sql) + wxT(", 0);\n");
         }
     }
     else
@@ -949,8 +951,8 @@ void dlgProperty::OnApply(wxCommandEvent &ev)
 
     EnableOK(false);
 
-    wxString sql=GetSql();
-    wxString sql2=GetSql2();
+    wxString sql = GetSql();
+    wxString sql2 = GetSql2();
 
     if (!apply(sql, sql2))
         return;
@@ -979,7 +981,7 @@ void dlgProperty::OnOK(wxCommandEvent &ev)
         EndModal(0);
         return;
     }
-    
+
     wxString sql;
     wxString sql2;
     if (chkReadOnly->GetValue())
@@ -998,7 +1000,7 @@ void dlgProperty::OnOK(wxCommandEvent &ev)
         {
             sql2 = wxT("");
         }
-    }    
+    }
 
     if (!apply(sql, sql2))
     {
@@ -1010,10 +1012,10 @@ void dlgProperty::OnOK(wxCommandEvent &ev)
 }
 
 
-void dlgProperty::OnPageSelect(wxNotebookEvent& event)
+void dlgProperty::OnPageSelect(wxNotebookEvent &event)
 {
     if (sqlTextField1 && chkReadOnly->GetValue() &&
-        event.GetSelection() == (int)nbNotebook->GetPageCount()-1)
+            event.GetSelection() == (int)nbNotebook->GetPageCount() - 1)
     {
         FillSQLTextfield();
     }
@@ -1025,49 +1027,49 @@ void dlgProperty::InitDialog(frmMain *frame, pgObject *node)
 {
     CenterOnParent();
     if (!connection)
-        connection=node->GetConnection();
-    database=node->GetDatabase();
+        connection = node->GetConnection();
+    database = node->GetDatabase();
 
     if (factory != node->GetFactory() && !node->IsCollection())
     {
         wxCookieType cookie;
-        wxTreeItemId collectionItem=frame->GetBrowser()->GetFirstChild(node->GetId(), cookie);
+        wxTreeItemId collectionItem = frame->GetBrowser()->GetFirstChild(node->GetId(), cookie);
         while (collectionItem)
         {
-            pgCollection *collection=(pgCollection*)frame->GetBrowser()->GetObject(collectionItem);
+            pgCollection *collection = (pgCollection *)frame->GetBrowser()->GetObject(collectionItem);
             if (collection && collection->IsCollection() && collection->IsCollectionFor(node))
                 break;
 
-            collectionItem=frame->GetBrowser()->GetNextChild(node->GetId(), cookie);
+            collectionItem = frame->GetBrowser()->GetNextChild(node->GetId(), cookie);
         }
-        item=collectionItem;
+        item = collectionItem;
     }
     else
-        item=node->GetId();
+        item = node->GetId();
 
     // Additional hacks to get the table to refresh when modifying sub-objects
     if (!item && (node->GetMetaType() == PGM_TABLE || node->GetMetaType() == PGM_VIEW || node->GetMetaType() == GP_PARTITION))
-        owneritem=node->GetId();
+        owneritem = node->GetId();
 
     int metatype = node->GetMetaType();
 
     switch (metatype)
     {
         case PGM_CHECK:
-        case PGM_COLUMN: 
+        case PGM_COLUMN:
         case PGM_CONSTRAINT:
         case PGM_EXCLUDE:
         case PGM_FOREIGNKEY:
         case PGM_INDEX:
         case PGM_PRIMARYKEY:
         case PGM_UNIQUE:
-            owneritem=node->GetTable()->GetId();
+            owneritem = node->GetTable()->GetId();
             break;
 
         case PGM_TRIGGER:
         case PGM_RULE: // Rules are technically table objects! Yeuch
         case EDB_PACKAGEFUNCTION:
-        case EDB_PACKAGEVARIABLE: 
+        case EDB_PACKAGEVARIABLE:
         case PGM_SCHEDULE:
         case PGM_STEP:
             if (node->IsCollection())
@@ -1086,28 +1088,28 @@ dlgProperty *dlgProperty::CreateDlg(frmMain *frame, pgObject *node, bool asNew, 
 {
     if (!factory)
     {
-        factory=node->GetFactory();
+        factory = node->GetFactory();
         if (node->IsCollection())
-            factory = ((pgaCollectionFactory*)factory)->GetItemFactory();
+            factory = ((pgaCollectionFactory *)factory)->GetItemFactory();
     }
 
     pgObject *currentNode, *parentNode;
     if (asNew)
-        currentNode=0;
+        currentNode = 0;
     else
-        currentNode=node;
+        currentNode = node;
 
     if (factory != node->GetFactory())
         parentNode = node;
     else
         parentNode = frame->GetBrowser()->GetObject(
-                     frame->GetBrowser()->GetItemParent(node->GetId()));
+                         frame->GetBrowser()->GetItemParent(node->GetId()));
 
     if (parentNode && parentNode->IsCollection() && parentNode->GetMetaType() != PGM_SERVER)
         parentNode = frame->GetBrowser()->GetObject(
-                     frame->GetBrowser()->GetItemParent(parentNode->GetId()));
+                         frame->GetBrowser()->GetItemParent(parentNode->GetId()));
 
-    dlgProperty *dlg=0;
+    dlgProperty *dlg = 0;
 
     if (factory)
     {
@@ -1115,7 +1117,7 @@ dlgProperty *dlgProperty::CreateDlg(frmMain *frame, pgObject *node, bool asNew, 
         if (dlg)
         {
             if (factory->IsCollection())
-                factory = ((pgaCollectionFactory*)factory)->GetItemFactory();
+                factory = ((pgaCollectionFactory *)factory)->GetItemFactory();
             wxASSERT(factory);
 
             dlg->InitDialog(frame, node);
@@ -1129,11 +1131,11 @@ bool dlgProperty::CreateObjectDialog(frmMain *frame, pgObject *node, pgaFactory 
 {
     if (node->GetMetaType() != PGM_SERVER)
     {
-        pgConn *conn=node->GetConnection();
+        pgConn *conn = node->GetConnection();
         if (!conn || conn->GetStatus() != PGCONN_OK || !conn->IsAlive())
             return false;
     }
-    dlgProperty *dlg=CreateDlg(frame, node, true, factory);
+    dlgProperty *dlg = CreateDlg(frame, node, true, factory);
 
     if (dlg)
     {
@@ -1145,7 +1147,7 @@ bool dlgProperty::CreateObjectDialog(frmMain *frame, pgObject *node, pgaFactory 
     }
     else
         wxMessageBox(_("Not implemented."));
-    
+
     return true;
 }
 
@@ -1154,20 +1156,20 @@ bool dlgProperty::EditObjectDialog(frmMain *frame, ctlSQLBox *sqlbox, pgObject *
 {
     if (node->GetMetaType() != PGM_SERVER)
     {
-        pgConn *conn=node->GetConnection();
+        pgConn *conn = node->GetConnection();
         if (!conn || conn->GetStatus() != PGCONN_OK || !conn->IsAlive())
             return false;
     }
 
-    // If this is a function or view, hint that the user might want to edit the object in 
+    // If this is a function or view, hint that the user might want to edit the object in
     // the query tool.
     if (node->GetMetaType() == PGM_FUNCTION || node->GetMetaType() == PGM_VIEW)
     {
-    if (frmHint::ShowHint(frame, HINT_OBJECT_EDITING) == wxID_CANCEL)
-        return false;
+        if (frmHint::ShowHint(frame, HINT_OBJECT_EDITING) == wxID_CANCEL)
+            return false;
     }
 
-    dlgProperty *dlg=CreateDlg(frame, node, false);
+    dlgProperty *dlg = CreateDlg(frame, node, false);
 
     if (dlg)
     {
@@ -1185,8 +1187,8 @@ bool dlgProperty::EditObjectDialog(frmMain *frame, ctlSQLBox *sqlbox, pgObject *
     return true;
 }
 
-wxString dlgProperty::qtDbString(const wxString &str) 
-{ 
+wxString dlgProperty::qtDbString(const wxString &str)
+{
     // Use the server aware version if possible
     if (connection)
         return connection->qtDbString(str);
@@ -1203,9 +1205,9 @@ wxString dlgProperty::qtDbString(const wxString &str)
     }
 }
 
-void dlgProperty::OnHelp(wxCommandEvent& ev)
+void dlgProperty::OnHelp(wxCommandEvent &ev)
 {
-    wxString page=GetHelpPage();
+    wxString page = GetHelpPage();
 
     if (!page.IsEmpty())
     {
@@ -1234,10 +1236,10 @@ void dlgProperty::OnHelp(wxCommandEvent& ev)
 
 
 dlgTypeProperty::dlgTypeProperty(pgaFactory *f, frmMain *frame, const wxString &resName)
-: dlgProperty(f, frame, resName)
+    : dlgProperty(f, frame, resName)
 {
-    isVarLen=false;
-    isVarPrec=false;
+    isVarLen = false;
+    isVarPrec = false;
     if (wxWindow::FindWindow(XRCID("txtLength")))
     {
         txtLength = CTRL_TEXT("txtLength");
@@ -1248,12 +1250,12 @@ dlgTypeProperty::dlgTypeProperty(pgaFactory *f, frmMain *frame, const wxString &
         txtLength = 0;
     if (wxWindow::FindWindow(XRCID("txtPrecision")))
     {
-        txtPrecision= CTRL_TEXT("txtPrecision");
+        txtPrecision = CTRL_TEXT("txtPrecision");
         txtPrecision->SetValidator(numericValidator);
         txtPrecision->Disable();
     }
     else
-        txtPrecision=0;
+        txtPrecision = 0;
 }
 
 
@@ -1264,15 +1266,15 @@ void dlgTypeProperty::FillDatatype(ctlComboBox *cb, bool withDomains)
 
 void dlgTypeProperty::FillDatatype(ctlComboBox *cb, ctlComboBox *cb2, bool withDomains)
 {
-     
+
     if (dtCache.IsEmpty())
     {
         // A column dialog is directly called, no datatype caching is done.
-        // Fetching datatypes from server. 
+        // Fetching datatypes from server.
         DatatypeReader tr(database, withDomains);
         while (tr.HasMore())
         {
-            pgDatatype dt=tr.GetDatatype();
+            pgDatatype dt = tr.GetDatatype();
 
             AddType(wxT("?"), tr.GetOid(), dt.FullName());
             cb->Append(dt.FullName());
@@ -1282,13 +1284,13 @@ void dlgTypeProperty::FillDatatype(ctlComboBox *cb, ctlComboBox *cb2, bool withD
         }
     }
     else
-    { 
-        // A column dialog is called from a table dialog where we have already cached the datatypes.  
+    {
+        // A column dialog is called from a table dialog where we have already cached the datatypes.
         // Using cached datatypes.
         size_t i;
         for (i = 0; i < dtCache.GetCount(); i++)
         {
-            AddType(wxT("?"), dtCache.Item(i)->GetOid(), dtCache.Item(i)->GetTypename()); 
+            AddType(wxT("?"), dtCache.Item(i)->GetOid(), dtCache.Item(i)->GetTypename());
             cb->Append(dtCache.Item(i)->GetTypename());
             if (cb2)
                 cb2->Append(dtCache.Item(i)->GetTypename());
@@ -1327,7 +1329,7 @@ void dlgTypeProperty::AddType(const wxString &typ, const OID oid, const wxString
             case PGOID_TYPE_BPCHAR_ARRAY:
             case PGOID_TYPE_VARCHAR:
             case PGOID_TYPE_VARCHAR_ARRAY:
-                vartyp=wxT("L");
+                vartyp = wxT("L");
                 break;
             case PGOID_TYPE_TIME:
             case PGOID_TYPE_TIME_ARRAY:
@@ -1339,24 +1341,24 @@ void dlgTypeProperty::AddType(const wxString &typ, const OID oid, const wxString
             case PGOID_TYPE_TIMESTAMPTZ_ARRAY:
             case PGOID_TYPE_INTERVAL:
             case PGOID_TYPE_INTERVAL_ARRAY:
-                vartyp=wxT("D");
+                vartyp = wxT("D");
                 break;
             case PGOID_TYPE_NUMERIC:
             case PGOID_TYPE_NUMERIC_ARRAY:
-                vartyp=wxT("P");
+                vartyp = wxT("P");
                 break;
             default:
-                vartyp=wxT(" ");
+                vartyp = wxT(" ");
                 break;
         }
     }
     else
-        vartyp=typ;
+        vartyp = typ;
 
     types.Add(vartyp + NumToStr(oid) + wxT(":") + quotedName);
 }
 
-    
+
 wxString dlgTypeProperty::GetTypeInfo(int sel)
 {
     wxString str;
@@ -1417,25 +1419,25 @@ wxString dlgTypeProperty::GetQuotedTypename(int sel)
         }
         else if (sql.Right(2) == wxT("[]"))
         {
-            sql = sql.SubString(0,sql.Len()-3);
+            sql = sql.SubString(0, sql.Len() - 3);
             isArray = true;
         }
         else if (sql.Right(3) == wxT("[]\""))
         {
-            sql = sql.SubString(1,sql.Len()-4);
+            sql = sql.SubString(1, sql.Len() - 4);
             isArray = true;
         }
 
         // Stick the length on
         if (isVarLen && txtLength)
         {
-            wxString varlen=txtLength->GetValue();
-            if (!varlen.IsEmpty() && NumToStr(StrToLong(varlen))==varlen && StrToLong(varlen) >= minVarLen)
+            wxString varlen = txtLength->GetValue();
+            if (!varlen.IsEmpty() && NumToStr(StrToLong(varlen)) == varlen && StrToLong(varlen) >= minVarLen)
             {
                 sql += wxT("(") + varlen;
                 if (isVarPrec && txtPrecision)
                 {
-                    wxString varprec=txtPrecision->GetValue();
+                    wxString varprec = txtPrecision->GetValue();
                     if (!varprec.IsEmpty())
                         sql += wxT(",") + varprec;
                 }
@@ -1449,7 +1451,7 @@ wxString dlgTypeProperty::GetQuotedTypename(int sel)
         sql += wxT(" ") + suffix;
 
     // Append any array decoration
-    if (isArray) 
+    if (isArray)
         sql += wxT("[]");
 
     return sql;
@@ -1458,14 +1460,14 @@ wxString dlgTypeProperty::GetQuotedTypename(int sel)
 
 void dlgTypeProperty::CheckLenEnable()
 {
-    int sel=cbDatatype->GetGuessedSelection();
+    int sel = cbDatatype->GetGuessedSelection();
     if (sel >= 0)
     {
-        wxString info=types.Item(sel);
+        wxString info = types.Item(sel);
         isVarPrec = info.StartsWith(wxT("P"));
         isVarLen =  isVarPrec || info.StartsWith(wxT("L")) || info.StartsWith(wxT("D"));
         minVarLen = (info.StartsWith(wxT("D")) ? 0 : 1);
-        maxVarLen = isVarPrec ? 1000 : 
+        maxVarLen = isVarPrec ? 1000 :
                     minVarLen ? 0x7fffffff : 10;
     }
 }
@@ -1475,18 +1477,18 @@ void dlgTypeProperty::CheckLenEnable()
 
 
 dlgCollistProperty::dlgCollistProperty(pgaFactory *f, frmMain *frame, const wxString &resName, pgTable *parentNode)
-: dlgProperty(f, frame, resName)
+    : dlgProperty(f, frame, resName)
 {
-    columns=0;
-    table=parentNode;
+    columns = 0;
+    table = parentNode;
 }
 
 
 dlgCollistProperty::dlgCollistProperty(pgaFactory *f, frmMain *frame, const wxString &resName, ctlListView *colList)
-: dlgProperty(f, frame, resName)
+    : dlgProperty(f, frame, resName)
 {
-    columns=colList;
-    table=0;
+    columns = colList;
+    table = 0;
 }
 
 
@@ -1496,9 +1498,9 @@ int dlgCollistProperty::Go(bool modal)
     {
         int pos;
         // iterate cols
-        for (pos=0 ; pos < columns->GetItemCount() ; pos++)
+        for (pos = 0 ; pos < columns->GetItemCount() ; pos++)
         {
-            wxString col=columns->GetItemText(pos);
+            wxString col = columns->GetItemText(pos);
             if (cbColumns->FindString(col) < 0)
                 cbColumns->Append(col);
         }
@@ -1507,25 +1509,25 @@ int dlgCollistProperty::Go(bool modal)
     {
         wxCookieType cookie;
         pgObject *data;
-        wxTreeItemId columnsItem=mainForm->GetBrowser()->GetFirstChild(table->GetId(), cookie);
+        wxTreeItemId columnsItem = mainForm->GetBrowser()->GetFirstChild(table->GetId(), cookie);
         while (columnsItem)
         {
-            data=mainForm->GetBrowser()->GetObject(columnsItem);
+            data = mainForm->GetBrowser()->GetObject(columnsItem);
             if (data->GetMetaType() == PGM_COLUMN && data->IsCollection())
                 break;
-            columnsItem=mainForm->GetBrowser()->GetNextChild(table->GetId(), cookie);
+            columnsItem = mainForm->GetBrowser()->GetNextChild(table->GetId(), cookie);
         }
 
         if (columnsItem)
         {
             wxCookieType cookie;
             pgColumn *column;
-            wxTreeItemId item=mainForm->GetBrowser()->GetFirstChild(columnsItem, cookie);
+            wxTreeItemId item = mainForm->GetBrowser()->GetFirstChild(columnsItem, cookie);
 
             // check columns
             while (item)
             {
-                column=(pgColumn*)mainForm->GetBrowser()->GetObject(item);
+                column = (pgColumn *)mainForm->GetBrowser()->GetObject(item);
                 if (column->IsCreatedBy(columnFactory))
                 {
                     if (column->GetColNumber() > 0)
@@ -1533,8 +1535,8 @@ int dlgCollistProperty::Go(bool modal)
                         cbColumns->Append(column->GetName(), column->GetAttTypId());
                     }
                 }
-        
-                item=mainForm->GetBrowser()->GetNextChild(columnsItem, cookie);
+
+                item = mainForm->GetBrowser()->GetNextChild(columnsItem, cookie);
             }
         }
     }
@@ -1560,10 +1562,10 @@ void dlgSecurityProperty::SetPrivilegesLayout()
     securityPage->lbPrivileges->GetParent()->Layout();
 }
 
-dlgSecurityProperty::dlgSecurityProperty(pgaFactory *f, frmMain *frame, pgObject *obj, const wxString &resName, const wxString& privList, const char *privChar)
-        : dlgProperty(f, frame, resName)
+dlgSecurityProperty::dlgSecurityProperty(pgaFactory *f, frmMain *frame, pgObject *obj, const wxString &resName, const wxString &privList, const char *privChar)
+    : dlgProperty(f, frame, resName)
 {
-    securityChanged=false;
+    securityChanged = false;
 
 
     if (!privList.IsEmpty() && (!obj || obj->CanCreate()))
@@ -1586,29 +1588,29 @@ dlgSecurityProperty::dlgSecurityProperty(pgaFactory *f, frmMain *frame, pgObject
                 }
                 delete setGrp;
             }
-        
-            wxString str=obj->GetAcl();
+
+            wxString str = obj->GetAcl();
             if (!str.IsEmpty())
             {
-                str = str.Mid(1, str.Length()-2);
+                str = str.Mid(1, str.Length() - 2);
                 wxStringTokenizer tokens(str, wxT(","));
 
                 while (tokens.HasMoreTokens())
                 {
-                    wxString str=tokens.GetNextToken();
-                    if (str[0U]== '"')
-                        str = str.Mid(1, str.Length()-2);
+                    wxString str = tokens.GetNextToken();
+                    if (str[0U] == '"')
+                        str = str.Mid(1, str.Length() - 2);
 
-                    wxString name=str.BeforeLast('=');
+                    wxString name = str.BeforeLast('=');
                     wxString value;
 
                     connection = obj->GetConnection();
                     if (connection->BackendMinimumVersion(7, 4))
-                        value=str.Mid(name.Length()+1).BeforeLast('/');
+                        value = str.Mid(name.Length() + 1).BeforeLast('/');
                     else
-                        value=str.Mid(name.Length()+1);
+                        value = str.Mid(name.Length() + 1);
 
-                    int icon=userFactory.GetIconId();
+                    int icon = userFactory.GetIconId();
 
                     if (name.Left(6).IsSameAs(wxT("group "), false))
                     {
@@ -1618,12 +1620,12 @@ dlgSecurityProperty::dlgSecurityProperty(pgaFactory *f, frmMain *frame, pgObject
                     else if (name.IsEmpty())
                     {
                         icon = PGICON_PUBLIC;
-                        name=wxT("public");
+                        name = wxT("public");
                     }
                     else
                     {
                         name = qtStrip(name);
-                        for (unsigned int index=0; index < groups.Count(); index++)
+                        for (unsigned int index = 0; index < groups.Count(); index++)
                             if (name == groups[index])
                             {
                                 name = wxT("group ") + name;
@@ -1653,7 +1655,7 @@ dlgSecurityProperty::~dlgSecurityProperty()
 void dlgSecurityProperty::OnChangeSize(wxSizeEvent &ev)
 {
     securityPage->lbPrivileges->SetSize(wxDefaultCoord, wxDefaultCoord,
-        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 550);
+                                        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 550);
     if (GetAutoLayout())
     {
         Layout();
@@ -1669,7 +1671,7 @@ int dlgSecurityProperty::Go(bool modal)
         securityPage->SetConnection(connection);
         //securityPage->Layout();
     }
-    
+
     return dlgProperty::Go(modal);
 }
 
@@ -1679,7 +1681,7 @@ void dlgSecurityProperty::AddGroups(ctlComboBox *comboBox)
     if (!((securityPage && securityPage->cbGroups) || comboBox))
         return;
 
-    pgSet *set=connection->ExecuteSet(wxT("SELECT groname FROM pg_group ORDER BY groname"));
+    pgSet *set = connection->ExecuteSet(wxT("SELECT groname FROM pg_group ORDER BY groname"));
 
     if (set)
     {
@@ -1711,21 +1713,21 @@ void dlgSecurityProperty::AddUsers(ctlComboBox *combobox)
 
 void dlgSecurityProperty::OnAddPriv(wxCommandEvent &ev)
 {
-    securityChanged=true;
+    securityChanged = true;
     EnableOK(btnOK->IsEnabled());
 }
 
 
 void dlgSecurityProperty::OnDelPriv(wxCommandEvent &ev)
 {
-    securityChanged=true;
+    securityChanged = true;
     EnableOK(btnOK->IsEnabled());
 }
 
 
 wxString dlgSecurityProperty::GetHelpPage() const
 {
-    if (nbNotebook->GetSelection() == (int)nbNotebook->GetPageCount()-2)
+    if (nbNotebook->GetSelection() == (int)nbNotebook->GetPageCount() - 2)
         return wxT("pg/sql-grant");
     else
         return dlgProperty::GetHelpPage();
@@ -1738,14 +1740,14 @@ void dlgSecurityProperty::EnableOK(bool enable)
     // leave that to the object dialog.
     if (securityChanged && GetObject())
     {
-        wxString sql=GetSql();
+        wxString sql = GetSql();
         if (sql.IsEmpty())
         {
-            enable=false;
-            securityChanged=false;
+            enable = false;
+            securityChanged = false;
         }
         else
-            enable=true;
+            enable = true;
     }
     dlgProperty::EnableOK(enable);
 }
@@ -1759,12 +1761,12 @@ wxString dlgSecurityProperty::GetGrant(const wxString &allPattern, const wxStrin
         return wxString();
 }
 
-bool dlgSecurityProperty::DisablePrivilege(const wxString &priv) 
-{ 
-    if (securityPage) 
-        return securityPage->DisablePrivilege(priv); 
-    else 
-        return true; 
+bool dlgSecurityProperty::DisablePrivilege(const wxString &priv)
+{
+    if (securityPage)
+        return securityPage->DisablePrivilege(priv);
+    else
+        return true;
 }
 
 
@@ -1780,10 +1782,10 @@ BEGIN_EVENT_TABLE(dlgDefaultSecurityProperty, dlgSecurityProperty)
 END_EVENT_TABLE();
 
 
-dlgDefaultSecurityProperty::dlgDefaultSecurityProperty(pgaFactory *f, frmMain *frame, pgObject *obj, const wxString &resName, const wxString& privList, const char *privChar, bool createDefPrivPanel)
-  : dlgSecurityProperty(f, frame, obj, resName, privList, privChar), defaultSecurityChanged(false)
+dlgDefaultSecurityProperty::dlgDefaultSecurityProperty(pgaFactory *f, frmMain *frame, pgObject *obj, const wxString &resName, const wxString &privList, const char *privChar, bool createDefPrivPanel)
+    : dlgSecurityProperty(f, frame, obj, resName, privList, privChar), defaultSecurityChanged(false)
 {
-    pgConn *l_conn= obj ? obj->GetConnection() : connection;
+    pgConn *l_conn = obj ? obj->GetConnection() : connection;
     if ((!obj || obj->CanCreate()) && createDefPrivPanel)
         defaultSecurityPage = new ctlDefaultSecurityPanel(l_conn, nbNotebook, frame->GetImageList());
     else
@@ -1796,7 +1798,7 @@ void dlgDefaultSecurityProperty::AddGroups(ctlComboBox *comboBox)
     if (!((securityPage && securityPage->cbGroups) || comboBox || defaultSecurityPage))
         return;
 
-    pgSet *set=connection->ExecuteSet(wxT("SELECT groname FROM pg_group ORDER BY groname"));
+    pgSet *set = connection->ExecuteSet(wxT("SELECT groname FROM pg_group ORDER BY groname"));
 
     if (set)
     {
@@ -1824,10 +1826,10 @@ void dlgDefaultSecurityProperty::AddUsers(ctlComboBox *combobox)
     {
         wxString strFetchUserQuery =
             connection->BackendMinimumVersion(8, 1) ?
-              wxT("SELECT rolname FROM pg_roles WHERE rolcanlogin ORDER BY 1") :
-              wxT("SELECT usename FROM pg_user ORDER BY 1");
+            wxT("SELECT rolname FROM pg_roles WHERE rolcanlogin ORDER BY 1") :
+            wxT("SELECT usename FROM pg_user ORDER BY 1");
 
-        pgSet *set=connection->ExecuteSet(strFetchUserQuery);
+        pgSet *set = connection->ExecuteSet(strFetchUserQuery);
         if (set)
         {
             while (!set->Eof())
@@ -1867,13 +1869,13 @@ void dlgDefaultSecurityProperty::EnableOK(bool enable)
     // leave that to the object dialog.
     if (GetObject())
     {
-        wxString sql=GetSql();
+        wxString sql = GetSql();
         if (sql.IsEmpty())
         {
-            enable=false;
+            enable = false;
         }
         else
-            enable=true;
+            enable = true;
     }
     dlgSecurityProperty::EnableOK(enable);
 }
@@ -1881,26 +1883,26 @@ void dlgDefaultSecurityProperty::EnableOK(bool enable)
 
 void dlgDefaultSecurityProperty::OnAddPriv(wxCommandEvent &ev)
 {
-    defaultSecurityChanged=true;
+    defaultSecurityChanged = true;
     EnableOK(btnOK->IsEnabled());
 }
 
 
 void dlgDefaultSecurityProperty::OnDelPriv(wxCommandEvent &ev)
 {
-    defaultSecurityChanged=true;
+    defaultSecurityChanged = true;
     EnableOK(btnOK->IsEnabled());
 }
 
-wxString dlgDefaultSecurityProperty::GetDefaultPrivileges(const wxString& schemaName)
+wxString dlgDefaultSecurityProperty::GetDefaultPrivileges(const wxString &schemaName)
 {
     if (defaultSecurityChanged)
         return defaultSecurityPage->GetDefaultPrivileges(schemaName);
     return wxT("");
 }
 
-int dlgDefaultSecurityProperty::Go(bool modal, bool createDefPrivs, const wxString& defPrivsOnTables,
-                                   const wxString& defPrivsOnSeqs, const wxString& defPrivsOnFuncs)
+int dlgDefaultSecurityProperty::Go(bool modal, bool createDefPrivs, const wxString &defPrivsOnTables,
+                                   const wxString &defPrivsOnSeqs, const wxString &defPrivsOnFuncs)
 {
     int res = dlgSecurityProperty::Go(modal);
 
@@ -1921,12 +1923,12 @@ wxString dlgDefaultSecurityProperty::GetHelpPage() const
 
     switch (nDiff)
     {
-    case 3:
-        return wxT("pg/sql-grant");
-    case 2:
-        return wxT("pg/sql-alterdefaultprivileges");
-    default:
-        return dlgProperty::GetHelpPage();
+        case 3:
+            return wxT("pg/sql-grant");
+        case 2:
+            return wxT("pg/sql-alterdefaultprivileges");
+        default:
+            return dlgProperty::GetHelpPage();
     }
 }
 
@@ -1938,15 +1940,15 @@ BEGIN_EVENT_TABLE(dlgAgentProperty, dlgProperty)
 END_EVENT_TABLE();
 
 dlgAgentProperty::dlgAgentProperty(pgaFactory *f, frmMain *frame, const wxString &resName)
-: dlgProperty(f, frame, resName)
+    : dlgProperty(f, frame, resName)
 {
-    recId=0;
+    recId = 0;
 }
 
 
 wxString dlgAgentProperty::GetSql()
 {
-    wxString str=GetInsertSql();
+    wxString str = GetInsertSql();
     if (!str.IsEmpty())
         str += wxT("\n\n");
     return str + GetUpdateSql();
@@ -1957,29 +1959,29 @@ wxString dlgAgentProperty::GetSql()
 bool dlgAgentProperty::executeSql()
 {
     wxString sql;
-    bool dataChanged=false;
+    bool dataChanged = false;
 
-    sql=GetInsertSql();
+    sql = GetInsertSql();
     if (!sql.IsEmpty())
     {
         int pos;
-        long jobId=0, schId=0, stpId=0;
+        long jobId = 0, schId = 0, stpId = 0;
         if (sql.Contains(wxT("<JobId>")))
         {
-            recId = jobId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_job_jobid_seq');")));
-            while ((pos=sql.Find(wxT("<JobId>"))) >= 0)
-                sql = sql.Left(pos) + NumToStr(jobId) + sql.Mid(pos+7);
+            recId = jobId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_job_jobid_seq');")));
+            while ((pos = sql.Find(wxT("<JobId>"))) >= 0)
+                sql = sql.Left(pos) + NumToStr(jobId) + sql.Mid(pos + 7);
         }
-        
+
         if (sql.Contains(wxT("<SchId>")))
         {
             // Each schedule ID should be unique. This'll need work if a schedule hits more than
             // one table or anything.
-            recId = schId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
-            while ((pos=sql.Find(wxT("<SchId>"))) >= 0)
+            recId = schId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
+            while ((pos = sql.Find(wxT("<SchId>"))) >= 0)
             {
-                sql = sql.Left(pos) + NumToStr(schId) + sql.Mid(pos+7);
-                recId = schId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
+                sql = sql.Left(pos) + NumToStr(schId) + sql.Mid(pos + 7);
+                recId = schId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
             }
         }
 
@@ -1987,15 +1989,15 @@ bool dlgAgentProperty::executeSql()
         {
             // Each step ID should be unique. This'll need work if a step hits more than
             // one table or anything.
-            recId = stpId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
-            while ((pos=sql.Find(wxT("<StpId>"))) >= 0)
+            recId = stpId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
+            while ((pos = sql.Find(wxT("<StpId>"))) >= 0)
             {
-                sql = sql.Left(pos) + NumToStr(stpId) + sql.Mid(pos+7);
-                recId = stpId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
+                sql = sql.Left(pos) + NumToStr(stpId) + sql.Mid(pos + 7);
+                recId = stpId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
             }
         }
 
-        pgSet *set=connection->ExecuteSet(sql);
+        pgSet *set = connection->ExecuteSet(sql);
         if (set)
         {
             delete set;
@@ -2004,26 +2006,26 @@ bool dlgAgentProperty::executeSql()
         {
             return false;
         }
-        dataChanged=true;
+        dataChanged = true;
     }
 
-    sql=GetUpdateSql();
+    sql = GetUpdateSql();
     if (!sql.IsEmpty())
     {
         int pos;
-        while ((pos=sql.Find(wxT("<JobId>"))) >= 0)
-            sql = sql.Left(pos) + NumToStr(recId) + sql.Mid(pos+7);
+        while ((pos = sql.Find(wxT("<JobId>"))) >= 0)
+            sql = sql.Left(pos) + NumToStr(recId) + sql.Mid(pos + 7);
 
         long newId;
         if (sql.Contains(wxT("<SchId>")))
         {
             // Each schedule ID should be unique. This'll need work if a schedule hits more than
             // one table or anything.
-            newId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
-            while ((pos=sql.Find(wxT("<SchId>"))) >= 0)
+            newId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
+            while ((pos = sql.Find(wxT("<SchId>"))) >= 0)
             {
-                sql = sql.Left(pos) + NumToStr(newId) + sql.Mid(pos+7);
-                newId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
+                sql = sql.Left(pos) + NumToStr(newId) + sql.Mid(pos + 7);
+                newId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_schedule_jscid_seq');")));
             }
         }
 
@@ -2031,11 +2033,11 @@ bool dlgAgentProperty::executeSql()
         {
             // Each step ID should be unique. This'll need work if a step hits more than
             // one table or anything.
-            newId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
-            while ((pos=sql.Find(wxT("<StpId>"))) >= 0)
+            newId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
+            while ((pos = sql.Find(wxT("<StpId>"))) >= 0)
             {
-                sql = sql.Left(pos) + NumToStr(newId) + sql.Mid(pos+7);
-                newId=StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
+                sql = sql.Left(pos) + NumToStr(newId) + sql.Mid(pos + 7);
+                newId = StrToLong(connection->ExecuteScalar(wxT("SELECT nextval('pgagent.pga_jobstep_jstid_seq');")));
             }
         }
 
@@ -2044,7 +2046,7 @@ bool dlgAgentProperty::executeSql()
             // error message is displayed inside ExecuteVoid
             return false;
         }
-        dataChanged=true;
+        dataChanged = true;
     }
 
     return dataChanged;
@@ -2090,7 +2092,7 @@ propertyFactory::propertyFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuTool
     if (mnu)
         mnu->Append(id, _("&Properties...\tCtrl-Alt-Enter"), _("Display/edit the properties of the selected object."));
     else
-        context=false;
+        context = false;
     if (toolbar)
         toolbar->AddTool(id, _("Properties"), wxBitmap(properties_xpm), _("Display/edit the properties of the selected object."), wxITEM_NORMAL);
 }
@@ -2188,10 +2190,10 @@ refreshFactory::refreshFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolba
 
 wxWindow *refreshFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    if (form) 
-       obj = form->GetBrowser()->GetObject(form->GetBrowser()->GetSelection()); 
+    if (form)
+        obj = form->GetBrowser()->GetObject(form->GetBrowser()->GetSelection());
 
-    if (obj) 
+    if (obj)
         if (CheckEnable(obj))
             form->Refresh(obj);
     return 0;

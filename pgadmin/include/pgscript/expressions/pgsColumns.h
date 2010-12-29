@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -16,27 +16,27 @@
 
 class pgsColumns : public pgsExpression
 {
-	
+
 private:
-	
-	wxString m_name;
-	
+
+    wxString m_name;
+
 public:
 
-	pgsColumns(const wxString & name);
+    pgsColumns(const wxString &name);
 
-	virtual ~pgsColumns();
+    virtual ~pgsColumns();
 
-	/* pgsColumns(const pgsColumns & that); */
+    /* pgsColumns(const pgsColumns & that); */
 
-	/* pgsColumns & operator=(const pgsColumns & that); */
+    /* pgsColumns & operator=(const pgsColumns & that); */
 
-	virtual pgsExpression * clone() const;
-	
-	virtual wxString value() const;
+    virtual pgsExpression *clone() const;
 
-	virtual pgsOperand eval(pgsVarMap & vars) const;
-	
+    virtual wxString value() const;
+
+    virtual pgsOperand eval(pgsVarMap &vars) const;
+
 };
 
 #endif /*PGSCOLUMNS_H_*/

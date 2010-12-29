@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,10 +18,10 @@
 #include "schema/pgSequence.h"
 
 
-pgSequence::pgSequence(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, sequenceFactory, newName)
+pgSequence::pgSequence(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, sequenceFactory, newName)
 {
-    isReplicated=false;
+    isReplicated = false;
 }
 
 pgSequence::~pgSequence()
@@ -31,7 +31,7 @@ pgSequence::~pgSequence()
 wxString pgSequence::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -44,11 +44,11 @@ wxString pgSequence::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop sequence \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop sequence \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop sequence cascaded?");
@@ -116,9 +116,9 @@ bool pgSequence::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 
 void pgSequence::UpdateValues()
 {
-    pgSet *sequence=ExecuteSet(
-        wxT("SELECT last_value, min_value, max_value, cache_value, is_cycled, increment_by, is_called\n")
-        wxT("  FROM ") + GetQuotedFullIdentifier());
+    pgSet *sequence = ExecuteSet(
+                          wxT("SELECT last_value, min_value, max_value, cache_value, is_cycled, increment_by, is_called\n")
+                          wxT("  FROM ") + GetQuotedFullIdentifier());
     if (sequence)
     {
         lastValue = sequence->GetLongLong(wxT("last_value"));
@@ -140,17 +140,17 @@ wxString pgSequence::GetSql(ctlTree *browser)
     {
         UpdateValues();
         sql = wxT("-- Sequence: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP SEQUENCE ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE SEQUENCE ") + GetQuotedFullIdentifier()
-            + wxT("\n  INCREMENT ") + GetIncrement().ToString()
-            + wxT("\n  MINVALUE ") + GetMinValue().ToString()
-            + wxT("\n  MAXVALUE ") + GetMaxValue().ToString()
-            + wxT("\n  START ") + GetLastValue().ToString()
-            + wxT("\n  CACHE ") + GetCacheValue().ToString();
+              + wxT("-- DROP SEQUENCE ") + GetQuotedFullIdentifier() + wxT(";")
+              + wxT("\n\nCREATE SEQUENCE ") + GetQuotedFullIdentifier()
+              + wxT("\n  INCREMENT ") + GetIncrement().ToString()
+              + wxT("\n  MINVALUE ") + GetMinValue().ToString()
+              + wxT("\n  MAXVALUE ") + GetMaxValue().ToString()
+              + wxT("\n  START ") + GetLastValue().ToString()
+              + wxT("\n  CACHE ") + GetCacheValue().ToString();
         if (GetCycled())
             sql += wxT("\n  CYCLE");
         sql += wxT(";\n")
-            + GetOwnerSql(7, 3, wxT("TABLE ") + GetQuotedFullIdentifier());
+               + GetOwnerSql(7, 3, wxT("TABLE ") + GetQuotedFullIdentifier());
 
         if (!GetConnection()->BackendMinimumVersion(8, 2))
             sql += GetGrant(wxT("arwdRxt"), wxT("TABLE ") + GetQuotedFullIdentifier());
@@ -190,13 +190,13 @@ void pgSequence::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 
 void pgSequence::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
-    wxLogInfo(wxT("Displaying statistics for sequence on ") +GetSchema()->GetIdentifier());
+    wxLogInfo(wxT("Displaying statistics for sequence on ") + GetSchema()->GetIdentifier());
 
     // Add the statistics view columns
     CreateListColumns(statistics, _("Statistic"), _("Value"));
 
     pgSet *stats = GetSchema()->GetDatabase()->ExecuteSet(wxT(
-        "SELECT blks_read, blks_hit FROM pg_statio_all_sequences WHERE relid = ") + GetOidStr());
+                       "SELECT blks_read, blks_hit FROM pg_statio_all_sequences WHERE relid = ") + GetOidStr());
 
     if (stats)
     {
@@ -212,8 +212,8 @@ void pgSequence::ShowStatistics(frmMain *form, ctlListView *statistics)
 
 pgObject *pgSequence::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *sequence=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *sequence = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         sequence = sequenceFactory.CreateObjects(coll, 0, wxT("\n   AND cl.oid=") + GetOidStr());
 
@@ -224,7 +224,7 @@ pgObject *pgSequence::Refresh(ctlTree *browser, const wxTreeItemId item)
 wxString pgSequenceCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -240,7 +240,7 @@ wxString pgSequenceCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Sequences list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -250,23 +250,23 @@ wxString pgSequenceCollection::GetTranslatedMessage(int kindOfMessage) const
 
 pgObject *pgSequenceFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgSequence *sequence=0;
+    pgSequence *sequence = 0;
 
     pgSet *sequences;
     sequences = collection->GetDatabase()->ExecuteSet(
-            wxT("SELECT cl.oid, relname, pg_get_userbyid(relowner) AS seqowner, relacl, description\n")
-            wxT("  FROM pg_class cl\n")
-            wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=cl.oid\n")
-            wxT(" WHERE relkind = 'S' AND relnamespace  = ") + collection->GetSchema()->GetOidStr()
-            + restriction + wxT("\n")
-            wxT(" ORDER BY relname"));
+                    wxT("SELECT cl.oid, relname, pg_get_userbyid(relowner) AS seqowner, relacl, description\n")
+                    wxT("  FROM pg_class cl\n")
+                    wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=cl.oid\n")
+                    wxT(" WHERE relkind = 'S' AND relnamespace  = ") + collection->GetSchema()->GetOidStr()
+                    + restriction + wxT("\n")
+                    wxT(" ORDER BY relname"));
 
     if (sequences)
     {
         while (!sequences->Eof())
         {
-            sequence = new pgSequence(collection->GetSchema(), 
-                                            sequences->GetVal(wxT("relname")));
+            sequence = new pgSequence(collection->GetSchema(),
+                                      sequences->GetVal(wxT("relname")));
 
             sequence->iSetOid(sequences->GetOid(wxT("oid")));
             sequence->iSetComment(sequences->GetVal(wxT("description")));
@@ -276,12 +276,12 @@ pgObject *pgSequenceFactory::CreateObjects(pgCollection *collection, ctlTree *br
             if (browser)
             {
                 browser->AppendObject(collection, sequence);
-	  			sequences->MoveNext();
+                sequences->MoveNext();
             }
             else
                 break;
         }
-		delete sequences;
+        delete sequences;
     }
     return sequence;
 }
@@ -290,8 +290,8 @@ pgObject *pgSequenceFactory::CreateObjects(pgCollection *collection, ctlTree *br
 #include "images/sequence.xpm"
 #include "images/sequences.xpm"
 
-pgSequenceFactory::pgSequenceFactory() 
-: pgSchemaObjFactory(__("Sequence"), __("New Sequence..."), __("Create a new Sequence."), sequence_xpm)
+pgSequenceFactory::pgSequenceFactory()
+    : pgSchemaObjFactory(__("Sequence"), __("New Sequence..."), __("Create a new Sequence."), sequence_xpm)
 {
     metaType = PGM_SEQUENCE;
 }

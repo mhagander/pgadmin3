@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -26,16 +26,16 @@
 #include "gqb/gqbQueryObjs.h"
 #include "gqb/gqbViewController.h"
 
-gqbGridJoinTable::gqbGridJoinTable(gqbController* _controller):
-wxGridTableBase()
+gqbGridJoinTable::gqbGridJoinTable(gqbController *_controller):
+    wxGridTableBase()
 {
-    controller=_controller;
+    controller = _controller;
 }
 
 
 gqbGridJoinTable::~gqbGridJoinTable()
 {
-	emptyTableData();
+    emptyTableData();
 }
 
 
@@ -63,48 +63,48 @@ wxString gqbGridJoinTable::GetValue( int row, int col )
 {
     if (row >= joins.count())
         return wxEmptyString;
-    gqbQueryJoin* obj = (gqbQueryJoin *)joins.getItemAt(row);
+    gqbQueryJoin *obj = (gqbQueryJoin *)joins.getItemAt(row);
 
     switch(col)
     {
         case 0:
-            {
-                gqbQueryObject* srcTbl = obj->getSourceQTable();
-                wxString sStr = srcTbl ? (srcTbl->getAlias().IsEmpty() ? qtIdent(srcTbl->getName()) : qtIdent(srcTbl->getAlias())) : wxString(wxEmptyString);
-                if ( !sStr.IsEmpty() )
-                    sStr += wxT(".") + qtIdent(obj->getSourceCol());
-                return sStr;
-            }
+        {
+            gqbQueryObject *srcTbl = obj->getSourceQTable();
+            wxString sStr = srcTbl ? (srcTbl->getAlias().IsEmpty() ? qtIdent(srcTbl->getName()) : qtIdent(srcTbl->getAlias())) : wxString(wxEmptyString);
+            if ( !sStr.IsEmpty() )
+                sStr += wxT(".") + qtIdent(obj->getSourceCol());
+            return sStr;
+        }
         case 1:
             switch(obj->getKindofJoin())
             {
-            case _equally:
-                return wxT("=");
-            case _lesser:
-                return wxT("<");
-            case _greater:
-                return wxT(">");
-            case _equlesser:
-                return wxT("<=");
-            case _equgreater:
-                return wxT(">=");
+                case _equally:
+                    return wxT("=");
+                case _lesser:
+                    return wxT("<");
+                case _greater:
+                    return wxT(">");
+                case _equlesser:
+                    return wxT("<=");
+                case _equgreater:
+                    return wxT(">=");
             }
             return wxEmptyString;
         case 2:
-            {
-                gqbQueryObject* destTbl = obj->getDestQTable();
-                wxString dStr = destTbl ? (destTbl->getAlias().IsEmpty() ? qtIdent(destTbl->getName()) : qtIdent(destTbl->getAlias())) : wxString(wxEmptyString);
-                if ( !dStr.IsEmpty() )
-                    dStr += wxT(".") + obj->getDestCol();
-                return dStr;
-            }
-            break;
+        {
+            gqbQueryObject *destTbl = obj->getDestQTable();
+            wxString dStr = destTbl ? (destTbl->getAlias().IsEmpty() ? qtIdent(destTbl->getName()) : qtIdent(destTbl->getAlias())) : wxString(wxEmptyString);
+            if ( !dStr.IsEmpty() )
+                dStr += wxT(".") + obj->getDestCol();
+            return dStr;
+        }
+        break;
     };
     return wxT("");
 }
 
 
-void gqbGridJoinTable::SetValue( int row, int col, const wxString& value )
+void gqbGridJoinTable::SetValue( int row, int col, const wxString &value )
 {
     if (col == 1)
     {
@@ -137,7 +137,7 @@ bool gqbGridJoinTable::ReplaceJoin( gqbQueryJoin *orig, gqbQueryJoin *newVal )
     return false;
 }
 
-gqbQueryJoin* gqbGridJoinTable::GetJoin( int row )
+gqbQueryJoin *gqbGridJoinTable::GetJoin( int row )
 {
     if (row >= joins.count())
         return NULL;
@@ -156,9 +156,9 @@ void gqbGridJoinTable::removeJoin(gqbQueryJoin *item)
     if (GetView())
     {
         wxGridTableMessage msg( this,
-            wxGRIDTABLE_NOTIFY_ROWS_DELETED,
-            index + 1,
-            1 );
+                                wxGRIDTABLE_NOTIFY_ROWS_DELETED,
+                                index + 1,
+                                1 );
         GetView()->ProcessTableMessage( msg );
     }
 }
@@ -206,20 +206,20 @@ void gqbGridJoinTable::AppendJoin(gqbQueryJoin *item)
     if (notify && GetView() )
     {
         wxGridTableMessage msg( this,
-            wxGRIDTABLE_NOTIFY_ROWS_INSERTED,
-            joins.count(),
-            1 );
+                                wxGRIDTABLE_NOTIFY_ROWS_INSERTED,
+                                joins.count(),
+                                1 );
         GetView()->ProcessTableMessage( msg );
 
-        int row = GetView()->GetNumberRows() -1;
+        int row = GetView()->GetNumberRows() - 1;
 
-        wxString strChoices[] = {wxT("="), wxT("<"),wxT("<="),wxT(">"),wxT(">=")};
+        wxString strChoices[] = {wxT("="), wxT("<"), wxT("<="), wxT(">"), wxT(">=")};
 
         GetView()->SetCellRenderer(row, 0, new wxGridCellButtonRenderer);
         GetView()->SetCellRenderer(row, 1, new wxGridCellComboBoxRenderer);
-        GetView()->SetCellEditor(row, 1, new dxGridCellSizedChoiceEditor(WXSIZEOF(strChoices),strChoices));
+        GetView()->SetCellEditor(row, 1, new dxGridCellSizedChoiceEditor(WXSIZEOF(strChoices), strChoices));
         GetView()->SetCellRenderer(row, 2, new wxGridCellButtonRenderer);
-        
+
         GetView()->SetReadOnly( row, 0 );
         GetView()->SetReadOnly( row, 2 );
     }
@@ -229,24 +229,24 @@ void gqbGridJoinTable::AppendJoin(gqbQueryJoin *item)
 // Removes all items from gqbGridJoinTable
 void gqbGridJoinTable::emptyTableData()
 {
-	for (int index = joins.count() - 1; index >= 0; index--)
-	{
-		gqbQueryJoin* join = (gqbQueryJoin *)joins[index];
-		joins.removeItem(join);
+    for (int index = joins.count() - 1; index >= 0; index--)
+    {
+        gqbQueryJoin *join = (gqbQueryJoin *)joins[index];
+        joins.removeItem(join);
 
-		// Join with either source or destination not present needs to be removed here
-		if (!(join->getSourceQTable() && join->getDestQTable()))
-		{
-			delete join;
-			join = NULL;
-		}
-	}
+        // Join with either source or destination not present needs to be removed here
+        if (!(join->getSourceQTable() && join->getDestQTable()))
+        {
+            delete join;
+            join = NULL;
+        }
+    }
 }
 
 gqbQueryObject *gqbGridJoinTable::DeleteRow(size_t pos)
 {
     gqbQueryJoin *join = (gqbQueryJoin *)joins.getItemAt(pos);
-    gqbQueryObject* srcTbl = NULL;
+    gqbQueryObject *srcTbl = NULL;
     if (join)
     {
         this->removeJoin(join);
@@ -264,12 +264,12 @@ wxString gqbGridJoinTable::GetColLabelValue(int col)
 {
     switch(col)
     {
-    case 0:
-        return _("Source Column");
-    case 1:
-        return _("Join Type");
-    case 2:
-        return _("Destination Column");
+        case 0:
+            return _("Source Column");
+        case 1:
+            return _("Join Type");
+        case 2:
+            return _("Destination Column");
     }
     return wxEmptyString;
 }

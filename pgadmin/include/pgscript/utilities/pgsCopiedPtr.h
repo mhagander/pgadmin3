@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,63 +18,63 @@ template <typename T> class pgsCopiedPtr
 
 private:
 
-	T * p;
+    T *p;
 
 public:
 
-	pgsCopiedPtr(T * p) :
-		p(p)
-	{
-		
-	}
+    pgsCopiedPtr(T *p) :
+        p(p)
+    {
 
-	pgsCopiedPtr() :
-		p(0)
-	{
-		
-	}
+    }
 
-	pgsCopiedPtr(const pgsCopiedPtr & that) :
-		p(that.p == 0 ? 0 : that.p->clone())
-	{
-		
-	}
+    pgsCopiedPtr() :
+        p(0)
+    {
 
-	~pgsCopiedPtr()
-	{
-		pdelete(p);
-	}
+    }
 
-	pgsCopiedPtr & operator =(pgsCopiedPtr that)
-	{
-		std::swap(p, that.p);
-		return (*this);
-	}
+    pgsCopiedPtr(const pgsCopiedPtr &that) :
+        p(that.p == 0 ? 0 : that.p->clone())
+    {
 
-	T & operator *()
-	{
-		return *p;
-	}
+    }
 
-	const T & operator *() const
-	{
-		return *p;
-	}
+    ~pgsCopiedPtr()
+    {
+        pdelete(p);
+    }
 
-	T * operator ->()
-	{
-		return p;
-	}
+    pgsCopiedPtr &operator =(pgsCopiedPtr that)
+    {
+        std::swap(p, that.p);
+        return (*this);
+    }
 
-	const T * operator ->() const
-	{
-		return p;
-	}
+    T &operator *()
+    {
+        return *p;
+    }
 
-	const T * get() const
-	{
-		return p;
-	}
+    const T &operator *() const
+    {
+        return *p;
+    }
+
+    T *operator ->()
+    {
+        return p;
+    }
+
+    const T *operator ->() const
+    {
+        return p;
+    }
+
+    const T *get() const
+    {
+        return p;
+    }
 };
 
 #endif /*PGSCOPIEDPTR_H_*/

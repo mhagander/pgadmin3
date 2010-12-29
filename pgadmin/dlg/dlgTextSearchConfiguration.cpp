@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -55,14 +55,14 @@ END_EVENT_TABLE();
 
 dlgProperty *pgTextSearchConfigurationFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgTextSearchConfiguration(this, frame, (pgTextSearchConfiguration*)node, (pgSchema*)parent);
+    return new dlgTextSearchConfiguration(this, frame, (pgTextSearchConfiguration *)node, (pgSchema *)parent);
 }
 
 dlgTextSearchConfiguration::dlgTextSearchConfiguration(pgaFactory *f, frmMain *frame, pgTextSearchConfiguration *node, pgSchema *sch)
-: dlgTypeProperty(f, frame, wxT("dlgTextSearchConfiguration"))
+    : dlgTypeProperty(f, frame, wxT("dlgTextSearchConfiguration"))
 {
-    schema=sch;
-    config=node;
+    schema = sch;
+    config = node;
     dirtyTokens = false;
 
     lstTokens->CreateColumns(0, _("Token"), _("Dictionaries"));
@@ -129,17 +129,17 @@ int dlgTextSearchConfiguration::Go(bool modal)
 
         // second tab handling
         size_t i;
-        for (i=0 ; i < config->GetTokens().GetCount() ; i++)
+        for (i = 0 ; i < config->GetTokens().GetCount() ; i++)
         {
-            wxString token=config->GetTokens().Item(i);
+            wxString token = config->GetTokens().Item(i);
             lstTokens->AppendItem(token.BeforeFirst('/'), token.AfterFirst('/'));
         }
 
         pgSet *tokens;
         tokens = connection->ExecuteSet(
-            wxT("SELECT alias FROM ts_token_type(")
-            + config->GetParserOidStr()
-            + wxT(") ORDER BY alias"));
+                     wxT("SELECT alias FROM ts_token_type(")
+                     + config->GetParserOidStr()
+                     + wxT(") ORDER BY alias"));
 
         if (tokens)
         {
@@ -153,7 +153,7 @@ int dlgTextSearchConfiguration::Go(bool modal)
 
         pgSet *dictionaries;
         dictionaries = connection->ExecuteSet(
-          wxT("SELECT dictname FROM pg_ts_dict ORDER BY dictname"));
+                           wxT("SELECT dictname FROM pg_ts_dict ORDER BY dictname"));
 
         if (dictionaries)
         {
@@ -182,9 +182,9 @@ int dlgTextSearchConfiguration::Go(bool modal)
 
 pgObject *dlgTextSearchConfiguration::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=textSearchConfigurationFactory.CreateObjects(collection, 0,
-         wxT("\n   AND cfg.cfgname=") + qtDbString(GetName()) +
-         wxT("\n   AND cfg.cfgnamespace=") + schema->GetOidStr());
+    pgObject *obj = textSearchConfigurationFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND cfg.cfgname=") + qtDbString(GetName()) +
+                    wxT("\n   AND cfg.cfgnamespace=") + schema->GetOidStr());
 
     return obj;
 }
@@ -193,8 +193,8 @@ pgObject *dlgTextSearchConfiguration::CreateObject(pgCollection *collection)
 #ifdef __WXMAC__
 void dlgTextSearchConfiguration::OnChangeSize(wxSizeEvent &ev)
 {
-	lstTokens->SetSize(wxDefaultCoord, wxDefaultCoord,
-	    ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
+    lstTokens->SetSize(wxDefaultCoord, wxDefaultCoord,
+                       ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
     if (GetAutoLayout())
     {
         Layout();
@@ -208,16 +208,16 @@ void dlgTextSearchConfiguration::CheckChange()
     if (config)
     {
         EnableOK(txtName->GetValue() != config->GetName()
-            || txtComment->GetValue() != config->GetComment()
-            || cbOwner->GetValue() != config->GetOwner()
-            || dirtyTokens);
+                 || txtComment->GetValue() != config->GetComment()
+                 || cbOwner->GetValue() != config->GetOwner()
+                 || dirtyTokens);
     }
     else
     {
-        wxString name=GetName();
-        bool enable=true;
+        wxString name = GetName();
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
-        CheckValid(enable, cbParser->GetGuessedSelection()>0 || cbCopy->GetGuessedSelection() > 0 , _("Please select a parser or a configuration to copy."));
+        CheckValid(enable, cbParser->GetGuessedSelection() > 0 || cbCopy->GetGuessedSelection() > 0 , _("Please select a parser or a configuration to copy."));
 
         EnableOK(enable);
     }
@@ -273,7 +273,7 @@ void dlgTextSearchConfiguration::OnChangeTxtDictionary(wxCommandEvent &ev)
 
 void dlgTextSearchConfiguration::OnSelChangeToken(wxListEvent &ev)
 {
-    int row=lstTokens->GetSelection();
+    int row = lstTokens->GetSelection();
     if (row >= 0)
     {
         cbToken->SetValue(lstTokens->GetText(row, 0));
@@ -337,7 +337,7 @@ void dlgTextSearchConfiguration::OnRemoveToken(wxCommandEvent &ev)
 wxString dlgTextSearchConfiguration::GetSql()
 {
     wxString sql;
-    wxString objname=schema->GetQuotedPrefix() + qtIdent(GetName());
+    wxString objname = schema->GetQuotedPrefix() + qtIdent(GetName());
 
     if (config)
     {
@@ -349,12 +349,12 @@ wxString dlgTextSearchConfiguration::GetSql()
     {
         // create mode
         sql = wxT("CREATE TEXT SEARCH CONFIGURATION ")
-            + schema->GetQuotedPrefix() + GetName()
-            + wxT(" (");
-        
+              + schema->GetQuotedPrefix() + GetName()
+              + wxT(" (");
+
         AppendIfFilled(sql, wxT("\n   PARSER="), cbParser->GetValue());
         AppendIfFilled(sql, wxT("\n   COPY="), cbCopy->GetValue());
-        
+
         sql += wxT("\n);\n");
 
     }
@@ -370,23 +370,23 @@ wxString dlgTextSearchConfiguration::GetSql()
                 toks.Add(config->GetTokens().Item(index));
         }
 
-        int cnt=lstTokens->GetItemCount();
+        int cnt = lstTokens->GetItemCount();
         int pos;
 
         // check for changed or added tokens
-        for (pos=0 ; pos < cnt ; pos++)
+        for (pos = 0 ; pos < cnt ; pos++)
         {
-            wxString newTok=lstTokens->GetText(pos);
-            wxString newVal=lstTokens->GetText(pos, 1);
+            wxString newTok = lstTokens->GetText(pos);
+            wxString newVal = lstTokens->GetText(pos, 1);
 
             wxString oldVal;
 
-            for (index=0 ; index < toks.GetCount() ; index++)
+            for (index = 0 ; index < toks.GetCount() ; index++)
             {
-                wxString tok=toks.Item(index);
+                wxString tok = toks.Item(index);
                 if (tok.BeforeFirst('/').IsSameAs(newTok, false))
                 {
-                    oldVal = tok.Mid(newTok.Length()+1);
+                    oldVal = tok.Mid(newTok.Length() + 1);
                     toks.RemoveAt(index);
                     break;
                 }
@@ -396,30 +396,30 @@ wxString dlgTextSearchConfiguration::GetSql()
                 if (oldVal.Length() == 0)
                 {
                     sql += wxT("ALTER TEXT SEARCH CONFIGURATION ") + objname
-                        +  wxT(" ADD MAPPING FOR ") + newTok
-                        +  wxT(" WITH ") + newVal
-                        +  wxT(";\n");
+                           +  wxT(" ADD MAPPING FOR ") + newTok
+                           +  wxT(" WITH ") + newVal
+                           +  wxT(";\n");
                 }
                 else
                 {
                     sql += wxT("ALTER TEXT SEARCH CONFIGURATION ") + objname
-                        +  wxT(" ALTER MAPPING FOR ") + newTok
-                        + wxT(" WITH ") + newVal
-                        +  wxT(";\n");
+                           +  wxT(" ALTER MAPPING FOR ") + newTok
+                           + wxT(" WITH ") + newVal
+                           +  wxT(";\n");
                 }
             }
         }
-        
+
         // check for removed tokens
         wxString oldTok;
-        for (pos=0 ; pos < (int)toks.GetCount() ; pos++)
+        for (pos = 0 ; pos < (int)toks.GetCount() ; pos++)
         {
             if (!toks.Item(pos).BeforeFirst('/').IsSameAs(oldTok, false))
             {
                 oldTok = toks.Item(pos).BeforeFirst('/');
                 sql += wxT("ALTER TEXT SEARCH CONFIGURATION ") + objname
-                    +  wxT(" DROP MAPPING FOR ") + oldTok
-                    + wxT(";\n");
+                       +  wxT(" DROP MAPPING FOR ") + oldTok
+                       + wxT(";\n");
             }
         }
     }

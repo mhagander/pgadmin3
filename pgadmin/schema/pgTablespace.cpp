@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,15 +22,15 @@
 #include "frm/frmMain.h"
 
 
-pgTablespace::pgTablespace(const wxString& newName)
-: pgServerObject(tablespaceFactory, newName)
+pgTablespace::pgTablespace(const wxString &newName)
+    : pgServerObject(tablespaceFactory, newName)
 {
 }
 
 wxString pgTablespace::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -43,11 +43,11 @@ wxString pgTablespace::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop tablespace \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop tablespace \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop tablespace cascaded?");
@@ -106,19 +106,19 @@ void pgTablespace::ShowDependents(frmMain *form, ctlListView *referencedBy, cons
 
     wxArrayString dblist;
 
-    pgSet *set=GetConnection()->ExecuteSet(
-        wxT("SELECT datname, datallowconn, dattablespace\n")
-        wxT("  FROM pg_database db\n")
-        wxT(" ORDER BY datname"));
+    pgSet *set = GetConnection()->ExecuteSet(
+                     wxT("SELECT datname, datallowconn, dattablespace\n")
+                     wxT("  FROM pg_database db\n")
+                     wxT(" ORDER BY datname"));
 
     if (set)
     {
         while (!set->Eof())
         {
-            wxString datname=set->GetVal(wxT("datname"));
+            wxString datname = set->GetVal(wxT("datname"));
             if (set->GetBool(wxT("datallowconn")))
                 dblist.Add(datname);
-            OID oid=set->GetOid(wxT("dattablespace"));
+            OID oid = set->GetOid(wxT("dattablespace"));
             if (oid == GetOid())
                 referencedBy->AppendItem(databaseFactory.GetIconId(), _("Database"), datname);
 
@@ -127,18 +127,18 @@ void pgTablespace::ShowDependents(frmMain *form, ctlListView *referencedBy, cons
         delete set;
     }
 
-    FillOwned(form->GetBrowser(), referencedBy, dblist, 
-        wxT("SELECT cl.relkind, COALESCE(cin.nspname, cln.nspname) as nspname, COALESCE(ci.relname, cl.relname) as relname, cl.relname as indname\n")
-        wxT("  FROM pg_class cl\n")
-        wxT("  JOIN pg_namespace cln ON cl.relnamespace=cln.oid\n")
-        wxT("  LEFT OUTER JOIN pg_index ind ON ind.indexrelid=cl.oid\n")
-        wxT("  LEFT OUTER JOIN pg_class ci ON ind.indrelid=ci.oid\n")
-        wxT("  LEFT OUTER JOIN pg_namespace cin ON ci.relnamespace=cin.oid,\n")
-        wxT("       pg_database\n")
-        wxT(" WHERE datname = current_database()\n")
-        wxT("   AND (cl.reltablespace = ") + GetOidStr() + wxT("\n")
-        wxT("        OR (cl.reltablespace=0 AND dattablespace = ") + GetOidStr() + wxT("))\n")
-        wxT(" ORDER BY 1,2,3"));
+    FillOwned(form->GetBrowser(), referencedBy, dblist,
+              wxT("SELECT cl.relkind, COALESCE(cin.nspname, cln.nspname) as nspname, COALESCE(ci.relname, cl.relname) as relname, cl.relname as indname\n")
+              wxT("  FROM pg_class cl\n")
+              wxT("  JOIN pg_namespace cln ON cl.relnamespace=cln.oid\n")
+              wxT("  LEFT OUTER JOIN pg_index ind ON ind.indexrelid=cl.oid\n")
+              wxT("  LEFT OUTER JOIN pg_class ci ON ind.indrelid=ci.oid\n")
+              wxT("  LEFT OUTER JOIN pg_namespace cin ON ci.relnamespace=cin.oid,\n")
+              wxT("       pg_database\n")
+              wxT(" WHERE datname = current_database()\n")
+              wxT("   AND (cl.reltablespace = ") + GetOidStr() + wxT("\n")
+              wxT("        OR (cl.reltablespace=0 AND dattablespace = ") + GetOidStr() + wxT("))\n")
+              wxT(" ORDER BY 1,2,3"));
 
     form->EndMsg(set != 0);
 }
@@ -159,16 +159,16 @@ wxString pgTablespace::GetSql(ctlTree *browser)
             sql += wxT("-- System Tablespace\n");
         else
             sql += wxT("-- DROP TABLESPACE ") + GetQuotedIdentifier()
-                +  wxT("\n\nCREATE TABLESPACE ") + GetQuotedIdentifier()
-                +  wxT("\n  OWNER ") + qtIdent(GetOwner())
-                +  wxT("\n  LOCATION ") + qtDbString(location)
-                +  wxT(";\n");
+                   +  wxT("\n\nCREATE TABLESPACE ") + GetQuotedIdentifier()
+                   +  wxT("\n  OWNER ") + qtIdent(GetOwner())
+                   +  wxT("\n  LOCATION ") + qtDbString(location)
+                   +  wxT(";\n");
         sql += GetCommentSql();
 
         size_t i;
-        for (i=0 ; i < variables.GetCount() ; i++)
+        for (i = 0 ; i < variables.GetCount() ; i++)
             sql += wxT("ALTER TABLESPACE ") + GetQuotedFullIdentifier()
-                +  wxT(" SET (") + variables.Item(i) + wxT(");\n");
+                   +  wxT(" SET (") + variables.Item(i) + wxT(");\n");
 
     }
     return sql;
@@ -179,7 +179,7 @@ void pgTablespace::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
     }
     if (properties)
@@ -191,9 +191,9 @@ void pgTablespace::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
         properties->AppendItem(_("Owner"), GetOwner());
         properties->AppendItem(_("Location"), GetLocation());
         size_t i;
-        for (i=0 ; i < variables.GetCount() ; i++)
+        for (i = 0 ; i < variables.GetCount() ; i++)
         {
-            wxString item=variables.Item(i);
+            wxString item = variables.Item(i);
             properties->AppendItem(item.BeforeFirst('='), item.AfterFirst('='));
         }
         properties->AppendItem(_("ACL"), GetAcl());
@@ -210,16 +210,16 @@ void pgTablespace::ShowStatistics(frmMain *form, ctlListView *statistics)
         {
             wxLogInfo(wxT("Displaying statistics for %s"), GetTypeName().c_str());
 
-        // Add the statistics view columns
+            // Add the statistics view columns
             CreateListColumns(statistics, _("Statistic"), _("Value"));
 
             pgSet *stats = GetConnection()->ExecuteSet(
-                wxT("SELECT pg_size_pretty(pg_tablespace_size(") + GetOidStr() + wxT(")) AS ") + qtIdent(_("Tablespace Size")));
-    
+                               wxT("SELECT pg_size_pretty(pg_tablespace_size(") + GetOidStr() + wxT(")) AS ") + qtIdent(_("Tablespace Size")));
+
             if (stats)
             {
                 int col;
-                for (col=0 ; col < stats->NumCols() ; col++)
+                for (col = 0 ; col < stats->NumCols() ; col++)
                 {
                     if (!stats->ColName(col).IsEmpty())
                         statistics->AppendItem(stats->ColName(col), stats->GetVal(col));
@@ -233,8 +233,8 @@ void pgTablespace::ShowStatistics(frmMain *form, ctlListView *statistics)
 
 pgObject *pgTablespace::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *tablespace=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *tablespace = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         tablespace = tablespaceFactory.CreateObjects(coll, 0, wxT("\n WHERE ts.oid=") + GetOidStr());
 
@@ -245,23 +245,23 @@ pgObject *pgTablespace::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgTablespaceFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgTablespace *tablespace=0;
+    pgTablespace *tablespace = 0;
 
     wxString tabname;
 
     pgSet *tablespaces;
     if (collection->GetConnection()->BackendMinimumVersion(8, 5))
         tablespaces = collection->GetServer()->ExecuteSet(
-        wxT("SELECT ts.oid, spcname, spclocation, spcoptions, pg_get_userbyid(spcowner) as spcuser, spcacl, pg_catalog.shobj_description(oid, 'pg_tablespace') AS description FROM pg_tablespace ts\n")
-        + restriction + wxT(" ORDER BY spcname"));
+                          wxT("SELECT ts.oid, spcname, spclocation, spcoptions, pg_get_userbyid(spcowner) as spcuser, spcacl, pg_catalog.shobj_description(oid, 'pg_tablespace') AS description FROM pg_tablespace ts\n")
+                          + restriction + wxT(" ORDER BY spcname"));
     else if (collection->GetConnection()->BackendMinimumVersion(8, 2))
         tablespaces = collection->GetServer()->ExecuteSet(
-        wxT("SELECT ts.oid, spcname, spclocation, pg_get_userbyid(spcowner) as spcuser, spcacl, pg_catalog.shobj_description(oid, 'pg_tablespace') AS description FROM pg_tablespace ts\n")
-        + restriction + wxT(" ORDER BY spcname"));
+                          wxT("SELECT ts.oid, spcname, spclocation, pg_get_userbyid(spcowner) as spcuser, spcacl, pg_catalog.shobj_description(oid, 'pg_tablespace') AS description FROM pg_tablespace ts\n")
+                          + restriction + wxT(" ORDER BY spcname"));
     else
         tablespaces = collection->GetServer()->ExecuteSet(
-        wxT("SELECT ts.oid, spcname, spclocation, '' AS description, pg_get_userbyid(spcowner) as spcuser, spcacl FROM pg_tablespace ts\n")
-        + restriction + wxT(" ORDER BY spcname"));
+                          wxT("SELECT ts.oid, spcname, spclocation, '' AS description, pg_get_userbyid(spcowner) as spcuser, spcacl FROM pg_tablespace ts\n")
+                          + restriction + wxT(" ORDER BY spcname"));
 
     if (tablespaces)
     {
@@ -278,29 +278,29 @@ pgObject *pgTablespaceFactory::CreateObjects(pgCollection *collection, ctlTree *
                 tablespace->iSetComment(tablespaces->GetVal(wxT("description")));
             if (collection->GetConnection()->BackendMinimumVersion(8, 5))
             {
-                wxString str=tablespaces->GetVal(wxT("spcoptions"));
+                wxString str = tablespaces->GetVal(wxT("spcoptions"));
                 if (!str.IsEmpty())
-                    FillArray(tablespace->GetVariables(), str.Mid(1, str.Length()-2));
+                    FillArray(tablespace->GetVariables(), str.Mid(1, str.Length() - 2));
             }
 
             if (browser)
             {
                 browser->AppendObject(collection, tablespace);
-				tablespaces->MoveNext();
+                tablespaces->MoveNext();
             }
             else
                 break;
         }
 
-		delete tablespaces;
+        delete tablespaces;
     }
     return tablespace;
 }
 
 
 pgTablespaceCollection::pgTablespaceCollection(pgaFactory *factory, pgServer *sv)
-: pgServerObjCollection(factory, sv)
-{ 
+    : pgServerObjCollection(factory, sv)
+{
 }
 
 
@@ -316,11 +316,11 @@ void pgTablespaceCollection::ShowStatistics(frmMain *form, ctlListView *statisti
         statistics->AddColumn(_("Size"), 60);
 
         pgSet *stats = GetConnection()->ExecuteSet(
-            wxT("SELECT spcname, pg_size_pretty(pg_tablespace_size(oid)) AS size FROM pg_tablespace ORDER BY spcname"));
+                           wxT("SELECT spcname, pg_size_pretty(pg_tablespace_size(oid)) AS size FROM pg_tablespace ORDER BY spcname"));
 
         if (stats)
         {
-            long pos=0;
+            long pos = 0;
             while (!stats->Eof())
             {
                 statistics->InsertItem(pos, stats->GetVal(wxT("spcname")), PGICON_STATISTICS);
@@ -329,7 +329,7 @@ void pgTablespaceCollection::ShowStatistics(frmMain *form, ctlListView *statisti
                 pos++;
             }
 
-	        delete stats;
+            delete stats;
         }
     }
 }
@@ -338,7 +338,7 @@ void pgTablespaceCollection::ShowStatistics(frmMain *form, ctlListView *statisti
 wxString pgTablespaceCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -357,7 +357,7 @@ wxString pgTablespaceCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Tablespaces list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -366,8 +366,8 @@ wxString pgTablespaceCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/tablespaces.xpm"
 
 
-pgTablespaceFactory::pgTablespaceFactory() 
-: pgServerObjFactory(__("Tablespace"), __("New Tablespace..."), __("Create a new Tablespace."), tablespace_xpm)
+pgTablespaceFactory::pgTablespaceFactory()
+    : pgServerObjFactory(__("Tablespace"), __("New Tablespace..."), __("Create a new Tablespace."), tablespace_xpm)
 {
     metaType = PGM_TABLESPACE;
 }
@@ -375,7 +375,7 @@ pgTablespaceFactory::pgTablespaceFactory()
 
 pgCollection *pgTablespaceFactory::CreateCollection(pgObject *obj)
 {
-    return new pgTablespaceCollection(GetCollectionFactory(), (pgServer*)obj);
+    return new pgTablespaceCollection(GetCollectionFactory(), (pgServer *)obj);
 }
 
 pgTablespaceFactory tablespaceFactory;

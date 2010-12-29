@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -24,16 +24,16 @@ public:
     wxString GetHelpPage() const;
 
     int Go();
-    
+
 private:
     pgHbaConfigLine *line;
 
-    void OnOK(wxCommandEvent& ev);
-    void OnCancel(wxCommandEvent& ev);
-    void OnChange(wxCommandEvent& ev);
-    void OnAddDatabase(wxCommandEvent& ev);
-    void OnAddUser(wxCommandEvent& ev);
-    void OnAddValue(wxCommandEvent& ev);
+    void OnOK(wxCommandEvent &ev);
+    void OnCancel(wxCommandEvent &ev);
+    void OnChange(wxCommandEvent &ev);
+    void OnAddDatabase(wxCommandEvent &ev);
+    void OnAddUser(wxCommandEvent &ev);
+    void OnAddValue(wxCommandEvent &ev);
 
     wxString database, user;
 

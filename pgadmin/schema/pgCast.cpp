@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -17,8 +17,8 @@
 #include "utils/misc.h"
 #include "schema/pgCast.h"
 
-pgCast::pgCast(const wxString& newName)
-: pgDatabaseObject(castFactory, newName)
+pgCast::pgCast(const wxString &newName)
+    : pgDatabaseObject(castFactory, newName)
 {
 }
 
@@ -30,7 +30,7 @@ pgCast::~pgCast()
 wxString pgCast::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -43,11 +43,11 @@ wxString pgCast::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop cast \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop cast \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop cast cascaded?");
@@ -91,7 +91,7 @@ wxString pgCast::GetTranslatedMessage(int kindOfMessage) const
 
 bool pgCast::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP CAST (") + GetSourceType() + wxT(" AS ") + GetTargetType() + wxT(")");
+    wxString sql = wxT("DROP CAST (") + GetSourceType() + wxT(" AS ") + GetTargetType() + wxT(")");
     if (cascaded)
         sql += wxT(" CASCADE");
     return GetDatabase()->ExecuteVoid(sql);
@@ -103,7 +103,7 @@ wxString pgCast::GetSql(ctlTree *browser)
     {
         sql = wxT("-- Cast: ") + GetQuotedFullIdentifier() + wxT("\n\n")
               wxT("-- DROP CAST (") + GetQuotedSchemaPrefix(GetSourceNamespace()) + GetSourceType() +
-                              wxT(" AS ") + GetQuotedSchemaPrefix(GetTargetNamespace()) + GetTargetType() + wxT(")") 
+              wxT(" AS ") + GetQuotedSchemaPrefix(GetTargetNamespace()) + GetTargetType() + wxT(")")
               wxT("\n\nCREATE CAST (") + GetQuotedSchemaPrefix(GetSourceNamespace()) + GetSourceType() +
               wxT(" AS ") + GetQuotedSchemaPrefix(GetTargetNamespace()) + GetTargetType();
         if (GetCastFunction().IsNull())
@@ -111,7 +111,7 @@ wxString pgCast::GetSql(ctlTree *browser)
         else
             sql += wxT(")\n  WITH FUNCTION ") + GetQuotedSchemaPrefix(GetCastNamespace()) + qtIdent(GetCastFunction()) + wxT("(") + GetSourceType() + wxT(")");
         if (GetCastContext() != wxT("EXPLICIT"))
-          sql += wxT("\n  AS ") + GetCastContext();
+            sql += wxT("\n  AS ") + GetCastContext();
         sql += wxT(";\n");
     }
 
@@ -131,7 +131,7 @@ void pgCast::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
         if (GetCastFunction().IsNull())
             properties->AppendItem(_("Function"), _("(binary compatible)"));
         else
-        properties->AppendItem(_("Function"), GetCastFunction() + wxT("(") + GetSourceType() + wxT(")"));
+            properties->AppendItem(_("Function"), GetCastFunction() + wxT("(") + GetSourceType() + wxT(")"));
         properties->AppendItem(_("Context"), GetCastContext());
         properties->AppendItem(_("System cast?"), GetSystemObject());
         if (GetConnection()->BackendMinimumVersion(7, 5))
@@ -143,9 +143,9 @@ void pgCast::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 
 pgObject *pgCast::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *cast=0;
+    pgObject *cast = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         cast = castFactory.CreateObjects(coll, 0, wxT(" WHERE ca.oid=") + GetOidStr());
 
@@ -156,31 +156,31 @@ pgObject *pgCast::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgCastFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgCast *cast=0;
+    pgCast *cast = 0;
     wxString systemRestriction;
     if (!settings->GetShowSystemObjects() && restriction.IsEmpty())
         systemRestriction = wxT(" WHERE ca.oid > ") + NumToStr(collection->GetConnection()->GetLastSystemOID()) + wxT("\n");
 
-    pgSet *casts= collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT ca.oid, ca.*, format_type(st.oid,NULL) AS srctyp, format_type(tt.oid,tt.typtypmod) AS trgtyp,")
-        wxT(      " ns.nspname AS srcnspname, nt.nspname AS trgnspname,\n")
-        wxT(      " proname, np.nspname AS pronspname, description\n")
-        wxT("  FROM pg_cast ca\n")
-        wxT("  JOIN pg_type st ON st.oid=castsource\n")
-        wxT("  JOIN pg_namespace ns ON ns.oid=st.typnamespace\n")
-        wxT("  JOIN pg_type tt ON tt.oid=casttarget\n")
-        wxT("  JOIN pg_namespace nt ON nt.oid=tt.typnamespace\n")
-        wxT("  LEFT JOIN pg_proc pr ON pr.oid=castfunc\n")
-        wxT("  LEFT JOIN pg_namespace np ON np.oid=pr.pronamespace\n")
-        wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=ca.oid AND des.objsubid=0\n")
-        + restriction + systemRestriction +
-        wxT(" ORDER BY st.typname, tt.typname"));
+    pgSet *casts = collection->GetDatabase()->ExecuteSet(
+                       wxT("SELECT ca.oid, ca.*, format_type(st.oid,NULL) AS srctyp, format_type(tt.oid,tt.typtypmod) AS trgtyp,")
+                       wxT(      " ns.nspname AS srcnspname, nt.nspname AS trgnspname,\n")
+                       wxT(      " proname, np.nspname AS pronspname, description\n")
+                       wxT("  FROM pg_cast ca\n")
+                       wxT("  JOIN pg_type st ON st.oid=castsource\n")
+                       wxT("  JOIN pg_namespace ns ON ns.oid=st.typnamespace\n")
+                       wxT("  JOIN pg_type tt ON tt.oid=casttarget\n")
+                       wxT("  JOIN pg_namespace nt ON nt.oid=tt.typnamespace\n")
+                       wxT("  LEFT JOIN pg_proc pr ON pr.oid=castfunc\n")
+                       wxT("  LEFT JOIN pg_namespace np ON np.oid=pr.pronamespace\n")
+                       wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=ca.oid AND des.objsubid=0\n")
+                       + restriction + systemRestriction +
+                       wxT(" ORDER BY st.typname, tt.typname"));
 
     if (casts)
     {
         while (!casts->Eof())
         {
-            wxString name=casts->GetVal(wxT("srctyp"))+wxT("->")+casts->GetVal(wxT("trgtyp"));
+            wxString name = casts->GetVal(wxT("srctyp")) + wxT("->") + casts->GetVal(wxT("trgtyp"));
             cast = new pgCast(name);
 
             cast->iSetOid(casts->GetOid(wxT("oid")));
@@ -194,26 +194,26 @@ pgObject *pgCastFactory::CreateObjects(pgCollection *collection, ctlTree *browse
             cast->iSetCastFunction(casts->GetVal(wxT("proname")));
             cast->iSetCastNamespace(casts->GetVal(wxT("pronspname")));
             cast->iSetComment(casts->GetVal(wxT("description")));
-            wxString ct=casts->GetVal(wxT("castcontext"));
+            wxString ct = casts->GetVal(wxT("castcontext"));
             cast->iSetCastContext(
                 ct == wxT("i") ? wxT("IMPLICIT") :
                 ct == wxT("a") ? wxT("ASSIGNMENT") : wxT("EXPLICIT"));
 
-            if (settings->GetShowSystemObjects() || 
-                (cast->GetOid() > collection->GetServer()->GetLastSystemOID()))
+            if (settings->GetShowSystemObjects() ||
+                    (cast->GetOid() > collection->GetServer()->GetLastSystemOID()))
             {
-            if (browser)
-            {
-                browser->AppendObject(collection, cast);
-			    casts->MoveNext();
+                if (browser)
+                {
+                    browser->AppendObject(collection, cast);
+                    casts->MoveNext();
+                }
+                else
+                    break;
             }
             else
                 break;
         }
-            else
-                break;
-        }
-		delete casts;
+        delete casts;
     }
     return cast;
 }
@@ -224,7 +224,7 @@ pgObject *pgCastFactory::CreateObjects(pgCollection *collection, ctlTree *browse
 wxString pgCastCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -237,7 +237,7 @@ wxString pgCastCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Casts list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -247,8 +247,8 @@ wxString pgCastCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/cast-sm.xpm"
 #include "images/casts.xpm"
 
-pgCastFactory::pgCastFactory() 
-: pgDatabaseObjFactory(__("Cast"), __("New Cast..."), __("Create a new Cast."), cast_xpm, cast_sm_xpm)
+pgCastFactory::pgCastFactory()
+    : pgDatabaseObjFactory(__("Cast"), __("New Cast..."), __("Create a new Cast."), cast_xpm, cast_sm_xpm)
 {
 }
 

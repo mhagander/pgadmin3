@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -36,11 +36,11 @@ END_EVENT_TABLE()
 
 
 
-dlgConnect::dlgConnect(frmMain *form, const wxString& description, bool storePwd) : 
-DialogWithHelp(form)
+dlgConnect::dlgConnect(frmMain *form, const wxString &description, bool storePwd) :
+    DialogWithHelp(form)
 {
     wxWindowBase::SetFont(settings->GetSystemFont());
-    LoadResource((wxWindow*)form, wxT("dlgConnect"));
+    LoadResource((wxWindow *)form, wxT("dlgConnect"));
 
     SetIcon(wxIcon(connect_xpm));
     RestorePosition();
@@ -50,8 +50,8 @@ DialogWithHelp(form)
     chkStorePwd->SetValue(storePwd);
     txtPassword->Enable(true);
 
-	if (form == NULL)
-		chkStorePwd->Hide();
+    if (form == NULL)
+        chkStorePwd->Hide();
 }
 
 dlgConnect::~dlgConnect()
@@ -66,20 +66,20 @@ wxString dlgConnect::GetHelpPage() const
 }
 
 
-void dlgConnect::OnOK(wxCommandEvent& ev)
+void dlgConnect::OnOK(wxCommandEvent &ev)
 {
     // Display the 'save password' hint if required
     if(chkStorePwd->GetValue())
     {
         if (frmHint::ShowHint(this, HINT_SAVING_PASSWORDS) == wxID_CANCEL)
-                return;
+            return;
     }
-	
+
     EndModal(wxID_OK);
 }
 
 
-void dlgConnect::OnCancel(wxCommandEvent& ev)
+void dlgConnect::OnCancel(wxCommandEvent &ev)
 {
     EndModal(wxID_CANCEL);
 }

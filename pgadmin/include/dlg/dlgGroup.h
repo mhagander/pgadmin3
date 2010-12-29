@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgGroup.h - Group property 
+// dlgGroup.h - Group property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +20,7 @@ class pgGroup;
 class dlgGroup : public dlgProperty
 {
 public:
-    dlgGroup(pgaFactory *factory, frmMain *frame, pgGroup *node=0);
+    dlgGroup(pgaFactory *factory, frmMain *frame, pgGroup *node = 0);
     wxString GetSql();
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();

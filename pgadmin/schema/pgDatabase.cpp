@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,16 +25,16 @@
 #include "frm/frmHint.h"
 #include "frm/frmReport.h"
 
-pgDatabase::pgDatabase(const wxString& newName)
-: pgServerObject(databaseFactory, newName) 
+pgDatabase::pgDatabase(const wxString &newName)
+    : pgServerObject(databaseFactory, newName)
 {
     useServerConnection = true;
     allowConnections = true;
     connected = false;
     conn = NULL;
-    missingFKs=0;
-    canDebugPlpgsql=0;
-    canDebugEdbspl=0;
+    missingFKs = 0;
+    canDebugPlpgsql = 0;
+    canDebugEdbspl = 0;
 }
 
 
@@ -47,7 +47,7 @@ pgDatabase::~pgDatabase()
 wxString pgDatabase::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -60,11 +60,11 @@ wxString pgDatabase::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop database \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop database \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop database cascaded?");
@@ -124,7 +124,7 @@ int pgDatabase::GetIconId()
 
 wxMenu *pgDatabase::GetNewMenu()
 {
-    wxMenu *menu=pgObject::GetNewMenu();
+    wxMenu *menu = pgObject::GetNewMenu();
 
     if (GetConnection() && GetCreatePrivilege())
     {
@@ -133,7 +133,7 @@ wxMenu *pgDatabase::GetNewMenu()
         if (settings->GetDisplayOption(_("Languages")))
             languageFactory.AppendMenu(menu);
         if (settings->GetDisplayOption(_("Synonyms")) && GetConnection()->EdbMinimumVersion(8, 0))
-            if (!GetConnection()->BackendMinimumVersion(8,4))
+            if (!GetConnection()->BackendMinimumVersion(8, 4))
                 synonymFactory.AppendMenu(menu);
         if (settings->GetDisplayOption(_("Schemas")))
             schemaFactory.AppendMenu(menu);
@@ -153,13 +153,13 @@ int pgDatabase::Connect()
         if (GetName() == server->GetDatabaseName() && server->connection()->GetStatus() == PGCONN_OK)
         {
             useServerConnection = true;
-            conn=0;
+            conn = 0;
         }
         else
         {
             useServerConnection = false;
             wxString applicationname = appearanceFactory->GetLongAppName() + _(" - Browser");
-		    conn = CreateConn(applicationname);
+            conn = CreateConn(applicationname);
 
             if (!conn)
             {
@@ -171,10 +171,10 @@ int pgDatabase::Connect()
         // Now we're connected.
 
         // check for extended ruleutils with pretty-print option
-        wxString exprname=connection()->ExecuteScalar(wxT("SELECT proname FROM pg_proc WHERE proname='pg_get_viewdef' AND proargtypes[1]=16"));
+        wxString exprname = connection()->ExecuteScalar(wxT("SELECT proname FROM pg_proc WHERE proname='pg_get_viewdef' AND proargtypes[1]=16"));
         if (!exprname.IsEmpty())
             prettyOption = wxT(", true");
-    
+
         UpdateDefaultSchema();
 
         if (connection()->BackendMinimumVersion(9, 0))
@@ -207,10 +207,10 @@ void pgDatabase::CheckAlive()
 
 void pgDatabase::Disconnect()
 {
-    connected=false;
+    connected = false;
     if (conn)
         delete conn;
-    conn=0;
+    conn = 0;
 }
 
 
@@ -221,14 +221,14 @@ bool pgDatabase::GetCanHint()
 
     if (encoding == wxT("UNICODE"))
     {
-        wxString ver=GetServer()->GetVersionString();
+        wxString ver = GetServer()->GetVersionString();
         if (ver.Find(wxT("mingw32")) > 0 && ver.Find(wxT("SQL 8.0.")) > 0)
             return true;
     }
 
-    if (GetServer()->GetConnection() == GetConnection() && 
-        GetConnection()->BackendMinimumVersion(8,0) && 
-       !GetConnection()->HasFeature(FEATURE_FILEREAD))
+    if (GetServer()->GetConnection() == GetConnection() &&
+            GetConnection()->BackendMinimumVersion(8, 0) &&
+            !GetConnection()->HasFeature(FEATURE_FILEREAD))
         return true;
 
     return false;
@@ -243,70 +243,70 @@ void pgDatabase::ShowHint(frmMain *form, bool force)
         hints.Add(HINT_ENCODING_ASCII);
     else if (encoding == wxT("UNICODE"))
     {
-        wxString ver=GetServer()->GetVersionString();
+        wxString ver = GetServer()->GetVersionString();
         if (ver.Find(wxT("mingw32")) > 0 && ver.Find(wxT("SQL 8.0.")) > 0)
             hints.Add(HINT_ENCODING_UNICODE);
     }
 
-    if (GetServer()->GetConnection() == GetConnection() && 
-        GetConnection()->BackendMinimumVersion(8,0) && 
-       !GetConnection()->HasFeature(FEATURE_FILEREAD))
+    if (GetServer()->GetConnection() == GetConnection() &&
+            GetConnection()->BackendMinimumVersion(8, 0) &&
+            !GetConnection()->HasFeature(FEATURE_FILEREAD))
         hints.Add(HINT_INSTRUMENTATION);
-    
+
     if (force || !hintShown)
         frmHint::ShowHint(form, hints, GetFullIdentifier(), force);
-    hintShown=true;
+    hintShown = true;
 }
 
 
 void pgDatabase::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
-    bool hasSize=connection()->HasFeature(FEATURE_SIZE);
+    bool hasSize = connection()->HasFeature(FEATURE_SIZE);
 
-    wxString sql=wxT("SELECT numbackends AS ") + qtIdent(_("Backends")) +
-	      wxT(", xact_commit AS ") + qtIdent(_("Xact Committed")) +
-	      wxT(", xact_rollback AS ") + qtIdent(_("Xact Rolled Back")) +
-	      wxT(", blks_read AS ") + qtIdent(_("Blocks Read")) +
-	      wxT(", blks_hit AS ") + qtIdent(_("Blocks Hit"));
+    wxString sql = wxT("SELECT numbackends AS ") + qtIdent(_("Backends")) +
+                   wxT(", xact_commit AS ") + qtIdent(_("Xact Committed")) +
+                   wxT(", xact_rollback AS ") + qtIdent(_("Xact Rolled Back")) +
+                   wxT(", blks_read AS ") + qtIdent(_("Blocks Read")) +
+                   wxT(", blks_hit AS ") + qtIdent(_("Blocks Hit"));
 
-	if (connection()->BackendMinimumVersion(8,3))
-		sql += wxT(", tup_returned AS ") + qtIdent(_("Tuples Returned")) +
-	      wxT(", tup_fetched AS ") + qtIdent(_("Tuples Fetched")) +
-	      wxT(", tup_inserted AS ") + qtIdent(_("Tuples Inserted")) +
-	      wxT(", tup_updated AS ") + qtIdent(_("Tuples Updated")) +
-	      wxT(", tup_deleted AS ") + qtIdent(_("Tuples Deleted"));
+    if (connection()->BackendMinimumVersion(8, 3))
+        sql += wxT(", tup_returned AS ") + qtIdent(_("Tuples Returned")) +
+               wxT(", tup_fetched AS ") + qtIdent(_("Tuples Fetched")) +
+               wxT(", tup_inserted AS ") + qtIdent(_("Tuples Inserted")) +
+               wxT(", tup_updated AS ") + qtIdent(_("Tuples Updated")) +
+               wxT(", tup_deleted AS ") + qtIdent(_("Tuples Deleted"));
 
     if (hasSize)
         sql += wxT(", pg_size_pretty(pg_database_size(datid)) AS ") + qtIdent(_("Size"));
 
     sql += wxT("\n  FROM pg_stat_database db WHERE datname=") + qtDbString(GetName());
 
-	// DisplayStatistics is not available for this object
+    // DisplayStatistics is not available for this object
 
-	CreateListColumns(statistics, _("Statistic"), _("Value"));
+    CreateListColumns(statistics, _("Statistic"), _("Value"));
 
-	pgSet *stats = connection()->ExecuteSet(sql);
+    pgSet *stats = connection()->ExecuteSet(sql);
 
-	if (stats)
-	{
-		int col;
-		for (col=0 ; col < stats->NumCols() ; col++)
-		{
-			if (!stats->ColName(col).IsEmpty())
-				statistics->AppendItem(stats->ColName(col), stats->GetVal(col));
-		}
-		delete stats;
-	}
+    if (stats)
+    {
+        int col;
+        for (col = 0 ; col < stats->NumCols() ; col++)
+        {
+            if (!stats->ColName(col).IsEmpty())
+                statistics->AppendItem(stats->ColName(col), stats->GetVal(col));
+        }
+        delete stats;
+    }
 
 }
 
 
-pgSet *pgDatabase::ExecuteSet(const wxString& sql)
+pgSet *pgDatabase::ExecuteSet(const wxString &sql)
 {
-    pgSet *set=0;
+    pgSet *set = 0;
     if (connection())
     {
-        set=connection()->ExecuteSet(sql);
+        set = connection()->ExecuteSet(sql);
         if (!set)
             CheckAlive();
     }
@@ -314,7 +314,7 @@ pgSet *pgDatabase::ExecuteSet(const wxString& sql)
 }
 
 
-wxString pgDatabase::ExecuteScalar(const wxString& sql)
+wxString pgDatabase::ExecuteScalar(const wxString &sql)
 {
     wxString str;
     if (connection())
@@ -327,9 +327,9 @@ wxString pgDatabase::ExecuteScalar(const wxString& sql)
 }
 
 
-bool pgDatabase::ExecuteVoid(const wxString& sql, bool reportError)
+bool pgDatabase::ExecuteVoid(const wxString &sql, bool reportError)
 {
-    bool rc=0;
+    bool rc = 0;
     if (connection())
     {
         rc = connection()->ExecuteVoid(sql, reportError);
@@ -347,22 +347,22 @@ void pgDatabase::UpdateDefaultSchema()
     if (!searchPath.IsEmpty())
     {
         wxStringTokenizer tk(searchPath, wxT(","));
-        pgSet *set=ExecuteSet(wxT("SELECT nspname, session_user=nspname AS isuser FROM pg_namespace"));
+        pgSet *set = ExecuteSet(wxT("SELECT nspname, session_user=nspname AS isuser FROM pg_namespace"));
         if (set)
         {
             while (tk.HasMoreTokens())
             {
-                wxString str=tk.GetNextToken();
+                wxString str = tk.GetNextToken();
                 str.Strip(wxString::both);
 
                 if (str.IsEmpty())
                     continue;
                 long row;
-                for (row=1 ; row <= set->NumRows() ; row++)
+                for (row = 1 ; row <= set->NumRows() ; row++)
                 {
                     set->Locate(row);
                     defaultSchema = set->GetVal(wxT("nspname"));
-                    if (str == defaultSchema || 
+                    if (str == defaultSchema ||
                             ((str == wxT("$user") || str == wxT("\"$user\"")) && set->GetBool(wxT("isuser"))))
                     {
                         delete set;
@@ -391,19 +391,22 @@ wxString pgDatabase::GetSchemaPrefix(const wxString &name) const
 
 wxString pgDatabase::GetQuotedSchemaPrefix(const wxString &name) const
 {
-    wxString str=GetSchemaPrefix(name);
+    wxString str = GetSchemaPrefix(name);
     if (!str.IsEmpty())
-        return qtIdent(str.Left(str.Length()-1)) + wxT(".");
+        return qtIdent(str.Left(str.Length() - 1)) + wxT(".");
     return str;
 }
 
 
 bool pgDatabase::GetSystemObject() const
 {
-    if (server) {
+    if (server)
+    {
         if (this->GetName() == wxT("template0")) return true;
         return (this->GetOid() <= server->GetLastSystemOID());
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
@@ -413,13 +416,13 @@ wxArrayString pgDatabase::GetSlonyClusters(ctlTree *browser)
 {
     wxArrayString clusters;
 
-    pgCollection *collection=browser->FindCollection(slClusterFactory, GetId());
+    pgCollection *collection = browser->FindCollection(slClusterFactory, GetId());
     if (collection)
     {
         treeObjectIterator clusterIterator(browser, collection);
 
         slCluster *cluster;
-        while ((cluster=(slCluster*)clusterIterator.GetNextObject()) != 0)
+        while ((cluster = (slCluster *)clusterIterator.GetNextObject()) != 0)
             clusters.Add(cluster->GetName());
     }
     return clusters;
@@ -446,7 +449,7 @@ bool pgDatabase::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
     }
     Disconnect();
 
-    bool done=server->ExecuteVoid(wxT("DROP DATABASE ") + GetQuotedIdentifier() + wxT(";"));
+    bool done = server->ExecuteVoid(wxT("DROP DATABASE ") + GetQuotedIdentifier() + wxT(";"));
     if (!done)
         Connect();
 
@@ -465,10 +468,10 @@ wxString pgDatabase::GetSql(ctlTree *browser)
             myConn = GetServer()->GetConnection();
 
         sql = wxT("-- Database: ") + GetQuotedFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP DATABASE ") + GetQuotedIdentifier() + wxT(";")
-            + wxT("\n\nCREATE DATABASE ") + GetQuotedIdentifier()
-            + wxT("\n  WITH OWNER = ") + qtIdent(GetOwner())
-            + wxT("\n       ENCODING = ") + qtDbString(GetEncoding());
+              + wxT("-- DROP DATABASE ") + GetQuotedIdentifier() + wxT(";")
+              + wxT("\n\nCREATE DATABASE ") + GetQuotedIdentifier()
+              + wxT("\n  WITH OWNER = ") + qtIdent(GetOwner())
+              + wxT("\n       ENCODING = ") + qtDbString(GetEncoding());
         if (!GetTablespace().IsEmpty())
             sql += wxT("\n       TABLESPACE = ") + qtIdent(GetTablespace());
         if (myConn && myConn->BackendMinimumVersion(8, 4))
@@ -487,7 +490,7 @@ wxString pgDatabase::GetSql(ctlTree *browser)
         wxString username;
         wxString varname;
         wxString varvalue;
-        for (i=0 ; i < variables.GetCount() ; i++)
+        for (i = 0 ; i < variables.GetCount() ; i++)
         {
             wxStringTokenizer tkz(variables.Item(i), wxT("="));
             while (tkz.HasMoreTokens())
@@ -511,13 +514,13 @@ wxString pgDatabase::GetSql(ctlTree *browser)
                 sql += wxT(" SET ") + varname + wxT("=") + varvalue + wxT(";\n");
         }
 
-		if (myConn)
-		{
-			if (!myConn->BackendMinimumVersion(8, 2))
-				sql += GetGrant(wxT("CT"));
-			else
-				sql += GetGrant(wxT("CTc"));
-		}
+        if (myConn)
+        {
+            if (!myConn->BackendMinimumVersion(8, 2))
+                sql += GetGrant(wxT("CT"));
+            else
+                sql += GetGrant(wxT("CTc"));
+        }
 
         sql += wxT("\n") + pgDatabase::GetDefaultPrivileges('r', m_defPrivsOnTables, wxT(""));
         sql += pgDatabase::GetDefaultPrivileges('S', m_defPrivsOnSeqs, wxT(""));
@@ -537,37 +540,37 @@ void pgDatabase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
         // Set the icon if required
         UpdateIcon(browser);
 
-            // Add child nodes if necessary
+        // Add child nodes if necessary
         if (browser->GetChildrenCount(GetId(), false) == 0)
         {
             wxLogInfo(wxT("Adding child object to database %s"), GetIdentifier().c_str());
 
-			if (settings->GetDisplayOption(_("Catalogs")))
-				browser->AppendCollection(this, catalogFactory);
-			if (settings->GetDisplayOption(_("Casts")))
-				browser->AppendCollection(this, castFactory);
-			if (settings->GetDisplayOption(_("Languages")))
-				browser->AppendCollection(this, languageFactory);
-			if (settings->GetDisplayOption(_("Synonyms")) && connection()->EdbMinimumVersion(8,0))
-				if (!GetConnection()->BackendMinimumVersion(8,4))
-					browser->AppendCollection(this, synonymFactory);
-			if (settings->GetDisplayOption(_("Schemas")))
-				browser->AppendCollection(this, schemaFactory);
-			if (settings->GetDisplayOption(_("Slony-I Clusters")))
-				browser->AppendCollection(this, slClusterFactory);
-            
+            if (settings->GetDisplayOption(_("Catalogs")))
+                browser->AppendCollection(this, catalogFactory);
+            if (settings->GetDisplayOption(_("Casts")))
+                browser->AppendCollection(this, castFactory);
+            if (settings->GetDisplayOption(_("Languages")))
+                browser->AppendCollection(this, languageFactory);
+            if (settings->GetDisplayOption(_("Synonyms")) && connection()->EdbMinimumVersion(8, 0))
+                if (!GetConnection()->BackendMinimumVersion(8, 4))
+                    browser->AppendCollection(this, synonymFactory);
+            if (settings->GetDisplayOption(_("Schemas")))
+                browser->AppendCollection(this, schemaFactory);
+            if (settings->GetDisplayOption(_("Slony-I Clusters")))
+                browser->AppendCollection(this, slClusterFactory);
+
             wxString missingFKsql = wxT("SELECT COUNT(*) FROM\n")
-                wxT("   (SELECT tgargs from pg_trigger tr\n")
-                wxT("      LEFT JOIN pg_depend dep ON dep.objid=tr.oid AND deptype = 'i'\n")
-                wxT("      LEFT JOIN pg_constraint co ON refobjid = co.oid AND contype = 'f'\n")
-                wxT("     WHERE \n");
+                                    wxT("   (SELECT tgargs from pg_trigger tr\n")
+                                    wxT("      LEFT JOIN pg_depend dep ON dep.objid=tr.oid AND deptype = 'i'\n")
+                                    wxT("      LEFT JOIN pg_constraint co ON refobjid = co.oid AND contype = 'f'\n")
+                                    wxT("     WHERE \n");
             if (connection()->BackendMinimumVersion(8, 5))
                 missingFKsql += wxT("tgconstraint <> 0\n");
             else
                 missingFKsql += wxT("tgisconstraint\n");
             missingFKsql += wxT("     AND co.oid IS NULL\n")
-                wxT("     GROUP BY tgargs\n")
-                wxT("    HAVING count(1) = 3) AS foo");
+                            wxT("     GROUP BY tgargs\n")
+                            wxT("    HAVING count(1) = 3) AS foo");
             missingFKs = StrToLong(connection()->ExecuteScalar(missingFKsql));
         }
     }
@@ -610,7 +613,7 @@ void pgDatabase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
         wxString username;
         wxString varname;
         wxString varvalue;
-        for (i=0 ; i < variables.GetCount() ; i++)
+        for (i = 0 ; i < variables.GetCount() ; i++)
         {
             wxStringTokenizer tkz(variables.Item(i), wxT("="));
             while (tkz.HasMoreTokens())
@@ -636,7 +639,7 @@ void pgDatabase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
         if (GetConnection() && GetConnection()->BackendMinimumVersion(8, 1))
         {
             wxString strConnLimit;
-            strConnLimit.Printf(wxT("%ld"), GetConnectionLimit()); 
+            strConnLimit.Printf(wxT("%ld"), GetConnectionLimit());
             properties->AppendItem(_("Connection limit"), strConnLimit);
         }
         properties->AppendItem(_("System database?"), GetSystemObject());
@@ -656,10 +659,10 @@ void pgDatabase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 
 pgObject *pgDatabase::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgDatabase *database=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgDatabase *database = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
-        database = (pgDatabase*)databaseFactory.CreateObjects(coll, 0, wxT(" WHERE db.oid=") + GetOidStr() + wxT("\n"));
+        database = (pgDatabase *)databaseFactory.CreateObjects(coll, 0, wxT(" WHERE db.oid=") + GetOidStr() + wxT("\n"));
 
     return database;
 }
@@ -667,7 +670,7 @@ pgObject *pgDatabase::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgDatabaseFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgDatabase *database=0;
+    pgDatabase *database = 0;
 
     pgSet *databases;
 
@@ -683,7 +686,7 @@ pgObject *pgDatabaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
         datcollate = wxT(", db.datcollate as collate");
     }
 
-    wxString restr=restriction;
+    wxString restr = restriction;
     if (!collection->GetServer()->GetDbRestriction().IsEmpty())
     {
         if (restr.IsEmpty())
@@ -693,57 +696,57 @@ pgObject *pgDatabaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
 
         restr += collection->GetServer()->GetDbRestriction() + wxT(")\n");
     }
-    
+
     // In 9.0+, database config options are in pg_db_role_setting
     if (collection->GetConnection()->BackendMinimumVersion(9, 0))
     {
         wxString setconfig = wxT("SELECT array(select coalesce('''' || rolname || '''', '') || '=' || unnest(setconfig) ")
-           wxT("FROM pg_db_role_setting setting LEFT JOIN pg_roles role ON setting.setrole=role.oid ")
-           wxT("WHERE setdatabase = db.oid)");
+                             wxT("FROM pg_db_role_setting setting LEFT JOIN pg_roles role ON setting.setrole=role.oid ")
+                             wxT("WHERE setdatabase = db.oid)");
         databases = collection->GetServer()->ExecuteSet(
-           wxT("SELECT db.oid, datname, db.dattablespace AS spcoid, spcname, datallowconn, (") + setconfig + wxT(") AS datconfig, datacl, ")
-           wxT("pg_encoding_to_char(encoding) AS serverencoding, pg_get_userbyid(datdba) AS datowner,")
-           wxT("has_database_privilege(db.oid, 'CREATE') as cancreate, \n")
-           wxT("current_setting('default_tablespace') AS default_tablespace, \n")
-           wxT("descr.description\n") +
-           datconnlimit + datcollate + datctype +
-           wxT("  FROM pg_database db\n")
-           wxT("  LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace=ta.OID\n")
-           wxT("  LEFT OUTER JOIN pg_shdescription descr ON db.oid=descr.objoid\n")
-           + restr +
-           wxT(" ORDER BY datname"));
+                        wxT("SELECT db.oid, datname, db.dattablespace AS spcoid, spcname, datallowconn, (") + setconfig + wxT(") AS datconfig, datacl, ")
+                        wxT("pg_encoding_to_char(encoding) AS serverencoding, pg_get_userbyid(datdba) AS datowner,")
+                        wxT("has_database_privilege(db.oid, 'CREATE') as cancreate, \n")
+                        wxT("current_setting('default_tablespace') AS default_tablespace, \n")
+                        wxT("descr.description\n") +
+                        datconnlimit + datcollate + datctype +
+                        wxT("  FROM pg_database db\n")
+                        wxT("  LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace=ta.OID\n")
+                        wxT("  LEFT OUTER JOIN pg_shdescription descr ON db.oid=descr.objoid\n")
+                        + restr +
+                        wxT(" ORDER BY datname"));
     }
     else if (collection->GetConnection()->BackendMinimumVersion(8, 0))
         databases = collection->GetServer()->ExecuteSet(
-           wxT("SELECT db.oid, datname, db.dattablespace AS spcoid, spcname, datallowconn, datconfig, datacl, ")
-           wxT("pg_encoding_to_char(encoding) AS serverencoding, pg_get_userbyid(datdba) AS datowner,")
-           wxT("has_database_privilege(db.oid, 'CREATE') as cancreate, \n")
-           wxT("current_setting('default_tablespace') AS default_tablespace, \n")
-           wxT("descr.description\n") +
-           datconnlimit + datcollate + datctype +
-           wxT("  FROM pg_database db\n")
-           wxT("  LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace=ta.OID\n")
-           wxT("  LEFT OUTER JOIN ") 
-           + wxString(collection->GetConnection()->BackendMinimumVersion(8, 2)?wxT("pg_shdescription"):wxT("pg_description")) +
-           wxT(" descr ON db.oid=descr.objoid\n")
-           + restr +
-           wxT(" ORDER BY datname"));
+                        wxT("SELECT db.oid, datname, db.dattablespace AS spcoid, spcname, datallowconn, datconfig, datacl, ")
+                        wxT("pg_encoding_to_char(encoding) AS serverencoding, pg_get_userbyid(datdba) AS datowner,")
+                        wxT("has_database_privilege(db.oid, 'CREATE') as cancreate, \n")
+                        wxT("current_setting('default_tablespace') AS default_tablespace, \n")
+                        wxT("descr.description\n") +
+                        datconnlimit + datcollate + datctype +
+                        wxT("  FROM pg_database db\n")
+                        wxT("  LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace=ta.OID\n")
+                        wxT("  LEFT OUTER JOIN ")
+                        + wxString(collection->GetConnection()->BackendMinimumVersion(8, 2) ? wxT("pg_shdescription") : wxT("pg_description")) +
+                        wxT(" descr ON db.oid=descr.objoid\n")
+                        + restr +
+                        wxT(" ORDER BY datname"));
     else
         databases = collection->GetServer()->ExecuteSet(
-           wxT("SELECT db.oid, datname, datpath, datallowconn, datconfig, datacl, ")
-                  wxT("pg_encoding_to_char(encoding) AS serverencoding, pg_get_userbyid(datdba) AS datowner,")
-                  wxT("has_database_privilege(db.oid, 'CREATE') as cancreate,\n")
-                  wxT("descr.description\n")
-           wxT("  FROM pg_database db\n")
-           wxT("  LEFT OUTER JOIN pg_description descr ON db.oid=descr.objoid\n")
-           + restr +
-           wxT(" ORDER BY datname"));
-    
+                        wxT("SELECT db.oid, datname, datpath, datallowconn, datconfig, datacl, ")
+                        wxT("pg_encoding_to_char(encoding) AS serverencoding, pg_get_userbyid(datdba) AS datowner,")
+                        wxT("has_database_privilege(db.oid, 'CREATE') as cancreate,\n")
+                        wxT("descr.description\n")
+                        wxT("  FROM pg_database db\n")
+                        wxT("  LEFT OUTER JOIN pg_description descr ON db.oid=descr.objoid\n")
+                        + restr +
+                        wxT(" ORDER BY datname"));
+
     if (databases)
     {
         while (!databases->Eof())
         {
-            wxString name=databases->GetVal(wxT("datname"));
+            wxString name = databases->GetVal(wxT("datname"));
             database = new pgDatabase(name);
             database->iSetServer(collection->GetServer());
             database->iSetOid(databases->GetOid(wxT("oid")));
@@ -752,14 +755,14 @@ pgObject *pgDatabaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
             database->iSetEncoding(databases->GetVal(wxT("serverencoding")));
             database->iSetCreatePrivilege(databases->GetBool(wxT("cancreate")));
             database->iSetComment(databases->GetVal(wxT("description")));
-            wxString str=databases->GetVal(wxT("datconfig"));
+            wxString str = databases->GetVal(wxT("datconfig"));
             if (!collection->GetConnection()->BackendMinimumVersion(8, 5))
             {
-                str = TransformToNewDatconfig(str.Mid(1, str.Length()-2));
+                str = TransformToNewDatconfig(str.Mid(1, str.Length() - 2));
                 //str = tmp;
             }
             else
-                str = str.Mid(1, str.Length()-2);
+                str = str.Mid(1, str.Length() - 2);
             if (!str.IsEmpty())
                 FillArray(database->GetVariables(), str);
             database->iSetAllowConnections(databases->GetBool(wxT("datallowconn")));
@@ -767,7 +770,7 @@ pgObject *pgDatabaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
             if (collection->GetConnection()->BackendMinimumVersion(8, 0))
             {
                 database->iSetTablespace(databases->GetVal(wxT("spcname")));
-				database->iSetTablespaceOid(databases->GetOid(wxT("spcoid")));
+                database->iSetTablespaceOid(databases->GetOid(wxT("spcoid")));
                 if (databases->GetVal(wxT("default_tablespace")) == wxEmptyString || databases->GetVal(wxT("default_tablespace")) == wxT("unset"))
                     database->iSetDefaultTablespace(databases->GetVal(wxT("spcname")));
                 else
@@ -790,13 +793,13 @@ pgObject *pgDatabaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
             {
                 wxString value;
                 settings->Read(wxT("Servers/") + NumToStr(collection->GetServer()->GetServerIndex())
-                    + wxT("/Databases/") + name + wxT("/SchemaRestriction"), &value, wxEmptyString);
+                               + wxT("/Databases/") + name + wxT("/SchemaRestriction"), &value, wxEmptyString);
 
                 database->iSetSchemaRestriction(value);
             }
 
             // Add the treeview node if required
-            if (settings->GetShowSystemObjects() ||!database->GetSystemObject()) 
+            if (settings->GetShowSystemObjects() || !database->GetSystemObject())
             {
                 if (browser)
                 {
@@ -806,59 +809,59 @@ pgObject *pgDatabaseFactory::CreateObjects(pgCollection *collection, ctlTree *br
                     else
                         icon = databaseFactory.GetClosedIconId();
 
-                    browser->AppendItem(collection->GetId(), database->GetIdentifier(), icon, -1, database);   
+                    browser->AppendItem(collection->GetId(), database->GetIdentifier(), icon, -1, database);
                 }
                 else
                     break;
             }
-            else 
-				delete database;
-	
-			databases->MoveNext();
+            else
+                delete database;
+
+            databases->MoveNext();
         }
-		delete databases;
+        delete databases;
     }
     return database;
 }
 
-wxString pgDatabase::GetDefaultPrivileges(const wxChar& cType, wxString strDefPrivs, const wxString& strSchema)
+wxString pgDatabase::GetDefaultPrivileges(const wxChar &cType, wxString strDefPrivs, const wxString &strSchema)
 {
     wxString strDefPrivsSql;
 
     if (!strDefPrivs.IsEmpty())
     {
-       wxString strRole, strPriv, strSupportedPrivs, strType;
-       strDefPrivs.Replace(wxT("\\\""), wxT("\""), true);
-       strDefPrivs.Replace(wxT("\\\\"), wxT("\\"), true);
+        wxString strRole, strPriv, strSupportedPrivs, strType;
+        strDefPrivs.Replace(wxT("\\\""), wxT("\""), true);
+        strDefPrivs.Replace(wxT("\\\\"), wxT("\\"), true);
 
-       switch(cType)
-       {
-           case 'r':
-               strType = wxT("TABLES");
-               strSupportedPrivs = wxT("arwdDxt");
-               break;
-           case 'S':
-               strType = wxT("SEQUENCES");
-               strSupportedPrivs = wxT("rwU");
-               break;
-           case 'f':
-               strType = wxT("FUNCTIONS");
-               strSupportedPrivs = wxT("X");
-               break;
-           default:
-               return wxT("");
-       }
+        switch(cType)
+        {
+            case 'r':
+                strType = wxT("TABLES");
+                strSupportedPrivs = wxT("arwdDxt");
+                break;
+            case 'S':
+                strType = wxT("SEQUENCES");
+                strSupportedPrivs = wxT("rwU");
+                break;
+            case 'f':
+                strType = wxT("FUNCTIONS");
+                strSupportedPrivs = wxT("X");
+                break;
+            default:
+                return wxT("");
+        }
 
-       // Removing starting brace '{' and ending brace '}'
-       strDefPrivs = strDefPrivs.SubString(1, strDefPrivs.Length() - 1);
+        // Removing starting brace '{' and ending brace '}'
+        strDefPrivs = strDefPrivs.SubString(1, strDefPrivs.Length() - 1);
 
-       while (pgObject::findUserPrivs(strDefPrivs, strRole, strPriv))
-       {
-           strDefPrivsSql += pgObject::GetDefaultPrivileges(strType, strSupportedPrivs, strSchema, wxT(""), strPriv, qtIdent(strRole));
+        while (pgObject::findUserPrivs(strDefPrivs, strRole, strPriv))
+        {
+            strDefPrivsSql += pgObject::GetDefaultPrivileges(strType, strSupportedPrivs, strSchema, wxT(""), strPriv, qtIdent(strRole));
 
-           strRole = wxT("");
-           strPriv = wxT("");
-       }
+            strRole = wxT("");
+            strPriv = wxT("");
+        }
     }
     return strDefPrivsSql;
 }
@@ -981,7 +984,7 @@ bool pgDatabase::CanDebugEdbspl()
 }
 
 pgDatabaseCollection::pgDatabaseCollection(pgaFactory *factory, pgServer *sv)
-: pgServerObjCollection(factory, sv)
+    : pgServerObjCollection(factory, sv)
 {
 }
 
@@ -989,7 +992,7 @@ pgDatabaseCollection::pgDatabaseCollection(pgaFactory *factory, pgServer *sv)
 wxString pgDatabaseCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -1008,7 +1011,7 @@ wxString pgDatabaseCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Databases list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -1017,7 +1020,7 @@ void pgDatabaseCollection::ShowStatistics(frmMain *form, ctlListView *statistics
 {
     wxLogInfo(wxT("Displaying statistics for databases on ") + GetServer()->GetIdentifier());
 
-    bool hasSize=GetConnection()->HasFeature(FEATURE_SIZE);
+    bool hasSize = GetConnection()->HasFeature(FEATURE_SIZE);
 
     wxString restr;
     if (!GetServer()->GetDbRestriction().IsEmpty())
@@ -1029,11 +1032,11 @@ void pgDatabaseCollection::ShowStatistics(frmMain *form, ctlListView *statistics
 
         restr += GetServer()->GetDbRestriction() + wxT(")\n");
     }
-    
-    wxString sql=wxT("SELECT datid, datname, numbackends, xact_commit, xact_rollback, blks_read, blks_hit");
 
-	if (GetConnection()->BackendMinimumVersion(8,3))
-		sql += wxT(", tup_returned, tup_fetched, tup_inserted, tup_updated, tup_deleted");
+    wxString sql = wxT("SELECT datid, datname, numbackends, xact_commit, xact_rollback, blks_read, blks_hit");
+
+    if (GetConnection()->BackendMinimumVersion(8, 3))
+        sql += wxT(", tup_returned, tup_fetched, tup_inserted, tup_updated, tup_deleted");
     if (hasSize)
         sql += wxT(", pg_size_pretty(pg_database_size(datid)) as size");
 
@@ -1049,14 +1052,14 @@ void pgDatabaseCollection::ShowStatistics(frmMain *form, ctlListView *statistics
     statistics->AddColumn(_("Xact Rolled Back"), 60);
     statistics->AddColumn(_("Blocks Read"), 60);
     statistics->AddColumn(_("Blocks Hit"), 60);
-	if (GetConnection()->BackendMinimumVersion(8,3))
-	{
-		statistics->AddColumn(_("Tuples Returned"), 60);
-		statistics->AddColumn(_("Tuples Fetched"), 60);
-		statistics->AddColumn(_("Tuples Inserted"), 60);
-		statistics->AddColumn(_("Tuples Updated"), 60);
-		statistics->AddColumn(_("Tuples Deleted"), 60);
-	}
+    if (GetConnection()->BackendMinimumVersion(8, 3))
+    {
+        statistics->AddColumn(_("Tuples Returned"), 60);
+        statistics->AddColumn(_("Tuples Fetched"), 60);
+        statistics->AddColumn(_("Tuples Inserted"), 60);
+        statistics->AddColumn(_("Tuples Updated"), 60);
+        statistics->AddColumn(_("Tuples Deleted"), 60);
+    }
 
     bool sysobj;
     pgSet *stats = GetServer()->ExecuteSet(sql);
@@ -1075,23 +1078,23 @@ void pgDatabaseCollection::ShowStatistics(frmMain *form, ctlListView *statistics
                 statistics->SetItem(statistics->GetItemCount() - 1, 1, stats->GetVal(wxT("numbackends")));
                 if (hasSize)
                     statistics->SetItem(statistics->GetItemCount() - 1, 2, stats->GetVal(wxT("size")));
-			    statistics->SetItem(statistics->GetItemCount() - 1, 2 + (hasSize?1:0), stats->GetVal(wxT("xact_commit")));
-                statistics->SetItem(statistics->GetItemCount() - 1, 3 + (hasSize?1:0), stats->GetVal(wxT("xact_rollback")));
-                statistics->SetItem(statistics->GetItemCount() - 1, 4 + (hasSize?1:0), stats->GetVal(wxT("blks_read")));
-                statistics->SetItem(statistics->GetItemCount() - 1, 5 + (hasSize?1:0), stats->GetVal(wxT("blks_hit")));
-			    if (GetConnection()->BackendMinimumVersion(8,3))
-			    {
-			    	statistics->SetItem(statistics->GetItemCount() - 1, 6 + (hasSize?1:0), stats->GetVal(wxT("tup_returned")));
-			    	statistics->SetItem(statistics->GetItemCount() - 1, 7 + (hasSize?1:0), stats->GetVal(wxT("tup_fetched")));
-			    	statistics->SetItem(statistics->GetItemCount() - 1, 8 + (hasSize?1:0), stats->GetVal(wxT("tup_inserted")));
-			    	statistics->SetItem(statistics->GetItemCount() - 1, 9 + (hasSize?1:0), stats->GetVal(wxT("tup_updated")));
-			    	statistics->SetItem(statistics->GetItemCount() - 1, 10 + (hasSize?1:0), stats->GetVal(wxT("tup_deleted")));
-			    }
+                statistics->SetItem(statistics->GetItemCount() - 1, 2 + (hasSize ? 1 : 0), stats->GetVal(wxT("xact_commit")));
+                statistics->SetItem(statistics->GetItemCount() - 1, 3 + (hasSize ? 1 : 0), stats->GetVal(wxT("xact_rollback")));
+                statistics->SetItem(statistics->GetItemCount() - 1, 4 + (hasSize ? 1 : 0), stats->GetVal(wxT("blks_read")));
+                statistics->SetItem(statistics->GetItemCount() - 1, 5 + (hasSize ? 1 : 0), stats->GetVal(wxT("blks_hit")));
+                if (GetConnection()->BackendMinimumVersion(8, 3))
+                {
+                    statistics->SetItem(statistics->GetItemCount() - 1, 6 + (hasSize ? 1 : 0), stats->GetVal(wxT("tup_returned")));
+                    statistics->SetItem(statistics->GetItemCount() - 1, 7 + (hasSize ? 1 : 0), stats->GetVal(wxT("tup_fetched")));
+                    statistics->SetItem(statistics->GetItemCount() - 1, 8 + (hasSize ? 1 : 0), stats->GetVal(wxT("tup_inserted")));
+                    statistics->SetItem(statistics->GetItemCount() - 1, 9 + (hasSize ? 1 : 0), stats->GetVal(wxT("tup_updated")));
+                    statistics->SetItem(statistics->GetItemCount() - 1, 10 + (hasSize ? 1 : 0), stats->GetVal(wxT("tup_deleted")));
+                }
             }
             stats->MoveNext();
         }
 
-	    delete stats;
+        delete stats;
     }
 }
 
@@ -1100,10 +1103,10 @@ void pgDatabaseCollection::ShowStatistics(frmMain *form, ctlListView *statistics
 /////////////////////////////////////////////////////
 
 pgDatabaseObjCollection::pgDatabaseObjCollection(pgaFactory *factory, pgDatabase *db)
-: pgCollection(factory)
-{ 
+    : pgCollection(factory)
+{
     database = db;
-    server= database->GetServer();
+    server = database->GetServer();
 }
 
 
@@ -1122,8 +1125,8 @@ bool pgDatabaseObjCollection::CanCreate()
 #include "images/closeddatabase.xpm"
 #include "images/closeddatabase-sm.xpm"
 
-pgDatabaseFactory::pgDatabaseFactory() 
-: pgServerObjFactory(__("Database"), __("New Database..."), __("Create a new Database."), database_xpm, database_sm_xpm)
+pgDatabaseFactory::pgDatabaseFactory()
+    : pgServerObjFactory(__("Database"), __("New Database..."), __("Create a new Database."), database_xpm, database_sm_xpm)
 {
     metaType = PGM_DATABASE;
     closedId = addIcon(closeddatabase_xpm);
@@ -1132,12 +1135,12 @@ pgDatabaseFactory::pgDatabaseFactory()
 
 pgCollection *pgDatabaseFactory::CreateCollection(pgObject *obj)
 {
-    return new pgDatabaseCollection(GetCollectionFactory(), (pgServer*)obj);
+    return new pgDatabaseCollection(GetCollectionFactory(), (pgServer *)obj);
 }
 
 pgCollection *pgDatabaseObjFactory::CreateCollection(pgObject *obj)
 {
-    return new pgDatabaseObjCollection(GetCollectionFactory(), (pgDatabase*)obj);
+    return new pgDatabaseObjCollection(GetCollectionFactory(), (pgDatabase *)obj);
 }
 
 
@@ -1154,7 +1157,7 @@ disconnectDatabaseFactory::disconnectDatabaseFactory(menuFactoryList *list, wxMe
 wxWindow *disconnectDatabaseFactory::StartDialog(frmMain *form, pgObject *obj)
 {
     ctlTree *browser = form->GetBrowser();
-    pgDatabase *database=(pgDatabase*)obj;
+    pgDatabase *database = (pgDatabase *)obj;
 
     database->Disconnect();
     database->UpdateIcon(browser);
@@ -1169,7 +1172,7 @@ wxWindow *disconnectDatabaseFactory::StartDialog(frmMain *form, pgObject *obj)
 bool disconnectDatabaseFactory::CheckEnable(pgObject *obj)
 {
     if (obj && obj->IsCreatedBy(databaseFactory))
-        return ((pgDatabase*)obj)->GetConnected() && (((pgDatabase*)obj)->GetName() != ((pgDatabase*)obj)->GetServer()->GetDatabaseName());
+        return ((pgDatabase *)obj)->GetConnected() && (((pgDatabase *)obj)->GetName() != ((pgDatabase *)obj)->GetServer()->GetDatabaseName());
 
     return false;
 }

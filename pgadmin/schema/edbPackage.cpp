@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,15 +19,15 @@
 #include "schema/edbPackageFunction.h"
 #include "schema/edbPackageVariable.h"
 
-edbPackage::edbPackage(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, packageFactory, newName)
+edbPackage::edbPackage(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, packageFactory, newName)
 {
 }
 
 wxString edbPackage::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -40,11 +40,11 @@ wxString edbPackage::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop package \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop package \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop package cascaded?");
@@ -92,7 +92,7 @@ bool edbPackage::IsUpToDate()
 
 bool edbPackage::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP PACKAGE ") + GetQuotedFullIdentifier();
+    wxString sql = wxT("DROP PACKAGE ") + GetQuotedFullIdentifier();
 
     return GetDatabase()->ExecuteVoid(sql);
 }
@@ -138,7 +138,7 @@ wxString edbPackage::GetBodyInner()
 
 wxString edbPackage::GetInner(const wxString &def)
 {
-    long start=0, end=0;
+    long start = 0, end = 0;
 
     wxStringTokenizer tkz(def, wxT("\t\r\n "));
 
@@ -171,7 +171,7 @@ void edbPackage::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
 
@@ -195,7 +195,7 @@ void edbPackage::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
         properties->AppendItem(_("Body"), firstLineOnly(GetBody()));
         properties->AppendItem(_("ACL"), GetAcl());
         properties->AppendItem(_("System package?"), GetSystemObject());
-		if (GetConnection()->EdbMinimumVersion(8, 2))
+        if (GetConnection()->EdbMinimumVersion(8, 2))
             properties->AppendItem(_("Comment"), firstLineOnly(GetComment()));
     }
 }
@@ -204,9 +204,9 @@ void edbPackage::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *pr
 
 pgObject *edbPackage::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *package=0;
+    pgObject *package = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
     {
         if (coll->GetConnection()->EdbMinimumVersion(8, 2))
@@ -222,16 +222,16 @@ pgObject *edbPackage::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *edbPackageFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    edbPackage *package=0;
+    edbPackage *package = 0;
 
     wxString sql;
-    
+
     if (collection->GetConnection()->EdbMinimumVersion(8, 2))
     {
         sql = wxT("SELECT nsp.oid, nsp.xmin, nspname AS pkgname, nspbodysrc AS pkgbodysrc, nspheadsrc AS pkgheadsrc,\n")
-              wxT("       nspacl AS pkgacl, pg_get_userbyid(nspowner) AS owner, description\n") 
+              wxT("       nspacl AS pkgacl, pg_get_userbyid(nspowner) AS owner, description\n")
               wxT("  FROM pg_namespace nsp")
-			  wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=nsp.oid\n")
+              wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=nsp.oid\n")
               wxT("  WHERE nspparent = ") + NumToStr(collection->GetSchema()->GetOid()) + wxT("::oid\n")
               + restriction +
               wxT("  ORDER BY nspname;");
@@ -239,7 +239,7 @@ pgObject *edbPackageFactory::CreateObjects(pgCollection *collection, ctlTree *br
     else
     {
 
-        sql = wxT("SELECT oid, xmin, *, pg_get_userbyid(pkgowner) AS owner\n") 
+        sql = wxT("SELECT oid, xmin, *, pg_get_userbyid(pkgowner) AS owner\n")
               wxT("  FROM edb_package")
               wxT("  WHERE pkgnamespace = ") + NumToStr(collection->GetSchema()->GetOid()) + wxT("::oid\n")
               + restriction +
@@ -252,18 +252,18 @@ pgObject *edbPackageFactory::CreateObjects(pgCollection *collection, ctlTree *br
     {
         while (!packages->Eof())
         {
-            wxString name=packages->GetVal(wxT("pkgname"));
+            wxString name = packages->GetVal(wxT("pkgname"));
             package = new edbPackage(collection->GetSchema(), name);
 
             package->iSetOid(packages->GetOid(wxT("oid")));
             package->iSetXid(packages->GetOid(wxT("xmin")));
             package->iSetDatabase(collection->GetDatabase());
             package->iSetOwner(packages->GetVal(wxT("owner")));
-			if (collection->GetConnection()->EdbMinimumVersion(8, 2))
-			    package->iSetComment(packages->GetVal(wxT("description")));
+            if (collection->GetConnection()->EdbMinimumVersion(8, 2))
+                package->iSetComment(packages->GetVal(wxT("description")));
 
             // EnterpriseDB's CVS code has some new parser code
-            // which is stricter about the formatting of body & 
+            // which is stricter about the formatting of body &
             // header code and leaves off trailing ;'s
             wxString tmp = packages->GetVal(wxT("pkgheadsrc")).Strip(wxString::both);
             if (!tmp.EndsWith(wxT(";")))
@@ -282,12 +282,12 @@ pgObject *edbPackageFactory::CreateObjects(pgCollection *collection, ctlTree *br
             if (browser)
             {
                 browser->AppendObject(collection, package);
-			    packages->MoveNext();
+                packages->MoveNext();
             }
             else
                 break;
         }
-		delete packages;
+        delete packages;
     }
     return package;
 }
@@ -297,7 +297,7 @@ pgObject *edbPackageFactory::CreateObjects(pgCollection *collection, ctlTree *br
 wxString edbPackageCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -313,7 +313,7 @@ wxString edbPackageCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Packages list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -323,7 +323,7 @@ wxString edbPackageCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/packages.xpm"
 
 edbPackageFactory::edbPackageFactory()
-: pgSchemaObjFactory(__("Package"), __("New Package..."), __("Create a new package."), package_xpm)
+    : pgSchemaObjFactory(__("Package"), __("New Package..."), __("Create a new package."), package_xpm)
 {
     metaType = EDB_PACKAGE;
 }

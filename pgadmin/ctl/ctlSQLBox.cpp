@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -35,12 +35,12 @@ wxString ftsKeywords = wxT(" gettoken lextypes headline init lexize");
 
 // Additional pgScript keywords we should highlight
 wxString pgscriptKeywords = wxT(" assert break columns continue date datetime file go lines ")
-                        wxT(" log print record reference regexrmline string waitfor while");
+                            wxT(" log print record reference regexrmline string waitfor while");
 
 BEGIN_EVENT_TABLE(ctlSQLBox, wxStyledTextCtrl)
     EVT_KEY_DOWN(ctlSQLBox::OnKeyDown)
-    EVT_MENU(MNU_FIND,ctlSQLBox::OnSearchReplace)
-    EVT_MENU(MNU_AUTOCOMPLETE,ctlSQLBox::OnAutoComplete)
+    EVT_MENU(MNU_FIND, ctlSQLBox::OnSearchReplace)
+    EVT_MENU(MNU_AUTOCOMPLETE, ctlSQLBox::OnAutoComplete)
     EVT_KILL_FOCUS(ctlSQLBox::OnKillFocus)
     EVT_STC_UPDATEUI(-1,  ctlSQLBox::OnPositionStc)
     EVT_STC_MARGINCLICK(-1, ctlSQLBox::OnMarginClick)
@@ -53,31 +53,31 @@ IMPLEMENT_DYNAMIC_CLASS(ctlSQLBox, wxStyledTextCtrl)
 
 ctlSQLBox::ctlSQLBox()
 {
-    m_dlgFindReplace=0;
-    m_autoIndent=false;
-    m_autocompDisabled=false;
+    m_dlgFindReplace = 0;
+    m_autoIndent = false;
+    m_autocompDisabled = false;
 }
 
 
-ctlSQLBox::ctlSQLBox(wxWindow *parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
+ctlSQLBox::ctlSQLBox(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
 {
-    m_dlgFindReplace=0;
+    m_dlgFindReplace = 0;
 
-    m_database=NULL;
+    m_database = NULL;
 
-    m_autocompDisabled=false;
+    m_autocompDisabled = false;
 
     Create(parent, id, pos, size, style);
 }
 
 
-void ctlSQLBox::Create(wxWindow *parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
+void ctlSQLBox::Create(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
 {
-    wxStyledTextCtrl::Create(parent,id , pos, size, style);
+    wxStyledTextCtrl::Create(parent, id , pos, size, style);
 
     // Clear all styles
     StyleClearAll();
-    
+
     // Font
     extern sysSettings *settings;
     wxFont fntSQLBox = settings->GetSQLFont();
@@ -105,7 +105,7 @@ void ctlSQLBox::Create(wxWindow *parent, wxWindowID id, const wxPoint& pos, cons
     SetMarginWidth(1, 0);
     SetTabWidth(settings->GetIndentSpaces());
     SetUseTabs(!settings->GetSpacesForTabs());
-    
+
     // Setup the different highlight colurs
     for (int i = 0; i < 34; ++ i )
     {
@@ -139,23 +139,23 @@ void ctlSQLBox::Create(wxWindow *parent, wxWindowID id, const wxPoint& pos, cons
 
     // Enable folding
     SetMarginSensitive(2, true);
- 
-	SetMarginType(2, wxSTC_MARGIN_SYMBOL); // margin 2 for symbols
-	SetMarginMask(2, wxSTC_MASK_FOLDERS);  // set up mask for folding symbols
-	SetMarginSensitive(2, true);           // this one needs to be mouse-aware
-	SetMarginWidth(2, 16);                 // set margin 2 16 px wide
-			
-	MarkerDefine(wxSTC_MARKNUM_FOLDEREND,     wxSTC_MARK_BOXPLUSCONNECTED,  *wxWHITE, *wxBLACK);
-	MarkerDefine(wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_BOXMINUSCONNECTED, *wxWHITE, *wxBLACK);
-	MarkerDefine(wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_TCORNER,  *wxWHITE, *wxBLACK);
-	MarkerDefine(wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_LCORNER,  *wxWHITE, *wxBLACK);
-	MarkerDefine(wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_VLINE,    *wxWHITE, *wxBLACK);
-	MarkerDefine(wxSTC_MARKNUM_FOLDER,        wxSTC_MARK_BOXPLUS,  *wxWHITE, *wxBLACK);
-	MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_BOXMINUS, *wxWHITE, *wxBLACK);
-			
+
+    SetMarginType(2, wxSTC_MARGIN_SYMBOL); // margin 2 for symbols
+    SetMarginMask(2, wxSTC_MASK_FOLDERS);  // set up mask for folding symbols
+    SetMarginSensitive(2, true);           // this one needs to be mouse-aware
+    SetMarginWidth(2, 16);                 // set margin 2 16 px wide
+
+    MarkerDefine(wxSTC_MARKNUM_FOLDEREND,     wxSTC_MARK_BOXPLUSCONNECTED,  *wxWHITE, *wxBLACK);
+    MarkerDefine(wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_BOXMINUSCONNECTED, *wxWHITE, *wxBLACK);
+    MarkerDefine(wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_TCORNER,  *wxWHITE, *wxBLACK);
+    MarkerDefine(wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_LCORNER,  *wxWHITE, *wxBLACK);
+    MarkerDefine(wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_VLINE,    *wxWHITE, *wxBLACK);
+    MarkerDefine(wxSTC_MARKNUM_FOLDER,        wxSTC_MARK_BOXPLUS,  *wxWHITE, *wxBLACK);
+    MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_BOXMINUS, *wxWHITE, *wxBLACK);
+
     SetProperty(wxT("fold"), wxT("1"));
     SetFoldFlags(16);
-	
+
     // Setup accelerators
     wxAcceleratorEntry entries[2];
     entries[0].Set(wxACCEL_CTRL, (int)'F', MNU_FIND);
@@ -178,7 +178,7 @@ void ctlSQLBox::SetDatabase(pgConn *db)
     m_database = db;
 }
 
-void ctlSQLBox::OnSearchReplace(wxCommandEvent& ev)
+void ctlSQLBox::OnSearchReplace(wxCommandEvent &ev)
 {
     if (!m_dlgFindReplace)
     {
@@ -191,11 +191,11 @@ void ctlSQLBox::OnSearchReplace(wxCommandEvent& ev)
         m_dlgFindReplace->SetFocus();
     }
 
-	wxString selText = GetSelectedText();
-	if (!selText.IsEmpty())
-	{
-		m_dlgFindReplace->SetFindString(selText);
-	}
+    wxString selText = GetSelectedText();
+    if (!selText.IsEmpty())
+    {
+        m_dlgFindReplace->SetFindString(selText);
+    }
 
     m_dlgFindReplace->FocusSearch();
 }
@@ -204,7 +204,7 @@ bool ctlSQLBox::Find(const wxString &find, bool wholeWord, bool matchCase, bool 
 {
     if (!DoFind(find, wxString(wxEmptyString), false, wholeWord, matchCase, useRegexps, startAtTop, reverse))
     {
-		wxWindow *w = wxWindow::FindFocus();
+        wxWindow *w = wxWindow::FindFocus();
         wxMessageBox(_("Reached the end of the document"), _("Find text"), wxICON_EXCLAMATION | wxOK, w);
         return false;
     }
@@ -215,7 +215,7 @@ bool ctlSQLBox::Replace(const wxString &find, const wxString &replace, bool whol
 {
     if (!DoFind(find, replace, true, wholeWord, matchCase, useRegexps, startAtTop, reverse))
     {
-		wxWindow *w = wxWindow::FindFocus();
+        wxWindow *w = wxWindow::FindFocus();
         wxMessageBox(_("Reached the end of the document"), _("Replace text"), wxICON_EXCLAMATION | wxOK, w);
         return false;
     }
@@ -325,7 +325,7 @@ bool ctlSQLBox::DoFind(const wxString &find, const wxString &replace, bool doRep
     }
 
     size_t selStart = 0, selEnd = 0;
-    
+
     if (useRegexps)
     {
         CharacterRange cr = RegexFindText(startPos, endPos, find);
@@ -357,10 +357,10 @@ bool ctlSQLBox::DoFind(const wxString &find, const wxString &replace, bool doRep
         return false;
 }
 
-void ctlSQLBox::OnKeyDown(wxKeyEvent& event)
+void ctlSQLBox::OnKeyDown(wxKeyEvent &event)
 {
 #ifdef __WXGTK__
-    event.m_metaDown=false;
+    event.m_metaDown = false;
 #endif
 
     // Get the line ending type
@@ -419,12 +419,12 @@ void ctlSQLBox::OnKeyDown(wxKeyEvent& event)
             indent += line[x++];
 
         // Select any indent in front of the cursor to be removed. If
-        // the cursor is positioned after any non-indent characters, 
+        // the cursor is positioned after any non-indent characters,
         // we don't remove anything. If there is already some selected,
         // don't select anything new at all.
-        if (indent.Length() != 0 && 
-            (unsigned int)GetCurrentPos() <= ((GetLineEndPosition(GetCurrentLine()) - line.Length()) + indent.Length() + offset) && 
-            GetSelectedText() == wxEmptyString)
+        if (indent.Length() != 0 &&
+                (unsigned int)GetCurrentPos() <= ((GetLineEndPosition(GetCurrentLine()) - line.Length()) + indent.Length() + offset) &&
+                GetSelectedText() == wxEmptyString)
             SetSelection(GetLineEndPosition(GetCurrentLine()) - line.Length() + offset, GetLineEndPosition(GetCurrentLine()) - line.Length() + indent.Length() + offset);
 
         // Lose any selected text.
@@ -462,7 +462,7 @@ bool ctlSQLBox::BlockComment(bool uncomment)
     }
 
     // Save the start position
-	const wxString comment = wxT("-- ");
+    const wxString comment = wxT("-- ");
     int start = GetSelectionStart();
 
     if (!GetSelectedText().IsEmpty())
@@ -472,8 +472,8 @@ bool ctlSQLBox::BlockComment(bool uncomment)
         {
             selection.Replace(lineEnd, lineEnd + comment);
             selection.Prepend(comment);
-			if (selection.EndsWith(comment))
-				selection = selection.Left(selection.Length() - comment.Length());
+            if (selection.EndsWith(comment))
+                selection = selection.Left(selection.Length() - comment.Length());
         }
         else
         {
@@ -484,49 +484,49 @@ bool ctlSQLBox::BlockComment(bool uncomment)
         ReplaceSelection(selection);
         SetSelection(start, start + selection.Length());
     }
-	else
-	{
-		// No text selection - (un)comment the current line
-		int column = GetColumn(start);
-		int curLineNum = GetCurrentLine();
-		int pos = PositionFromLine(curLineNum);
+    else
+    {
+        // No text selection - (un)comment the current line
+        int column = GetColumn(start);
+        int curLineNum = GetCurrentLine();
+        int pos = PositionFromLine(curLineNum);
 
-		if (!uncomment)
-		{
-			InsertText(pos, comment);
-		}
-		else
-		{
-			wxString t = GetTextRange(pos, pos + comment.Length());
-			if (t == comment)
-			{
-				// The line starts with a comment, so we remove it
-				SetTargetStart(pos);
-				SetTargetEnd(pos + comment.Length());
-				ReplaceTarget(wxT(""));
-			}
-			else
-			{
-				// The line doesn't start with a comment, do nothing
-				return false;
-			}
-		}
+        if (!uncomment)
+        {
+            InsertText(pos, comment);
+        }
+        else
+        {
+            wxString t = GetTextRange(pos, pos + comment.Length());
+            if (t == comment)
+            {
+                // The line starts with a comment, so we remove it
+                SetTargetStart(pos);
+                SetTargetEnd(pos + comment.Length());
+                ReplaceTarget(wxT(""));
+            }
+            else
+            {
+                // The line doesn't start with a comment, do nothing
+                return false;
+            }
+        }
 
-		if (GetLineCount() > curLineNum) 
-		{
-			wxString nextLine = GetLine(curLineNum + 1);
-			if (nextLine.EndsWith(lineEnd))
-				nextLine = nextLine.Left(nextLine.Length() - lineEnd.Length());
+        if (GetLineCount() > curLineNum)
+        {
+            wxString nextLine = GetLine(curLineNum + 1);
+            if (nextLine.EndsWith(lineEnd))
+                nextLine = nextLine.Left(nextLine.Length() - lineEnd.Length());
 
-			int nextColumn = (nextLine.Length() < (unsigned int)column ? nextLine.Length() : column);
-			GotoPos(PositionFromLine(curLineNum + 1) + nextColumn);
-		}
-	}
+            int nextColumn = (nextLine.Length() < (unsigned int)column ? nextLine.Length() : column);
+            GotoPos(PositionFromLine(curLineNum + 1) + nextColumn);
+        }
+    }
 
     return true;
 }
 
-void ctlSQLBox::OnKillFocus(wxFocusEvent& event)
+void ctlSQLBox::OnKillFocus(wxFocusEvent &event)
 {
     AutoCompCancel();
     event.Skip();
@@ -540,7 +540,7 @@ void ctlSQLBox::UpdateLineNumber()
     if (showlinenumber)
     {
         long int width = TextWidth(wxSTC_STYLE_LINENUMBER,
-            wxT(" ")+NumToStr((long int)GetLineCount())+wxT(" "));
+                                   wxT(" ") + NumToStr((long int)GetLineCount()) + wxT(" "));
         if (width != GetMarginWidth(0))
             SetMarginWidth(0, width);
     }
@@ -550,11 +550,11 @@ void ctlSQLBox::UpdateLineNumber()
     }
 }
 
-void ctlSQLBox::OnPositionStc(wxStyledTextEvent& event)
+void ctlSQLBox::OnPositionStc(wxStyledTextEvent &event)
 {
     int pos = GetCurrentPos();
-    wxChar ch = GetCharAt(pos-1);
-    int st = GetStyleAt(pos-1);
+    wxChar ch = GetCharAt(pos - 1);
+    int st = GetStyleAt(pos - 1);
     int match;
 
 
@@ -567,13 +567,13 @@ void ctlSQLBox::OnPositionStc(wxStyledTextEvent& event)
     // Check for braces that aren't in comment styles,
     // double quoted styles or single quoted styles
     if ((ch == '{' || ch == '}' ||
-         ch == '[' || ch == ']' ||
-         ch == '(' || ch == ')') &&
-         st != 2 && st != 6 && st != 7) 
+            ch == '[' || ch == ']' ||
+            ch == '(' || ch == ')') &&
+            st != 2 && st != 6 && st != 7)
     {
-        match = BraceMatch(pos-1);
+        match = BraceMatch(pos - 1);
         if (match != wxSTC_INVALID_POSITION)
-            BraceHighlight(pos-1, match);
+            BraceHighlight(pos - 1, match);
     }
 
     // Roll back through the doc and highlight any unmatched braces
@@ -583,9 +583,9 @@ void ctlSQLBox::OnPositionStc(wxStyledTextEvent& event)
         st = GetStyleAt(pos);
 
         if ((ch == '{' || ch == '}' ||
-             ch == '[' || ch == ']' ||
-             ch == '(' || ch == ')') &&
-             st != 2 && st != 6 && st != 7)
+                ch == '[' || ch == ']' ||
+                ch == '(' || ch == ')') &&
+                st != 2 && st != 6 && st != 7)
         {
             match = BraceMatch(pos);
             if (match == wxSTC_INVALID_POSITION)
@@ -595,22 +595,22 @@ void ctlSQLBox::OnPositionStc(wxStyledTextEvent& event)
             }
         }
     }
-    
+
     event.Skip();
 }
 
 
-void ctlSQLBox::OnMarginClick(wxStyledTextEvent& event)
+void ctlSQLBox::OnMarginClick(wxStyledTextEvent &event)
 {
-	if (event.GetMargin() == 2)
-		ToggleFold(LineFromPosition(event.GetPosition()));
-	
-	event.Skip();
+    if (event.GetMargin() == 2)
+        ToggleFold(LineFromPosition(event.GetPosition()));
+
+    event.Skip();
 }
 
 
 extern "C" char *tab_complete(const char *allstr, const int startptr, const int endptr, void *dbptr);
-void ctlSQLBox::OnAutoComplete(wxCommandEvent& rev)
+void ctlSQLBox::OnAutoComplete(wxCommandEvent &rev)
 {
     if (GetReadOnly())
         return;
@@ -619,14 +619,14 @@ void ctlSQLBox::OnAutoComplete(wxCommandEvent& rev)
     if (m_autocompDisabled)
         return;
 
-    wxString what = GetCurLine().Left(GetCurrentPos()-PositionFromLine(GetCurrentLine()));;
-    int spaceidx = what.Find(' ',true);
-    
+    wxString what = GetCurLine().Left(GetCurrentPos() - PositionFromLine(GetCurrentLine()));;
+    int spaceidx = what.Find(' ', true);
+
     char *tab_ret;
     if (spaceidx == -1)
-        tab_ret = tab_complete(what.mb_str(wxConvUTF8), 0, what.Len()+1, m_database);
+        tab_ret = tab_complete(what.mb_str(wxConvUTF8), 0, what.Len() + 1, m_database);
     else
-        tab_ret = tab_complete(what.mb_str(wxConvUTF8), spaceidx+1, what.Len()+1, m_database);
+        tab_ret = tab_complete(what.mb_str(wxConvUTF8), spaceidx + 1, what.Len() + 1, m_database);
 
     if (tab_ret == NULL || tab_ret[0] == '\0')
         return; /* No autocomplete available for this string */
@@ -643,8 +643,8 @@ void ctlSQLBox::OnAutoComplete(wxCommandEvent& rev)
     if (spaceidx == -1)
         AutoCompShow(what.Len(), wxRet);
     else
-        AutoCompShow(what.Len()-spaceidx-1, wxRet);
- 
+        AutoCompShow(what.Len() - spaceidx - 1, wxRet);
+
     // Now switch back
 #ifdef __WXMAC__
     wxSystemOptions::SetOption(wxT("mac.listctrl.always_use_generic"), false);
@@ -657,7 +657,7 @@ ctlSQLBox::~ctlSQLBox()
     if (m_dlgFindReplace)
     {
         m_dlgFindReplace->Destroy();
-        m_dlgFindReplace=0;
+        m_dlgFindReplace = 0;
     }
 }
 
@@ -702,19 +702,19 @@ char *pg_query_to_single_ordered_string(char *query, void *dbptr)
 
 
 // Find some text in the document.
-CharacterRange ctlSQLBox::RegexFindText(int minPos, int maxPos, const wxString& text) 
+CharacterRange ctlSQLBox::RegexFindText(int minPos, int maxPos, const wxString &text)
 {
     TextToFind  ft;
     ft.chrg.cpMin = minPos;
     ft.chrg.cpMax = maxPos;
     wxWX2MBbuf buf = (wxWX2MBbuf)wx2stc(text);
-    ft.lpstrText = (char*)(const char*)buf;
+    ft.lpstrText = (char *)(const char *)buf;
 
     if (SendMsg(2150, wxSTC_FIND_REGEXP, (long)&ft) == -1)
     {
         ft.chrgText.cpMin = -1;
         ft.chrgText.cpMax = -1;
     }
-    
+
     return ft.chrgText;
 }

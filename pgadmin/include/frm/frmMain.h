@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -52,7 +52,8 @@ class pluginUtilityFactory;
 class ctlMenuButton;
 
 // A plugin utility
-typedef struct PluginUtility {
+typedef struct PluginUtility
+{
     wxString title;
     wxString command;
     wxString description;
@@ -68,7 +69,7 @@ typedef struct PluginUtility {
 
 enum
 {
-    NBP_PROPERTIES=0,
+    NBP_PROPERTIES = 0,
     NBP_STATISTICS,
     NBP_DEPENDENCIES,
     NBP_DEPENDENTS
@@ -79,17 +80,20 @@ enum
 class frmMain : public pgFrame
 {
 public:
-    frmMain(const wxString& title);
+    frmMain(const wxString &title);
     ~frmMain();
-    
+
     void OnAction(wxCommandEvent &ev);
     void OnReport(wxCommandEvent &ev);
     wxString GetHelpPage() const;
 
-    void StartMsg(const wxString& msg);
-    void EndMsg(bool done=true);
+    void StartMsg(const wxString &msg);
+    void EndMsg(bool done = true);
     void SetStatusText(const wxString &msg);
-    void SetCurrentObject(pgObject *data) { currentObject = data; }
+    void SetCurrentObject(pgObject *data)
+    {
+        currentObject = data;
+    }
     bool CheckAlive();
 
     void execSelChange(wxTreeItemId item, bool currentNode);
@@ -97,23 +101,50 @@ public:
     void ExecDrop(bool cascaded);
     void ShowObjStatistics(pgObject *data);
 
-    wxImageList *GetImageList() { return imageList; }
-    ctlTree *GetBrowser() { return browser; }
-    ctlSQLBox *GetSqlPane() { return sqlPane; }
-    ctlListView *GetProperties() { return properties; }
+    wxImageList *GetImageList()
+    {
+        return imageList;
+    }
+    ctlTree *GetBrowser()
+    {
+        return browser;
+    }
+    ctlSQLBox *GetSqlPane()
+    {
+        return sqlPane;
+    }
+    ctlListView *GetProperties()
+    {
+        return properties;
+    }
     ctlListView *GetStatistics();
     ctlListView *GetDependencies();
     ctlListView *GetReferencedBy();
-    void SelectStatisticsTab() { listViews->SetSelection(1); };
+    void SelectStatisticsTab()
+    {
+        listViews->SetSelection(1);
+    };
     void StoreServers();
     int ReconnectServer(pgServer *server, bool restore = true);
     void ReportConnError(pgServer *server);
-    pgServerCollection *GetServerCollection() { return serversObj; }
-    pgServer *ConnectToServer(const wxString& servername, bool restore = false);
+    pgServerCollection *GetServerCollection()
+    {
+        return serversObj;
+    }
+    pgServer *ConnectToServer(const wxString &servername, bool restore = false);
 
-    void SetLastPluginUtility(pluginUtilityFactory *pluginFactory) { lastPluginUtility = pluginFactory; }
-    pluginUtilityFactory *GetLastPluginUtility() { return lastPluginUtility; }
-    wxMenu *GetPluginsMenu() { return pluginsMenu; }
+    void SetLastPluginUtility(pluginUtilityFactory *pluginFactory)
+    {
+        lastPluginUtility = pluginFactory;
+    }
+    pluginUtilityFactory *GetLastPluginUtility()
+    {
+        return lastPluginUtility;
+    }
+    wxMenu *GetPluginsMenu()
+    {
+        return pluginsMenu;
+    }
 
     wxString GetCurrentNodePath();
     bool SetCurrentNode(wxTreeItemId node, const wxString &path);
@@ -132,8 +163,8 @@ private:
     ctlListView *dependents, *dependencies;
     wxAuiNotebook *listViews;
     ctlSQLBox *sqlPane;
-    wxMenu *newMenu, *debuggingMenu, *reportMenu, *toolsMenu, *pluginsMenu, *viewMenu, 
-          *treeContextMenu, *newContextMenu, *slonyMenu, *scriptingMenu, *viewDataMenu;
+    wxMenu *newMenu, *debuggingMenu, *reportMenu, *toolsMenu, *pluginsMenu, *viewMenu,
+           *treeContextMenu, *newContextMenu, *slonyMenu, *scriptingMenu, *viewDataMenu;
     pgServerCollection *serversObj;
 
     pluginUtilityFactory *lastPluginUtility;
@@ -153,45 +184,45 @@ private:
     wxTreeItemId denyCollapseItem;
     pgObject *currentObject;
 
-    void OnEraseBackground(wxEraseEvent& event);
-    void OnSize(wxSizeEvent& event);
-	void OnSelectItem(wxListEvent &event);
-    
+    void OnEraseBackground(wxEraseEvent &event);
+    void OnSize(wxSizeEvent &event);
+    void OnSelectItem(wxListEvent &event);
+
     void CreateMenus();
-    void OnContents(wxCommandEvent& event);
-    void OnExit(wxCommandEvent& event);
+    void OnContents(wxCommandEvent &event);
+    void OnExit(wxCommandEvent &event);
     void ViewData(bool filter = false);
-    void OnSaveDefinition(wxCommandEvent& event);
-    void OnToggleSqlPane(wxCommandEvent& event);
-    void OnToggleObjectBrowser(wxCommandEvent& event);
-    void OnToggleToolBar(wxCommandEvent& event);
-    void OnDefaultView(wxCommandEvent& event);
-    void OnAuiUpdate(wxAuiManagerEvent& event);
-	void OnAuiNotebookPageClose(wxAuiNotebookEvent& event);
-    void OnContextMenu(wxCommandEvent& event);
+    void OnSaveDefinition(wxCommandEvent &event);
+    void OnToggleSqlPane(wxCommandEvent &event);
+    void OnToggleObjectBrowser(wxCommandEvent &event);
+    void OnToggleToolBar(wxCommandEvent &event);
+    void OnDefaultView(wxCommandEvent &event);
+    void OnAuiUpdate(wxAuiManagerEvent &event);
+    void OnAuiNotebookPageClose(wxAuiNotebookEvent &event);
+    void OnContextMenu(wxCommandEvent &event);
 
-    void OnPropSelChanged(wxListEvent& event);
-    void OnPropSelActivated(wxListEvent& event);
-    void OnPropRightClick(wxListEvent& event);
+    void OnPropSelChanged(wxListEvent &event);
+    void OnPropSelActivated(wxListEvent &event);
+    void OnPropRightClick(wxListEvent &event);
     void OnTreeSelChanged(wxTreeEvent &event);
-    void OnTreeKeyDown(wxTreeEvent& event);
-    void OnSelActivated(wxTreeEvent& event);
-    void OnSelRightClick(wxTreeEvent& event);
-    void OnCollapse(wxTreeEvent& event);
-    void OnExpand(wxTreeEvent& event);
-    void OnClose(wxCloseEvent& event);
+    void OnTreeKeyDown(wxTreeEvent &event);
+    void OnSelActivated(wxTreeEvent &event);
+    void OnSelRightClick(wxTreeEvent &event);
+    void OnCollapse(wxTreeEvent &event);
+    void OnExpand(wxTreeEvent &event);
+    void OnClose(wxCloseEvent &event);
 
-    void OnNew(wxCommandEvent& event);
+    void OnNew(wxCommandEvent &event);
     void OnDelete(wxCommandEvent &ev);
     void OnCopy(wxCommandEvent &ev);
 
-    void OnCheckAlive(wxCommandEvent& event);
+    void OnCheckAlive(wxCommandEvent &event);
 
-    void OnPositionStc(wxStyledTextEvent& event);
+    void OnPositionStc(wxStyledTextEvent &event);
 
     bool dropSingleObject(pgObject *data, bool updateFinal, bool cascaded);
     void doPopup(wxWindow *win, wxPoint point, pgObject *object);
-    void setDisplay(pgObject *data, ctlListView *props=0, ctlSQLBox *sqlbox=0);
+    void setDisplay(pgObject *data, ctlListView *props = 0, ctlSQLBox *sqlbox = 0);
     void RetrieveServers();
     bool reportError(const wxString &error, const wxString &msgToIdentify, const wxString &hint);
     wxTreeItemId RestoreEnvironment(pgServer *server);
@@ -200,7 +231,7 @@ private:
     void ExpandChildNodes(wxTreeItemId node, wxArrayString &expandedNodes);
     wxString GetNodePath(wxTreeItemId node);
 
-    void PopulatePluginButtonMenu(wxCommandEvent& event); 
+    void PopulatePluginButtonMenu(wxCommandEvent &event);
 
     // In plugins.cpp
     void LoadPluginUtilities();

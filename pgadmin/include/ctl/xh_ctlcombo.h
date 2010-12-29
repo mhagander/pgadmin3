@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -17,10 +17,10 @@
 #include "wx/xrc/xmlres.h"
 #include "wx/xrc/xh_combo.h"
 
-//class WXDLLIMPEXP_XRC 
+//class WXDLLIMPEXP_XRC
 class ctlComboBoxXmlHandler : public wxComboBoxXmlHandler
 {
-DECLARE_DYNAMIC_CLASS(ctlComboBoxXmlHandler)
+    DECLARE_DYNAMIC_CLASS(ctlComboBoxXmlHandler)
 public:
     ctlComboBoxXmlHandler() : wxComboBoxXmlHandler() {}
     virtual wxObject *DoCreateResource();
@@ -28,4 +28,4 @@ public:
 };
 
 
-#endif 
+#endif

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -45,7 +45,7 @@ END_EVENT_TABLE()
 
 frmBackupServer::frmBackupServer(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
 {
-    object=obj;
+    object = obj;
 
     wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(form, wxT("frmBackupServer"));
@@ -54,12 +54,12 @@ frmBackupServer::frmBackupServer(frmMain *form, pgObject *obj) : ExternProcessDi
     SetTitle(object->GetTranslatedMessage(BACKUPSERVERTITLE));
 
     pgServer *server = (pgServer *)object;
-    if (server->GetConnection()->EdbMinimumVersion(8,0))
-        backupExecutable=edbBackupAllExecutable;
+    if (server->GetConnection()->EdbMinimumVersion(8, 0))
+        backupExecutable = edbBackupAllExecutable;
     else if (server->GetConnection()->GetIsGreenplum())
-        backupExecutable=gpBackupAllExecutable;
+        backupExecutable = gpBackupAllExecutable;
     else
-        backupExecutable=pgBackupAllExecutable;
+        backupExecutable = pgBackupAllExecutable;
 
     wxString val;
     settings->Read(wxT("frmBackupServer/LastFile"), &val, wxEmptyString);
@@ -72,9 +72,9 @@ frmBackupServer::frmBackupServer(frmMain *form, pgObject *obj) : ExternProcessDi
     {
         // Collect the available rolenames
         pgSetIterator set(server->GetConnection(),
-            wxT("SELECT DISTINCT rolname\n")
-            wxT("FROM pg_roles db\n")
-            wxT("ORDER BY rolname"));
+                          wxT("SELECT DISTINCT rolname\n")
+                          wxT("FROM pg_roles db\n")
+                          wxT("ORDER BY rolname"));
 
         cbRolename->Append(wxEmptyString);
 
@@ -85,19 +85,19 @@ frmBackupServer::frmBackupServer(frmMain *form, pgObject *obj) : ExternProcessDi
     }
 
     if (!server->GetPasswordIsStored())
-       environment.Add(wxT("PGPASSWORD=") + server->GetPassword());
+        environment.Add(wxT("PGPASSWORD=") + server->GetPassword());
 
-	// Pass the SSL mode via the environment
-	environment.Add(wxT("PGSSLMODE=") + server->GetConnection()->GetSslModeName());
+    // Pass the SSL mode via the environment
+    environment.Add(wxT("PGSSLMODE=") + server->GetConnection()->GetSslModeName());
 
-	// Icon
+    // Icon
     SetIcon(wxIcon(backup_xpm));
 
     txtMessages = CTRL_TEXT("txtMessages");
     txtMessages->SetMaxLength(0L);
     btnOK->Disable();
 
-    if (!pgAppMinimumVersion(backupExecutable, 9,1))
+    if (!pgAppMinimumVersion(backupExecutable, 9, 1))
     {
         chkForceQuoteForIdent->Disable();
     }
@@ -131,10 +131,10 @@ void frmBackupServer::OnSelectFilename(wxCommandEvent &ev)
 #else
     prompt = _("Query files (*.sql)|*.sql|All files (*)|*");
 #endif
-    
+
     wxFileName::SplitPath(txtFilename->GetValue(), NULL, NULL, &FilenameOnly, NULL);
     wxFileDialog file(this, title, ::wxPathOnly(txtFilename->GetValue()), FilenameOnly, prompt, wxFD_SAVE);
-    
+
     if (file.ShowModal() == wxID_OK)
     {
         txtFilename->SetValue(file.GetPath());
@@ -175,7 +175,7 @@ wxString frmBackupServer::getCmdPart1()
         cmd += wxT(" --host ") + server->GetName();
 
     cmd +=  wxT(" --port ") + NumToStr((long)server->GetPort())
-         +  wxT(" --username \"") + commandLineCleanOption(qtIdent(server->GetUsername())) + wxT("\"");
+            +  wxT(" --username \"") + commandLineCleanOption(qtIdent(server->GetUsername())) + wxT("\"");
 
     if (!cbRolename->GetValue().IsEmpty())
         cmd += wxT(" --role \"") + commandLineCleanOption(qtIdent(cbRolename->GetValue())) + wxT("\"");
@@ -242,7 +242,7 @@ backupServerFactory::backupServerFactory(menuFactoryList *list, wxMenu *mnu, ctl
 
 wxWindow *backupServerFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmBackupServer *frm=new frmBackupServer(form, obj);
+    frmBackupServer *frm = new frmBackupServer(form, obj);
     frm->Go();
     return 0;
 }

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -44,15 +44,15 @@ END_EVENT_TABLE();
 
 dlgProperty *pgSequenceFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgSequence(this, frame, (pgSequence*)node, (pgSchema*)parent);
+    return new dlgSequence(this, frame, (pgSequence *)node, (pgSchema *)parent);
 }
 
 
 dlgSequence::dlgSequence(pgaFactory *f, frmMain *frame, pgSequence *node, pgSchema *sch)
-: dlgSecurityProperty(f, frame, node, wxT("dlgSequence"), wxT("INSERT,SELECT,UPDATE,DELETE,RULE,REFERENCES,TRIGGER,USAGE"), "arwdRxtU")
+    : dlgSecurityProperty(f, frame, node, wxT("dlgSequence"), wxT("INSERT,SELECT,UPDATE,DELETE,RULE,REFERENCES,TRIGGER,USAGE"), "arwdRxtU")
 {
-    schema=sch;
-    sequence=node;
+    schema = sch;
+    sequence = node;
 }
 
 
@@ -129,10 +129,10 @@ int dlgSequence::Go(bool modal)
 
 pgObject *dlgSequence::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=sequenceFactory.CreateObjects(collection, 0, 
-        wxT("   AND relname=") + qtDbString(GetName()) +
-        wxT("\n   AND relnamespace=") + schema->GetOidStr());
-         
+    pgObject *obj = sequenceFactory.CreateObjects(collection, 0,
+                    wxT("   AND relname=") + qtDbString(GetName()) +
+                    wxT("\n   AND relnamespace=") + schema->GetOidStr());
+
     return obj;
 }
 
@@ -151,7 +151,7 @@ void dlgSequence::OnChangeSize(wxSizeEvent &ev)
 
 void dlgSequence::CheckChange()
 {
-    wxString name=GetName();
+    wxString name = GetName();
     bool maxOk = true;
 
     if (statusBar)
@@ -195,19 +195,19 @@ void dlgSequence::CheckChange()
 
     if (sequence)
     {
-        EnableOK(maxOk && (name != sequence->GetName() 
-               || txtComment->GetValue() != sequence->GetComment()
-               || cbOwner->GetValue() != sequence->GetOwner()
-               || txtStart->GetValue() != sequence->GetLastValue().ToString()
-               || txtMin->GetValue() != sequence->GetMinValue().ToString()
-               || txtMax->GetValue() != sequence->GetMaxValue().ToString()
-               || txtCache->GetValue() != sequence->GetCacheValue().ToString()
-               || txtIncrement->GetValue() != sequence->GetIncrement().ToString()
-               || chkCycled->GetValue() != sequence->GetCycled()));
+        EnableOK(maxOk && (name != sequence->GetName()
+                           || txtComment->GetValue() != sequence->GetComment()
+                           || cbOwner->GetValue() != sequence->GetOwner()
+                           || txtStart->GetValue() != sequence->GetLastValue().ToString()
+                           || txtMin->GetValue() != sequence->GetMinValue().ToString()
+                           || txtMax->GetValue() != sequence->GetMaxValue().ToString()
+                           || txtCache->GetValue() != sequence->GetCacheValue().ToString()
+                           || txtIncrement->GetValue() != sequence->GetIncrement().ToString()
+                           || chkCycled->GetValue() != sequence->GetCycled()));
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
         EnableOK(enable && maxOk);
     }
@@ -228,7 +228,7 @@ wxString dlgSequence::GetSql()
 {
     wxString sql;
 
-    wxString name=GetName();
+    wxString name = GetName();
 
     if (sequence)
     {
@@ -237,16 +237,16 @@ wxString dlgSequence::GetSql()
         if (GetName() != sequence->GetName())
         {
             sql += wxT("ALTER TABLE ") + sequence->GetQuotedFullIdentifier()
-                +  wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
+                   +  wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
         }
         if (sequence->GetOwner() != cbOwner->GetValue())
         {
             sql += wxT("ALTER TABLE ") + schema->GetQuotedPrefix() + qtIdent(name)
-                +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue()) + wxT(";\n");
+                   +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue()) + wxT(";\n");
         }
 
-        // This is where things get hairy. Per some thought by Horvath Gabor, 
-        // we need to adjust the min/max sequence values, and the the current 
+        // This is where things get hairy. Per some thought by Horvath Gabor,
+        // we need to adjust the min/max sequence values, and the the current
         // value per the rules:
         //
         // 1 Any ALTER SEQUENCE MIN/MAXVALUE statements that widen the range
@@ -263,7 +263,7 @@ wxString dlgSequence::GetSql()
             if (txtMin->GetValue().IsEmpty())
                 tmp += wxT("\n   NO MINVALUE");
             else if (StrToLongLong(txtMin->GetValue()) < sequence->GetMinValue())
-                    tmp += wxT("\n   MINVALUE ") + txtMin->GetValue();
+                tmp += wxT("\n   MINVALUE ") + txtMin->GetValue();
 
             if (txtMax->GetValue().IsEmpty())
                 tmp += wxT("\n   NO MAXVALUE");
@@ -273,15 +273,15 @@ wxString dlgSequence::GetSql()
             if (!tmp.IsEmpty())
             {
                 sql += wxT("ALTER SEQUENCE ") + schema->GetQuotedPrefix() + qtIdent(name)
-                    +  tmp + wxT(";\n");
+                       +  tmp + wxT(";\n");
             }
         }
 
         // The new sequence value
         if (txtStart->GetValue() != sequence->GetLastValue().ToString())
             sql += wxT("SELECT setval('") + qtIdent(schema->GetName()) + wxT(".") + qtIdent(name)
-                +  wxT("', ") + txtStart->GetValue()
-                +  wxT(", true);\n");
+                   +  wxT("', ") + txtStart->GetValue()
+                   +  wxT(", true);\n");
 
         // Min/Max changes that narrow the ranges, as well as other changes.
         if (connection->BackendMinimumVersion(7, 4))
@@ -289,12 +289,12 @@ wxString dlgSequence::GetSql()
             tmp = wxEmptyString;
             if (txtIncrement->GetValue() != sequence->GetIncrement().ToString())
                 tmp += wxT("\n   INCREMENT ") + txtIncrement->GetValue();
-                    
+
             if ((!txtMin->GetValue().IsEmpty()) && StrToLongLong(txtMin->GetValue()) > sequence->GetMinValue())
                 tmp += wxT("\n   MINVALUE ") + txtMin->GetValue();
 
             if ((!txtMax->GetValue().IsEmpty()) && StrToLongLong(txtMax->GetValue()) < sequence->GetMaxValue())
-                    tmp += wxT("\n   MAXVALUE ") + txtMax->GetValue();
+                tmp += wxT("\n   MAXVALUE ") + txtMax->GetValue();
 
             if (txtCache->GetValue() != sequence->GetCacheValue().ToString())
                 tmp += wxT("\n   CACHE ") + txtCache->GetValue();
@@ -310,7 +310,7 @@ wxString dlgSequence::GetSql()
             if (!tmp.IsEmpty())
             {
                 sql += wxT("ALTER SEQUENCE ") + schema->GetQuotedPrefix() + qtIdent(name)
-                    +  tmp + wxT(";\n");
+                       +  tmp + wxT(";\n");
             }
         }
     }
@@ -330,7 +330,7 @@ wxString dlgSequence::GetSql()
         if (cbOwner->GetGuessedSelection() > 0)
         {
             sql += wxT("ALTER TABLE ")  + schema->GetQuotedPrefix() + qtIdent(name)
-                +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue()) + wxT(";\n");
+                   +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue()) + wxT(";\n");
         }
     }
 

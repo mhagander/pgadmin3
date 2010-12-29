@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -42,16 +42,16 @@ END_EVENT_TABLE();
 
 dlgProperty *pgConversionFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgConversion(this, frame, (pgConversion*)node, (pgSchema*)parent);
+    return new dlgConversion(this, frame, (pgConversion *)node, (pgSchema *)parent);
 }
 
 
 
 dlgConversion::dlgConversion(pgaFactory *f, frmMain *frame, pgConversion *node, pgSchema *sch)
-: dlgProperty(f, frame, wxT("dlgConversion"))
+    : dlgProperty(f, frame, wxT("dlgConversion"))
 {
-    conversion=node;
-    schema=sch;
+    conversion = node;
+    schema = sch;
 }
 
 
@@ -91,7 +91,7 @@ int dlgConversion::Go(bool modal)
     else
     {
         // create mode
-        wxString qry=
+        wxString qry =
             wxT("SELECT proname, nspname\n")
             wxT("  FROM pg_proc p\n")
             wxT("  JOIN pg_namespace n ON n.oid=pronamespace")
@@ -103,7 +103,7 @@ int dlgConversion::Go(bool modal)
             wxT("\n   AND proargtypes[4] = ") + NumToStr(PGOID_TYPE_INT4) +
             wxT("\n   AND proargtypes[5] = 0");
 
-        pgSet *set=connection->ExecuteSet(qry);
+        pgSet *set = connection->ExecuteSet(qry);
         if (set)
         {
             while (!set->Eof())
@@ -116,12 +116,12 @@ int dlgConversion::Go(bool modal)
             delete set;
         }
 
-        long encNo=0;
+        long encNo = 0;
         wxString encStr;
         do
         {
-            encStr=connection->ExecuteScalar(
-                wxT("SELECT pg_encoding_to_char(") + NumToStr(encNo) + wxT(")"));
+            encStr = connection->ExecuteScalar(
+                         wxT("SELECT pg_encoding_to_char(") + NumToStr(encNo) + wxT(")"));
             if (!encStr.IsEmpty())
             {
                 cbSourceEncoding->Append(encStr);
@@ -138,8 +138,8 @@ int dlgConversion::Go(bool modal)
 
 pgObject *dlgConversion::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=conversionFactory.CreateObjects(collection, 0,
-         wxT("\n AND conname = ") + qtDbString(GetName()));
+    pgObject *obj = conversionFactory.CreateObjects(collection, 0,
+                    wxT("\n AND conname = ") + qtDbString(GetName()));
 
     return obj;
 }
@@ -149,13 +149,13 @@ void dlgConversion::CheckChange()
 {
     if (conversion)
     {
-        EnableOK(txtName->GetValue() != conversion->GetName() 
-            || txtComment->GetValue() != conversion->GetComment()
-            || cbOwner->GetValue() != conversion->GetOwner());
+        EnableOK(txtName->GetValue() != conversion->GetName()
+                 || txtComment->GetValue() != conversion->GetComment()
+                 || cbOwner->GetValue() != conversion->GetOwner());
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, !GetName().IsEmpty(), _("Please specify name."));
         CheckValid(enable, !cbSourceEncoding->GetValue().IsEmpty(), _("Please specify source encoding."));
         CheckValid(enable, !cbTargetEncoding->GetValue().IsEmpty(), _("Please specify target encoding."));
@@ -171,7 +171,7 @@ void dlgConversion::CheckChange()
 wxString dlgConversion::GetSql()
 {
     wxString sql;
-    wxString name=GetName();
+    wxString name = GetName();
 
     if (conversion)
     {
@@ -187,10 +187,10 @@ wxString dlgConversion::GetSql()
         if (chkDefault->GetValue())
             sql += wxT("DEFAULT ");
         sql += wxT("CONVERSION ") + schema->GetQuotedPrefix() + qtIdent(name)
-            + wxT("\n   FOR ") + qtDbString(cbSourceEncoding->GetValue())
-            + wxT(" TO ") + qtDbString(cbTargetEncoding->GetValue())
-            + wxT("\n   FROM ") + functions.Item(cbFunction->GetCurrentSelection())
-            + wxT(";\n");
+               + wxT("\n   FOR ") + qtDbString(cbSourceEncoding->GetValue())
+               + wxT(" TO ") + qtDbString(cbTargetEncoding->GetValue())
+               + wxT("\n   FROM ") + functions.Item(cbFunction->GetCurrentSelection())
+               + wxT(";\n");
 
         AppendOwnerNew(sql, wxT("CONVERSION ") + schema->GetQuotedPrefix() + qtIdent(name));
     }

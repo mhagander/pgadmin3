@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -65,7 +65,7 @@ BEGIN_EVENT_TABLE(dlgType, dlgTypeProperty)
     EVT_COMBOBOX(XRCID("cbOutput"),                 dlgProperty::OnChange)
     EVT_TEXT(XRCID("txtIntLength"),                 dlgProperty::OnChange)
     EVT_CHECKBOX(XRCID("chkVariable"),              dlgProperty::OnChange)
-    
+
     EVT_BUTTON(XRCID("btnAddMember"),               dlgType::OnMemberAdd)
     EVT_BUTTON(XRCID("btnChangeMember"),            dlgType::OnMemberChange)
     EVT_BUTTON(XRCID("btnRemoveMember"),            dlgType::OnMemberRemove)
@@ -84,15 +84,15 @@ END_EVENT_TABLE();
 
 dlgProperty *pgTypeFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgType(this, frame, (pgType*)node, (pgSchema*)parent);
+    return new dlgType(this, frame, (pgType *)node, (pgSchema *)parent);
 }
 
 
 dlgType::dlgType(pgaFactory *f, frmMain *frame, pgType *node, pgSchema *sch)
-: dlgTypeProperty(f, frame, wxT("dlgType"))
+    : dlgTypeProperty(f, frame, wxT("dlgType"))
 {
-    type=node;
-    schema=sch;
+    type = node;
+    schema = sch;
     lstMembers->CreateColumns(0, _("Member"), _("Data type"), -1);
     lstLabels->InsertColumn(0, _("Label"), wxLIST_FORMAT_LEFT, GetClientSize().GetWidth());
 
@@ -145,7 +145,7 @@ void dlgType::showDefinition(int panel)
 void dlgType::OnTypeChange(wxCommandEvent &ev)
 {
     showDefinition(rdbType->GetSelection());
-    
+
     CheckChange();
 }
 
@@ -171,17 +171,29 @@ int dlgType::Go(bool modal)
 
         showDefinition(type->GetTypeClass());
 
-        cbInput->Append(type->GetInputFunction()); cbInput->SetSelection(0); cbInput->Disable();
-        cbOutput->Append(type->GetOutputFunction()); cbOutput->SetSelection(0); cbOutput->Disable();
-        cbReceive->Append(type->GetReceiveFunction()); cbReceive->SetSelection(0); cbReceive->Disable();
-        cbSend->Append(type->GetSendFunction()); cbSend->SetSelection(0); cbSend->Disable();
-        cbTypmodin->Append(type->GetTypmodinFunction()); cbTypmodin->SetSelection(0); cbTypmodin->Disable();
-        cbTypmodout->Append(type->GetTypmodoutFunction()); cbTypmodout->SetSelection(0); cbTypmodout->Disable();
+        cbInput->Append(type->GetInputFunction());
+        cbInput->SetSelection(0);
+        cbInput->Disable();
+        cbOutput->Append(type->GetOutputFunction());
+        cbOutput->SetSelection(0);
+        cbOutput->Disable();
+        cbReceive->Append(type->GetReceiveFunction());
+        cbReceive->SetSelection(0);
+        cbReceive->Disable();
+        cbSend->Append(type->GetSendFunction());
+        cbSend->SetSelection(0);
+        cbSend->Disable();
+        cbTypmodin->Append(type->GetTypmodinFunction());
+        cbTypmodin->SetSelection(0);
+        cbTypmodin->Disable();
+        cbTypmodout->Append(type->GetTypmodoutFunction());
+        cbTypmodout->SetSelection(0);
+        cbTypmodout->Disable();
 
         chkVariable->SetValue(type->GetInternalLength() < 0);
         chkVariable->Disable();
         if (type->GetInternalLength() > 0)
-            txtIntLength->SetValue(NumToStr(type->GetInternalLength())); 
+            txtIntLength->SetValue(NumToStr(type->GetInternalLength()));
         txtIntLength->Disable();
         txtDefault->SetValue(type->GetDefault());
         txtDefault->Disable();
@@ -208,15 +220,15 @@ int dlgType::Go(bool modal)
         btnAddAfterLabel->Enable(connection->BackendMinimumVersion(9, 1));
         btnRemoveLabel->Disable();
 
-        wxArrayString elements=type->GetTypesArray();
+        wxArrayString elements = type->GetTypesArray();
         wxString fullType, typeName, typeLength, typePrecision;
         size_t pos;
         size_t i;
-		for (i=0 ; i < elements.GetCount() ; i+=2)
+        for (i = 0 ; i < elements.GetCount() ; i += 2)
         {
-            lstMembers->AppendItem(0, elements.Item(i), elements.Item(i+1));
+            lstMembers->AppendItem(0, elements.Item(i), elements.Item(i + 1));
 
-            fullType = elements.Item(i+1);
+            fullType = elements.Item(i + 1);
             typeName = fullType;
             typeLength = wxEmptyString;
             typePrecision = wxEmptyString;
@@ -251,8 +263,8 @@ int dlgType::Go(bool modal)
         txtLength->Enable(changeok);
 
         // Load the enum labels
-        elements=type->GetLabelArray();
-		for (i=0 ; i < elements.GetCount() ; i++)
+        elements = type->GetLabelArray();
+        for (i = 0 ; i < elements.GetCount() ; i++)
             lstLabels->AppendItem(0, elements.Item(i));
 
         if (!connection->BackendMinimumVersion(7, 5))
@@ -293,15 +305,15 @@ int dlgType::Go(bool modal)
             rdbType->Enable(TYPE_ENUM, false);
 
         set = connection->ExecuteSet(
-            wxT("SELECT proname, nspname\n")
-            wxT("  FROM (\n")
-            wxT("        SELECT proname, nspname, max(proargtypes[0]) AS arg0, max(proargtypes[1]) AS arg1\n")
-            wxT("          FROM pg_proc p\n")
-            wxT("          JOIN pg_namespace n ON n.oid=pronamespace\n")
-            wxT("         GROUP BY proname, nspname\n")
-            wxT("        HAVING count(proname) = 1   ) AS uniquefunc\n")
-            wxT(" WHERE arg0 <> 0 AND arg1 = 0"));
-        
+                  wxT("SELECT proname, nspname\n")
+                  wxT("  FROM (\n")
+                  wxT("        SELECT proname, nspname, max(proargtypes[0]) AS arg0, max(proargtypes[1]) AS arg1\n")
+                  wxT("          FROM pg_proc p\n")
+                  wxT("          JOIN pg_namespace n ON n.oid=pronamespace\n")
+                  wxT("         GROUP BY proname, nspname\n")
+                  wxT("        HAVING count(proname) = 1   ) AS uniquefunc\n")
+                  wxT(" WHERE arg0 <> 0 AND arg1 = 0"));
+
         if (set)
         {
             while (!set->Eof())
@@ -328,13 +340,13 @@ int dlgType::Go(bool modal)
         if (hasTypmod)
         {
             set = connection->ExecuteSet(
-                wxT("SELECT proname, nspname\n")
-                wxT("  FROM pg_proc p\n")
-                wxT("  JOIN pg_namespace n ON n.oid=pronamespace\n")
-                wxT("  WHERE prorettype=(SELECT oid FROM pg_type WHERE typname='int4')")
-                wxT("    AND proargtypes[0]=(SELECT oid FROM pg_type WHERE typname='_cstring')")
-                wxT("    AND proargtypes[1] IS NULL")
-                wxT("  ORDER BY nspname, proname"));
+                      wxT("SELECT proname, nspname\n")
+                      wxT("  FROM pg_proc p\n")
+                      wxT("  JOIN pg_namespace n ON n.oid=pronamespace\n")
+                      wxT("  WHERE prorettype=(SELECT oid FROM pg_type WHERE typname='int4')")
+                      wxT("    AND proargtypes[0]=(SELECT oid FROM pg_type WHERE typname='_cstring')")
+                      wxT("    AND proargtypes[1] IS NULL")
+                      wxT("  ORDER BY nspname, proname"));
 
             if (set)
             {
@@ -349,13 +361,13 @@ int dlgType::Go(bool modal)
             }
 
             set = connection->ExecuteSet(
-                wxT("SELECT proname, nspname\n")
-                wxT("  FROM pg_proc p\n")
-                wxT("  JOIN pg_namespace n ON n.oid=pronamespace\n")
-                wxT("  WHERE prorettype=(SELECT oid FROM pg_type WHERE typname='cstring')")
-                wxT("    AND proargtypes[0]=(SELECT oid FROM pg_type WHERE typname='int4')")
-                wxT("    AND proargtypes[1] IS NULL")
-                wxT("  ORDER BY nspname, proname"));
+                      wxT("SELECT proname, nspname\n")
+                      wxT("  FROM pg_proc p\n")
+                      wxT("  JOIN pg_namespace n ON n.oid=pronamespace\n")
+                      wxT("  WHERE prorettype=(SELECT oid FROM pg_type WHERE typname='cstring')")
+                      wxT("    AND proargtypes[0]=(SELECT oid FROM pg_type WHERE typname='int4')")
+                      wxT("    AND proargtypes[1] IS NULL")
+                      wxT("  ORDER BY nspname, proname"));
 
             if (set)
             {
@@ -404,15 +416,15 @@ void dlgType::CheckChange()
     if (type)
     {
         EnableOK(txtComment->GetValue() != type->GetComment()
-            || cbOwner->GetValue() != type->GetOwner()
-            || (rdbType->GetSelection() == TYPE_COMPOSITE && GetSqlForTypes() != wxEmptyString)
-            || (GetSql().Length() > 0 && connection->BackendMinimumVersion(9, 1)));
+                 || cbOwner->GetValue() != type->GetOwner()
+                 || (rdbType->GetSelection() == TYPE_COMPOSITE && GetSqlForTypes() != wxEmptyString)
+                 || (GetSql().Length() > 0 && connection->BackendMinimumVersion(9, 1)));
     }
     else
     {
-        wxString name=GetName();
+        wxString name = GetName();
 
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
         CheckValid(enable, !name.StartsWith(wxT("_")), _("Name may not start with '_'."));
 
@@ -438,7 +450,7 @@ void dlgType::CheckChange()
 
 void dlgType::OnMemberSelChange(wxListEvent &ev)
 {
-    long pos=lstMembers->GetSelection();
+    long pos = lstMembers->GetSelection();
     if (pos >= 0)
     {
         txtMembername->SetValue(lstMembers->GetText(pos));
@@ -461,9 +473,9 @@ void dlgType::OnMemberAdd(wxCommandEvent &ev)
     wxString precision = wxEmptyString;
 
     if (txtLength->GetValue() != wxT("") && txtLength->IsEnabled())
-       length = txtLength->GetValue();
+        length = txtLength->GetValue();
     if (txtPrecision->GetValue() != wxT("") && txtPrecision->IsEnabled())
-       precision = txtPrecision->GetValue();
+        precision = txtPrecision->GetValue();
 
     if (!length.IsEmpty())
     {
@@ -495,9 +507,9 @@ void dlgType::OnMemberChange(wxCommandEvent &ev)
     wxString precision = wxEmptyString;
 
     if (txtLength->GetValue() != wxT("") && txtLength->IsEnabled())
-       length = txtLength->GetValue();
+        length = txtLength->GetValue();
     if (txtPrecision->GetValue() != wxT("") && txtPrecision->IsEnabled())
-       precision = txtPrecision->GetValue();
+        precision = txtPrecision->GetValue();
 
     if (!length.IsEmpty())
     {
@@ -509,7 +521,7 @@ void dlgType::OnMemberChange(wxCommandEvent &ev)
 
     if (!name.IsEmpty())
     {
-        long pos=lstMembers->GetFirstSelected();
+        long pos = lstMembers->GetFirstSelected();
         if (pos >= 0)
         {
             lstMembers->SetItem(pos, 0, name);
@@ -517,9 +529,9 @@ void dlgType::OnMemberChange(wxCommandEvent &ev)
             memberTypes.Insert(GetTypeInfo(cbDatatype->GetGuessedSelection()), pos);
             memberLengths.Insert(length, pos);
             memberPrecisions.Insert(precision, pos);
-            memberTypes.RemoveAt(pos+1);
-            memberLengths.RemoveAt(pos+1);
-            memberPrecisions.RemoveAt(pos+1);
+            memberTypes.RemoveAt(pos + 1);
+            memberLengths.RemoveAt(pos + 1);
+            memberPrecisions.RemoveAt(pos + 1);
         }
     }
 
@@ -529,7 +541,7 @@ void dlgType::OnMemberChange(wxCommandEvent &ev)
 
 void dlgType::OnMemberRemove(wxCommandEvent &ev)
 {
-    long pos=lstMembers->GetSelection();
+    long pos = lstMembers->GetSelection();
 
     if (pos >= 0)
     {
@@ -544,7 +556,7 @@ void dlgType::OnMemberRemove(wxCommandEvent &ev)
 
 void dlgType::OnLabelSelChange(wxListEvent &ev)
 {
-    long pos=lstLabels->GetSelection();
+    long pos = lstLabels->GetSelection();
     if (pos >= 0)
     {
         txtLabel->SetValue(lstLabels->GetText(pos));
@@ -554,11 +566,11 @@ void dlgType::OnLabelSelChange(wxListEvent &ev)
 
 void dlgType::OnLabelAddBefore(wxCommandEvent &ev)
 {
-    wxString label=txtLabel->GetValue().Strip(wxString::both);
+    wxString label = txtLabel->GetValue().Strip(wxString::both);
 
     if (!label.IsEmpty())
     {
-        long pos=lstLabels->FindItem(-1, label);
+        long pos = lstLabels->FindItem(-1, label);
         if (pos < 0)
         {
             if (lstLabels->GetFirstSelected() >= 0)
@@ -575,11 +587,11 @@ void dlgType::OnLabelAddBefore(wxCommandEvent &ev)
 
 void dlgType::OnLabelAddAfter(wxCommandEvent &ev)
 {
-    wxString label=txtLabel->GetValue().Strip(wxString::both);
+    wxString label = txtLabel->GetValue().Strip(wxString::both);
 
     if (!label.IsEmpty())
     {
-        long pos=lstLabels->FindItem(-1, label);
+        long pos = lstLabels->FindItem(-1, label);
         if (pos < 0)
         {
             if (lstLabels->GetFirstSelected() >= 0)
@@ -596,7 +608,7 @@ void dlgType::OnLabelAddAfter(wxCommandEvent &ev)
 
 void dlgType::OnLabelRemove(wxCommandEvent &ev)
 {
-    long pos=lstLabels->GetSelection();
+    long pos = lstLabels->GetSelection();
 
     if (pos >= 0)
         lstLabels->DeleteItem(pos);
@@ -607,18 +619,18 @@ void dlgType::OnLabelRemove(wxCommandEvent &ev)
 
 pgObject *dlgType::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgObject *obj=0; //pgType::ReadObjects(collection, 0, wxT("\n WHERE usename=") + qtDbString(name));
+    pgObject *obj = 0; //pgType::ReadObjects(collection, 0, wxT("\n WHERE usename=") + qtDbString(name));
     return obj;
 }
 
 
 wxString dlgType::GetSql()
 {
-    wxString sql,direction;
+    wxString sql, direction;
     size_t existingitems_index, listitems_index, offset;
-    
+
     if (type)
     {
         // Edit Mode
@@ -626,9 +638,9 @@ wxString dlgType::GetSql()
         sql += GetSqlForTypes();
         if (rdbType->GetSelection() == TYPE_ENUM && connection->BackendMinimumVersion(9, 1))
         {
-            wxArrayString elements=type->GetLabelArray();
+            wxArrayString elements = type->GetLabelArray();
             existingitems_index = 0;
-            for (listitems_index=0 ; listitems_index < (size_t)lstLabels->GetItemCount() ; listitems_index++)
+            for (listitems_index = 0 ; listitems_index < (size_t)lstLabels->GetItemCount() ; listitems_index++)
             {
                 if (existingitems_index >= elements.GetCount() || lstLabels->GetItemText(listitems_index) != elements.Item(existingitems_index))
                 {
@@ -645,10 +657,10 @@ wxString dlgType::GetSql()
                     }
 
                     sql += wxT("ALTER TYPE ") + type->GetQuotedFullIdentifier()
-                        +  wxT(" ADD VALUE ") + connection->qtDbString(lstLabels->GetItemText(listitems_index))
-                        +  wxT(" ") + direction + wxT(" ")
-                        + connection->qtDbString(elements.Item(existingitems_index + offset))
-                        + wxT(";\n");
+                           +  wxT(" ADD VALUE ") + connection->qtDbString(lstLabels->GetItemText(listitems_index))
+                           +  wxT(" ") + direction + wxT(" ")
+                           + connection->qtDbString(elements.Item(existingitems_index + offset))
+                           + wxT(";\n");
                 }
                 else
                     existingitems_index++;
@@ -665,12 +677,12 @@ wxString dlgType::GetSql()
             sql += wxT(" AS\n   (");
 
             int i;
-            for (i=0 ; i < lstMembers->GetItemCount() ; i++)
+            for (i = 0 ; i < lstMembers->GetItemCount() ; i++)
             {
                 if (i)
                     sql += wxT(",\n    ");
                 sql += qtIdent(lstMembers->GetItemText(i)) + wxT(" ")
-                    + GetFullTypeName(i);
+                       + GetFullTypeName(i);
             }
         }
         else if (rdbType->GetSelection() == TYPE_ENUM)
@@ -678,7 +690,7 @@ wxString dlgType::GetSql()
             sql += wxT(" AS ENUM\n   (");
 
             int i;
-            for (i=0 ; i < lstLabels->GetItemCount() ; i++)
+            for (i = 0 ; i < lstLabels->GetItemCount() ; i++)
             {
                 if (i)
                     sql += wxT(",\n    ");
@@ -780,15 +792,15 @@ wxString dlgType::GetSqlForTypes()
 {
     wxString sql = wxEmptyString;
     wxString old_name, old_type, new_name, new_type;
-    wxArrayString elements=type->GetTypesArray();
-    bool modified = lstMembers->GetItemCount()*2 != (int)elements.GetCount();
+    wxArrayString elements = type->GetTypesArray();
+    bool modified = lstMembers->GetItemCount() * 2 != (int)elements.GetCount();
     size_t i;
 
     // Check if there is a change
-    for (int i=0 ; i < lstMembers->GetItemCount() && !modified; i++)
+    for (int i = 0 ; i < lstMembers->GetItemCount() && !modified; i++)
     {
-        old_name = elements.Item(i*2);
-        old_type = elements.Item(i*2+1);
+        old_name = elements.Item(i * 2);
+        old_type = elements.Item(i * 2 + 1);
         new_name = lstMembers->GetItemText(i);
         new_type = GetFullTypeName(i);
         modified = modified || old_name != new_name || old_type != new_type;
@@ -797,14 +809,14 @@ wxString dlgType::GetSqlForTypes()
     if (modified)
     {
         // Drop all old attributes
-		for (i=0 ; i < elements.GetCount() ; i+=2)
+        for (i = 0 ; i < elements.GetCount() ; i += 2)
         {
             old_name = elements.Item(i);
             sql += wxT("ALTER TYPE type DROP ATTRIBUTE ") + old_name + wxT(";\n");
         }
 
         // Add all new attributes
-        for (int i=0 ; i < lstMembers->GetItemCount() ; i++)
+        for (int i = 0 ; i < lstMembers->GetItemCount() ; i++)
         {
             new_name = lstMembers->GetItemText(i);
             new_type = GetFullTypeName(i);

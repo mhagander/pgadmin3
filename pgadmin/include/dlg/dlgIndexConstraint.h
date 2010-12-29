@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgIndexConstraint.h - IndexConstraint property 
+// dlgIndexConstraint.h - IndexConstraint property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,10 @@ public:
     wxString GetDefinition();
     wxString GetColumns();
     wxString GetSql();
-    wxString GetHelpPage() const { return wxT("pg/sql-altertable"); }
+    wxString GetHelpPage() const
+    {
+        return wxT("pg/sql-altertable");
+    }
 
 private:
 #ifdef __WXMAC__

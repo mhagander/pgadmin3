@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgClasses.h - Some dialogue base classes 
+// dlgClasses.h - Some dialogue base classes
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -29,14 +29,17 @@ class ctlMenuToolbar;
 class pgDialog : public wxDialog
 {
 public:
-    pgDialog() { statusBar = 0; }
-    void RestorePosition(int defaultX=-1, int defaultY=-1, int defaultW=-1, int defaultH=-1, int minW=-1, int minH=-1);
+    pgDialog()
+    {
+        statusBar = 0;
+    }
+    void RestorePosition(int defaultX = -1, int defaultY = -1, int defaultW = -1, int defaultH = -1, int minW = -1, int minH = -1);
     void SavePosition();
-    void LoadResource(wxWindow *parent, const wxChar *name=0);
+    void LoadResource(wxWindow *parent, const wxChar *name = 0);
 
 protected:
-    void OnCancel(wxCommandEvent& ev);
-    void OnClose(wxCloseEvent& event);
+    void OnCancel(wxCommandEvent &ev);
+    void OnClose(wxCloseEvent &event);
     void AddStatusBar();
 
     void PostCreation();
@@ -52,28 +55,40 @@ class menuFactoryList;
 class pgFrame : public wxFrame
 {
 public:
-    pgFrame(wxFrame *parent, const wxString &title, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize, long flags=wxDEFAULT_FRAME_STYLE) ;
+    pgFrame(wxFrame *parent, const wxString &title, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize, long flags = wxDEFAULT_FRAME_STYLE) ;
     ~pgFrame();
     void RemoveFrame(wxWindow *frame);
-    void AddFrame(wxWindow *wnd) { frames.Append(wnd); }
-    void RestorePosition(int defaultX=-1, int defaultY=-1, int defaultW=-1, int defaultH=-1, int minW=100, int minH=70);
+    void AddFrame(wxWindow *wnd)
+    {
+        frames.Append(wnd);
+    }
+    void RestorePosition(int defaultX = -1, int defaultY = -1, int defaultW = -1, int defaultH = -1, int minW = 100, int minH = 70);
     void SavePosition();
-    void OnAction(wxCommandEvent& event);
-		
-    void UpdateRecentFiles(bool updatefile=true);
+    void OnAction(wxCommandEvent &event);
 
-	menuFactoryList *GetMenuFactories() { return menuFactories; }
+    void UpdateRecentFiles(bool updatefile = true);
+
+    menuFactoryList *GetMenuFactories()
+    {
+        return menuFactories;
+    }
 
 protected:
 
-    void OnKeyDown(wxKeyEvent& event);
-    void OnExit(wxCommandEvent& event);
-    void OnRecent(wxCommandEvent& event);
-    void OnHelp(wxCommandEvent& event);
+    void OnKeyDown(wxKeyEvent &event);
+    void OnExit(wxCommandEvent &event);
+    void OnRecent(wxCommandEvent &event);
+    void OnHelp(wxCommandEvent &event);
 
     virtual void OpenLastFile() {}
-    virtual bool CheckChanged(bool canVeto) { return false; }
-    virtual wxString GetHelpPage() const { return wxEmptyString; }
+    virtual bool CheckChanged(bool canVeto)
+    {
+        return false;
+    }
+    virtual wxString GetHelpPage() const
+    {
+        return wxEmptyString;
+    }
 
     windowList frames;
     menuFactoryList *menuFactories;
@@ -97,7 +112,7 @@ public:
 
 protected:
     frmMain *mainForm;
-    void OnHelp(wxCommandEvent& ev);
+    void OnHelp(wxCommandEvent &ev);
 
 private:
     virtual wxString GetHelpPage() const = 0;
@@ -108,11 +123,11 @@ class ExecutionDialog : public DialogWithHelp
 {
 public:
     ExecutionDialog(frmMain *frame, pgObject *_object);
-    virtual wxString GetSql()=0;
+    virtual wxString GetSql() = 0;
 
-    void OnOK(wxCommandEvent& ev);
-    void OnCancel(wxCommandEvent& ev);
-    void OnClose(wxCloseEvent& event);
+    void OnOK(wxCommandEvent &ev);
+    void OnCancel(wxCommandEvent &ev);
+    void OnClose(wxCloseEvent &event);
 
     void Abort();
 
@@ -140,9 +155,9 @@ class ExternProcessDialog : public DialogWithHelp
 public:
     ExternProcessDialog(frmMain *frame);
     ~ExternProcessDialog();
-    virtual wxString GetDisplayCmd(int version)=0;
-    virtual wxString GetCmd(int step)=0;
-    bool Execute(int step=0, bool finalStep=true);
+    virtual wxString GetDisplayCmd(int version) = 0;
+    virtual wxString GetCmd(int step) = 0;
+    bool Execute(int step = 0, bool finalStep = true);
     void Abort();
 
 protected:
@@ -154,13 +169,13 @@ protected:
 #if __GNUC__ >= 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
 public:
 #endif
-    void OnOK(wxCommandEvent& ev);
-    void OnCancel(wxCommandEvent& ev);
-    void OnClose(wxCloseEvent& event);
+    void OnOK(wxCommandEvent &ev);
+    void OnCancel(wxCommandEvent &ev);
+    void OnClose(wxCloseEvent &event);
 protected:
 
-    void OnEndProcess(wxProcessEvent& event);
-    void OnPollProcess(wxTimerEvent& event);
+    void OnEndProcess(wxProcessEvent &event);
+    void OnPollProcess(wxTimerEvent &event);
     void checkStreams();
 
     wxTimer *timer;

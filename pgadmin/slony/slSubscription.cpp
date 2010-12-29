@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,8 +22,8 @@
 
 
 
-slSubscription::slSubscription(slSet *s, const wxString& newName)
-: slSetObject(s, subscriptionFactory, newName)
+slSubscription::slSubscription(slSet *s, const wxString &newName)
+    : slSetObject(s, subscriptionFactory, newName)
 {
 }
 
@@ -39,10 +39,10 @@ int slSubscription::GetIconId()
 bool slSubscription::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
     return GetDatabase()->ExecuteVoid(
-        wxT("SELECT ") + GetCluster()->GetSchemaPrefix() 
-            + wxT("unsubscribeset(") + NumToStr(GetSet()->GetSlId())
-            + wxT(", ") + NumToStr(GetReceiverId())
-            + wxT(");"));
+               wxT("SELECT ") + GetCluster()->GetSchemaPrefix()
+               + wxT("unsubscribeset(") + NumToStr(GetSet()->GetSlId())
+               + wxT(", ") + NumToStr(GetReceiverId())
+               + wxT(");"));
 
 }
 
@@ -68,10 +68,10 @@ wxString slSubscription::GetSql(ctlTree *browser)
         else
             sql = wxT("-- subscribe replication set\n\n")
                   wxT(" SELECT ") + GetCluster()->GetSchemaPrefix() + wxT("subscribeset(")
-                + NumToStr(GetSet()->GetSlId()) + wxT(", ")
-                + NumToStr(GetProviderId()) + wxT(", ")
-                + NumToStr(GetReceiverId()) + wxT(", ")
-                + BoolToStr(GetForward()) + wxT(");");
+                  + NumToStr(GetSet()->GetSlId()) + wxT(", ")
+                  + NumToStr(GetProviderId()) + wxT(", ")
+                  + NumToStr(GetReceiverId()) + wxT(", ")
+                  + BoolToStr(GetForward()) + wxT(");");
     }
     return sql;
 }
@@ -87,17 +87,17 @@ void slSubscription::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
         // Log
 
         if (WantDummyChild())
         {
-            wxTreeItemId id=browser->GetItemParent(browser->GetItemParent(GetId()));
+            wxTreeItemId id = browser->GetItemParent(browser->GetItemParent(GetId()));
             if (id)
             {
-                slSet *set=(slSet*)browser->GetObject(id);
+                slSet *set = (slSet *)browser->GetObject(id);
                 if (set && set->IsCreatedBy(setFactory))
                 {
                     wxLogInfo(wxT("Adding child object to subscription %s"), GetIdentifier().c_str());
@@ -130,11 +130,11 @@ void slSubscription::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView
 
 pgObject *slSubscription::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *subscription=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *subscription = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
-        subscription = subscriptionFactory.CreateObjects(coll, 0, wxT(" WHERE sub_set=") + NumToStr(GetSet()->GetSlId()) 
-                            + wxT(" AND sub_receiver = ") + NumToStr(GetReceiverId()) + wxT("\n"));
+        subscription = subscriptionFactory.CreateObjects(coll, 0, wxT(" WHERE sub_set=") + NumToStr(GetSet()->GetSlId())
+                       + wxT(" AND sub_receiver = ") + NumToStr(GetReceiverId()) + wxT("\n"));
     return subscription;
 }
 
@@ -142,25 +142,25 @@ pgObject *slSubscription::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *slSubscriptionFactory::CreateObjects(pgCollection *coll, ctlTree *browser, const wxString &restr)
 {
-    slSetObjCollection *collection=(slSetObjCollection*)coll;
-    slSubscription *subscription=0;
+    slSetObjCollection *collection = (slSetObjCollection *)coll;
+    slSubscription *subscription = 0;
     wxString restriction;
     if (restr.IsEmpty())
         restriction = wxT(" WHERE sub_set = ") + NumToStr(collection->GetSlId());
     else
         restriction = restr;
 
-    wxString prefix=collection->GetCluster()->GetSchemaPrefix();
+    wxString prefix = collection->GetCluster()->GetSchemaPrefix();
     pgSet *subscriptions = collection->GetDatabase()->ExecuteSet(
-        wxT("SELECT sub_set, sub_provider, sub_receiver, sub_forward, sub_active,\n")
-              wxT(" re.no_comment as receiver_name, pr.no_comment as provider_name,\n")
-              wxT(" EXISTS (SELECT 1 FROM ") + prefix + wxT("sl_subscribe s2 WHERE s2.sub_provider = s1.sub_receiver AND s1.sub_set=s2.sub_set) AS is_subscribed\n")
-        wxT("  FROM ") + prefix + wxT("sl_subscribe s1\n")
-        wxT("  JOIN ") + prefix + wxT("sl_set ON set_id = sub_set\n")
-        wxT("  JOIN ") + prefix + wxT("sl_node pr ON pr.no_id = sub_provider\n")
-        wxT("  JOIN ") + prefix + wxT("sl_node re ON re.no_id = sub_receiver\n")
-         + restriction +
-        wxT(" ORDER BY sub_provider, sub_receiver"));
+                               wxT("SELECT sub_set, sub_provider, sub_receiver, sub_forward, sub_active,\n")
+                               wxT(" re.no_comment as receiver_name, pr.no_comment as provider_name,\n")
+                               wxT(" EXISTS (SELECT 1 FROM ") + prefix + wxT("sl_subscribe s2 WHERE s2.sub_provider = s1.sub_receiver AND s1.sub_set=s2.sub_set) AS is_subscribed\n")
+                               wxT("  FROM ") + prefix + wxT("sl_subscribe s1\n")
+                               wxT("  JOIN ") + prefix + wxT("sl_set ON set_id = sub_set\n")
+                               wxT("  JOIN ") + prefix + wxT("sl_node pr ON pr.no_id = sub_provider\n")
+                               wxT("  JOIN ") + prefix + wxT("sl_node re ON re.no_id = sub_receiver\n")
+                               + restriction +
+                               wxT(" ORDER BY sub_provider, sub_receiver"));
 
     if (subscriptions)
     {
@@ -178,13 +178,13 @@ pgObject *slSubscriptionFactory::CreateObjects(pgCollection *coll, ctlTree *brow
             if (browser)
             {
                 browser->AppendObject(coll, subscription);
-				subscriptions->MoveNext();
+                subscriptions->MoveNext();
             }
             else
                 break;
         }
 
-		delete subscriptions;
+        delete subscriptions;
     }
     return subscription;
 }
@@ -195,8 +195,8 @@ pgObject *slSubscriptionFactory::CreateObjects(pgCollection *coll, ctlTree *brow
 #include "images/slsubscription.xpm"
 #include "images/slsubscriptions.xpm"
 
-slSubscriptionFactory::slSubscriptionFactory() 
-: slSetObjFactory(__("Subscription"), __("New Subscription"), __("Create a new Subscription."), slsubscription_xpm)
+slSubscriptionFactory::slSubscriptionFactory()
+    : slSetObjFactory(__("Subscription"), __("New Subscription"), __("Create a new Subscription."), slsubscription_xpm)
 {
     metaType = SLM_SUBSCRIPTION;
 }

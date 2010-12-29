@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -29,7 +29,7 @@ public:
     bool IsEmptyCell( int row, int col );
     wxString GetValue( int row, int col );
     wxString GetColLabelValue( int col);
-    void SetValue( int row, int col, const wxString& value );
+    void SetValue( int row, int col, const wxString &value );
     void AppendItem(gqbQueryRestriction *item);
     void emptyTableData();
     bool DeleteRows(size_t pos, size_t numRows);
@@ -46,9 +46,12 @@ class wxGridCellComboBoxRenderer : public wxGridCellStringRenderer
 {
 public:
     wxGridCellComboBoxRenderer(wxLayoutAlignment border = wxLAYOUT_NONE) :
-    m_border(border) {}
-    virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect, int row, int col, bool isSelected);
-    virtual wxGridCellRenderer *Clone() const { return new wxGridCellComboBoxRenderer; }
+        m_border(border) {}
+    virtual void Draw(wxGrid &grid, wxGridCellAttr &attr, wxDC &dc, const wxRect &rect, int row, int col, bool isSelected);
+    virtual wxGridCellRenderer *Clone() const
+    {
+        return new wxGridCellComboBoxRenderer;
+    }
 
 private:
     wxLayoutAlignment m_border;
@@ -58,9 +61,12 @@ class wxGridCellButtonRenderer : public wxGridCellStringRenderer
 {
 public:
     wxGridCellButtonRenderer(wxLayoutAlignment border = wxLAYOUT_NONE) :
-    m_border(border) {}
-    virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect, int row, int col, bool isSelected);
-    virtual wxGridCellRenderer *Clone() const { return new wxGridCellComboBoxRenderer; }
+        m_border(border) {}
+    virtual void Draw(wxGrid &grid, wxGridCellAttr &attr, wxDC &dc, const wxRect &rect, int row, int col, bool isSelected);
+    virtual wxGridCellRenderer *Clone() const
+    {
+        return new wxGridCellComboBoxRenderer;
+    }
 
 private:
     wxLayoutAlignment m_border;
@@ -70,12 +76,12 @@ private:
 class dxGridCellSizedChoiceEditor : public wxGridCellChoiceEditor
 {
 public:
-    dxGridCellSizedChoiceEditor(const wxArrayString& choices, bool allowOthers = false);
+    dxGridCellSizedChoiceEditor(const wxArrayString &choices, bool allowOthers = false);
     dxGridCellSizedChoiceEditor(size_t count = 0, const wxString choices[] = NULL, bool allowOthers = false);
 
     ~dxGridCellSizedChoiceEditor() {}
 
-    virtual wxGridCellEditor*  Clone() const;
+    virtual wxGridCellEditor  *Clone() const;
     virtual void Show(bool show, wxGridCellAttr *attr = (wxGridCellAttr *)NULL);
 
 protected:

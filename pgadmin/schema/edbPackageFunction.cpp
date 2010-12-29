@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,28 +18,28 @@
 #include "schema/edbPackageFunction.h"
 
 
-edbPackageFunction::edbPackageFunction(edbPackage *newPackage, const wxString& newName)
-: edbPackageObject(newPackage, packageFunctionFactory, newName)
+edbPackageFunction::edbPackageFunction(edbPackage *newPackage, const wxString &newName)
+    : edbPackageObject(newPackage, packageFunctionFactory, newName)
 {
 }
 
-edbPackageFunction::edbPackageFunction(edbPackage *newPackage,pgaFactory &factory, const wxString& newName)
-: edbPackageObject(newPackage, factory, newName)
+edbPackageFunction::edbPackageFunction(edbPackage *newPackage, pgaFactory &factory, const wxString &newName)
+    : edbPackageObject(newPackage, factory, newName)
 {
 }
 
-edbPackageProcedure::edbPackageProcedure(edbPackage *newPackage, const wxString& newName)
-: edbPackageFunction(newPackage, packageProcedureFactory, newName)
+edbPackageProcedure::edbPackageProcedure(edbPackage *newPackage, const wxString &newName)
+    : edbPackageFunction(newPackage, packageProcedureFactory, newName)
 {
 }
 
 wxString edbPackageFunction::GetFullName()
-{ 
+{
     return GetName() + wxT("(") + GetArgSigList() + wxT(")");
 }
 
 wxString edbPackageProcedure::GetFullName()
-{ 
+{
     if (GetArgSigList().IsEmpty())
         return GetName();
     else
@@ -50,7 +50,7 @@ wxString edbPackageFunction::GetArgListWithNames()
 {
     wxString args;
 
-    for (unsigned int i=0; i < argTypesArray.Count(); i++)
+    for (unsigned int i = 0; i < argTypesArray.Count(); i++)
     {
         if (i > 0)
             args += wxT(", ");
@@ -105,7 +105,7 @@ wxString edbPackageFunction::GetArgSigList()
 {
     wxString args;
 
-    for (unsigned int i=0; i < argTypesArray.Count(); i++)
+    for (unsigned int i = 0; i < argTypesArray.Count(); i++)
     {
         // OUT parameters are not considered part of the signature
         if (argModesArray.Item(i) != wxT("OUT"))
@@ -163,8 +163,8 @@ void edbPackageFunction::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlList
 
 pgObject *edbPackageFunction::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *packageFunction=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *packageFunction = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
     {
         if (coll->GetConnection()->EdbMinimumVersion(8, 2))
@@ -181,8 +181,8 @@ pgObject *edbPackageFunction::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 edbPackageFunction *edbPackageFunctionFactory::AppendFunctions(pgObject *obj, edbPackage *package, ctlTree *browser, const wxString &restriction)
 {
-    edbPackageFunction *packageFunction=0;
-	pgSet *packageFunctions;
+    edbPackageFunction *packageFunction = 0;
+    pgSet *packageFunctions;
 
     // Caches
     cacheMap typeCache, exprCache;
@@ -193,27 +193,27 @@ edbPackageFunction *edbPackageFunctionFactory::AppendFunctions(pgObject *obj, ed
 
     if (obj->GetConnection()->EdbMinimumVersion(8, 2))
     {
-		sql = wxT("SELECT pg_proc.oid, proname AS eltname, prorettype AS eltdatatype, pronargs AS nargs, proaccess AS visibility,\n")
-            wxT("       proallargtypes AS allargtypes, proargtypes AS argtypes, proargnames AS argnames, proargmodes AS argmodes,") + argDefsCol + wxT("\n")
+        sql = wxT("SELECT pg_proc.oid, proname AS eltname, prorettype AS eltdatatype, pronargs AS nargs, proaccess AS visibility,\n")
+              wxT("       proallargtypes AS allargtypes, proargtypes AS argtypes, proargnames AS argnames, proargmodes AS argmodes,") + argDefsCol + wxT("\n")
               wxT("       CASE WHEN format_type(prorettype, NULL) = 'void' THEN 'P' ELSE 'F' END AS eltclass\n")
               wxT("  FROM pg_proc, pg_namespace\n")
               + restriction + wxT("\n")
               wxT("  AND pg_proc.pronamespace = pg_namespace.oid\n")
- 		      wxT("  ORDER BY eltname");
+              wxT("  ORDER BY eltname");
     }
     else
     {
-		sql = wxT("SELECT oid, eltname, eltdatatype, eltclass, nargs, visibility,\n")
+        sql = wxT("SELECT oid, eltname, eltdatatype, eltclass, nargs, visibility,\n")
               wxT("       allargtypes, argtypes, argnames, argmodes\n")
               wxT("  FROM edb_pkgelements\n")
-		      + restriction + wxT("\n")
-		      wxT("  ORDER BY eltname");
+              + restriction + wxT("\n")
+              wxT("  ORDER BY eltname");
     }
 
     packageFunctions = obj->GetDatabase()->ExecuteSet(sql);
 
     pgSet *types = obj->GetDatabase()->ExecuteSet(wxT(
-                    "SELECT oid, format_type(oid, NULL) AS typname FROM pg_type"));
+                       "SELECT oid, format_type(oid, NULL) AS typname FROM pg_type"));
 
     while(!types->Eof())
     {
@@ -238,7 +238,7 @@ edbPackageFunction *edbPackageFunctionFactory::AppendFunctions(pgObject *obj, ed
             // Types
             tmp = packageFunctions->GetVal(wxT("allargtypes"));
             if (!tmp.IsEmpty())
-                argTypesTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                argTypesTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
             else
             {
                 tmp = packageFunctions->GetVal(wxT("argtypes"));
@@ -249,38 +249,38 @@ edbPackageFunction *edbPackageFunctionFactory::AppendFunctions(pgObject *obj, ed
             // Names
             tmp = packageFunctions->GetVal(wxT("argnames"));
             if (!tmp.IsEmpty())
-                argNamesTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                argNamesTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
 
             // Modes
             tmp = packageFunctions->GetVal(wxT("argmodes"));
             if (!tmp.IsEmpty())
-                argModesTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                argModesTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
 
             // Function defaults
             if (obj->GetConnection()->HasFeature(FEATURE_FUNCTION_DEFAULTS))
             {
                 tmp = packageFunctions->GetVal(wxT("proargdefvals"));
                 if (!tmp.IsEmpty())
-                    argDefsTkz.SetString(tmp.Mid(1, tmp.Length()-2), wxT(","));
+                    argDefsTkz.SetString(tmp.Mid(1, tmp.Length() - 2), wxT(","));
             }
 
             // Now iterate the arguments and build the arrays
             wxString type, name, mode, def;
-            
+
             while (argTypesTkz.HasMoreTokens())
             {
-                // Add the arg type. This is a type oid, so 
+                // Add the arg type. This is a type oid, so
                 // look it up in the hashmap
                 type = argTypesTkz.GetNextToken();
                 packageFunction->iAddArgType(typeCache[type]);
 
                 // Now add the name, stripping the quotes if
-                // necessary. 
+                // necessary.
                 name = argNamesTkz.GetNextToken();
                 if (!name.IsEmpty())
                 {
                     if (name[0] == '"')
-                        name = name.Mid(1, name.Length()-2);
+                        name = name.Mid(1, name.Length() - 2);
                     packageFunction->iAddArgName(name);
                 }
                 else
@@ -307,12 +307,12 @@ edbPackageFunction *edbPackageFunctionFactory::AppendFunctions(pgObject *obj, ed
                 else
                     packageFunction->iAddArgMode(wxEmptyString);
 
-                // Finally the defaults, as we got them. 
+                // Finally the defaults, as we got them.
                 def = argDefsTkz.GetNextToken();
                 if (!def.IsEmpty() && !def.IsSameAs(wxT("-")))
                 {
                     if (def[0] == '"')
-                        def = def.Mid(1, def.Length()-2);
+                        def = def.Mid(1, def.Length() - 2);
 
                     // Check the cache first - if we don't have a value, get it and cache for next time
                     wxString val = exprCache[def];
@@ -343,13 +343,13 @@ edbPackageFunction *edbPackageFunctionFactory::AppendFunctions(pgObject *obj, ed
             if (browser)
             {
                 browser->AppendObject(obj, packageFunction);
-				packageFunctions->MoveNext();
+                packageFunctions->MoveNext();
             }
             else
                 break;
         }
 
-		delete packageFunctions;
+        delete packageFunctions;
         delete types;
     }
     return packageFunction;
@@ -358,7 +358,7 @@ edbPackageFunction *edbPackageFunctionFactory::AppendFunctions(pgObject *obj, ed
 pgObject *edbPackageFunctionFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
     wxString restr;
-    
+
     if (collection->GetDatabase()->GetConnection()->EdbMinimumVersion(8, 2))
         restr = wxT(" WHERE format_type(prorettype, NULL) != 'void' AND pronamespace = ");
     else
@@ -372,7 +372,7 @@ pgObject *edbPackageFunctionFactory::CreateObjects(pgCollection *collection, ctl
 pgObject *edbPackageProcedureFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
     wxString restr;
-    
+
     if (collection->GetDatabase()->GetConnection()->EdbMinimumVersion(8, 2))
         restr = wxT(" WHERE format_type(prorettype, NULL) = 'void' AND pronamespace = ");
     else
@@ -386,8 +386,8 @@ pgObject *edbPackageProcedureFactory::CreateObjects(pgCollection *collection, ct
 #include "images/function.xpm"
 #include "images/functions.xpm"
 
-edbPackageFunctionFactory::edbPackageFunctionFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img) 
-: edbPackageObjFactory(tn, ns, nls, img)
+edbPackageFunctionFactory::edbPackageFunctionFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img)
+    : edbPackageObjFactory(tn, ns, nls, img)
 {
     metaType = EDB_PACKAGEFUNCTION;
 }
@@ -397,14 +397,14 @@ static pgaCollectionFactory cff(&packageFunctionFactory, __("Functions"), functi
 
 pgCollection *edbPackageObjFactory::CreateCollection(pgObject *obj)
 {
-    return new edbPackageObjCollection(GetCollectionFactory(), (edbPackage*)obj);
+    return new edbPackageObjCollection(GetCollectionFactory(), (edbPackage *)obj);
 }
 
 #include "images/procedure.xpm"
 #include "images/procedures.xpm"
 
-edbPackageProcedureFactory::edbPackageProcedureFactory() 
-: edbPackageFunctionFactory(__("Procedure"), __("New Procedure..."), __("Create a new Procedure."), procedure_xpm)
+edbPackageProcedureFactory::edbPackageProcedureFactory()
+    : edbPackageFunctionFactory(__("Procedure"), __("New Procedure..."), __("Create a new Procedure."), procedure_xpm)
 {
 }
 

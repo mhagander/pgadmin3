@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -48,16 +48,16 @@ END_EVENT_TABLE();
 
 dlgProperty *pgRuleFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgRule(this, frame, (pgRule*)node, (pgTable*)parent);
+    return new dlgRule(this, frame, (pgRule *)node, (pgTable *)parent);
 }
 
 
 
 dlgRule::dlgRule(pgaFactory *f, frmMain *frame, pgRule *node, pgTable *tab)
-: dlgProperty(f, frame, wxT("dlgRule"))
+    : dlgProperty(f, frame, wxT("dlgRule"))
 {
-    table=tab;
-    rule=node;
+    table = tab;
+    rule = node;
 }
 
 
@@ -73,17 +73,17 @@ int dlgRule::Go(bool modal)
     {
         // edit mode
 
-        oldDefinition=rule->GetFormattedDefinition();
+        oldDefinition = rule->GetFormattedDefinition();
         if (!oldDefinition.IsEmpty())
         {
-            int doPos=oldDefinition.Find(wxT(" DO INSTEAD "));
+            int doPos = oldDefinition.Find(wxT(" DO INSTEAD "));
             if (doPos > 0)
                 oldDefinition = oldDefinition.Mid(doPos + 12).Strip(wxString::both);
             else
             {
                 doPos = oldDefinition.Find(wxT(" DO "));
                 if (doPos > 0)
-                    oldDefinition = oldDefinition.Mid(doPos+4).Strip(wxString::both);
+                    oldDefinition = oldDefinition.Mid(doPos + 4).Strip(wxString::both);
             }
         }
         chkDoInstead->SetValue(rule->GetDoInstead());
@@ -104,9 +104,9 @@ int dlgRule::Go(bool modal)
 
 pgObject *dlgRule::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=ruleFactory.CreateObjects(collection, 0, 
-        wxT("\n   AND rulename=") + qtDbString(GetName()) +
-        wxT("\n   AND rw.ev_class=") + table->GetOidStr());
+    pgObject *obj = ruleFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND rulename=") + qtDbString(GetName()) +
+                    wxT("\n   AND rw.ev_class=") + table->GetOidStr());
     return obj;
 }
 
@@ -135,20 +135,20 @@ bool dlgRule::didChange()
 
 void dlgRule::CheckChange()
 {
-    wxString name=GetName();
+    wxString name = GetName();
     if (rule)
     {
         EnableOK(didChange() || txtSqlBox->GetText() != oldDefinition || txtComment->GetValue() != rule->GetComment());
     }
     else
     {
-        wxString name=GetName();
+        wxString name = GetName();
 
-        bool enable=true;
+        bool enable = true;
 
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
         CheckValid(enable, rbxEvent->GetSelection() >= 0,
-                    _("Please select at an event."));
+                   _("Please select at an event."));
         CheckValid(enable, !txtSqlBox->GetTextLength() || txtSqlBox->GetTextLength() > 6 , _("Please enter function definition."));
 
         EnableOK(enable);
@@ -158,21 +158,21 @@ void dlgRule::CheckChange()
 
 wxString dlgRule::GetSql()
 {
-    wxString sql, name=GetName();
+    wxString sql, name = GetName();
 
 
     if (!rule || didChange())
     {
         sql += wxT("CREATE OR REPLACE RULE ") + qtIdent(name)
-            + wxT(" AS\n   ON ") + rbxEvent->GetStringSelection()
-            + wxT(" TO ") + table->GetQuotedFullIdentifier();
+               + wxT(" AS\n   ON ") + rbxEvent->GetStringSelection()
+               + wxT(" TO ") + table->GetQuotedFullIdentifier();
         AppendIfFilled(sql, wxT("\n   WHERE ") , txtCondition->GetValue());
 
         sql += wxT("\n   DO ");
 
         if (chkDoInstead->GetValue())
             sql += wxT("INSTEAD ");
-    
+
         if (txtSqlBox->GetTextLength())
         {
             sql += wxT("\n") + txtSqlBox->GetText().Strip(wxString::both);
@@ -184,8 +184,8 @@ wxString dlgRule::GetSql()
 
         sql += wxT("\n");
     }
-    AppendComment(sql, wxT("RULE ") + qtIdent(name) 
-        + wxT(" ON ") + table->GetQuotedFullIdentifier(), rule);
+    AppendComment(sql, wxT("RULE ") + qtIdent(name)
+                  + wxT(" ON ") + table->GetQuotedFullIdentifier(), rule);
     return sql;
 }
 

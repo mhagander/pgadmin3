@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -30,7 +30,7 @@
 
 dlgProperty *pgLanguageFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgLanguage(this, frame, (pgLanguage*)node);
+    return new dlgLanguage(this, frame, (pgLanguage *)node);
 }
 
 
@@ -43,9 +43,9 @@ END_EVENT_TABLE();
 
 
 dlgLanguage::dlgLanguage(pgaFactory *f, frmMain *frame, pgLanguage *node)
-: dlgSecurityProperty(f, frame, node, wxT("dlgLanguage"), wxT("USAGE"), "U")
+    : dlgSecurityProperty(f, frame, node, wxT("dlgLanguage"), wxT("USAGE"), "U")
 {
-    language=node;
+    language = node;
 }
 
 
@@ -70,7 +70,7 @@ int dlgLanguage::Go(bool modal)
         chkTrusted->SetValue(language->GetTrusted());
         cbHandler->Append(language->GetHandlerProc());
         cbHandler->SetSelection(0);
-        wxString val=language->GetValidatorProc();
+        wxString val = language->GetValidatorProc();
         if (!val.IsEmpty())
         {
             cbValidator->Append(val);
@@ -89,11 +89,11 @@ int dlgLanguage::Go(bool modal)
         // create mode
         if (connection->BackendMinimumVersion(8, 1))
         {
-            pgSetIterator languages(connection, 
-                wxT("SELECT tmplname FROM pg_pltemplate\n")
-                wxT("  LEFT JOIN pg_language ON tmplname=lanname\n")
-                wxT(" WHERE lanname IS NULL\n")
-                wxT(" ORDER BY tmplname"));
+            pgSetIterator languages(connection,
+                                    wxT("SELECT tmplname FROM pg_pltemplate\n")
+                                    wxT("  LEFT JOIN pg_language ON tmplname=lanname\n")
+                                    wxT(" WHERE lanname IS NULL\n")
+                                    wxT(" ORDER BY tmplname"));
 
             while (languages.RowsLeft())
                 cbName->Append(languages.GetVal(wxT("tmplname")));
@@ -105,12 +105,12 @@ int dlgLanguage::Go(bool modal)
             cbName->Delete(0);
         }
         cbValidator->Append(wxT(""));
-        pgSet *set=connection->ExecuteSet(
-            wxT("SELECT nspname, proname, prorettype\n")
-            wxT("  FROM pg_proc p\n")
-            wxT("  JOIN pg_namespace nsp ON nsp.oid=pronamespace\n")
-            wxT(" WHERE prorettype=2280 OR (prorettype=") + NumToStr(PGOID_TYPE_VOID) +
-            wxT(" AND proargtypes[0]=") + NumToStr(PGOID_TYPE_LANGUAGE_HANDLER) + wxT(")"));
+        pgSet *set = connection->ExecuteSet(
+                         wxT("SELECT nspname, proname, prorettype\n")
+                         wxT("  FROM pg_proc p\n")
+                         wxT("  JOIN pg_namespace nsp ON nsp.oid=pronamespace\n")
+                         wxT(" WHERE prorettype=2280 OR (prorettype=") + NumToStr(PGOID_TYPE_VOID) +
+                         wxT(" AND proargtypes[0]=") + NumToStr(PGOID_TYPE_LANGUAGE_HANDLER) + wxT(")"));
         if (set)
         {
             while (!set->Eof())
@@ -135,9 +135,9 @@ int dlgLanguage::Go(bool modal)
 
 pgObject *dlgLanguage::CreateObject(pgCollection *collection)
 {
-    wxString name=cbName->wxComboBox::GetValue();
+    wxString name = cbName->wxComboBox::GetValue();
 
-    pgObject *obj=languageFactory.CreateObjects(collection, 0, wxT("\n   AND lanname ILIKE ") + qtDbString(name));
+    pgObject *obj = languageFactory.CreateObjects(collection, 0, wxT("\n   AND lanname ILIKE ") + qtDbString(name));
     return obj;
 }
 
@@ -157,19 +157,19 @@ void dlgLanguage::OnChangeName(wxCommandEvent &ev)
 
 void dlgLanguage::CheckChange()
 {
-    bool didChange=true;
-    wxString name=cbName->wxComboBox::GetValue();
+    bool didChange = true;
+    wxString name = cbName->wxComboBox::GetValue();
     if (language)
     {
         didChange = name != language->GetName()
-          || txtComment->GetValue() != language->GetComment()
-          || (connection->BackendMinimumVersion(8, 3) && cbOwner->GetValue() != language->GetOwner());
+                    || txtComment->GetValue() != language->GetComment()
+                    || (connection->BackendMinimumVersion(8, 3) && cbOwner->GetValue() != language->GetOwner());
         EnableOK(didChange);
     }
     else
     {
 
-        bool enable=true;
+        bool enable = true;
         bool useTemplate = (cbName->FindString(name) >= 0);
 
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
@@ -183,14 +183,14 @@ void dlgLanguage::CheckChange()
 wxString dlgLanguage::GetSql()
 {
     wxString sql, name;
-    name=cbName->wxComboBox::GetValue();
+    name = cbName->wxComboBox::GetValue();
 
     if (language)
     {
         // edit mode
         if (name != language->GetName())
-            sql += wxT("ALTER LANGUAGE ") + qtIdent(language->GetName()) 
-                +  wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
+            sql += wxT("ALTER LANGUAGE ") + qtIdent(language->GetName())
+                   +  wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n");
         if (connection->BackendMinimumVersion(8, 3))
             AppendOwnerChange(sql, wxT("LANGUAGE ") + qtIdent(name));
     }

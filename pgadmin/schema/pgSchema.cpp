@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -42,15 +42,15 @@
 
 #include "wx/regex.h"
 
-pgSchema::pgSchema(const wxString& newName)
-: pgSchemaBase(schemaFactory, newName)
+pgSchema::pgSchema(const wxString &newName)
+    : pgSchemaBase(schemaFactory, newName)
 {
 }
 
 wxString pgSchema::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -67,11 +67,11 @@ wxString pgSchema::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop schema \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop schema \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop schema cascaded?");
@@ -112,15 +112,15 @@ wxString pgSchema::GetTranslatedMessage(int kindOfMessage) const
     return message;
 }
 
-pgCatalog::pgCatalog(const wxString& newName)
-: pgSchemaBase(catalogFactory, newName)
+pgCatalog::pgCatalog(const wxString &newName)
+    : pgSchemaBase(catalogFactory, newName)
 {
 }
 
 wxString pgCatalog::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -164,8 +164,8 @@ wxString pgCatalog::GetTranslatedMessage(int kindOfMessage) const
     return message;
 }
 
-pgSchemaBase::pgSchemaBase(pgaFactory &factory, const wxString& newName)
-: pgDatabaseObject(factory, newName)
+pgSchemaBase::pgSchemaBase(pgaFactory &factory, const wxString &newName)
+    : pgDatabaseObject(factory, newName)
 {
 }
 
@@ -190,7 +190,7 @@ wxString pgCatalog::GetDisplayName()
 
 wxMenu *pgSchemaBase::GetNewMenu()
 {
-    wxMenu *menu=pgObject::GetNewMenu();
+    wxMenu *menu = pgObject::GetNewMenu();
 
     if (GetCreatePrivilege())
     {
@@ -275,12 +275,12 @@ wxString pgSchemaBase::GetSql(ctlTree *browser)
             sql = wxT("-- Schema: ") + GetName() + wxT("\n\n");
 
         sql += wxT("-- DROP SCHEMA ") + GetQuotedFullIdentifier() + wxT(";")
-            + wxT("\n\nCREATE SCHEMA ") + strName
-            + wxT("\n  AUTHORIZATION ") + qtIdent(GetOwner());
+               + wxT("\n\nCREATE SCHEMA ") + strName
+               + wxT("\n  AUTHORIZATION ") + qtIdent(GetOwner());
         sql += wxT(";\n\n");
 
         sql += GetGrant(wxT("UC"), wxT("SCHEMA ") + GetQuotedFullIdentifier())
-            + GetCommentSql();
+               + GetCommentSql();
 
         sql += wxT("\n") + pgDatabase::GetDefaultPrivileges('r', m_defPrivsOnTables, strName);
         sql += pgDatabase::GetDefaultPrivileges('S', m_defPrivsOnSeqs, strName);
@@ -298,7 +298,7 @@ void pgSchemaBase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
 
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
 
@@ -347,7 +347,7 @@ void pgSchemaBase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
                     browser->AppendCollection(this, operatorFamilyFactory);
             }
 
-            if (settings->GetDisplayOption(_("Packages")) && GetConnection()->EdbMinimumVersion(8,1))
+            if (settings->GetDisplayOption(_("Packages")) && GetConnection()->EdbMinimumVersion(8, 1))
                 browser->AppendCollection(this, packageFactory);
 
             if (settings->GetDisplayOption(_("Procedures")))
@@ -402,8 +402,8 @@ void pgSchemaBase::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *
 
 pgObject *pgSchemaBase::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *schema=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *schema = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
     {
         if (coll->IsCollectionForType(PGM_CATALOG))
@@ -419,10 +419,10 @@ pgObject *pgSchemaBase::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgSchemaBaseFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgSchema *schema=0;
-    pgCatalog *catalog=0;
+    pgSchema *schema = 0;
+    pgCatalog *catalog = 0;
 
-    wxString restr=restriction;
+    wxString restr = restriction;
 
     if (restr.IsEmpty())
         restr += wxT(" WHERE ");
@@ -452,7 +452,7 @@ pgObject *pgSchemaBaseFactory::CreateObjects(pgCollection *collection, ctlTree *
     if (!collection->GetDatabase()->GetSchemaRestriction().IsEmpty())
         restr += wxT("  AND nspname IN (") + collection->GetDatabase()->GetSchemaRestriction() + wxT(")");
 
-    // Don't fetch temp schemas if not actually required, as Greenplum seems to 
+    // Don't fetch temp schemas if not actually required, as Greenplum seems to
     // generate thousands in some circumstances.
     if (!settings->GetShowSystemObjects())
     {
@@ -501,8 +501,8 @@ pgObject *pgSchemaBaseFactory::CreateObjects(pgCollection *collection, ctlTree *
     {
         while (!schemas->Eof())
         {
-            wxString name=schemas->GetVal(wxT("nspname"));
-            long nsptyp=schemas->GetLong(wxT("nsptyp"));
+            wxString name = schemas->GetVal(wxT("nspname"));
+            long nsptyp = schemas->GetLong(wxT("nsptyp"));
 
             wxStringTokenizer tokens(settings->GetSystemSchemas(), wxT(","));
             while (tokens.HasMoreTokens())
@@ -601,11 +601,11 @@ pgObject *pgSchemaBase::ReadObjects(pgCollection *collection, ctlTree *browser)
 /////////////////////////////////////////////////////
 
 pgSchemaObjCollection::pgSchemaObjCollection(pgaFactory *factory, pgSchema *sch)
-: pgCollection(factory)
-{ 
+    : pgCollection(factory)
+{
     schema = sch;
     database = schema->GetDatabase();
-    server= database->GetServer();
+    server = database->GetServer();
     iSetOid(sch->GetOid());
 }
 
@@ -613,7 +613,7 @@ pgSchemaObjCollection::pgSchemaObjCollection(pgaFactory *factory, pgSchema *sch)
 wxString pgSchemaObjCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -626,7 +626,7 @@ wxString pgSchemaObjCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Schemas list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -637,7 +637,7 @@ bool pgSchemaObjCollection::CanCreate()
 
     // TODO
     // OK, this is a hack. Rules and Views are both derived from pgRuleObject, which
-    // is derived from pgSchemaObject. In order that they attach to the treeview 
+    // is derived from pgSchemaObject. In order that they attach to the treeview
     // under the relevant node however, the Schema object is actually the table or
     // View (yeah, I know - I didn't write it :-p ). This works fine *except* for
     // Get CreatePrivilege() which doesn't exist in these classes so must be fixed
@@ -654,7 +654,7 @@ bool pgSchemaObjCollection::CanCreate()
 wxString pgCatalogObjCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -667,7 +667,7 @@ wxString pgCatalogObjCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Catalogs list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -679,27 +679,27 @@ wxString pgCatalogObjCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/catalog-sm.xpm"
 #include "images/catalogs.xpm"
 
-pgSchemaBaseFactory::pgSchemaBaseFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img, const char **imgSm) 
-: pgDatabaseObjFactory(tn, ns, nls, img, imgSm)
+pgSchemaBaseFactory::pgSchemaBaseFactory(const wxChar *tn, const wxChar *ns, const wxChar *nls, const char **img, const char **imgSm)
+    : pgDatabaseObjFactory(tn, ns, nls, img, imgSm)
 {
 
 }
 
-pgSchemaFactory::pgSchemaFactory() 
-: pgSchemaBaseFactory(__("Schema"), __("New Schema..."), __("Create a new Schema."), namespace_xpm, namespace_sm_xpm)
+pgSchemaFactory::pgSchemaFactory()
+    : pgSchemaBaseFactory(__("Schema"), __("New Schema..."), __("Create a new Schema."), namespace_xpm, namespace_sm_xpm)
 {
     metaType = PGM_SCHEMA;
 }
 
-pgCatalogFactory::pgCatalogFactory() 
-: pgSchemaBaseFactory(__("Catalog"), __("New Catalog..."), __("Create a new Catalog."), catalog_xpm, catalog_sm_xpm)
+pgCatalogFactory::pgCatalogFactory()
+    : pgSchemaBaseFactory(__("Catalog"), __("New Catalog..."), __("Create a new Catalog."), catalog_xpm, catalog_sm_xpm)
 {
     metaType = PGM_CATALOG;
 }
 
 pgCollection *pgSchemaObjFactory::CreateCollection(pgObject *obj)
 {
-    return new pgSchemaObjCollection(GetCollectionFactory(), (pgSchema*)obj);
+    return new pgSchemaObjCollection(GetCollectionFactory(), (pgSchema *)obj);
 }
 
 

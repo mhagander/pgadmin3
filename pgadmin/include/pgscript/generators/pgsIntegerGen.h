@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,95 +21,95 @@ class pgsIntegerGen : public pgsObjectGen
 
 private:
 
-	class pgsSequentialIntGen : public pgsNumberGen
-	{
+    class pgsSequentialIntGen : public pgsNumberGen
+    {
+
+    private:
+
+        MAPM m_state;
+        MAPM m_m;
+
+        static const MAPM arg_a;
+        static const MAPM arg_c;
+
+        MAPM m_remainder;
+
+        pgsVectorMapm m_buffer;
+
+    public:
+
+        pgsSequentialIntGen(const MAPM &range, const long &seed);
+
+        virtual MAPM random();
+
+        virtual ~pgsSequentialIntGen();
+
+        virtual pgsNumberGen *clone();
+
+        /* pgsSequentialIntGen & operator =(const pgsSequentialIntGen & that); */
+
+        /* pgsSequentialIntGen(const pgsSequentialIntGen & that); */
+    };
+
+    class pgsNormalIntGen : public pgsNumberGen
+    {
+
+    private:
+
+        MAPM m_state;
+        MAPM m_top;
+
+        static const MAPM arg_a;
+        static const MAPM arg_c;
+        static const MAPM arg_m;
+
+    public:
+
+        pgsNormalIntGen(const MAPM &range, const long &seed);
+
+        virtual MAPM random();
+
+        virtual ~pgsNormalIntGen();
+
+        virtual pgsNumberGen *clone();
+
+        /* pgsNormalIntGen & operator =(const pgsNormalIntGen & that); */
+
+        /* pgsNormalIntGen(const pgsNormalIntGen & that); */
+    };
+
+    friend class pgsRealGen;
 
 private:
 
-		MAPM m_state;
-		MAPM m_m;
+    typedef pgsCopiedPtr<pgsNumberGen> pgsRandomizer; // Needs a clone() method
 
-		static const MAPM arg_a;
-		static const MAPM arg_c;
+    MAPM m_min;
+    MAPM m_max;
+    MAPM m_range;
 
-		MAPM m_remainder;
+    bool m_sequence;
 
-		pgsVectorMapm m_buffer;
-
-public:
-
-		pgsSequentialIntGen(const MAPM & range, const long & seed);
-
-		virtual MAPM random();
-
-		virtual ~pgsSequentialIntGen();
-
-		virtual pgsNumberGen * clone();
-
-		/* pgsSequentialIntGen & operator =(const pgsSequentialIntGen & that); */
-
-		/* pgsSequentialIntGen(const pgsSequentialIntGen & that); */
-	};
-
-	class pgsNormalIntGen : public pgsNumberGen
-	{
-
-private:
-
-		MAPM m_state;
-		MAPM m_top;
-
-		static const MAPM arg_a;
-		static const MAPM arg_c;
-		static const MAPM arg_m;
+    pgsRandomizer m_randomizer;
 
 public:
 
-		pgsNormalIntGen(const MAPM & range, const long & seed);
+    pgsIntegerGen(const MAPM &min, const MAPM &max,
+                  const bool &sequence = false, const long &seed = wxDateTime::GetTimeNow());
 
-		virtual MAPM random();
+    bool is_sequence() const;
 
-		virtual ~pgsNormalIntGen();
+    virtual wxString random();
 
-		virtual pgsNumberGen * clone();
+    long random_long();
 
-		/* pgsNormalIntGen & operator =(const pgsNormalIntGen & that); */
+    virtual ~pgsIntegerGen();
 
-		/* pgsNormalIntGen(const pgsNormalIntGen & that); */
-	};
+    virtual pgsIntegerGen *clone();
 
-	friend class pgsRealGen;
+    /* pgsIntegerGen & operator =(const pgsIntegerGen & that); */
 
-private:
-
-	typedef pgsCopiedPtr<pgsNumberGen> pgsRandomizer; // Needs a clone() method
-
-	MAPM m_min;
-	MAPM m_max;
-	MAPM m_range;
-
-	bool m_sequence;
-
-	pgsRandomizer m_randomizer;
-
-public:
-
-	pgsIntegerGen(const MAPM & min, const MAPM & max,
-			const bool & sequence = false, const long & seed = wxDateTime::GetTimeNow());
-
-	bool is_sequence() const;
-
-	virtual wxString random();
-
-	long random_long();
-
-	virtual ~pgsIntegerGen();
-	
-	virtual pgsIntegerGen * clone();
-
-	/* pgsIntegerGen & operator =(const pgsIntegerGen & that); */
-
-	/* pgsIntegerGen(const pgsIntegerGen & that); */
+    /* pgsIntegerGen(const pgsIntegerGen & that); */
 };
 
 #endif /*PGSINTEGERGEN_H_*/

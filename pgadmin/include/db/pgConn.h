@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,7 +22,7 @@
 #include "pgSet.h"
 
 // status enums
-enum 
+enum
 {
     PGCONN_OK = CONNECTION_OK,
     PGCONN_BAD = CONNECTION_BAD,
@@ -32,7 +32,7 @@ enum
     PGCONN_BROKEN       // tcp/pipe broken
 };
 
-enum 
+enum
 {
     PGCONN_EMPTY_QUERY = PGRES_EMPTY_QUERY,
     PGCONN_COMMAND_OK = PGRES_COMMAND_OK,
@@ -54,14 +54,16 @@ enum
 };
 
 // Our version of a pgNotify
-typedef struct pgNotification {
+typedef struct pgNotification
+{
     wxString name;
     int pid;
     wxString data;
 } pgNotification;
 
 // An error record
-typedef struct pgError {
+typedef struct pgError
+{
     wxString severity;
     wxString sql_state;
     wxString msg_primary;
@@ -81,68 +83,137 @@ typedef struct pgError {
 class pgConn
 {
 public:
-    pgConn(const wxString& server = wxT(""), const wxString& database = wxT(""), const wxString& username = wxT(""), const wxString& password = wxT(""), int port = 5432, const wxString& rolename = wxT(""), int sslmode=0, OID oid=0, const wxString& applicationname = wxT("pgAdmin"));
+    pgConn(const wxString &server = wxT(""), const wxString &database = wxT(""), const wxString &username = wxT(""), const wxString &password = wxT(""), int port = 5432, const wxString &rolename = wxT(""), int sslmode = 0, OID oid = 0, const wxString &applicationname = wxT("pgAdmin"));
     ~pgConn();
 
     bool HasPrivilege(const wxString &objTyp, const wxString &objName, const wxString &priv);
-    bool HasFeature(int feature=0);
+    bool HasFeature(int feature = 0);
     bool BackendMinimumVersion(int major, int minor);
     bool BackendMinimumVersion(int major, int minor, int patch);
     bool EdbMinimumVersion(int major, int minor);
     wxString SystemNamespaceRestriction(const wxString &nsp);
-    int GetMajorVersion() const { return majorVersion; }
-    int GetMinorVersion() const { return minorVersion; }
+    int GetMajorVersion() const
+    {
+        return majorVersion;
+    }
+    int GetMinorVersion() const
+    {
+        return minorVersion;
+    }
     bool GetIsEdb();
     bool GetIsGreenplum();
     wxString EncryptPassword(const wxString &user, const wxString &password);
-    wxString qtDbString(const wxString& value);
+    wxString qtDbString(const wxString &value);
     pgConn *Duplicate();
 
     static void ExamineLibpqVersion();
-    static double GetLibpqVersion() { return libpqVersion; }
+    static double GetLibpqVersion()
+    {
+        return libpqVersion;
+    }
 
-    static bool IsValidServerEncoding(int encid) { return pg_valid_server_encoding_id(encid) == 0 ? false : true; }
+    static bool IsValidServerEncoding(int encid)
+    {
+        return pg_valid_server_encoding_id(encid) == 0 ? false : true;
+    }
 
     void Close();
-	bool Reconnect();
-    bool ExecuteVoid(const wxString& sql, bool reportError = true);
-    wxString ExecuteScalar(const wxString& sql);
-    pgSet *ExecuteSet(const wxString& sql);
-    wxString GetUser() const { return wxString(PQuser(conn), *conv); }
-    wxString GetPassword() const { return wxString(PQpass(conn), *conv); }
-    wxString GetRole() const { return dbRole; }
-    wxString GetHost() const { return dbHost; }
-    wxString GetHostName() const { return dbHostName; }
-    wxString GetDbname() const { return save_database; }
-    wxString GetApplicationName() const { return save_applicationname; }
+    bool Reconnect();
+    bool ExecuteVoid(const wxString &sql, bool reportError = true);
+    wxString ExecuteScalar(const wxString &sql);
+    pgSet *ExecuteSet(const wxString &sql);
+    wxString GetUser() const
+    {
+        return wxString(PQuser(conn), *conv);
+    }
+    wxString GetPassword() const
+    {
+        return wxString(PQpass(conn), *conv);
+    }
+    wxString GetRole() const
+    {
+        return dbRole;
+    }
+    wxString GetHost() const
+    {
+        return dbHost;
+    }
+    wxString GetHostName() const
+    {
+        return dbHostName;
+    }
+    wxString GetDbname() const
+    {
+        return save_database;
+    }
+    wxString GetApplicationName() const
+    {
+        return save_applicationname;
+    }
     wxString GetName() const;
-    bool GetNeedUtfConnectString() { return utfConnectString; }
-    int GetPort() const { return atoi(PQport(conn)); };
-    wxString GetTTY() const { return wxString(PQtty(conn), *conv); }
-    wxString GetOptions() const { return wxString(PQoptions(conn), *conv); }
-    int GetSslMode() const { return save_sslmode; }
+    bool GetNeedUtfConnectString()
+    {
+        return utfConnectString;
+    }
+    int GetPort() const
+    {
+        return atoi(PQport(conn));
+    };
+    wxString GetTTY() const
+    {
+        return wxString(PQtty(conn), *conv);
+    }
+    wxString GetOptions() const
+    {
+        return wxString(PQoptions(conn), *conv);
+    }
+    int GetSslMode() const
+    {
+        return save_sslmode;
+    }
     wxString GetSslModeName();
-    int GetBackendPID() const { return PQbackendPID(conn); }
+    int GetBackendPID() const
+    {
+        return PQbackendPID(conn);
+    }
     int GetStatus() const;
-    int GetLastResultStatus() const { return lastResultStatus; }
+    int GetLastResultStatus() const
+    {
+        return lastResultStatus;
+    }
     bool IsAlive();
     wxString GetLastError() const;
-    pgError GetLastResultError() const { return lastResultError; }
+    pgError GetLastResultError() const
+    {
+        return lastResultError;
+    }
     wxString GetVersionString();
-    OID GetLastSystemOID() const { return lastSystemOID; }
-    OID GetDbOid() const { return dbOid; }
+    OID GetLastSystemOID() const
+    {
+        return lastSystemOID;
+    }
+    OID GetDbOid() const
+    {
+        return dbOid;
+    }
     void RegisterNoticeProcessor(PQnoticeProcessor proc, void *arg);
-    wxMBConv *GetConv() { return conv; };
+    wxMBConv *GetConv()
+    {
+        return conv;
+    };
 
-    void LogError(const bool quiet=false);
+    void LogError(const bool quiet = false);
 
     bool IsSSLconnected();
-    PGconn *connection() { return conn; }
+    PGconn *connection()
+    {
+        return conn;
+    }
     void Notice(const char *msg);
     pgNotification *GetNotification();
     int GetTxStatus();
 
-    bool TableHasColumn(wxString schemaname, wxString tblname, const wxString& colname);
+    bool TableHasColumn(wxString schemaname, wxString tblname, const wxString &colname);
 
 protected:
     PGconn *conn;
@@ -166,9 +237,9 @@ protected:
     friend class pgQueryThread;
 
 private:
-	bool DoConnect();
-	
-    wxString qtString(const wxString& value);
+    bool DoConnect();
+
+    wxString qtString(const wxString &value);
 
     bool features[32];
     int minorVersion, majorVersion, patchVersion;
@@ -176,8 +247,8 @@ private:
     bool isGreenplum;
 
     wxString reservedNamespaces;
-	wxString connstr;
-	
+    wxString connstr;
+
     wxString save_server, save_database, save_username, save_password, save_rolename, save_applicationname;
     int save_port, save_sslmode;
     OID save_oid;

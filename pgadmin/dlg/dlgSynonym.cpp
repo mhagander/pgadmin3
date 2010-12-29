@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -30,12 +30,12 @@
 
 dlgProperty *edbSynonymFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgSynonym(this, frame, (edbSynonym*)node);
+    return new dlgSynonym(this, frame, (edbSynonym *)node);
 }
 
 dlgProperty *edbPrivateSynonymFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgSynonym(this, frame, (edbPrivateSynonym*)node, (pgSchema*)parent);
+    return new dlgSynonym(this, frame, (edbPrivateSynonym *)node, (pgSchema *)parent);
 }
 
 
@@ -49,11 +49,11 @@ END_EVENT_TABLE();
 
 
 dlgSynonym::dlgSynonym(pgaFactory *f, frmMain *frame, edbSynonym *node)
-: dlgProperty(f, frame, wxT("dlgSynonym"))
+    : dlgProperty(f, frame, wxT("dlgSynonym"))
 {
-    synonym=node;
-    privSynonym=NULL;
-    synonymSchema=NULL;
+    synonym = node;
+    privSynonym = NULL;
+    synonymSchema = NULL;
     cbOwner->Disable();
 
     cbTargetType->Append(_("Sequence"));
@@ -62,12 +62,12 @@ dlgSynonym::dlgSynonym(pgaFactory *f, frmMain *frame, edbSynonym *node)
     cbTargetType->Append(_("View"));
 }
 
-dlgSynonym::dlgSynonym(edbPrivateSynonymFactory *factory, frmMain *frame, edbPrivateSynonym *syn, pgSchema* schema)
-: dlgProperty((pgaFactory*)factory, frame, wxT("dlgSynonym"))
+dlgSynonym::dlgSynonym(edbPrivateSynonymFactory *factory, frmMain *frame, edbPrivateSynonym *syn, pgSchema *schema)
+    : dlgProperty((pgaFactory *)factory, frame, wxT("dlgSynonym"))
 {
-    synonym=NULL;
-    privSynonym=syn;
-    synonymSchema=schema;
+    synonym = NULL;
+    privSynonym = syn;
+    synonymSchema = schema;
     cbOwner->Disable();
 
     cbTargetType->Append(_("Sequence"));
@@ -133,12 +133,12 @@ pgObject *dlgSynonym::CreateObject(pgCollection *collection)
 {
     pgObject *obj = NULL;
     if (!synonymSchema)
-        obj=synonymFactory.CreateObjects(collection, 0,
-              wxT(" WHERE synname = ") + qtDbString(GetName()));
+        obj = synonymFactory.CreateObjects(collection, 0,
+                                           wxT(" WHERE synname = ") + qtDbString(GetName()));
     else
-        obj=edbPrivFactory.CreateObjects(collection, 0,
-              wxT(" WHERE s.synname=") + qtDbString(GetName()) +
-              wxT(" AND s.synnamespace=") + collection->GetSchema()->GetOidStr() + wxT(" \n"));
+        obj = edbPrivFactory.CreateObjects(collection, 0,
+                                           wxT(" WHERE s.synname=") + qtDbString(GetName()) +
+                                           wxT(" AND s.synnamespace=") + collection->GetSchema()->GetOidStr() + wxT(" \n"));
 
     return obj;
 }
@@ -146,7 +146,7 @@ pgObject *dlgSynonym::CreateObject(pgCollection *collection)
 
 void dlgSynonym::CheckChange()
 {
-    bool enable=true;
+    bool enable = true;
     CheckValid(enable, !txtName->GetValue().IsEmpty(), _("Please specify name."));
     CheckValid(enable, !cbTargetType->GetValue().IsEmpty(), _("Please select target type."));
     // Public Synonyms does supported in public only

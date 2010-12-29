@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -24,7 +24,11 @@ class pgSettingItem;
 class pgConfigLine
 {
 public:
-    pgConfigLine() { item=0; isComment=false; }
+    pgConfigLine()
+    {
+        item = 0;
+        isComment = false;
+    }
 
     pgConfigLine(pgConfigLine *line);
 
@@ -40,7 +44,10 @@ public:
 class pgConfigOrgLine : public pgConfigLine
 {
 public:
-    pgConfigOrgLine(const wxString str) : pgConfigLine()  {text=str;}
+    pgConfigOrgLine(const wxString str) : pgConfigLine()
+    {
+        text = str;
+    }
     pgConfigOrgLine(pgConfigLine *line);
     wxString GetNewText();
 
@@ -51,7 +58,7 @@ public:
 class pgHbaConfigLine
 {
 public:
-    pgHbaConfigLine(const wxString &line=wxEmptyString);
+    pgHbaConfigLine(const wxString &line = wxEmptyString);
     wxString GetText();
     const wxChar *GetConnectType();
     const wxChar *GetMethod();
@@ -59,7 +66,7 @@ public:
 
     enum pgHbaConnectType
     {
-        PGC_LOCAL=0,
+        PGC_LOCAL = 0,
         PGC_HOST,
         PGC_HOSTSSL,
         PGC_HOSTNOSSL,
@@ -67,7 +74,7 @@ public:
     };
     enum pgHbaMethod
     {
-        PGC_TRUST=0,
+        PGC_TRUST = 0,
         PGC_REJECT,
         PGC_MD5,
         PGC_CRYPT,
@@ -97,16 +104,16 @@ public:
 class pgPassConfigLine
 {
 public:
-	pgPassConfigLine(const wxString &line=wxEmptyString);
-	wxString GetText();
-	void Init(const wxString &line);
+    pgPassConfigLine(const wxString &line = wxEmptyString);
+    wxString GetText();
+    void Init(const wxString &line);
 
-	wxString text;
-	wxString hostname,port,database,username,password;
+    wxString text;
+    wxString hostname, port, database, username, password;
 
-	long item;
+    long item;
 
-	bool isComment;
+    bool isComment;
 };
 
 
@@ -115,7 +122,7 @@ class pgSettingItem
 public:
     enum pgConfigType
     {
-        PGC_BOOL=0,
+        PGC_BOOL = 0,
         PGC_INT,
         PGC_REAL,
         PGC_STRING
@@ -123,7 +130,7 @@ public:
 
     enum pgConfigContext
     {
-        PGC_INTERNAL=0,
+        PGC_INTERNAL = 0,
         PGC_POSTMASTER,
         PGC_SIGHUP,
         PGC_BACKEND,
@@ -135,7 +142,7 @@ public:
 
     enum pgConfigSource
     {
-        PGC_DEFAULT=0,
+        PGC_DEFAULT = 0,
         PGC_ENVIRONMENT,
         PGC_FILE,
         PGC_ARGV,
@@ -150,8 +157,17 @@ public:
         PGC_UNKNOWNSOURCE
     };
 
-    pgSettingItem() { orgLine=0; newLine=0; source=PGC_UNKNOWNSOURCE; context = PGC_UNKNOWNCONTEXT; }
-    ~pgSettingItem() {if (newLine) delete newLine; }
+    pgSettingItem()
+    {
+        orgLine = 0;
+        newLine = 0;
+        source = PGC_UNKNOWNSOURCE;
+        context = PGC_UNKNOWNCONTEXT;
+    }
+    ~pgSettingItem()
+    {
+        if (newLine) delete newLine;
+    }
 
     void SetType(const wxString &str);
     void SetContext(const wxString &str);
@@ -175,8 +191,8 @@ public:
 
 
 
-WX_DECLARE_HASH_MAP(wxString, pgSettingItem*, wxStringHash, wxStringEqual, pgSettingItemHashmap);
-WX_DECLARE_HASH_MAP(wxString, wxArrayString*, wxStringHash, wxStringEqual, pgCategoryHashmap);
+WX_DECLARE_HASH_MAP(wxString, pgSettingItem *, wxStringHash, wxStringEqual, pgSettingItemHashmap);
+WX_DECLARE_HASH_MAP(wxString, wxArrayString *, wxStringHash, wxStringEqual, pgCategoryHashmap);
 
 class pgSettingReader
 {
@@ -196,7 +212,10 @@ class pgSettingFileReader : public pgSettingReader
 public:
     pgSettingFileReader(bool localized);
     ~pgSettingFileReader();
-    virtual bool IsValid() { return !buffer.IsEmpty(); }
+    virtual bool IsValid()
+    {
+        return !buffer.IsEmpty();
+    }
     virtual pgSettingItem *GetNextItem();
 };
 
@@ -209,7 +228,10 @@ public:
     pgSettingDbReader(pgConn *conn);
     ~pgSettingDbReader();
 
-    virtual bool IsValid() { return set != NULL; }
+    virtual bool IsValid()
+    {
+        return set != NULL;
+    }
     virtual pgSettingItem *GetNextItem();
 };
 

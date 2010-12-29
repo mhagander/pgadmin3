@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -30,14 +30,14 @@ public:
     wxString GetDatabase();
     wxString GetRole();
     bool IsReassign();
-    
+
 private:
     pgConn *connection;
     frmMain *parent;
-    
-	void OnOK(wxCommandEvent& ev);
-    void OnCancel(wxCommandEvent& ev);
-	void OnChange(wxCommandEvent &ev);
+
+    void OnOK(wxCommandEvent &ev);
+    void OnCancel(wxCommandEvent &ev);
+    void OnChange(wxCommandEvent &ev);
     DECLARE_EVENT_TABLE()
 };
 

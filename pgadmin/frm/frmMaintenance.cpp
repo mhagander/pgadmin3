@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -78,18 +78,24 @@ frmMaintenance::~frmMaintenance()
 wxString frmMaintenance::GetHelpPage() const
 {
     wxString page;
-    switch ((XRCCTRL(*(frmMaintenance*)this, "rbxAction", wxRadioBox))->GetSelection())
+    switch ((XRCCTRL(*(frmMaintenance *)this, "rbxAction", wxRadioBox))->GetSelection())
     {
-        case 0: page = wxT("pg/sql-vacuum"); break;
-        case 1: page = wxT("pg/sql-analyze"); break;
-        case 2: page = wxT("pg/sql-reindex"); break;
+        case 0:
+            page = wxT("pg/sql-vacuum");
+            break;
+        case 1:
+            page = wxT("pg/sql-analyze");
+            break;
+        case 2:
+            page = wxT("pg/sql-reindex");
+            break;
     }
     return page;
 }
 
 
 
-void frmMaintenance::OnAction(wxCommandEvent& ev)
+void frmMaintenance::OnAction(wxCommandEvent &ev)
 {
     bool isVacuum = (rbxAction->GetSelection() == 0);
     chkFull->Enable(isVacuum);
@@ -114,7 +120,7 @@ wxString frmMaintenance::GetSql()
     {
         case 0:
         {
-            sql=wxT("VACUUM ");
+            sql = wxT("VACUUM ");
 
             if (chkFull->GetValue())
                 sql += wxT("FULL ");
@@ -127,7 +133,7 @@ wxString frmMaintenance::GetSql()
 
             if (object->GetMetaType() != PGM_DATABASE)
                 sql += object->GetQuotedFullIdentifier();
-            
+
             break;
         }
         case 1:
@@ -135,7 +141,7 @@ wxString frmMaintenance::GetSql()
             sql = wxT("ANALYZE ");
             if (chkVerbose->GetValue())
                 sql += wxT("VERBOSE ");
-            
+
             if (object->GetMetaType() != PGM_DATABASE)
                 sql += object->GetQuotedFullIdentifier();
 
@@ -150,7 +156,7 @@ wxString frmMaintenance::GetSql()
             else // Database, Tables, and Index (but not Constraintes ones)
             {
                 sql = wxT("REINDEX ") + object->GetTypeName().Upper()
-                    + wxT(" ") + object->GetQuotedFullIdentifier();
+                      + wxT(" ") + object->GetQuotedFullIdentifier();
             }
             break;
         }
@@ -178,7 +184,7 @@ maintenanceFactory::maintenanceFactory(menuFactoryList *list, wxMenu *mnu, ctlMe
 
 wxWindow *maintenanceFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmMaintenance *frm=new frmMaintenance(form, obj);
+    frmMaintenance *frm = new frmMaintenance(form, obj);
     frm->Go();
     return 0;
 }

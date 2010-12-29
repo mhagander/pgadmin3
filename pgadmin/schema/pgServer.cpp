@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -40,29 +40,29 @@
 
 #define DEFAULT_PG_DATABASE wxT("postgres")
 
-pgServer::pgServer(const wxString& newName, const wxString& newDescription, const wxString& newDatabase, const wxString& newUsername, int newPort, bool _storePwd, const wxString& newRolename, bool _restore, int _ssl, const wxString &_colour, const wxString &_group)
-: pgObject(serverFactory, newName)
-{  
+pgServer::pgServer(const wxString &newName, const wxString &newDescription, const wxString &newDatabase, const wxString &newUsername, int newPort, bool _storePwd, const wxString &newRolename, bool _restore, int _ssl, const wxString &_colour, const wxString &_group)
+    : pgObject(serverFactory, newName)
+{
     description = newDescription;
     database = newDatabase;
     username = newUsername;
     port = newPort;
-    ssl=_ssl;
+    ssl = _ssl;
     colour = _colour;
     group = _group;
 
-	serverIndex=0;
+    serverIndex = 0;
 
     connected = false;
     lastSystemOID = 0;
 
     conn = NULL;
-    passwordValid=true;
-    storePwd=_storePwd;
+    passwordValid = true;
+    storePwd = _storePwd;
     rolename = newRolename;
-    restore=_restore;
-    superUser=false;
-    createPrivilege=false;
+    restore = _restore;
+    superUser = false;
+    createPrivilege = false;
 #ifdef WIN32
     scmHandle = 0;
     serviceHandle = 0;
@@ -86,7 +86,7 @@ pgServer::~pgServer()
 wxString pgServer::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -139,10 +139,10 @@ int pgServer::GetIconId()
 
 wxMenu *pgServer::GetNewMenu()
 {
-    wxMenu *menu=0;
+    wxMenu *menu = 0;
     if (connected && (GetSuperUser() || GetCreateRole()))
     {
-        menu=new wxMenu();
+        menu = new wxMenu();
         if (settings->GetDisplayOption(_("Tablespaces")))
             tablespaceFactory.AppendMenu(menu);
         if (GetConnection()->BackendMinimumVersion(8, 1))
@@ -171,7 +171,7 @@ wxMenu *pgServer::GetNewMenu()
 pgServer *pgServer::GetServer() const
 {
     if (connected)
-        return (pgServer*)this;
+        return (pgServer *)this;
     return 0;
 }
 
@@ -186,7 +186,7 @@ pgConn *pgServer::CreateConn(wxString dbName, OID oid, wxString applicationname)
         dbName = GetDatabaseName();
         oid = dbOid;
     }
-    pgConn *conn=new pgConn(GetName(), dbName, username, password, port, rolename, ssl, oid, applicationname);
+    pgConn *conn = new pgConn(GetName(), dbName, username, password, port, rolename, ssl, oid, applicationname);
 
     if (conn && conn->GetStatus() != PGCONN_OK)
     {
@@ -201,12 +201,12 @@ pgConn *pgServer::CreateConn(wxString dbName, OID oid, wxString applicationname)
 wxString pgServer::GetFullName()
 {
     if (GetDescription().Length() > 0)
-      return GetDescription() + wxT(" (") + GetIdentifier() + wxT(")");
+        return GetDescription() + wxT(" (") + GetIdentifier() + wxT(")");
     else
-      return wxT("(") + GetIdentifier() + wxT(")");
+        return wxT("(") + GetIdentifier() + wxT(")");
 }
 
-wxString pgServer::GetFullIdentifier() 
+wxString pgServer::GetFullIdentifier()
 {
     return GetFullName();
 }
@@ -216,9 +216,9 @@ bool pgServer::Disconnect(frmMain *form)
     if (conn)
     {
         delete conn;
-        conn=0;
-        connected=false;
-        expandedKids=false;
+        conn = 0;
+        connected = false;
+        expandedKids = false;
         ver = wxT("");
         versionNum = wxT("");
         lastSystemOID = 0;
@@ -240,15 +240,15 @@ void pgServer::ShowHint(frmMain *form, bool force)
 
     if (!autovacuumRunning)
         hints.Add(HINT_AUTOVACUUM);
-    
+
     if (force || !hintShown)
         frmHint::ShowHint(form, hints, GetFullIdentifier(), force);
-    hintShown=true;
+    hintShown = true;
 }
 
 
 #define SERVICEBUFSIZE  10000
-#define QUERYBUFSIZE    256     
+#define QUERYBUFSIZE    256
 
 #ifdef WIN32
 wxArrayString pgServer::GetDependentServices(SC_HANDLE handle)
@@ -256,18 +256,18 @@ wxArrayString pgServer::GetDependentServices(SC_HANDLE handle)
     wxArrayString services;
     LPENUM_SERVICE_STATUS sbuf = (LPENUM_SERVICE_STATUS) new char[SERVICEBUFSIZE];
 
-    DWORD servicesReturned=0, bytesNeeded;
+    DWORD servicesReturned = 0, bytesNeeded;
     ::EnumDependentServices(handle, SERVICE_STATE_ALL, sbuf, SERVICEBUFSIZE, &bytesNeeded, &servicesReturned);
 
 
     DWORD i;
-    for (i=0 ; i < servicesReturned ; i++)
+    for (i = 0 ; i < servicesReturned ; i++)
     {
-        SC_HANDLE h=::OpenService(scmHandle, sbuf[i].lpServiceName, SERVICE_QUERY_CONFIG);
+        SC_HANDLE h =::OpenService(scmHandle, sbuf[i].lpServiceName, SERVICE_QUERY_CONFIG);
         if (h)
         {
             char buffer[QUERYBUFSIZE];
-            LPQUERY_SERVICE_CONFIG qsc=(LPQUERY_SERVICE_CONFIG)buffer;
+            LPQUERY_SERVICE_CONFIG qsc = (LPQUERY_SERVICE_CONFIG)buffer;
             if(::QueryServiceConfig(h, qsc, QUERYBUFSIZE, &bytesNeeded))
             {
                 if (qsc->dwStartType != SERVICE_DISABLED)
@@ -286,7 +286,7 @@ wxArrayString pgServer::GetDependentServices(SC_HANDLE handle)
 
 bool pgServer::StartService()
 {
-    bool done=false;
+    bool done = false;
 #ifdef WIN32
     if (serviceHandle)
     {
@@ -301,45 +301,45 @@ bool pgServer::StartService()
             }
             // report error
             wxLogError(__("Failed to start server %s: Errcode=%d\nCheck event log for details."),
-                serviceId.c_str(), rc);
+                       serviceId.c_str(), rc);
         }
         else
         {
             GetServerRunning();     // ignore result, just to wait for startup
 
-            wxArrayString services=GetDependentServices(serviceHandle);
+            wxArrayString services = GetDependentServices(serviceHandle);
 
             if (services.GetCount() > 0)
             {
                 size_t i;
                 wxString serviceString;
-                for (i=0 ; i < services.GetCount() ; i++)
+                for (i = 0 ; i < services.GetCount() ; i++)
                     serviceString += wxT("   ") + services.Item(i) + wxT("\n");
 
                 wxMessageDialog msg(0, _("There are dependent services configured:\n\n")
-                        + serviceString + _("\nStart dependent services too?"), _("Dependent services"),
-                            wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT);
-                
+                                    + serviceString + _("\nStart dependent services too?"), _("Dependent services"),
+                                    wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT);
+
                 if (msg.ShowModal() == wxID_YES)
                 {
-                    for (i=0 ; i < services.GetCount() ; i++)
+                    for (i = 0 ; i < services.GetCount() ; i++)
                     {
-                        SC_HANDLE h=::OpenService(scmHandle, services.Item(i), GENERIC_EXECUTE|GENERIC_READ);
+                        SC_HANDLE h =::OpenService(scmHandle, services.Item(i), GENERIC_EXECUTE | GENERIC_READ);
                         if (h)
                         {
                             if (!::StartService(h, 0, 0))
-                                done=false;
+                                done = false;
                             CloseServiceHandle(h);
                         }
                         else
-                            done=false;
+                            done = false;
                     }
                     if (!done)
                     {
                         wxMessageDialog msg(0, _("One or more dependent services didn't start; see the eventlog for details."), _("Service start problem"),
-                                    wxICON_EXCLAMATION |wxOK);
+                                            wxICON_EXCLAMATION | wxOK);
                         msg.ShowModal();
-                        done=true;
+                        done = true;
                     }
                 }
             }
@@ -355,7 +355,7 @@ bool pgServer::StartService()
 
 bool pgServer::StopService()
 {
-    bool done=false;
+    bool done = false;
 #ifdef WIN32
     if (serviceHandle)
     {
@@ -367,34 +367,34 @@ bool pgServer::StopService()
             if (::GetLastError() == ERROR_DEPENDENT_SERVICES_RUNNING)
             {
                 LPENUM_SERVICE_STATUS sbuf = (LPENUM_SERVICE_STATUS) new char[SERVICEBUFSIZE];
-                DWORD bytesNeeded, servicesReturned=0;
+                DWORD bytesNeeded, servicesReturned = 0;
                 ::EnumDependentServices(serviceHandle, SERVICE_ACTIVE, sbuf, SERVICEBUFSIZE, &bytesNeeded, &servicesReturned);
-                
-                done=true;
+
+                done = true;
 
                 if (servicesReturned)
                 {
                     DWORD i;
                     wxString services;
-                    for (i=0 ; i < servicesReturned ; i++)
+                    for (i = 0 ; i < servicesReturned ; i++)
                         services += wxT("   ") + wxString(sbuf[i].lpDisplayName) + wxT("\n");
 
                     wxMessageDialog msg(0, _("There are dependent services running:\n\n")
-                            + services + _("\nStop dependent services?"), _("Dependent services"),
-                                wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT);
+                                        + services + _("\nStop dependent services?"), _("Dependent services"),
+                                        wxICON_EXCLAMATION | wxYES_NO | wxYES_DEFAULT);
                     if (msg.ShowModal() != wxID_YES)
                         return false;
 
-                    for (i=0 ; done && i < servicesReturned ; i++)
+                    for (i = 0 ; done && i < servicesReturned ; i++)
                     {
-                        SC_HANDLE h=::OpenService(scmHandle, sbuf[i].lpServiceName, GENERIC_EXECUTE|GENERIC_READ);
+                        SC_HANDLE h =::OpenService(scmHandle, sbuf[i].lpServiceName, GENERIC_EXECUTE | GENERIC_READ);
                         if (h)
                         {
                             done = (::ControlService(h, SERVICE_CONTROL_STOP, &st) != 0);
                             CloseServiceHandle(h);
                         }
                         else
-                            done=false;
+                            done = false;
                     }
                     if (done)
                     {
@@ -416,7 +416,7 @@ bool pgServer::StopService()
 
             if (!done)
                 wxLogError(__("Failed to stop server %s: Errcode=%d\nCheck event log for details."),
-                    serviceId.c_str(), ::GetLastError());
+                           serviceId.c_str(), ::GetLastError());
         }
     }
 #else
@@ -429,22 +429,22 @@ bool pgServer::StopService()
 
 bool pgServer::GetServerRunning()
 {
-    bool done=false;
+    bool done = false;
 #ifdef WIN32
     if (serviceHandle)
     {
         SERVICE_STATUS st;
         int loops;
 
-        for (loops=0 ; loops < 20 ; loops++)
+        for (loops = 0 ; loops < 20 ; loops++)
         {
             if (::QueryServiceStatus(serviceHandle, &st) == 0)
             {
                 DWORD rc = ::GetLastError();
                 CloseServiceHandle(serviceHandle);
                 CloseServiceHandle(scmHandle);
-                serviceHandle=0;
-                scmHandle=0;
+                serviceHandle = 0;
+                scmHandle = 0;
 
                 return false;
             }
@@ -465,17 +465,17 @@ bool pgServer::GetServerRunning()
 }
 
 
-void pgServer::iSetServiceID(const wxString& s)
+void pgServer::iSetServiceID(const wxString &s)
 {
     serviceId = s;
 #ifdef WIN32
     if (serviceId.Find('\\') < 0)
         scmHandle = OpenSCManager(0, SERVICES_ACTIVE_DATABASE, GENERIC_EXECUTE);
     else
-        scmHandle = OpenSCManager(wxT("\\\\") + serviceId.BeforeFirst('\\'), SERVICES_ACTIVE_DATABASE, GENERIC_EXECUTE|GENERIC_READ);
+        scmHandle = OpenSCManager(wxT("\\\\") + serviceId.BeforeFirst('\\'), SERVICES_ACTIVE_DATABASE, GENERIC_EXECUTE | GENERIC_READ);
 
     if (scmHandle)
-        serviceHandle=OpenService(scmHandle, serviceId.AfterLast('\\'), GENERIC_EXECUTE|GENERIC_READ);
+        serviceHandle = OpenService(scmHandle, serviceId.AfterLast('\\'), GENERIC_EXECUTE | GENERIC_READ);
 #endif
 }
 
@@ -502,7 +502,7 @@ wxString pgServer::passwordFilename()
 
 bool pgServer::GetPasswordIsStored()
 {
-    wxString fname=passwordFilename();
+    wxString fname = passwordFilename();
 
 
     if (!wxFile::Exists(fname))
@@ -517,17 +517,17 @@ bool pgServer::GetPasswordIsStored()
 
         wxStringTokenizer lines(before, wxT("\n\r"));
 
-        wxString seekStr= GetName() + wxT(":") 
-                        + NumToStr((long)GetPort()) + wxT(":*:") 
-                        + username + wxT(":") ;
+        wxString seekStr = GetName() + wxT(":")
+                           + NumToStr((long)GetPort()) + wxT(":*:")
+                           + username + wxT(":") ;
 
-        wxString seekStr2= wxString(GetName().mb_str(wxConvUTF8), wxConvLibc) + wxT(":") 
-                        + NumToStr((long)GetPort()) + wxT(":*:") 
-                        + wxString(username.mb_str(wxConvUTF8), wxConvLibc) + wxT(":") ;
+        wxString seekStr2 = wxString(GetName().mb_str(wxConvUTF8), wxConvLibc) + wxT(":")
+                            + NumToStr((long)GetPort()) + wxT(":*:")
+                            + wxString(username.mb_str(wxConvUTF8), wxConvLibc) + wxT(":") ;
 
         while (lines.HasMoreTokens())
         {
-            wxString str=lines.GetNextToken();
+            wxString str = lines.GetNextToken();
             if (str.Left(seekStr.Length()) == seekStr)
                 return true;
 
@@ -535,14 +535,14 @@ bool pgServer::GetPasswordIsStored()
                 return true;
         }
     }
-    
+
     return false;
 }
 
 
 void pgServer::StorePassword()
 {
-    wxString fname=passwordFilename();
+    wxString fname = passwordFilename();
 
     wxUtfFile file;
     if (!wxFile::Exists(fname))
@@ -564,34 +564,34 @@ void pgServer::StorePassword()
 
         wxString passwd;
         wxString seekStr;
-        
+
         if (GetConnection()->GetNeedUtfConnectString())
         {
             passwd = wxString(password.mb_str(wxConvUTF8), wxConvLibc);
-            seekStr = wxString(GetName().mb_str(wxConvUTF8), wxConvLibc) + wxT(":") 
-                    + NumToStr((long)GetPort()) + wxT(":*:") 
-                    + wxString(username.mb_str(wxConvUTF8), wxConvLibc) + wxT(":") ;
+            seekStr = wxString(GetName().mb_str(wxConvUTF8), wxConvLibc) + wxT(":")
+                      + NumToStr((long)GetPort()) + wxT(":*:")
+                      + wxString(username.mb_str(wxConvUTF8), wxConvLibc) + wxT(":") ;
         }
         else
         {
             passwd = password;
-            seekStr = GetName() + wxT(":") 
-                    + NumToStr((long)GetPort()) + wxT(":*:") 
-                    + username + wxT(":") ;
+            seekStr = GetName() + wxT(":")
+                      + NumToStr((long)GetPort()) + wxT(":*:")
+                      + username + wxT(":") ;
         }
 
         file.Read(before);
         wxStringTokenizer lines(before, wxT("\n\r"));
 
         file.Seek(0);
-        bool found=false;
+        bool found = false;
         while (lines.HasMoreTokens())
         {
-            wxString str=lines.GetNextToken();
+            wxString str = lines.GetNextToken();
             if (str.Left(seekStr.Length()) == seekStr)
             {
                 // entry found
-                found=true;
+                found = true;
                 if (storePwd)
                     file.Write(seekStr + passwd + END_OF_LINE);
             }
@@ -605,7 +605,7 @@ void pgServer::StorePassword()
     }
 }
 
-    
+
 int pgServer::Connect(frmMain *form, bool askPassword, const wxString &pwd, bool forceStorePassword)
 {
     wxLogInfo(wxT("Attempting to create a connection object..."));
@@ -617,7 +617,7 @@ int pgServer::Connect(frmMain *form, bool askPassword, const wxString &pwd, bool
         if (conn)
         {
             delete conn;
-            conn=0;
+            conn = 0;
         }
         if (askPassword)
         {
@@ -665,14 +665,14 @@ int pgServer::Connect(frmMain *form, bool askPassword, const wxString &pwd, bool
         {
             conn = new pgConn(GetName(), DEFAULT_PG_DATABASE, username, password, port, rolename, ssl, 0, appearanceFactory->GetLongAppName() + _(" - Browser"));
             if (conn->GetStatus() == PGCONN_OK)
-                database=DEFAULT_PG_DATABASE;
+                database = DEFAULT_PG_DATABASE;
             else if (conn->GetStatus() == PGCONN_BAD && conn->GetLastError().Find(
-                                wxT("database \"") DEFAULT_PG_DATABASE wxT("\" does not exist")) >= 0)
+                         wxT("database \"") DEFAULT_PG_DATABASE wxT("\" does not exist")) >= 0)
             {
                 delete conn;
                 conn = new pgConn(GetName(), wxT("template1"), username, password, port, rolename, ssl, 0, appearanceFactory->GetLongAppName() + _(" - Browser"));
                 if (conn && conn->GetStatus() == PGCONN_OK)
-                    database=wxT("template1");
+                    database = wxT("template1");
             }
         }
         else
@@ -693,25 +693,25 @@ int pgServer::Connect(frmMain *form, bool askPassword, const wxString &pwd, bool
 
         // Check the server version
         if (!(conn->BackendMinimumVersion(SERVER_MIN_VERSION_N >> 8, SERVER_MIN_VERSION_N & 0x00FF)) ||
-            (conn->BackendMinimumVersion(SERVER_MAX_VERSION_N >> 8, (SERVER_MAX_VERSION_N & 0x00FF) + 1))) 
-            wxLogWarning(_("The server you are connecting to is not a version that is supported by this release of %s.\n\n%s may not function as expected.\n\nSupported server versions are %s to %s."), 
-                            appearanceFactory->GetLongAppName().c_str(), 
-                            appearanceFactory->GetLongAppName().c_str(), 
-                            wxString(SERVER_MIN_VERSION_T).c_str(), 
-                            wxString(SERVER_MAX_VERSION_T).c_str());
+                (conn->BackendMinimumVersion(SERVER_MAX_VERSION_N >> 8, (SERVER_MAX_VERSION_N & 0x00FF) + 1)))
+            wxLogWarning(_("The server you are connecting to is not a version that is supported by this release of %s.\n\n%s may not function as expected.\n\nSupported server versions are %s to %s."),
+                         appearanceFactory->GetLongAppName().c_str(),
+                         appearanceFactory->GetLongAppName().c_str(),
+                         wxString(SERVER_MIN_VERSION_T).c_str(),
+                         wxString(SERVER_MAX_VERSION_T).c_str());
 
         connected = true;
-        bool hasUptime=false;
+        bool hasUptime = false;
 
         wxString sql = wxT("SELECT usecreatedb, usesuper");
         if (conn->BackendMinimumVersion(8, 1))
         {
-            hasUptime=true;
+            hasUptime = true;
             sql += wxT(", CASE WHEN usesuper THEN pg_postmaster_start_time() ELSE NULL END as upsince");
         }
         else if (conn->HasFeature(FEATURE_POSTMASTER_STARTTIME))
         {
-            hasUptime=true;
+            hasUptime = true;
             sql += wxT(", CASE WHEN usesuper THEN pg_postmaster_starttime() ELSE NULL END as upsince");
         }
         if (conn->BackendMinimumVersion(8, 4))
@@ -729,7 +729,7 @@ int pgServer::Connect(frmMain *form, bool askPassword, const wxString &pwd, bool
             sql += wxT(", CASE WHEN usesuper THEN pg_last_xact_replay_timestamp() ELSE NULL END as replay_timestamp");
         }
 
-        pgSet *set=ExecuteSet(sql + wxT("\n  FROM pg_user WHERE usename=current_user"));
+        pgSet *set = ExecuteSet(sql + wxT("\n  FROM pg_user WHERE usename=current_user"));
         if (set)
         {
             iSetCreatePrivilege(set->GetBool(wxT("usecreatedb")));
@@ -753,7 +753,7 @@ int pgServer::Connect(frmMain *form, bool askPassword, const wxString &pwd, bool
 
         if (conn->BackendMinimumVersion(8, 1))
         {
-            set=ExecuteSet(wxT("SELECT rolcreaterole, rolcreatedb FROM pg_roles WHERE rolname = current_user;"));
+            set = ExecuteSet(wxT("SELECT rolcreaterole, rolcreatedb FROM pg_roles WHERE rolname = current_user;"));
 
             if (set)
             {
@@ -826,12 +826,12 @@ wxString pgServer::GetVersionNumber()
     {
         if (versionNum.IsEmpty())
         {
-            int major=0, minor=0;
+            int major = 0, minor = 0;
             sscanf(GetVersionString().ToAscii(), "%*s %d.%d", &major, &minor);
             versionNum.Printf(wxT("%d.%d"), major, minor);
         }
 
-    } 
+    }
     return versionNum;
 }
 
@@ -849,7 +849,7 @@ OID pgServer::GetLastSystemOID()
 }
 
 
-bool pgServer::SetPassword(const wxString& newVal)
+bool pgServer::SetPassword(const wxString &newVal)
 {
     wxString sql;
     sql.Printf(wxT("ALTER USER %s WITH ENCRYPTED PASSWORD %s;"), qtIdent(username).c_str(), qtDbString(conn->EncryptPassword(username, newVal)).c_str());
@@ -878,12 +878,12 @@ wxString pgServer::GetLastError() const
             }
             else
             {
-                msg=error;
+                msg = error;
             }
         }
         else
         {
-            msg=conn->GetLastError();
+            msg = conn->GetLastError();
         }
     }
     return msg;
@@ -901,11 +901,11 @@ void pgServer::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
 
         if (!expandedKids)
         {
-            expandedKids=true;
+            expandedKids = true;
             // Log
-            
+
             wxLogInfo(wxT("Adding child object to server %s"), GetIdentifier().c_str());
-    
+
             if (settings->GetDisplayOption(_("Databases")))
                 browser->AppendCollection(this, databaseFactory);
 
@@ -917,8 +917,8 @@ void pgServer::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
             if (settings->GetDisplayOption(_("pgAgent Jobs")))
             {
                 wxString exists = conn->ExecuteScalar(
-                    wxT("SELECT cl.oid FROM pg_class cl JOIN pg_namespace ns ON ns.oid=relnamespace\n")
-                    wxT(" WHERE relname='pga_job' AND nspname='pgagent'"));
+                                      wxT("SELECT cl.oid FROM pg_class cl JOIN pg_namespace ns ON ns.oid=relnamespace\n")
+                                      wxT(" WHERE relname='pga_job' AND nspname='pgagent'"));
 
                 if (!exists.IsNull())
                 {
@@ -949,7 +949,7 @@ void pgServer::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
                     browser->AppendCollection(this, userFactory);
             }
 
-            autovacuumRunning=true;
+            autovacuumRunning = true;
 
             wxString qry;
             if (conn->BackendMinimumVersion(8, 3))
@@ -985,8 +985,8 @@ void pgServer::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
 #ifdef SSL
             if (GetConnected())
             {
-                properties->AppendItem(_("Encryption"), 
-                    conn->IsSSLconnected() ? _("SSL encrypted") : _("not encrypted"));
+                properties->AppendItem(_("Encryption"),
+                                       conn->IsSSLconnected() ? _("SSL encrypted") : _("not encrypted"));
             }
             else
             {
@@ -995,12 +995,24 @@ void pgServer::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
                     wxString sslMode;
                     switch (ssl)
                     {
-                        case 1: sslMode = _("require"); break;
-                        case 2: sslMode = _("prefer"); break;
-                        case 3: sslMode = _("allow"); break;
-                        case 4: sslMode = _("disable"); break;
-						case 5: sslMode = _("verify-ca"); break;
-						case 6: sslMode = _("verify-full"); break;
+                        case 1:
+                            sslMode = _("require");
+                            break;
+                        case 2:
+                            sslMode = _("prefer");
+                            break;
+                        case 3:
+                            sslMode = _("allow");
+                            break;
+                        case 4:
+                            sslMode = _("disable");
+                            break;
+                        case 5:
+                            sslMode = _("verify-ca");
+                            break;
+                        case 6:
+                            sslMode = _("verify-full");
+                            break;
                     }
                     properties->AppendItem(_("SSL Mode"), sslMode);
                 }
@@ -1029,15 +1041,15 @@ void pgServer::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prop
                 properties->AppendItem(_("Up since"), GetUpSince());
             if (GetConfLoadedSince().IsValid())
                 properties->AppendItem(_("Configuration loaded since"), GetConfLoadedSince());
-            if (conn->BackendMinimumVersion(8,1))
+            if (conn->BackendMinimumVersion(8, 1))
                 properties->AppendItem(wxT("Autovacuum"), (autovacuumRunning ? _("running") : _("not running")));
-            if (conn->BackendMinimumVersion(8,5))
+            if (conn->BackendMinimumVersion(8, 5))
             {
                 properties->AppendItem(_("In recovery"), (GetInRecovery() ? _("yes") : _("no")));
                 properties->AppendItem(_("Last XLOG receive location"), GetReceiveLoc());
                 properties->AppendItem(_("Last XLOG replay location"), GetReplayLoc());
             }
-            if (conn->BackendMinimumVersion(9,1))
+            if (conn->BackendMinimumVersion(9, 1))
             {
                 properties->AppendItem(_("Last XACT replay timestamp"), GetReplayTimestamp());
             }
@@ -1080,17 +1092,17 @@ void pgServer::ShowStatistics(frmMain *form, ctlListView *statistics)
         pgSet *stats = ExecuteSet(wxT("SELECT * FROM pg_stat_activity"));
         if (stats)
         {
-            int pos=0;
+            int pos = 0;
             while (!stats->Eof())
             {
                 statistics->InsertItem(pos, stats->GetVal(wxT("procpid")), 0);
-                int colpos=1;
+                int colpos = 1;
                 statistics->SetItem(pos, colpos++, stats->GetVal(wxT("usename")));
                 statistics->SetItem(pos, colpos++, stats->GetVal(wxT("datname")));
                 if (GetConnection()->BackendMinimumVersion(8, 1))
                 {
                     statistics->SetItem(pos, colpos++, stats->GetVal(wxT("backend_start")));
-                    wxString client=stats->GetVal(wxT("client_addr")) + wxT(":") + stats->GetVal(wxT("client_port"));
+                    wxString client = stats->GetVal(wxT("client_addr")) + wxT(":") + stats->GetVal(wxT("client_port"));
                     if (client == wxT(":-1"))
                         client = _("local pipe");
                     statistics->SetItem(pos, colpos++, client);
@@ -1131,7 +1143,7 @@ bool pgServer::ReloadConfiguration()
 
 
 pgServerCollection::pgServerCollection(pgaFactory *factory)
- : pgCollection(factory)
+    : pgCollection(factory)
 {
 }
 
@@ -1139,7 +1151,7 @@ pgServerCollection::pgServerCollection(pgaFactory *factory)
 wxString pgServerCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -1152,13 +1164,13 @@ wxString pgServerCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Servers list report");
             break;
     }
-    
+
     return message;
 }
 
 
 pgServerObjCollection::pgServerObjCollection(pgaFactory *factory, pgServer *sv)
-: pgCollection(factory)
+    : pgCollection(factory)
 {
     server = sv;
 }
@@ -1196,17 +1208,17 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
     wxTreeItemIdValue groupcookie;
     bool found;
 
-    long numServers=settings->Read(wxT("Servers/Count"), 0L);
+    long numServers = settings->Read(wxT("Servers/Count"), 0L);
 
-    long loop, port, ssl=0;
+    long loop, port, ssl = 0;
     wxString key, servername, description, database, username, lastDatabase, lastSchema, storePwd, rolename, restore, serviceID, discoveryID, dbRestriction, colour, group;
-    pgServer *server=0;
+    pgServer *server = 0;
 
     wxArrayString discoveredServers;
 
     // Get the hostname for later...
     char buf[255];
-    gethostname(buf, 255); 
+    gethostname(buf, 255);
     wxString hostname = wxString(buf, wxConvUTF8);
 
     //wxLogError(wxT("Loading previously registered servers"));
@@ -1215,7 +1227,7 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
     for (loop = 1; loop <= numServers; ++loop)
     {
         key.Printf(wxT("Servers/%d/"), loop);
-        
+
         settings->Read(key + wxT("Server"), &servername, wxEmptyString);
         settings->Read(key + wxT("ServiceID"), &serviceID, wxEmptyString);
         settings->Read(key + wxT("DiscoveryID"), &discoveryID, serviceID);
@@ -1304,11 +1316,11 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
             discoveredServers.Add(discoveryID);
     }
 
-	group = _("Servers");
+    group = _("Servers");
 
 #ifdef __WXMSW__
 
-    // Add local servers. Will currently only work on Win32 with >= BETA3 
+    // Add local servers. Will currently only work on Win32 with >= BETA3
     // of the Win32 PostgreSQL installer.
     wxLogInfo(wxT("Loading servers registered on the local machine"));
 
@@ -1337,7 +1349,7 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
         while (flag != false)
         {
             svcName = svcKey->GetKeyName();
-            // On Windows, the discovery ID is always the service name. 
+            // On Windows, the discovery ID is always the service name.
             // Only load the server if we didn't load it with all the others.
             if (discoveredServers.Index(svcName, false) < 0)
             {
@@ -1401,22 +1413,22 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
     // Add local servers on non-Win32 platforms (on Win32, they will be picked up above)
 #ifndef WIN32
 
-    // On Unix/Mac, the discovery ID can be anything. We use the PostgreSQL 
-    // package config filename if it's present, as that is the only thing vaguely 
+    // On Unix/Mac, the discovery ID can be anything. We use the PostgreSQL
+    // package config filename if it's present, as that is the only thing vaguely
     // discoverable and unique to a given installation. We can do the same for
-    // other distros in the future if they drop a suitable file someplace. 
+    // other distros in the future if they drop a suitable file someplace.
     // Look for any files that match the basic postgres*.ini pattern.
 
     wxLogInfo(wxT("Loading servers registered on the local machine"));
-    
+
     if (wxFile::Exists(REGISTRY_FILE))
     {
         wxString version, locale;
         long cookie;
-        
+
         wxFileInputStream fst(REGISTRY_FILE);
         wxFileConfig *cnf = new wxFileConfig(fst);
-        
+
         // PostgreSQL servers
         cnf->SetPath(wxT("/PostgreSQL"));
         bool flag = cnf->GetFirstGroup(version, cookie);
@@ -1428,48 +1440,48 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
                 // Only load this server if we haven't read it from the pgAdmin config
                 if (discoveredServers.Index(cnf->GetPath() + wxT("/") + version, false) < 0)
                 {
-                     
+
                     // Basic details
                     servername = wxT("localhost");
                     cnf->Read(version + wxT("/Description"), &description, wxT("PostgreSQL ") + version);
                     cnf->Read(version + wxT("/Superuser"), &username, wxEmptyString);
                     cnf->Read(version + wxT("/Port"), &port, 0);
-                
+
                     // Add the item, if it looks sane
                     if (port != 0 && username != wxEmptyString)
                     {
                         server = new pgServer(servername, description, wxT("postgres"), username, port, false, rolename, 0);
                         server->iSetDiscoveryID(cnf->GetPath() + wxT("/") + version);
                         server->iSetDiscovered(true);
-						server->iSetGroup(group);
-						found = false;
-						if (browser->ItemHasChildren(browser->GetRootItem()))
-						{
-							groupitem = browser->GetFirstChild(browser->GetRootItem(), groupcookie);
-							while (!found && groupitem)
-							{
-								if (browser->GetItemText(groupitem).StartsWith(group))
-									found = true;
-								else
-									groupitem = browser->GetNextChild(browser->GetRootItem(), groupcookie);
-							}
-						}
+                        server->iSetGroup(group);
+                        found = false;
+                        if (browser->ItemHasChildren(browser->GetRootItem()))
+                        {
+                            groupitem = browser->GetFirstChild(browser->GetRootItem(), groupcookie);
+                            while (!found && groupitem)
+                            {
+                                if (browser->GetItemText(groupitem).StartsWith(group))
+                                    found = true;
+                                else
+                                    groupitem = browser->GetNextChild(browser->GetRootItem(), groupcookie);
+                            }
+                        }
 
-						if (!found)
-						{
-							groupitem = browser->AppendItem(browser->GetRootItem(), group, obj->GetIconId());
-							browser->SortChildren(browser->GetRootItem());
-						}
+                        if (!found)
+                        {
+                            groupitem = browser->AppendItem(browser->GetRootItem(), group, obj->GetIconId());
+                            browser->SortChildren(browser->GetRootItem());
+                        }
 
-						browser->AppendItem(groupitem, server->GetFullName(), server->GetIconId(), -1, server);
-						browser->SortChildren(groupitem);
+                        browser->AppendItem(groupitem, server->GetFullName(), server->GetIconId(), -1, server);
+                        browser->SortChildren(groupitem);
                     }
                 }
             }
-            
+
             flag = cnf->GetNextGroup(version, cookie);
         }
-        
+
         // EnterpriseDB servers
         cnf->SetPath(wxT("/EnterpriseDB"));
         flag = cnf->GetFirstGroup(version, cookie);
@@ -1481,13 +1493,13 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
                 // Only load this server if we haven't read it from the pgAdmin config
                 if (discoveredServers.Index(cnf->GetPath() + wxT("/") + version, false) < 0)
                 {
-                    
+
                     // Basic details
                     servername = wxT("localhost");
                     cnf->Read(version + wxT("/Description"), &description, wxT("EnterpriseDB ") + version);
                     cnf->Read(version + wxT("/Superuser"), &username, wxEmptyString);
                     cnf->Read(version + wxT("/Port"), &port, 0);
-                    
+
                     // Add the item, if it looks sane
                     if (port != 0 && username != wxEmptyString)
                     {
@@ -1498,10 +1510,10 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
                     }
                 }
             }
-            
+
             flag = cnf->GetNextGroup(version, cookie);
         }
-    
+
         delete cnf;
         browser->SortChildren(obj->GetId());
     }
@@ -1517,8 +1529,8 @@ pgObject *pgServerFactory::CreateObjects(pgCollection *obj, ctlTree *browser, co
 #include "images/serverbad.xpm"
 #include "images/serverbad-sm.xpm"
 
-pgServerFactory::pgServerFactory() 
-: pgaFactory(__("Server"), __("New Server Registration"), __("Create a new Server registration."), server_xpm, server_sm_xpm)
+pgServerFactory::pgServerFactory()
+    : pgaFactory(__("Server"), __("New Server Registration"), __("Create a new Server registration."), server_xpm, server_sm_xpm)
 {
     metaType = PGM_SERVER;
     closedId = addIcon(serverbad_xpm);
@@ -1532,7 +1544,7 @@ pgCollection *pgServerFactory::CreateCollection(pgObject *obj)
 
 pgCollection *pgServerObjFactory::CreateCollection(pgObject *obj)
 {
-    return new pgServerObjCollection(GetCollectionFactory(), (pgServer*)obj);
+    return new pgServerObjCollection(GetCollectionFactory(), (pgServer *)obj);
 }
 
 pgServerFactory serverFactory;
@@ -1549,7 +1561,7 @@ addServerFactory::addServerFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuTo
 wxWindow *addServerFactory::StartDialog(frmMain *form, pgObject *obj)
 {
     int rc = PGCONN_BAD;
-    
+
     dlgServer dlg(&serverFactory, form, 0);
     dlg.CenterOnParent();
 
@@ -1558,12 +1570,12 @@ wxWindow *addServerFactory::StartDialog(frmMain *form, pgObject *obj)
         if (dlg.GoNew() != wxID_OK)
             return 0;
 
-        pgServer *server=(pgServer*)dlg.CreateObject(0);
+        pgServer *server = (pgServer *)dlg.CreateObject(0);
 
         if (dlg.GetTryConnect())
         {
             wxBusyInfo waiting(wxString::Format(_("Connecting to server %s (%s:%d)"),
-                server->GetDescription().c_str(), server->GetName().c_str(), server->GetPort()), form);
+                                                server->GetDescription().c_str(), server->GetName().c_str(), server->GetPort()), form);
 
             // Give the UI a chance to redraw
             wxSafeYield();
@@ -1655,7 +1667,7 @@ startServiceFactory::startServiceFactory(menuFactoryList *list, wxMenu *mnu, ctl
 
 wxWindow *startServiceFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    pgServer *server= (pgServer*)obj;
+    pgServer *server = (pgServer *)obj;
     form->StartMsg(_("Starting Service"));
     bool rc = server->StartService();
     if (rc)
@@ -1669,7 +1681,7 @@ bool startServiceFactory::CheckEnable(pgObject *obj)
 {
     if (obj && obj->IsCreatedBy(serverFactory))
     {
-        pgServer *server=(pgServer*)obj;
+        pgServer *server = (pgServer *)obj;
         return server->GetServerControllable() && !server->GetServerRunning();
     }
     return false;
@@ -1684,14 +1696,14 @@ stopServiceFactory::stopServiceFactory(menuFactoryList *list, wxMenu *mnu, ctlMe
 
 wxWindow *stopServiceFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    pgServer *server= (pgServer*)obj;
+    pgServer *server = (pgServer *)obj;
     wxMessageDialog msg(form, _("Are you sure you wish to shutdown this server?"),
-            _("Stop Service"), wxYES_NO | wxICON_QUESTION);
+                        _("Stop Service"), wxYES_NO | wxICON_QUESTION);
     if (msg.ShowModal() == wxID_YES)
     {
         form->StartMsg(_("Stopping service"));
 
-        bool done=server->StopService();
+        bool done = server->StopService();
 
         if (done)
         {
@@ -1711,7 +1723,7 @@ bool stopServiceFactory::CheckEnable(pgObject *obj)
 {
     if (obj && obj->IsCreatedBy(serverFactory))
     {
-        pgServer *server=(pgServer*)obj;
+        pgServer *server = (pgServer *)obj;
         return server->GetServerControllable() && server->GetServerRunning();
     }
     return false;
@@ -1735,7 +1747,7 @@ wxWindow *connectServerFactory::StartDialog(frmMain *form, pgObject *obj)
 bool connectServerFactory::CheckEnable(pgObject *obj)
 {
     if (obj && obj->IsCreatedBy(serverFactory))
-        return !((pgServer*)obj)->GetConnected();
+        return !((pgServer *)obj)->GetConnected();
 
     return false;
 }
@@ -1749,7 +1761,7 @@ disconnectServerFactory::disconnectServerFactory(menuFactoryList *list, wxMenu *
 
 wxWindow *disconnectServerFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    pgServer *server=(pgServer*)obj;
+    pgServer *server = (pgServer *)obj;
     server->Disconnect(form);
     server->UpdateIcon(form->GetBrowser());
     form->GetBrowser()->DeleteChildren(obj->GetId());
@@ -1761,7 +1773,7 @@ wxWindow *disconnectServerFactory::StartDialog(frmMain *form, pgObject *obj)
 bool disconnectServerFactory::CheckEnable(pgObject *obj)
 {
     if (obj && obj->IsCreatedBy(serverFactory))
-        return ((pgServer*)obj)->GetConnected();
+        return ((pgServer *)obj)->GetConnected();
 
     return false;
 }
@@ -1774,7 +1786,7 @@ reloadconfServiceFactory::reloadconfServiceFactory(menuFactoryList *list, wxMenu
 
 wxWindow *reloadconfServiceFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    pgServer *server= (pgServer*)obj;
+    pgServer *server = (pgServer *)obj;
     form->StartMsg(_("Reloading configuration"));
     bool rc = server->ReloadConfiguration();
     form->EndMsg(rc);
@@ -1786,7 +1798,7 @@ bool reloadconfServiceFactory::CheckEnable(pgObject *obj)
 {
     if (obj && obj->IsCreatedBy(serverFactory))
     {
-        pgServer *server=(pgServer*)obj;
+        pgServer *server = (pgServer *)obj;
         return server->GetConnected() && server->connection()->BackendMinimumVersion(8, 1);
     }
     return false;

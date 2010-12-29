@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,38 +19,38 @@ class pgsRealGen : public pgsObjectGen
 
 private:
 
-	typedef pgsCopiedPtr<pgsNumberGen> pgsRandomizer; // Needs a clone() method
+    typedef pgsCopiedPtr<pgsNumberGen> pgsRandomizer; // Needs a clone() method
 
-	MAPM m_min;
-	MAPM m_max;
-	MAPM m_range;
+    MAPM m_min;
+    MAPM m_max;
+    MAPM m_range;
 
-	bool m_sequence;
+    bool m_sequence;
 
-	MAPM m_pow;
-	MAPM m_int_max;
+    MAPM m_pow;
+    MAPM m_int_max;
 
-	pgsRandomizer m_randomizer;
+    pgsRandomizer m_randomizer;
 
 public:
 
-	/**
-	 * Builds a new real number generator. Precision cannot be greater that 255.
-	 */
-	pgsRealGen(const MAPM & min, const MAPM & max, const UCHAR & precision,
-			const bool & sequence = false, const long & seed = wxDateTime::GetTimeNow());
+    /**
+     * Builds a new real number generator. Precision cannot be greater that 255.
+     */
+    pgsRealGen(const MAPM &min, const MAPM &max, const UCHAR &precision,
+               const bool &sequence = false, const long &seed = wxDateTime::GetTimeNow());
 
-	bool is_sequence() const;
+    bool is_sequence() const;
 
-	virtual wxString random();
+    virtual wxString random();
 
-	virtual ~pgsRealGen();
-	
-	virtual pgsRealGen * clone();
+    virtual ~pgsRealGen();
 
-	/* pgsRealGen & operator =(const pgsRealGen & that); */
+    virtual pgsRealGen *clone();
 
-	/* pgsRealGen(const pgsRealGen & that); */
+    /* pgsRealGen & operator =(const pgsRealGen & that); */
+
+    /* pgsRealGen(const pgsRealGen & that); */
 };
 
 #endif /*RANDREAL_H_*/

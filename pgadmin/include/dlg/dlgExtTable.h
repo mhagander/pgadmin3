@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgExtTable.h - Greenplum External Table property 
+// dlgExtTable.h - Greenplum External Table property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,10 @@ public:
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
 
-    void SetObject(pgObject *obj) { extTable = (gpExtTable*)obj; }
+    void SetObject(pgObject *obj)
+    {
+        extTable = (gpExtTable *)obj;
+    }
 
 private:
 

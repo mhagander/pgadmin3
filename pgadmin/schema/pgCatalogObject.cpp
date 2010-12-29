@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,15 +19,15 @@
 #include "schema/pgColumn.h"
 
 
-pgCatalogObject::pgCatalogObject(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, catalogObjectFactory, newName)
+pgCatalogObject::pgCatalogObject(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, catalogObjectFactory, newName)
 {
 }
 
 wxString pgCatalogObject::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -79,7 +79,7 @@ void pgCatalogObject::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListVie
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->AppendCollection(this, columnFactory);
     }
@@ -99,8 +99,8 @@ void pgCatalogObject::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListVie
 
 pgObject *pgCatalogObject::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *catalog=0;
-    pgCollection *parent=(pgCollection *)browser->GetItemData(browser->GetItemParent(item));
+    pgObject *catalog = 0;
+    pgCollection *parent = (pgCollection *)browser->GetItemData(browser->GetItemParent(item));
     if (parent)
         catalog = catalogObjectFactory.CreateObjects(parent, 0, wxT("\n AND c.oid=") + GetOidStr());
 
@@ -111,14 +111,14 @@ pgObject *pgCatalogObject::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgCatalogObjectFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgCatalogObject *catalog=0;
+    pgCatalogObject *catalog = 0;
 
     wxString qry = wxT("SELECT c.oid, c.relname, pg_get_userbyid(relowner) AS owner, description\n")
                    wxT("  FROM pg_class c\n")
                    wxT("  LEFT OUTER JOIN pg_description d ON d.objoid=c.oid\n")
                    wxT("  WHERE relnamespace = ") + NumToStr(collection->GetSchema()->GetOid()) + wxT("::oid\n");
 
-    qry += restriction + 
+    qry += restriction +
            wxT(" ORDER BY relname");
 
     pgSet *catalogs = collection->GetServer()->ExecuteSet(qry);
@@ -127,13 +127,13 @@ pgObject *pgCatalogObjectFactory::CreateObjects(pgCollection *collection, ctlTre
     {
         while (!catalogs->Eof())
         {
-            // On EnterpriseDB we need to ignore some objects in the sys 
+            // On EnterpriseDB we need to ignore some objects in the sys
             // catalog, namely, _*, dual and type_object_source.
             if (!settings->GetShowSystemObjects() &&
-                collection->GetSchema()->GetName() == wxT("sys") &&
-                (catalogs->GetVal(wxT("relname")).StartsWith(wxT("_")) ||
-                 catalogs->GetVal(wxT("relname")) == wxT("dual") ||
-                 catalogs->GetVal(wxT("relname")) == wxT("type_object_source")))
+                    collection->GetSchema()->GetName() == wxT("sys") &&
+                    (catalogs->GetVal(wxT("relname")).StartsWith(wxT("_")) ||
+                     catalogs->GetVal(wxT("relname")) == wxT("dual") ||
+                     catalogs->GetVal(wxT("relname")) == wxT("type_object_source")))
             {
                 catalogs->MoveNext();
                 continue;
@@ -147,13 +147,13 @@ pgObject *pgCatalogObjectFactory::CreateObjects(pgCollection *collection, ctlTre
             if (browser)
             {
                 browser->AppendObject(collection, catalog);
-	    		catalogs->MoveNext();
+                catalogs->MoveNext();
             }
             else
                 break;
         }
 
-		delete catalogs;
+        delete catalogs;
     }
     return catalog;
 }
@@ -163,7 +163,7 @@ pgObject *pgCatalogObjectFactory::CreateObjects(pgCollection *collection, ctlTre
 wxString pgCatalogObjectCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -176,7 +176,7 @@ wxString pgCatalogObjectCollection::GetTranslatedMessage(int kindOfMessage) cons
             message = _("Catalog objects list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -187,7 +187,7 @@ wxString pgCatalogObjectCollection::GetTranslatedMessage(int kindOfMessage) cons
 #include "images/catalogobjects.xpm"
 
 pgCatalogObjectFactory::pgCatalogObjectFactory()
-: pgSchemaObjFactory(__("Catalog Object"), __("New Catalog Object..."), __("Create a new Catalog Object."), catalogobject_xpm, catalogobject_sm_xpm)
+    : pgSchemaObjFactory(__("Catalog Object"), __("New Catalog Object..."), __("Create a new Catalog Object."), catalogobject_xpm, catalogobject_sm_xpm)
 {
     metaType = PGM_CATALOGOBJECT;
 }

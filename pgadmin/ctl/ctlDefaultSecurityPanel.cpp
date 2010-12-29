@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -30,11 +30,11 @@ defaultPrivilegesOn g_defPrivTables('r', wxT("Tables"), wxT("arwdDxt")),
                     g_defPrivSequences('S', wxT("Sequences"), wxT("rwU")),
                     g_defPrivFunctions('f', wxT("Functions"), wxT("X"));
 
-defaultPrivilegesOn::defaultPrivilegesOn(const wxChar privType, const wxString& privOn, const wxString& privileges)
-  : m_privilegeType(privType), m_privilegesOn(privOn), m_privileges(privileges) {}
+defaultPrivilegesOn::defaultPrivilegesOn(const wxChar privType, const wxString &privOn, const wxString &privileges)
+    : m_privilegeType(privType), m_privilegesOn(privOn), m_privileges(privileges) {}
 
-ctlDefaultSecurityPanel::ctlDefaultSecurityPanel(pgConn* conn, wxNotebook* nb, wxImageList* imgList)
-  : wxPanel(nb, -1, wxDefaultPosition, wxDefaultSize), nbNotebook(NULL)
+ctlDefaultSecurityPanel::ctlDefaultSecurityPanel(pgConn *conn, wxNotebook *nb, wxImageList *imgList)
+    : wxPanel(nb, -1, wxDefaultPosition, wxDefaultSize), nbNotebook(NULL)
 {
     nb->AddPage(this, _("Default Privileges"));
 
@@ -48,14 +48,14 @@ ctlDefaultSecurityPanel::ctlDefaultSecurityPanel(pgConn* conn, wxNotebook* nb, w
     m_defPrivOnSeqsPanel   = new ctlDefaultPrivilegesPanel(this, nbNotebook, g_defPrivSequences, imgList);
     m_defPrivOnFuncsPanel  = new ctlDefaultPrivilegesPanel(this, nbNotebook, g_defPrivFunctions, imgList);
 
-    mainSizer->Add(nbNotebook, 0, wxEXPAND|wxALL, 2);
+    mainSizer->Add(nbNotebook, 0, wxEXPAND | wxALL, 2);
 
     this->SetSizer(mainSizer);
     mainSizer->Fit(this);
 }
 
-void  ctlDefaultSecurityPanel::UpdatePrivilegePages(bool createDefPrivs, const wxString& defPrivsOnTables,
-                                                    const wxString& defPrivsOnSeqs, const wxString& defPrivsOnFuncs)
+void  ctlDefaultSecurityPanel::UpdatePrivilegePages(bool createDefPrivs, const wxString &defPrivsOnTables,
+        const wxString &defPrivsOnSeqs, const wxString &defPrivsOnFuncs)
 {
     if (!createDefPrivs)
     {
@@ -68,11 +68,11 @@ void  ctlDefaultSecurityPanel::UpdatePrivilegePages(bool createDefPrivs, const w
 }
 
 
-wxString ctlDefaultSecurityPanel::GetDefaultPrivileges(const wxString& schemaName)
+wxString ctlDefaultSecurityPanel::GetDefaultPrivileges(const wxString &schemaName)
 {
     wxString strDefPrivs;
     int nPageCount = nbNotebook->GetPageCount();
-    for (int index=0; index < nPageCount; index++)
+    for (int index = 0; index < nPageCount; index++)
     {
         strDefPrivs += (dynamic_cast<ctlDefaultPrivilegesPanel *>(nbNotebook->GetPage(index)))->GetDefaultPrivileges(schemaName);
     }
@@ -93,31 +93,31 @@ BEGIN_EVENT_TABLE(ctlDefaultPrivilegesPanel, wxPanel)
     EVT_CHECKBOX(CTL_DEFALLPRIV,           ctlDefaultPrivilegesPanel::OnPrivCheckAll)
     EVT_CHECKBOX(CTL_DEFALLPRIVGRANT,      ctlDefaultPrivilegesPanel::OnPrivCheckAllGrant)
     EVT_CHECKBOX(CTL_DEFPRIVCB,            ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+2,          ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+4,          ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+6,          ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+8,          ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+10,         ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+12,         ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+14,         ctlDefaultPrivilegesPanel::OnPrivCheck)
-    EVT_CHECKBOX(CTL_DEFPRIVCB+16,         ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 2,          ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 4,          ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 6,          ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 8,          ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 10,         ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 12,         ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 14,         ctlDefaultPrivilegesPanel::OnPrivCheck)
+    EVT_CHECKBOX(CTL_DEFPRIVCB + 16,         ctlDefaultPrivilegesPanel::OnPrivCheck)
 END_EVENT_TABLE();
 
 DEFINE_LOCAL_EVENT_TYPE(EVT_DEFAULTSECURITYPANEL_CHANGE)
 
 ctlDefaultPrivilegesPanel::ctlDefaultPrivilegesPanel(ctlDefaultSecurityPanel *defSecurityPanel, wxNotebook *nb,
-                                                     defaultPrivilegesOn &privOn, wxImageList *imgList)
-  : wxPanel(nb, -1, wxDefaultPosition, wxDefaultSize), m_defPrivChanged(false),
-    m_privilegeType(privOn), m_defSecurityPanel(defSecurityPanel)
+        defaultPrivilegesOn &privOn, wxImageList *imgList)
+    : wxPanel(nb, -1, wxDefaultPosition, wxDefaultSize), m_defPrivChanged(false),
+      m_privilegeType(privOn), m_defSecurityPanel(defSecurityPanel)
 {
 
     nb->AddPage(this, m_privilegeType.m_privilegesOn);
 
-    allPrivileges=0;
-    privCheckboxes=0;
-    m_currentSelectedPriv=NULL;
+    allPrivileges = 0;
+    privCheckboxes = 0;
+    m_currentSelectedPriv = NULL;
 
-    privilegeCount=m_privilegeType.m_privileges.Length();
+    privilegeCount = m_privilegeType.m_privileges.Length();
 
     wxFlexGridSizer *item0 = new wxFlexGridSizer(3, 1, 5, 5);
     item0->AddGrowableCol(0);
@@ -131,30 +131,30 @@ ctlDefaultPrivilegesPanel::ctlDefaultPrivilegesPanel(ctlDefaultSecurityPanel *de
 
     wxString strGroupLabel = settings->GetShowUsersForPrivileges() ? _("Role/Group") : _("Role");
 
-    lbPrivileges = new ctlListView(this, CTL_DEFLBPRIV, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxLC_REPORT);
+    lbPrivileges = new ctlListView(this, CTL_DEFLBPRIV, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER | wxLC_REPORT);
     lbPrivileges->SetImageList(imgList, wxIMAGE_LIST_SMALL);
     lbPrivileges->AddColumn(_("Role/Group"), 60, wxLIST_FORMAT_LEFT);
     lbPrivileges->AddColumn(_("Privileges"), 60, wxLIST_FORMAT_LEFT);
-    itemSizer1->Add(lbPrivileges, 0, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT, 4);
-    item0->Add(itemSizer1, 0, wxEXPAND|wxALL, 5);
+    itemSizer1->Add(lbPrivileges, 0, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT, 4);
+    item0->Add(itemSizer1, 0, wxEXPAND | wxALL, 5);
 
-    wxBoxSizer* itemSizer2 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *itemSizer2 = new wxBoxSizer(wxHORIZONTAL);
     btnAddPriv = new wxButton(this, CTL_DEFADDPRIV, _("Add/Change"));
-    itemSizer2->Add(btnAddPriv, 0, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT, 4);
+    itemSizer2->Add(btnAddPriv, 0, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT, 4);
     btnDelPriv = new wxButton(this, CTL_DEFDELPRIV, _("Remove"));
-    itemSizer2->Add(btnDelPriv, 0, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT, 4);
-    item0->Add(itemSizer2, 0, wxEXPAND|wxALL, 0);
+    itemSizer2->Add(btnDelPriv, 0, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT, 4);
+    item0->Add(itemSizer2, 0, wxEXPAND | wxALL, 0);
 
-    wxStaticBox* sb = new wxStaticBox(this, -1, _("Privileges"));
-    wxBoxSizer* itemSizer3 = new wxStaticBoxSizer( sb, wxVERTICAL );
-    item0->Add(itemSizer3, 0, wxEXPAND|wxALL, 5);
+    wxStaticBox *sb = new wxStaticBox(this, -1, _("Privileges"));
+    wxBoxSizer *itemSizer3 = new wxStaticBoxSizer( sb, wxVERTICAL );
+    item0->Add(itemSizer3, 0, wxEXPAND | wxALL, 5);
 
-    wxBoxSizer* itemSizer4a = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *itemSizer4a = new wxBoxSizer(wxHORIZONTAL);
     stGroup = new wxStaticText(this, CTL_DEFSTATICGROUP, strGroupLabel);
-    itemSizer4a->Add(stGroup, 0, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT, 4);
+    itemSizer4a->Add(stGroup, 0, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT, 4);
     cbGroups = new ctlComboBox(this, CTL_DEFCBGROUP, wxDefaultPosition, wxDefaultSize);
-    itemSizer4a->Add(cbGroups, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT);
-    itemSizer3->Add(itemSizer4a, 0, wxEXPAND|wxALL, 0);
+    itemSizer4a->Add(cbGroups, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT);
+    itemSizer3->Add(itemSizer4a, 0, wxEXPAND | wxALL, 0);
 
     /* border size depends on the plateform */
 #ifdef __WXMSW__
@@ -167,27 +167,27 @@ ctlDefaultPrivilegesPanel::ctlDefaultPrivilegesPanel(ctlDefaultSecurityPanel *de
     int bordersize = 0;
 #endif
 
-    wxBoxSizer* itemSizer5 = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer *itemSizer5 = new wxBoxSizer(wxHORIZONTAL);
     allPrivileges = new wxCheckBox(this, CTL_DEFALLPRIV, wxT("ALL"));
-    itemSizer5->Add(allPrivileges, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT);
+    itemSizer5->Add(allPrivileges, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT);
     allPrivilegesGrant = new wxCheckBox(this, CTL_DEFALLPRIVGRANT, wxT("WITH GRANT OPTION"));
-    itemSizer5->Add(allPrivilegesGrant, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT);
+    itemSizer5->Add(allPrivilegesGrant, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT);
     allPrivilegesGrant->Disable();
     itemSizer3->Add(itemSizer5, 0, wxALL, bordersize);
 
-    for (int index=0; index < privilegeCount; index++)
+    for (int index = 0; index < privilegeCount; index++)
     {
         int i = index * 2;
         wxChar privilege = m_privilegeType.m_privileges.GetChar(index);
         wxString priv = pgObject::GetPrivilegeName(privilege);
 
         wxCheckBox *cb;
-        wxBoxSizer* itemSizer6 = new wxBoxSizer(wxHORIZONTAL);
+        wxBoxSizer *itemSizer6 = new wxBoxSizer(wxHORIZONTAL);
         cb = new wxCheckBox(this, CTL_DEFPRIVCB + i, priv);
-        itemSizer6->Add(cb, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT);
+        itemSizer6->Add(cb, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT);
         privCheckboxes[i++] = cb;
         cb = new wxCheckBox(this, CTL_DEFPRIVCB + i, wxT("WITH GRANT OPTION"));
-        itemSizer6->Add(cb, wxEXPAND|wxALIGN_CENTRE_VERTICAL|wxTOP|wxLEFT|wxRIGHT);
+        itemSizer6->Add(cb, wxEXPAND | wxALIGN_CENTRE_VERTICAL | wxTOP | wxLEFT | wxRIGHT);
         cb->Disable();
         privCheckboxes[i] = cb;
         itemSizer3->Add(itemSizer6, 0, wxALL, bordersize);
@@ -208,7 +208,7 @@ ctlDefaultPrivilegesPanel::~ctlDefaultPrivilegesPanel()
 
 // Find the privileges for the selected user from the map
 // and select the check-boxes accordingly
-bool ctlDefaultPrivilegesPanel::PrivCheckBoxUpdate(wxString& strRole)
+bool ctlDefaultPrivilegesPanel::PrivCheckBoxUpdate(wxString &strRole)
 {
     int index = 0;
     wxString strKey  = strRole;
@@ -282,7 +282,7 @@ void ctlDefaultPrivilegesPanel::OnGroupChange(wxCommandEvent &ev)
 }
 
 
-void ctlDefaultPrivilegesPanel::OnPrivCheckAll(wxCommandEvent& ev)
+void ctlDefaultPrivilegesPanel::OnPrivCheckAll(wxCommandEvent &ev)
 {
     bool all = allPrivileges->GetValue();
     allPrivilegesGrant->Enable(all && CanGrant());
@@ -294,27 +294,27 @@ void ctlDefaultPrivilegesPanel::OnPrivCheckAll(wxCommandEvent& ev)
     }
 }
 
-void ctlDefaultPrivilegesPanel::OnPrivCheckAllGrant(wxCommandEvent& ev)
+void ctlDefaultPrivilegesPanel::OnPrivCheckAllGrant(wxCommandEvent &ev)
 {
-    bool grant=allPrivilegesGrant->GetValue();
-    for (int i=0 ; i < privilegeCount ; i++)
+    bool grant = allPrivilegesGrant->GetValue();
+    for (int i = 0 ; i < privilegeCount ; i++)
         privCheckboxes[i*2+1]->SetValue(grant);
 }
 
 
-void ctlDefaultPrivilegesPanel::OnPrivCheck(wxCommandEvent& ev)
+void ctlDefaultPrivilegesPanel::OnPrivCheck(wxCommandEvent &ev)
 {
-    int id=(ev.GetId()-CTL_DEFPRIVCB) /2;
+    int id = (ev.GetId() - CTL_DEFPRIVCB) / 2;
     CheckGrantOpt(id);
     btnAddPriv->Enable();
     if (!privCheckboxes[id*2]->GetValue())
-       allPrivileges->SetValue(false);
+        allPrivileges->SetValue(false);
 }
 
 
 void ctlDefaultPrivilegesPanel::CheckGrantOpt(int id)
 {
-    bool canGrant=(privCheckboxes[id*2]->GetValue() && CanGrant());
+    bool canGrant = (privCheckboxes[id*2]->GetValue() && CanGrant());
     if (canGrant)
         privCheckboxes[id*2+1]->Enable(true);
     else
@@ -415,8 +415,8 @@ void ctlDefaultPrivilegesPanel::OnAddPriv(wxCommandEvent &ev)
     else
     {
         if (m_currentSelectedPriv->m_modified ?
-              m_currentSelectedPriv->m_newPriv == strPriv :
-              m_currentSelectedPriv->m_origPriv == strPriv)
+                m_currentSelectedPriv->m_newPriv == strPriv :
+                m_currentSelectedPriv->m_origPriv == strPriv)
         {
             ev.Skip();
             return;
@@ -445,7 +445,7 @@ void ctlDefaultPrivilegesPanel::OnAddPriv(wxCommandEvent &ev)
         long nCount =  lbPrivileges->GetItemCount();
         wxListItem info;
 
-        for (int index=0; index < nCount; index++)
+        for (int index = 0; index < nCount; index++)
         {
             wxString strTempRole;
 
@@ -479,7 +479,7 @@ void ctlDefaultPrivilegesPanel::OnPrivSelChange(wxListEvent &ev)
 
 void ctlDefaultPrivilegesPanel::Update(wxString strDefPrivs)
 {
-    unsigned int index=0;
+    unsigned int index = 0;
 
     cbGroups->Clear();
     lbPrivileges->DeleteAllItems();
@@ -493,53 +493,53 @@ void ctlDefaultPrivilegesPanel::Update(wxString strDefPrivs)
 
     if (!strDefPrivs.IsEmpty())
     {
-       wxString strRole, strPriv;
-       strDefPrivs.Replace(wxT("\\\""), wxT("\""), true);
-       strDefPrivs.Replace(wxT("\\\\"), wxT("\\"), true);
+        wxString strRole, strPriv;
+        strDefPrivs.Replace(wxT("\\\""), wxT("\""), true);
+        strDefPrivs.Replace(wxT("\\\\"), wxT("\\"), true);
 
-       // Removing starting brace '{' and ending brace '}'
-       strDefPrivs = strDefPrivs.SubString(1, strDefPrivs.Length() - 1);
+        // Removing starting brace '{' and ending brace '}'
+        strDefPrivs = strDefPrivs.SubString(1, strDefPrivs.Length() - 1);
 
-       long pos = 0;
+        long pos = 0;
 
-       while (pgObject::findUserPrivs(strDefPrivs, strRole, strPriv))
-       {
-           int icon;
-           if (strRole.IsSameAs(wxT("public"), true))
-               icon = PGICON_PUBLIC;
-           else if (cbGroups->FindString(strRole) != wxNOT_FOUND)
-               icon = userFactory.GetIconId();
-           else if (cbGroups->FindString(wxT("group ") + strRole) != wxNOT_FOUND)
-           {
-               icon = groupFactory.GetIconId();
-               strRole = wxT("group ") + strRole;
-           }
-           else
-               continue;
+        while (pgObject::findUserPrivs(strDefPrivs, strRole, strPriv))
+        {
+            int icon;
+            if (strRole.IsSameAs(wxT("public"), true))
+                icon = PGICON_PUBLIC;
+            else if (cbGroups->FindString(strRole) != wxNOT_FOUND)
+                icon = userFactory.GetIconId();
+            else if (cbGroups->FindString(wxT("group ") + strRole) != wxNOT_FOUND)
+            {
+                icon = groupFactory.GetIconId();
+                strRole = wxT("group ") + strRole;
+            }
+            else
+                continue;
 
-           defPrivilege priv;
-           priv.m_username = strRole;
-           priv.m_origPriv = strPriv;
-           priv.m_modified = false;
-           priv.m_newPriv  = wxT("");
+            defPrivilege priv;
+            priv.m_username = strRole;
+            priv.m_origPriv = strPriv;
+            priv.m_modified = false;
+            priv.m_newPriv  = wxT("");
 
-           wxString strKey = strRole;
-           m_privileges[strKey] = priv;
+            wxString strKey = strRole;
+            m_privileges[strKey] = priv;
 
-           pos = lbPrivileges->GetItemCount();
+            pos = lbPrivileges->GetItemCount();
 
-           lbPrivileges->InsertItem(pos, strRole, icon);
-           lbPrivileges->SetItem(pos, 1, strPriv);
+            lbPrivileges->InsertItem(pos, strRole, icon);
+            lbPrivileges->SetItem(pos, 1, strPriv);
 
-           strRole = wxT("");
-           strPriv = wxT("");
-           pos++;
-       }
+            strRole = wxT("");
+            strPriv = wxT("");
+            pos++;
+        }
     }
 }
 
 
-wxString ctlDefaultPrivilegesPanel::GetDefaultPrivileges(const wxString& schemaName)
+wxString ctlDefaultPrivilegesPanel::GetDefaultPrivileges(const wxString &schemaName)
 {
     if(!m_defPrivChanged)
         return wxT("");

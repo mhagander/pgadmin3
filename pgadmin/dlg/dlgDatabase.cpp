@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -43,7 +43,7 @@
 
 dlgProperty *pgDatabaseFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    dlgDatabase *dlg=new dlgDatabase(this, frame, (pgDatabase*)node);
+    dlgDatabase *dlg = new dlgDatabase(this, frame, (pgDatabase *)node);
     if (dlg && !node)
     {
         // use the server's connection to avoid "template1 in use"
@@ -77,15 +77,15 @@ END_EVENT_TABLE();
 
 
 dlgDatabase::dlgDatabase(pgaFactory *f, frmMain *frame, pgDatabase *node)
-: dlgDefaultSecurityProperty(f, frame, node, wxT("dlgDatabase"), wxT("CREATE,TEMP,CONNECT"), "CTc", node != NULL ? true : false)
+    : dlgDefaultSecurityProperty(f, frame, node, wxT("dlgDatabase"), wxT("CREATE,TEMP,CONNECT"), "CTc", node != NULL ? true : false)
 {
-    database=node;
-    schemaRestrictionOk=true;
+    database = node;
+    schemaRestrictionOk = true;
     lstVariables->CreateColumns(0, _("Username"), _("Variable"), _("Value"));
 
     chkValue->Hide();
 
-	dirtyVars = false;
+    dirtyVars = false;
 }
 
 pgObject *dlgDatabase::GetObject()
@@ -134,14 +134,14 @@ int dlgDatabase::Go(bool modal)
         cbTablespace->Hide();
     }
 
-    if (!connection->BackendMinimumVersion(8,1))
+    if (!connection->BackendMinimumVersion(8, 1))
     {
         txtConnLimit->Disable();
     }
     else
         txtConnLimit->SetValidator(numericValidator);
-    
-    if (!connection->BackendMinimumVersion(8,4))
+
+    if (!connection->BackendMinimumVersion(8, 4))
     {
         cbCollate->Disable();
         cbCType->Disable();
@@ -149,16 +149,16 @@ int dlgDatabase::Go(bool modal)
 
     pgSet *set;
     if (connection->BackendMinimumVersion(7, 4))
-        set=connection->ExecuteSet(wxT("SELECT name, vartype, min_val, max_val\n")
-                wxT("  FROM pg_settings WHERE context in ('user', 'superuser')"));
+        set = connection->ExecuteSet(wxT("SELECT name, vartype, min_val, max_val\n")
+                                     wxT("  FROM pg_settings WHERE context in ('user', 'superuser')"));
     else
-        set=connection->ExecuteSet(wxT("SELECT name, 'string' as vartype, '' as min_val, '' as max_val FROM pg_settings"));
+        set = connection->ExecuteSet(wxT("SELECT name, 'string' as vartype, '' as min_val, '' as max_val FROM pg_settings"));
     if (set)
     {
         while (!set->Eof())
         {
             cbVarname->Append(set->GetVal(0));
-            varInfo.Add(set->GetVal(wxT("vartype")) + wxT(" ") + 
+            varInfo.Add(set->GetVal(wxT("vartype")) + wxT(" ") +
                         set->GetVal(wxT("min_val")) + wxT(" ") +
                         set->GetVal(wxT("max_val")));
             set->MoveNext();
@@ -208,7 +208,7 @@ int dlgDatabase::Go(bool modal)
         wxString username;
         wxString varname;
         wxString varvalue;
-        for (i=0 ; i < database->GetVariables().GetCount() ; i++)
+        for (i = 0 ; i < database->GetVariables().GetCount() ; i++)
         {
             wxStringTokenizer tkz(database->GetVariables().Item(i), wxT("="));
             while (tkz.HasMoreTokens())
@@ -222,17 +222,17 @@ int dlgDatabase::Go(bool modal)
         }
 
         PrepareTablespace(cbTablespace, database->GetTablespaceOid());
-		if (connection->BackendMinimumVersion(8, 4))
-		    cbTablespace->Enable();
-		else
-		    cbTablespace->Disable();
+        if (connection->BackendMinimumVersion(8, 4))
+            cbTablespace->Enable();
+        else
+            cbTablespace->Disable();
         txtPath->SetValue(database->GetPath());
         txtPath->Disable();
 
         cbEncoding->Append(database->GetEncoding());
         cbEncoding->SetSelection(0);
 
-        if (connection->BackendMinimumVersion(8,1))
+        if (connection->BackendMinimumVersion(8, 1))
         {
             wxString strConnLimit;
             strConnLimit.Printf(wxT("%ld"), database->GetConnectionLimit());
@@ -262,7 +262,7 @@ int dlgDatabase::Go(bool modal)
 
         PrepareTablespace(cbTablespace);
 
-        // Add the default tablespace 
+        // Add the default tablespace
         cbTablespace->Insert(_("<default tablespace>"), 0, (void *)0);
         cbTablespace->SetSelection(0);
 
@@ -270,7 +270,7 @@ int dlgDatabase::Go(bool modal)
         FillCombobox(wxT("SELECT datname FROM pg_database ORDER BY datname"), cbTemplate);
         cbTemplate->SetSelection(0);
 
-        if (connection->BackendMinimumVersion(8,4))
+        if (connection->BackendMinimumVersion(8, 4))
         {
             FillCombobox(wxT("select DISTINCT(datctype) from pg_database UNION SELECT DISTINCT(datcollate) from pg_database"), cbCollate, cbCType);
             if (cbCollate->FindString(wxT("C")) < 0)
@@ -284,18 +284,18 @@ int dlgDatabase::Go(bool modal)
                 cbCType->AppendString(wxT("POSIX"));
             }
         }
-        if (connection->BackendMinimumVersion(8,1))
+        if (connection->BackendMinimumVersion(8, 1))
         {
             txtConnLimit->SetValue(wxT("-1"));
         }
 
 
-        long encNo=0;
+        long encNo = 0;
         wxString encStr;
         do
         {
-            encStr=connection->ExecuteScalar(
-                wxT("SELECT pg_encoding_to_char(") + NumToStr(encNo) + wxT(")"));
+            encStr = connection->ExecuteScalar(
+                         wxT("SELECT pg_encoding_to_char(") + NumToStr(encNo) + wxT(")"));
             if (pgConn::IsValidServerEncoding(encNo) && !encStr.IsEmpty())
                 cbEncoding->Append(encStr);
 
@@ -303,14 +303,14 @@ int dlgDatabase::Go(bool modal)
         }
         while (!encStr.IsEmpty());
 
-        encStr=connection->ExecuteScalar(wxT("SELECT pg_encoding_to_char(encoding) FROM pg_database WHERE datname = 'template0'"));
-        encNo=cbEncoding->FindString(encStr);
+        encStr = connection->ExecuteScalar(wxT("SELECT pg_encoding_to_char(encoding) FROM pg_database WHERE datname = 'template0'"));
+        encNo = cbEncoding->FindString(encStr);
 
-        if (encNo < 0) 
+        if (encNo < 0)
         {
-            encNo=cbEncoding->FindString(wxT("UNICODE"));
+            encNo = cbEncoding->FindString(wxT("UNICODE"));
             if (encNo < 0)
-                encNo=cbEncoding->FindString(wxT("UTF8"));
+                encNo = cbEncoding->FindString(wxT("UTF8"));
         }
 
         if (encNo >= 0)
@@ -332,9 +332,9 @@ int dlgDatabase::Go(bool modal)
 
 pgObject *dlgDatabase::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgObject *obj=databaseFactory.CreateObjects(collection, 0, wxT(" WHERE datname=") + qtDbString(name) + wxT("\n"));
+    pgObject *obj = databaseFactory.CreateObjects(collection, 0, wxT(" WHERE datname=") + qtDbString(name) + wxT("\n"));
     return obj;
 }
 
@@ -342,8 +342,8 @@ pgObject *dlgDatabase::CreateObject(pgCollection *collection)
 #ifdef __WXMAC__
 void dlgDatabase::OnChangeSize(wxSizeEvent &ev)
 {
-	lstVariables->SetSize(wxDefaultCoord, wxDefaultCoord,
-	    ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 550);
+    lstVariables->SetSize(wxDefaultCoord, wxDefaultCoord,
+                          ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 550);
     dlgSecurityProperty::OnChangeSize(ev);
 }
 #endif
@@ -355,11 +355,11 @@ void dlgDatabase::OnChangeRestr(wxCommandEvent &ev)
         schemaRestrictionOk = true;
     else
     {
-        wxString sql=wxT("EXPLAIN SELECT 1 FROM pg_namespace\n")
-                wxT("WHERE nspname IN (") + txtSchemaRestr->GetValue() + wxT(")");
+        wxString sql = wxT("EXPLAIN SELECT 1 FROM pg_namespace\n")
+                       wxT("WHERE nspname IN (") + txtSchemaRestr->GetValue() + wxT(")");
 
         wxLogNull nix;
-        wxString result=connection->ExecuteScalar(sql);
+        wxString result = connection->ExecuteScalar(sql);
 
         schemaRestrictionOk = !result.IsEmpty();
     }
@@ -411,7 +411,7 @@ void dlgDatabase::OnOK(wxCommandEvent &ev)
  *
  *  NOTE: This will work only if the database object exists.
  */
-bool dlgDatabase::executeDDLSql(const wxString& strSql)
+bool dlgDatabase::executeDDLSql(const wxString &strSql)
 {
     pgConn *myConn = connection;
 
@@ -420,21 +420,21 @@ bool dlgDatabase::executeDDLSql(const wxString& strSql)
         wxString tmp;
         if (cbClusterSet && cbClusterSet->GetSelection() > 0)
         {
-            replClientData *data=(replClientData*)cbClusterSet->GetClientData(cbClusterSet->GetSelection());
+            replClientData *data = (replClientData *)cbClusterSet->GetClientData(cbClusterSet->GetSelection());
 
             if (data->majorVer > 1 || (data->majorVer == 1 && data->minorVer >= 2))
             {
                 tmp = wxT("SELECT ") + qtIdent(data->cluster)
-                    + wxT(".ddlscript_prepare(") + NumToStr(data->setId) + wxT(", 0);\n")
-                    + wxT("SELECT ") + qtIdent(data->cluster)
-                    + wxT(".ddlscript_complete(") + NumToStr(data->setId) + wxT(", ")
-                    + qtDbString(strSql) + wxT(", 0);\n");
+                      + wxT(".ddlscript_prepare(") + NumToStr(data->setId) + wxT(", 0);\n")
+                      + wxT("SELECT ") + qtIdent(data->cluster)
+                      + wxT(".ddlscript_complete(") + NumToStr(data->setId) + wxT(", ")
+                      + qtDbString(strSql) + wxT(", 0);\n");
             }
             else
             {
                 tmp = wxT("SELECT ") + qtIdent(data->cluster)
-                    + wxT(".ddlscript(") + NumToStr(data->setId) + wxT(", ")
-                    + qtDbString(strSql) + wxT(", 0);\n");
+                      + wxT(".ddlscript(") + NumToStr(data->setId) + wxT(", ")
+                      + qtDbString(strSql) + wxT(", 0);\n");
             }
         }
         else
@@ -450,8 +450,8 @@ bool dlgDatabase::executeDDLSql(const wxString& strSql)
 
 void dlgDatabase::CheckChange()
 {
-    bool enable=true;
-    
+    bool enable = true;
+
     if (database)
     {
         long connLimit;
@@ -459,12 +459,12 @@ void dlgDatabase::CheckChange()
             connLimit = database->GetConnectionLimit();
 
         enable = txtSchemaRestr->GetValue() != database->GetSchemaRestriction()
-               || txtComment->GetValue() != database->GetComment()
-			   || txtName->GetValue() != database->GetName()
-               || cbOwner->GetValue() != database->GetOwner()
-               || cbTablespace->GetValue() != database->GetTablespace()
-               || connLimit != database->GetConnectionLimit()
-			   || dirtyVars;
+                 || txtComment->GetValue() != database->GetComment()
+                 || txtName->GetValue() != database->GetName()
+                 || cbOwner->GetValue() != database->GetOwner()
+                 || cbTablespace->GetValue() != database->GetTablespace()
+                 || connLimit != database->GetConnectionLimit()
+                 || dirtyVars;
     }
 
     CheckValid(enable, !GetName().IsEmpty(), _("Please specify name."));
@@ -476,7 +476,7 @@ void dlgDatabase::CheckChange()
 
 void dlgDatabase::OnVarnameSelChange(wxCommandEvent &ev)
 {
-    int sel=cbVarname->GuessSelection(ev);
+    int sel = cbVarname->GuessSelection(ev);
 
     SetupVarEditor(sel);
 }
@@ -521,7 +521,7 @@ void dlgDatabase::OnConnLimitChange(wxCommandEvent &ev)
             wxString newVal = strConnLimit.substr(0, 10);
             if (!newVal.ToLong(&val))
             {
-                newVal = strConnLimit.substr(0,9);
+                newVal = strConnLimit.substr(0, 9);
             }
             ev.StopPropagation();
             txtConnLimit->SetValue(newVal);
@@ -536,7 +536,7 @@ void dlgDatabase::SetupVarEditor(int var)
     if (var >= 0 && varInfo.Count() > 0)
     {
         wxStringTokenizer vals(varInfo.Item(var));
-        wxString typ=vals.GetNextToken();
+        wxString typ = vals.GetNextToken();
 
         if (typ == wxT("bool"))
         {
@@ -561,7 +561,7 @@ void dlgDatabase::SetupVarEditor(int var)
 
 void dlgDatabase::OnVarSelChange(wxListEvent &ev)
 {
-    long pos=lstVariables->GetSelection();
+    long pos = lstVariables->GetSelection();
     if (pos >= 0)
     {
         cbVarUsername->SetValue(lstVariables->GetText(pos));
@@ -569,7 +569,7 @@ void dlgDatabase::OnVarSelChange(wxListEvent &ev)
 
         // We used to raise an OnVarnameSelChange() event here, but
         // at this point the combo box hasn't necessarily updated.
-        wxString value=lstVariables->GetText(pos, 2);
+        wxString value = lstVariables->GetText(pos, 2);
         int sel = cbVarname->FindString(lstVariables->GetText(pos, 1));
         SetupVarEditor(sel);
 
@@ -581,8 +581,8 @@ void dlgDatabase::OnVarSelChange(wxListEvent &ev)
 
 void dlgDatabase::OnVarAdd(wxCommandEvent &ev)
 {
-    wxString username=cbVarUsername->GetValue();
-    wxString name=cbVarname->GetValue();
+    wxString username = cbVarUsername->GetValue();
+    wxString name = cbVarname->GetValue();
     wxString value;
     if (chkValue->IsShown())
         value = chkValue->GetValue() ? wxT("on") : wxT("off");
@@ -596,7 +596,7 @@ void dlgDatabase::OnVarAdd(wxCommandEvent &ev)
     {
         bool found = false;
         long prevpos = -1;
-        for (long item=0; item<lstVariables->GetItemCount(); item++)
+        for (long item = 0; item < lstVariables->GetItemCount(); item++)
         {
             if (name == lstVariables->GetText(item, 1))
             {
@@ -628,7 +628,7 @@ void dlgDatabase::OnVarAdd(wxCommandEvent &ev)
             }
         }
     }
-	dirtyVars = true;
+    dirtyVars = true;
     CheckChange();
 }
 
@@ -638,19 +638,19 @@ void dlgDatabase::OnVarRemove(wxCommandEvent &ev)
     if (lstVariables->GetSelection() == wxNOT_FOUND)
         return;
     lstVariables->DeleteCurrentItem();
-	dirtyVars = true;
+    dirtyVars = true;
     CheckChange();
 }
 
 
-// Note: CREATE DATABASE cannot be part of a multi-statement query as of 
+// Note: CREATE DATABASE cannot be part of a multi-statement query as of
 //       PG83, and never actually would have been transaction-safe prior
 //       to then. Therefore, when creating a new database, only the CREATE
 //       statement comes from GetSql(), subsequent ALTERs come from GetSql2()
 wxString dlgDatabase::GetSql()
 {
     wxString sql, name;
-    name=GetName();
+    name = GetName();
 
     if (database)
     {
@@ -664,10 +664,10 @@ wxString dlgDatabase::GetSql()
         if (connection->BackendMinimumVersion(8, 4))
         {
             if (cbTablespace->GetCurrentSelection() > 0 && cbTablespace->GetOIDKey() > 0
-                && cbTablespace->GetOIDKey() != database->GetTablespaceOid())
-            	sql += wxT("ALTER DATABASE ") + qtIdent(name)
-                    +  wxT(" SET TABLESPACE ") + qtIdent(cbTablespace->GetValue())
-                    +  wxT(";\n");
+                    && cbTablespace->GetOIDKey() != database->GetTablespaceOid())
+                sql += wxT("ALTER DATABASE ") + qtIdent(name)
+                       +  wxT(" SET TABLESPACE ") + qtIdent(cbTablespace->GetValue())
+                       +  wxT(";\n");
         }
         if (connection->BackendMinimumVersion(8, 1))
         {
@@ -683,9 +683,9 @@ wxString dlgDatabase::GetSql()
                 wxString strConnLimit;
                 strConnLimit << connLimit;
                 sql += wxT("ALTER DATABASE ") + qtIdent(name)
-                    +  wxT(" WITH CONNECTION LIMIT = ")
-                    +  strConnLimit
-                    +  wxT(";\n");
+                       +  wxT(" WITH CONNECTION LIMIT = ")
+                       +  strConnLimit
+                       +  wxT(";\n");
             }
         }
 
@@ -704,19 +704,19 @@ wxString dlgDatabase::GetSql()
         for (index = 0 ; index < database->GetVariables().GetCount() ; index++)
             vars.Add(database->GetVariables().Item(index));
 
-        int cnt=lstVariables->GetItemCount();
+        int cnt = lstVariables->GetItemCount();
         int pos;
 
         // check for changed or added vars
-        for (pos=0 ; pos < cnt ; pos++)
+        for (pos = 0 ; pos < cnt ; pos++)
         {
-            wxString newUsr=lstVariables->GetText(pos);
-            wxString newVar=lstVariables->GetText(pos, 1);
-            wxString newVal=lstVariables->GetText(pos, 2);
+            wxString newUsr = lstVariables->GetText(pos);
+            wxString newVar = lstVariables->GetText(pos, 1);
+            wxString newVal = lstVariables->GetText(pos, 2);
 
             wxString oldVal;
 
-            for (index=0 ; index < vars.GetCount() ; index++)
+            for (index = 0 ; index < vars.GetCount() ; index++)
             {
                 wxStringTokenizer tkz(vars.Item(index), wxT("="));
                 while (tkz.HasMoreTokens())
@@ -726,7 +726,7 @@ wxString dlgDatabase::GetSql()
                     varvalue = tkz.GetNextToken();
                 }
 
-                wxString var=vars.Item(index);
+                wxString var = vars.Item(index);
                 if (newUsr == username && newVar == varname)
                 {
                     oldVal = varvalue;
@@ -747,9 +747,9 @@ wxString dlgDatabase::GetSql()
                     sql += wxT(" SET ") + newVar + wxT("=") + newVal + wxT(";\n");
             }
         }
-        
+
         // check for removed vars
-        for (pos=0 ; pos < (int)vars.GetCount() ; pos++)
+        for (pos = 0 ; pos < (int)vars.GetCount() ; pos++)
         {
             wxStringTokenizer tkz(vars.Item(pos), wxT("="));
             while (tkz.HasMoreTokens())
@@ -762,13 +762,13 @@ wxString dlgDatabase::GetSql()
             if (username.Length() == 0)
             {
                 sql += wxT("ALTER DATABASE ") + qtIdent(name)
-                    +  wxT(" RESET ") + varname
-                    + wxT(";\n");
+                       +  wxT(" RESET ") + varname
+                       + wxT(";\n");
             }
             else
             {
                 sql += wxT("ALTER ROLE ") + username + wxT(" IN DATABASE ") + qtIdent(name)
-                    +  wxT(" RESET ") + varname + wxT(";\n");
+                       +  wxT(" RESET ") + varname + wxT(";\n");
             }
         }
 
@@ -778,13 +778,13 @@ wxString dlgDatabase::GetSql()
     else
     {
         // create mode
-        sql = wxT("CREATE DATABASE ") + qtIdent(name) 
-            + wxT("\n  WITH ENCODING=") + qtDbString(cbEncoding->GetValue());
+        sql = wxT("CREATE DATABASE ") + qtIdent(name)
+              + wxT("\n  WITH ENCODING=") + qtDbString(cbEncoding->GetValue());
 
         AppendIfFilled(sql, wxT("\n       OWNER="), qtIdent(cbOwner->GetValue()));
         AppendIfFilled(sql, wxT("\n       TEMPLATE="), qtIdent(cbTemplate->GetValue()));
         AppendIfFilled(sql, wxT("\n       LOCATION="), txtPath->GetValue());
-        if (connection->BackendMinimumVersion(8,4))
+        if (connection->BackendMinimumVersion(8, 4))
         {
             wxString strCollate = cbCollate->GetValue();
             if (!strCollate.IsEmpty())
@@ -793,7 +793,7 @@ wxString dlgDatabase::GetSql()
             if (!strCType.IsEmpty())
                 AppendIfFilled(sql, wxT("\n       LC_CTYPE="), qtDbString(strCType));
         }
-        if (connection->BackendMinimumVersion(8,1))
+        if (connection->BackendMinimumVersion(8, 1))
         {
             AppendIfFilled(sql, wxT("\n       CONNECTION LIMIT="), (txtConnLimit->GetValue() == wxT("-") ? wxT("-1") : txtConnLimit->GetValue()));
         }
@@ -809,7 +809,7 @@ wxString dlgDatabase::GetSql()
 wxString dlgDatabase::GetSql2()
 {
     wxString sql, name;
-    name=GetName();
+    name = GetName();
 
     // We only use GetSql2() in the CREATE case
     if (!database)
@@ -822,15 +822,15 @@ wxString dlgDatabase::GetSql2()
         else
             sql += GetGrant(wxT("CTc"), wxT("DATABASE ") + qtIdent(name));
 
-        int cnt=lstVariables->GetItemCount();
+        int cnt = lstVariables->GetItemCount();
         int pos;
 
         // check for changed or added vars
-        for (pos=0 ; pos < cnt ; pos++)
+        for (pos = 0 ; pos < cnt ; pos++)
         {
-            wxString newUsr=lstVariables->GetText(pos);
-            wxString newVar=lstVariables->GetText(pos, 1);
-            wxString newVal=lstVariables->GetText(pos, 2);
+            wxString newUsr = lstVariables->GetText(pos);
+            wxString newVar = lstVariables->GetText(pos, 1);
+            wxString newVal = lstVariables->GetText(pos, 2);
 
             if (newUsr.Length() == 0)
                 sql += wxT("ALTER DATABASE ") + qtIdent(name);
@@ -850,6 +850,6 @@ wxString dlgDatabase::GetSql2()
 bool dlgDatabase::GetDisconnectFirst()
 {
     if (database)
-      return true;
+        return true;
     return false;
 }

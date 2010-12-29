@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -30,13 +30,23 @@ class gqbController;
 class gqbBrowser : public wxTreeCtrl
 {
 public:
-    gqbBrowser(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style, gqbController *_controller);
+    gqbBrowser(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style, gqbController *_controller);
     ~gqbBrowser();
-    wxTreeItemId& createRoot(wxString &Name);
-    wxTreeItemId& getCatalogRootNode(){return catalogsNode;}
-    wxTreeItemId& getTablesRootNode(){return schemasNode;}
+    wxTreeItemId &createRoot(wxString &Name);
+    wxTreeItemId &getCatalogRootNode()
+    {
+        return catalogsNode;
+    }
+    wxTreeItemId &getTablesRootNode()
+    {
+        return schemasNode;
+    }
     void refreshTables(pgConn *connection);
-    void setDnDPoint(int x, int y){xx=x; yy=y;};
+    void setDnDPoint(int x, int y)
+    {
+        xx = x;
+        yy = y;
+    };
 
 private:
     enum typeSchema						// GQB-TODO: DELETE from here should be locate at gqbDatabase
@@ -45,13 +55,13 @@ private:
         GQB_OTHER
     };
 
-    wxTreeItemId rootNode,catalogsNode,schemasNode;
-    void OnItemActivated(wxTreeEvent& event);
-    void OnBeginDrag(wxTreeEvent& event);
+    wxTreeItemId rootNode, catalogsNode, schemasNode;
+    void OnItemActivated(wxTreeEvent &event);
+    void OnBeginDrag(wxTreeEvent &event);
     wxString NumToStr(OID value);
     gqbController *controller;			//Allow access to controller functions like add table to model
-    wxImageList* imageList;
-    int xx,yy;
+    wxImageList *imageList;
+    int xx, yy;
 
     DECLARE_EVENT_TABLE()
 };

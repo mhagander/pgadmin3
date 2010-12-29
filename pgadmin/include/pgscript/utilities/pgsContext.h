@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgScript - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -26,93 +26,93 @@ class pgsContext
 
 private:
 
-	wxArrayString m_columns;
+    wxArrayString m_columns;
 
-	/** List of temporary expressions or variables. */
-	pgsListExpression m_vars;
+    /** List of temporary expressions or variables. */
+    pgsListExpression m_vars;
 
-	/** List of temporary statements. */
-	pgsListStmt m_stmts;
-	
-public:
-	
-	/** For writing to the output. */
-	pgsOutputStream & m_cout;
+    /** List of temporary statements. */
+    pgsListStmt m_stmts;
 
 public:
 
-	//////////////////////////////
-	// Constructor & destructor //
-	//////////////////////////////
-	
-	pgsContext(pgsOutputStream & cout);
+    /** For writing to the output. */
+    pgsOutputStream &m_cout;
 
-	~pgsContext();
-	
-	///////////////////////////////
-	// Methods generating values //
-	///////////////////////////////
+public:
 
-	/** Generates a pgsNumber with value '0' and put it on stack. */
-	pgsVariable * zero();
+    //////////////////////////////
+    // Constructor & destructor //
+    //////////////////////////////
 
-	/** Generates a pgsNumber with value '0' and put it on stack. */
-	pgsVariable * one();
-	
-	/** Generates a pgsNumber with value now() and put it on stack. */
-	pgsVariable * seed();
-	
-	/** Generates a pgsString with the locale encoding and put it on stack. */
-	pgsVariable * encoding();
-	
-	/** Generates an empty statement list and put it on stack. */
-	pgsStmtList * stmt_list(pgsThread * app = 0);
-	
-	////////////////////////////////////////////////
-	// For managing a new record declaration list //
-	////////////////////////////////////////////////
-	
-	/** Adds a column name to the column list. */
-	void add_column(const wxString & column);
+    pgsContext(pgsOutputStream &cout);
 
-	/** Retrieves the column list. */
-	const wxArrayString & columns();
+    ~pgsContext();
 
-	/** Clears the column list. */
-	void clear_columns();
+    ///////////////////////////////
+    // Methods generating values //
+    ///////////////////////////////
 
-	
-	/////////////////////////////////////////////
-	// For managing stacks of temporary values //
-	/////////////////////////////////////////////
-	
-	/** Adds a pgsExpression on stack. */
-	void push_var(pgsExpression * var);
+    /** Generates a pgsNumber with value '0' and put it on stack. */
+    pgsVariable *zero();
 
-	/** Removes the last pgsExpression on stack. */
-	void pop_var();
-	
-	/** Gives the number of pgsExpression on stack. */
-	size_t size_vars() const;
+    /** Generates a pgsNumber with value '0' and put it on stack. */
+    pgsVariable *one();
 
-	/** Adds a pgsStmt on stack. */
-	void push_stmt(pgsStmt * stmt);
+    /** Generates a pgsNumber with value now() and put it on stack. */
+    pgsVariable *seed();
 
-	/** Removes the last pgsStmt on stack. */
-	void pop_stmt();
-	
-	/** Gives the number of pgsStmt on stack. */
-	size_t size_stmts() const;
+    /** Generates a pgsString with the locale encoding and put it on stack. */
+    pgsVariable *encoding();
 
-	/** When an error occurs in the parser this method must be called in order
-	 * to free the memory (i.e the temporary pgsExpression & pgsStmt). */
-	void clear_stacks();
+    /** Generates an empty statement list and put it on stack. */
+    pgsStmtList *stmt_list(pgsThread *app = 0);
+
+    ////////////////////////////////////////////////
+    // For managing a new record declaration list //
+    ////////////////////////////////////////////////
+
+    /** Adds a column name to the column list. */
+    void add_column(const wxString &column);
+
+    /** Retrieves the column list. */
+    const wxArrayString &columns();
+
+    /** Clears the column list. */
+    void clear_columns();
+
+
+    /////////////////////////////////////////////
+    // For managing stacks of temporary values //
+    /////////////////////////////////////////////
+
+    /** Adds a pgsExpression on stack. */
+    void push_var(pgsExpression *var);
+
+    /** Removes the last pgsExpression on stack. */
+    void pop_var();
+
+    /** Gives the number of pgsExpression on stack. */
+    size_t size_vars() const;
+
+    /** Adds a pgsStmt on stack. */
+    void push_stmt(pgsStmt *stmt);
+
+    /** Removes the last pgsStmt on stack. */
+    void pop_stmt();
+
+    /** Gives the number of pgsStmt on stack. */
+    size_t size_stmts() const;
+
+    /** When an error occurs in the parser this method must be called in order
+     * to free the memory (i.e the temporary pgsExpression & pgsStmt). */
+    void clear_stacks();
 
 private:
 
-	pgsContext(const pgsContext & that);
+    pgsContext(const pgsContext &that);
 
-	pgsContext & operator=(const pgsContext & that);
+    pgsContext &operator=(const pgsContext &that);
 
 };
 

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,7 +19,7 @@
 
 enum
 {
-    CTL_DEFPROPSQL=500,
+    CTL_DEFPROPSQL = 500,
     CTL_DEFMSG,
     CTL_DEFLBPRIV,
     CTL_DEFSTATICGROUP,
@@ -34,7 +34,7 @@ enum
 class defaultPrivilegesOn
 {
 public:
-    defaultPrivilegesOn(const wxChar, const wxString&, const wxString&);
+    defaultPrivilegesOn(const wxChar, const wxString &, const wxString &);
 
     wxChar   m_privilegeType;
     wxString m_privilegesOn;
@@ -53,11 +53,11 @@ class ctlDefaultSecurityPanel : public wxPanel
 {
 
 public:
-    ctlDefaultSecurityPanel(pgConn* , wxNotebook* , wxImageList*);
+    ctlDefaultSecurityPanel(pgConn * , wxNotebook * , wxImageList *);
 
-    wxString GetDefaultPrivileges(const wxString& schemaName);
-    void     UpdatePrivilegePages(bool createDefPrivs, const wxString& defPrivsOnTables,
-                                  const wxString& defPrivsOnSeqs, const wxString& defPrivsOnFuncs);
+    wxString GetDefaultPrivileges(const wxString &schemaName);
+    void     UpdatePrivilegePages(bool createDefPrivs, const wxString &defPrivsOnTables,
+                                  const wxString &defPrivsOnSeqs, const wxString &defPrivsOnFuncs);
 
 protected:
     wxNotebook    *nbNotebook;
@@ -76,15 +76,16 @@ class ctlDefaultPrivilegesPanel : public wxPanel
 
 public:
 
-    ctlDefaultPrivilegesPanel(ctlDefaultSecurityPanel *, wxNotebook *, defaultPrivilegesOn&, wxImageList *);
+    ctlDefaultPrivilegesPanel(ctlDefaultSecurityPanel *, wxNotebook *, defaultPrivilegesOn &, wxImageList *);
     ~ctlDefaultPrivilegesPanel();
 
     void Update(wxString privs);
-    wxString GetDefaultPrivileges(const wxString& schemaName);
+    wxString GetDefaultPrivileges(const wxString &schemaName);
 
 protected:
 
-    typedef struct {
+    typedef struct
+    {
         wxString m_username;
         wxString m_origPriv;
         wxString m_newPriv;
@@ -111,14 +112,14 @@ protected:
     wxStaticText            *stGroup;
 
     void OnPrivSelChange(wxListEvent &ev);
-    void OnAddPriv(wxCommandEvent& ev);
+    void OnAddPriv(wxCommandEvent &ev);
     void OnGroupChange(wxCommandEvent &ev);
-    void OnDelPriv(wxCommandEvent& ev);
-    void OnPrivCheck(wxCommandEvent& ev);
-    void OnPrivCheckAll(wxCommandEvent& ev);
-    void OnPrivCheckAllGrant(wxCommandEvent& ev);
+    void OnDelPriv(wxCommandEvent &ev);
+    void OnPrivCheck(wxCommandEvent &ev);
+    void OnPrivCheckAll(wxCommandEvent &ev);
+    void OnPrivCheckAllGrant(wxCommandEvent &ev);
 
-    bool PrivCheckBoxUpdate(wxString& strUser);
+    bool PrivCheckBoxUpdate(wxString &strUser);
     void CheckGrantOpt(int index);
     bool CanGrant();
 

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -41,15 +41,15 @@ END_EVENT_TABLE();
 
 dlgProperty *pgDomainFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgDomain(this, frame, (pgDomain*)node, (pgSchema*)parent);
+    return new dlgDomain(this, frame, (pgDomain *)node, (pgSchema *)parent);
 }
 
 
 dlgDomain::dlgDomain(pgaFactory *f, frmMain *frame, pgDomain *node, pgSchema *sch)
-: dlgTypeProperty(f, frame, wxT("dlgDomain"))
+    : dlgTypeProperty(f, frame, wxT("dlgDomain"))
 {
-    schema=sch;
-    domain=node;
+    schema = sch;
+    domain = node;
 
     txtLength->Disable();
     txtPrecision->Disable();
@@ -105,12 +105,12 @@ int dlgDomain::Go(bool modal)
 
 pgObject *dlgDomain::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgObject *obj=domainFactory.CreateObjects(collection, 0, 
-        wxT("   AND d.typname=") + qtDbString(name) + 
-        wxT("\n   AND d.typnamespace=") + schema->GetOidStr() +
-        wxT("\n"));
+    pgObject *obj = domainFactory.CreateObjects(collection, 0,
+                    wxT("   AND d.typname=") + qtDbString(name) +
+                    wxT("\n   AND d.typnamespace=") + schema->GetOidStr() +
+                    wxT("\n"));
     return obj;
 }
 
@@ -120,27 +120,27 @@ void dlgDomain::CheckChange()
     if (domain)
     {
         EnableOK(txtDefault->GetValue() != domain->GetDefault()
-            || chkNotNull->GetValue() != domain->GetNotNull()
-            || cbOwner->GetValue() != domain->GetOwner()
-            || txtComment->GetValue() != domain->GetComment());
+                 || chkNotNull->GetValue() != domain->GetNotNull()
+                 || cbOwner->GetValue() != domain->GetOwner()
+                 || txtComment->GetValue() != domain->GetComment());
     }
     else
     {
-        wxString name=GetName();
-        long varlen=StrToLong(txtLength->GetValue()), 
-             varprec=StrToLong(txtPrecision->GetValue());
+        wxString name = GetName();
+        long varlen = StrToLong(txtLength->GetValue()),
+             varprec = StrToLong(txtPrecision->GetValue());
 
         txtPrecision->Enable(isVarPrec && varlen > 0);
 
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
-        CheckValid(enable, cbDatatype->GetGuessedSelection() >=0, _("Please select a datatype."));
+        CheckValid(enable, cbDatatype->GetGuessedSelection() >= 0, _("Please select a datatype."));
         CheckValid(enable, !isVarLen || txtLength->GetValue().IsEmpty()
-            || (varlen >= minVarLen && varlen <= maxVarLen && NumToStr(varlen) == txtLength->GetValue()),
-            _("Please specify valid length."));
-        CheckValid(enable, !txtPrecision->IsEnabled() 
-            || (varprec >= 0 && varprec <= varlen && NumToStr(varprec) == txtPrecision->GetValue()),
-            _("Please specify valid numeric precision (0..") + NumToStr(varlen) + wxT(")."));
+                   || (varlen >= minVarLen && varlen <= maxVarLen && NumToStr(varlen) == txtLength->GetValue()),
+                   _("Please specify valid length."));
+        CheckValid(enable, !txtPrecision->IsEnabled()
+                   || (varprec >= 0 && varprec <= varlen && NumToStr(varprec) == txtPrecision->GetValue()),
+                   _("Please specify valid numeric precision (0..") + NumToStr(varlen) + wxT(")."));
 
         EnableOK(enable);
     }
@@ -163,7 +163,7 @@ void dlgDomain::OnSelChangeTyp(wxCommandEvent &ev)
 wxString dlgDomain::GetSql()
 {
     wxString sql, name;
-    name=GetName();
+    name = GetName();
 
     if (domain)
     {
@@ -190,8 +190,8 @@ wxString dlgDomain::GetSql()
     {
         // create mode
         sql = wxT("CREATE DOMAIN ") + schema->GetQuotedPrefix() + qtIdent(name)
-            + wxT("\n   AS ") + GetQuotedTypename(cbDatatype->GetGuessedSelection());
-        
+              + wxT("\n   AS ") + GetQuotedTypename(cbDatatype->GetGuessedSelection());
+
         AppendIfFilled(sql, wxT("\n   DEFAULT "), txtDefault->GetValue());
         if (chkNotNull->GetValue())
             sql += wxT("\n   NOT NULL");

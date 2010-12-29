@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dbgTargetInfo.cpp - debugger 
+// dbgTargetInfo.cpp - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -59,24 +59,24 @@ WX_DEFINE_OBJARRAY( wsArgInfoArray );
 //    This class offers a number of (inline) member functions that you can call
 //  to extract the above information after it's been queried from the server.
 
-dbgTargetInfo::dbgTargetInfo( const wxString &target,  dbgPgConn * conn, char targetType )
+dbgTargetInfo::dbgTargetInfo( const wxString &target,  dbgPgConn *conn, char targetType )
 {
-    wxString query = 
-    	wxT("select t.*, ")
-    	wxT("  pg_catalog.oidvectortypes( t.argtypes ) as argtypenames, t.argtypes as argtypeoids,")
-    	wxT("  l.lanname, n.nspname, p.proretset, y.typname AS rettype")
-    	wxT(" from")
-    	wxT("  pldbg_get_target_info( '%s', '%c' ) t , pg_namespace n, pg_language l, pg_proc p, pg_type y")
-    	wxT(" where")
-    	wxT("  n.oid = t.schema and ")
-    	wxT("  l.oid = t.targetlang and " )
+    wxString query =
+        wxT("select t.*, ")
+        wxT("  pg_catalog.oidvectortypes( t.argtypes ) as argtypenames, t.argtypes as argtypeoids,")
+        wxT("  l.lanname, n.nspname, p.proretset, y.typname AS rettype")
+        wxT(" from")
+        wxT("  pldbg_get_target_info( '%s', '%c' ) t , pg_namespace n, pg_language l, pg_proc p, pg_type y")
+        wxT(" where")
+        wxT("  n.oid = t.schema and ")
+        wxT("  l.oid = t.targetlang and " )
         wxT("  p.oid = t.target and ")
         wxT("  y.oid = t.returntype");
- 
+
     dbgResultset *result = new dbgResultset(conn->waitForCommand(wxString::Format(query, target.c_str(), targetType)));
 
     if(result->getCommandStatus() != PGRES_TUPLES_OK)
-    	throw( std::runtime_error( result->getRawErrorMessage()));
+        throw( std::runtime_error( result->getRawErrorMessage()));
 
     m_name     	 = result->getString( wxString(COL_TARGET_NAME, wxConvUTF8));
     m_schema   	 = result->getString( wxString(COL_SCHEMA_NAME, wxConvUTF8));
@@ -103,7 +103,7 @@ dbgTargetInfo::dbgTargetInfo( const wxString &target,  dbgPgConn * conn, char ta
     m_returnType = result->getString( wxString(COL_RETURN_TYPE, wxConvUTF8));
 
     // Parse out the argument types, names, and modes
-  
+
     // By creating a tokenizer with wxTOKEN_STRTOK and a delimiter string
     // that contains ",{}", we can parse out PostgreSQL array strings like:
     //	 {int, varchar, numeric}
@@ -120,23 +120,23 @@ dbgTargetInfo::dbgTargetInfo( const wxString &target,  dbgPgConn * conn, char ta
 
     while( types.HasMoreTokens())
     {
-    	argCount++;
+        argCount++;
 
-    	wxString	argName = names.GetNextToken();
+        wxString	argName = names.GetNextToken();
 
-    	if( argName.IsEmpty())
-    		argName.Printf( wxT( "$%d" ), argCount );
+        if( argName.IsEmpty())
+            argName.Printf( wxT( "$%d" ), argCount );
 
-    	wsArgInfo	argInfo( argName, types.GetNextToken(), modes.GetNextToken(), typeOids.GetNextToken());
+        wsArgInfo	argInfo( argName, types.GetNextToken(), modes.GetNextToken(), typeOids.GetNextToken());
 
-    	if( argInfo.getMode() == wxT( "i" ))
-    		m_argInCount++;
-    	else if( argInfo.getMode() == wxT( "o" ))
-    		m_argOutCount++;
-    	else if( argInfo.getMode() == wxT( "b" ))
-    		m_argInOutCount++;
+        if( argInfo.getMode() == wxT( "i" ))
+            m_argInCount++;
+        else if( argInfo.getMode() == wxT( "o" ))
+            m_argOutCount++;
+        else if( argInfo.getMode() == wxT( "b" ))
+            m_argInOutCount++;
 
-    	m_argInfo.Add( argInfo );
+        m_argInfo.Add( argInfo );
     }
 
     // Get the package initializer function OID. On 8.1 or below, this is
@@ -169,7 +169,7 @@ dbgTargetInfo::dbgTargetInfo( const wxString &target,  dbgPgConn * conn, char ta
 //    This operator function makes it easy to index into the m_argInfo[] array
 //    using concise syntax.
 
-wsArgInfo & dbgTargetInfo::operator[]( int index )
+wsArgInfo &dbgTargetInfo::operator[]( int index )
 {
     return( m_argInfo[index] );
 }
@@ -177,7 +177,7 @@ wsArgInfo & dbgTargetInfo::operator[]( int index )
 ////////////////////////////////////////////////////////////////////////////////
 // wsArgInfo constructor
 //
-//    A wsArgInfo object contains information about a function (or procedure) 
+//    A wsArgInfo object contains information about a function (or procedure)
 //  argument.  Inside of each wsArgInfo object, we store the name of the argument,
 //    the argument type, and the argument mode (IN (i), OUT (o), or INOUT (b)).
 //
@@ -203,19 +203,19 @@ wsArgInfo::wsArgInfo( const wxString &argName, const wxString &argType, const wx
 //    quoted).  If the argument value (entered by the user) is blank, we return NULL
 //    instead of a quoted string.
 //
-//    NOTE: we quote all value regardless of type - it's perfectly valid to quote a 
+//    NOTE: we quote all value regardless of type - it's perfectly valid to quote a
 //        numeric (or boolean) value in PostgreSQL
 
 const wxString wsArgInfo::quoteValue()
 {
     if (m_value == wxT(""))
-    	return (wxT("NULL"));
+        return (wxT("NULL"));
     else if (m_value == wxT("''"))
         return (wxT("''"));
     else if (m_value == wxT("\\'\\'"))
         return (wxT("'\\'\\''"));
     else if (m_value[0] == '\'' )
-    	return (m_value);
+        return (m_value);
     else
-    	return(wxString(wxT("'") + m_value + wxT("'")));
+        return(wxString(wxT("'") + m_value + wxT("'")));
 }

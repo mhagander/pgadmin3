@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,7 +25,7 @@
 #include "utils/pgDefs.h"
 
 pgSet::pgSet()
-: conv(wxConvLibc)
+    : conv(wxConvLibc)
 {
     conn = 0;
     res = 0;
@@ -35,7 +35,7 @@ pgSet::pgSet()
 }
 
 pgSet::pgSet(PGresult *newRes, pgConn *newConn, wxMBConv &cnv, bool needColQt)
-: conv(cnv)
+    : conv(cnv)
 {
     needColQuoting = needColQt;
 
@@ -52,11 +52,11 @@ pgSet::pgSet(PGresult *newRes, pgConn *newConn, wxMBConv &cnv, bool needColQt)
     else
     {
         nCols = PQnfields(res);
-        for (int x = 0; x < nCols+1; x++)
+        for (int x = 0; x < nCols + 1; x++)
         {
             colTypes.Add(wxT(""));
             colFullTypes.Add(wxT(""));
-			colClasses.Add(0);
+            colClasses.Add(0);
         }
 
         nRows = PQntuples(res);
@@ -89,7 +89,7 @@ long pgSet::ColTypeMod(const int col) const
 
 long pgSet::GetInsertedCount() const
 {
-    char *cnt=PQcmdTuples(res);
+    char *cnt = PQcmdTuples(res);
     if (!*cnt)
         return -1;
     else
@@ -104,9 +104,9 @@ pgTypClass pgSet::ColTypClass(const int col) const
     if (colClasses[col] != 0)
         return (pgTypClass)colClasses[col];
 
-    wxString typoid=ExecuteScalar(
-        wxT("SELECT CASE WHEN typbasetype=0 THEN oid else typbasetype END AS basetype\n")
-        wxT("  FROM pg_type WHERE oid=") + NumToStr(ColTypeOid(col)));
+    wxString typoid = ExecuteScalar(
+                          wxT("SELECT CASE WHEN typbasetype=0 THEN oid else typbasetype END AS basetype\n")
+                          wxT("  FROM pg_type WHERE oid=") + NumToStr(ColTypeOid(col)));
 
     switch (StrToLong(typoid))
     {
@@ -125,28 +125,28 @@ pgTypClass pgSet::ColTypClass(const int col) const
         case PGOID_TYPE_MONEY:
         case PGOID_TYPE_BIT:
         case PGOID_TYPE_NUMERIC:
-			colClasses[col] = PGTYPCLASS_NUMERIC;
-			break;
+            colClasses[col] = PGTYPCLASS_NUMERIC;
+            break;
         case PGOID_TYPE_BYTEA:
         case PGOID_TYPE_CHAR:
         case PGOID_TYPE_NAME:
         case PGOID_TYPE_TEXT:
         case PGOID_TYPE_VARCHAR:
             colClasses[col] = PGTYPCLASS_STRING;
-			break;
+            break;
         case PGOID_TYPE_TIMESTAMP:
         case PGOID_TYPE_TIMESTAMPTZ:
         case PGOID_TYPE_TIME:
         case PGOID_TYPE_TIMETZ:
         case PGOID_TYPE_INTERVAL:
             colClasses[col] = PGTYPCLASS_DATE;
-			break;
+            break;
         default:
             colClasses[col] = PGTYPCLASS_OTHER;
-			break;
+            break;
     }
 
-	return (pgTypClass)colClasses[col];
+    return (pgTypClass)colClasses[col];
 }
 
 
@@ -198,7 +198,7 @@ wxString pgSet::ColName(const int col) const
 int pgSet::ColNumber(const wxString &colname) const
 {
     int col;
-    
+
     if (needColQuoting)
     {
         wxString quotedColName = colname;
@@ -232,13 +232,13 @@ char *pgSet::GetCharPtr(const int col) const
 {
     wxASSERT(col < nCols && col >= 0);
 
-    return PQgetvalue(res, pos -1, col);
+    return PQgetvalue(res, pos - 1, col);
 }
 
 
 char *pgSet::GetCharPtr(const wxString &col) const
 {
-    return PQgetvalue(res, pos -1, ColNumber(col));
+    return PQgetvalue(res, pos - 1, ColNumber(col));
 }
 
 
@@ -250,7 +250,7 @@ wxString pgSet::GetVal(const int col) const
 }
 
 
-wxString pgSet::GetVal(const wxString& colname) const
+wxString pgSet::GetVal(const wxString &colname) const
 {
     return GetVal(ColNumber(colname));
 }
@@ -260,7 +260,7 @@ long pgSet::GetLong(const int col) const
 {
     wxASSERT(col < nCols && col >= 0);
 
-    char *c=PQgetvalue(res, pos-1, col);
+    char *c = PQgetvalue(res, pos - 1, col);
     if (c)
         return atol(c);
     else
@@ -270,7 +270,7 @@ long pgSet::GetLong(const int col) const
 
 long pgSet::GetLong(const wxString &col) const
 {
-    char *c=PQgetvalue(res, pos-1, ColNumber(col));
+    char *c = PQgetvalue(res, pos - 1, ColNumber(col));
     if (c)
         return atol(c);
     else
@@ -282,7 +282,7 @@ bool pgSet::GetBool(const int col) const
 {
     wxASSERT(col < nCols && col >= 0);
 
-    char *c=PQgetvalue(res, pos-1, col);
+    char *c = PQgetvalue(res, pos - 1, col);
     if (c)
     {
         if (*c == 't' || *c == '1' || !strcmp(c, "on"))
@@ -303,7 +303,7 @@ wxDateTime pgSet::GetDateTime(const int col) const
     wxASSERT(col < nCols && col >= 0);
 
     wxDateTime dt;
-    wxString str=GetVal(col);
+    wxString str = GetVal(col);
     /* This hasn't just been used. ( Is not infinity ) */
     if (!str.IsEmpty())
         dt.ParseDateTime(str);
@@ -322,7 +322,7 @@ wxDateTime pgSet::GetDate(const int col) const
     wxASSERT(col < nCols && col >= 0);
 
     wxDateTime dt;
-    wxString str=GetVal(col);
+    wxString str = GetVal(col);
     /* This hasn't just been used. ( Is not infinity ) */
     if (!str.IsEmpty())
         dt.ParseDate(str);
@@ -354,7 +354,7 @@ wxULongLong pgSet::GetLongLong(const int col) const
 {
     wxASSERT(col < nCols && col >= 0);
 
-    char *c=PQgetvalue(res, pos-1, col);
+    char *c = PQgetvalue(res, pos - 1, col);
     if (c)
         return atolonglong(c);
     else
@@ -371,7 +371,7 @@ OID pgSet::GetOid(const int col) const
 {
     wxASSERT(col < nCols && col >= 0);
 
-    char *c=PQgetvalue(res, pos-1, col);
+    char *c = PQgetvalue(res, pos - 1, col);
     if (c)
         return (OID)strtoul(c, 0, 10);
     else
@@ -385,7 +385,7 @@ OID pgSet::GetOid(const wxString &col) const
 }
 
 
-wxString pgSet::ExecuteScalar(const wxString& sql) const
+wxString pgSet::ExecuteScalar(const wxString &sql) const
 {
     return conn->ExecuteScalar(sql);
 }
@@ -395,15 +395,15 @@ wxString pgSet::ExecuteScalar(const wxString& sql) const
 
 pgSetIterator::pgSetIterator(pgConn *conn, const wxString &qry)
 {
-    set=conn->ExecuteSet(qry);
-    first=true;
+    set = conn->ExecuteSet(qry);
+    first = true;
 }
 
 
 pgSetIterator::pgSetIterator(pgSet *s)
 {
-    set=s;
-    first=true;
+    set = s;
+    first = true;
 }
 
 
@@ -423,7 +423,7 @@ bool pgSetIterator::RowsLeft()
     {
         if (!set->NumRows())
             return false;
-        first=false;
+        first = false;
     }
     else
         set->MoveNext();

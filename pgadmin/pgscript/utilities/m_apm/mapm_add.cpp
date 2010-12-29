@@ -1,5 +1,5 @@
 
-/* 
+/*
  *  M_APM  -  mapm_add.c
  *
  *  Copyright (C) 1999 - 2007   Michael C. Ring
@@ -35,287 +35,295 @@ static	int	M_add_firsttime = TRUE;
 /****************************************************************************/
 void	M_free_all_add()
 {
-if (M_add_firsttime == FALSE)
-  {
-   m_apm_free(M_work1);
-   m_apm_free(M_work2);
-   M_add_firsttime = TRUE;
-  }
+    if (M_add_firsttime == FALSE)
+    {
+        m_apm_free(M_work1);
+        m_apm_free(M_work2);
+        M_add_firsttime = TRUE;
+    }
 }
 /****************************************************************************/
 void	m_apm_add(M_APM r, M_APM a, M_APM b)
 {
-int	j, carry, sign, aexp, bexp, adigits, bdigits;
+    int	j, carry, sign, aexp, bexp, adigits, bdigits;
 
-if (M_add_firsttime)
-  {
-   M_add_firsttime = FALSE;
-   M_work1 = m_apm_init();
-   M_work2 = m_apm_init();
-  }
+    if (M_add_firsttime)
+    {
+        M_add_firsttime = FALSE;
+        M_work1 = m_apm_init();
+        M_work2 = m_apm_init();
+    }
 
-if (a->m_apm_sign == 0)
-  {
-   m_apm_copy(r,b);
-   return;
-  }
+    if (a->m_apm_sign == 0)
+    {
+        m_apm_copy(r, b);
+        return;
+    }
 
-if (b->m_apm_sign == 0)
-  {
-   m_apm_copy(r,a);
-   return;
-  }
-  
-if (a->m_apm_sign == 1 && b->m_apm_sign == -1)
-  {
-   b->m_apm_sign = 1;
-   m_apm_subtract(r,a,b);
-   b->m_apm_sign = -1;
-   return;
-  }
+    if (b->m_apm_sign == 0)
+    {
+        m_apm_copy(r, a);
+        return;
+    }
 
-if (a->m_apm_sign == -1 && b->m_apm_sign == 1)
-  {
-   a->m_apm_sign = 1;
-   m_apm_subtract(r,b,a);
-   a->m_apm_sign = -1;
-   return;
-  }
+    if (a->m_apm_sign == 1 && b->m_apm_sign == -1)
+    {
+        b->m_apm_sign = 1;
+        m_apm_subtract(r, a, b);
+        b->m_apm_sign = -1;
+        return;
+    }
 
-sign = a->m_apm_sign;         /* signs are the same, result will be same */
+    if (a->m_apm_sign == -1 && b->m_apm_sign == 1)
+    {
+        a->m_apm_sign = 1;
+        m_apm_subtract(r, b, a);
+        a->m_apm_sign = -1;
+        return;
+    }
 
-aexp = a->m_apm_exponent;
-bexp = b->m_apm_exponent;
+    sign = a->m_apm_sign;         /* signs are the same, result will be same */
 
-m_apm_copy(M_work1, a);
-m_apm_copy(M_work2, b);
+    aexp = a->m_apm_exponent;
+    bexp = b->m_apm_exponent;
 
-/*
- *  scale by at least 1 factor of 10 in case the MSB carrys
- */
+    m_apm_copy(M_work1, a);
+    m_apm_copy(M_work2, b);
 
-if (aexp == bexp)
-  {
-   M_apm_scale(M_work1, 2);   /* shift 2 digits == 1 byte for efficiency */
-   M_apm_scale(M_work2, 2);
-  }
-else
-  {
-   if (aexp > bexp)
-     {
-      M_apm_scale(M_work1, 2);
-      M_apm_scale(M_work2, (aexp + 2 - bexp));
-     }
-   else            /*  aexp < bexp  */
-     {
-      M_apm_scale(M_work2, 2);
-      M_apm_scale(M_work1, (bexp + 2 - aexp));
-     }
-  }
+    /*
+     *  scale by at least 1 factor of 10 in case the MSB carrys
+     */
 
-adigits = M_work1->m_apm_datalength;
-bdigits = M_work2->m_apm_datalength;
-
-if (adigits >= bdigits)
-  {
-   m_apm_copy(r, M_work1);
-   j = (bdigits + 1) >> 1;
-   carry = 0;
-
-   while (TRUE)
-     {
-      j--;
-      r->m_apm_data[j] += carry + M_work2->m_apm_data[j];
-
-      if (r->m_apm_data[j] >= 100)
+    if (aexp == bexp)
+    {
+        M_apm_scale(M_work1, 2);   /* shift 2 digits == 1 byte for efficiency */
+        M_apm_scale(M_work2, 2);
+    }
+    else
+    {
+        if (aexp > bexp)
         {
-         r->m_apm_data[j] -= 100;
-	 carry = 1;
-	}
-      else
-         carry = 0;
-
-      if (j == 0) 
-        break;
-     }
-  }
-else
-  {
-   m_apm_copy(r, M_work2);
-   j = (adigits + 1) >> 1;
-   carry = 0;
-
-   while (TRUE)
-     {
-      j--;
-      r->m_apm_data[j] += carry + M_work1->m_apm_data[j];
-
-      if (r->m_apm_data[j] >= 100)
+            M_apm_scale(M_work1, 2);
+            M_apm_scale(M_work2, (aexp + 2 - bexp));
+        }
+        else            /*  aexp < bexp  */
         {
-         r->m_apm_data[j] -= 100;
-	 carry = 1;
-	}
-      else
-         carry = 0;
+            M_apm_scale(M_work2, 2);
+            M_apm_scale(M_work1, (bexp + 2 - aexp));
+        }
+    }
 
-      if (j == 0) 
-        break;
-     }
-  }
+    adigits = M_work1->m_apm_datalength;
+    bdigits = M_work2->m_apm_datalength;
 
-r->m_apm_sign = sign;
+    if (adigits >= bdigits)
+    {
+        m_apm_copy(r, M_work1);
+        j = (bdigits + 1) >> 1;
+        carry = 0;
 
-M_apm_normalize(r);
+        while (TRUE)
+        {
+            j--;
+            r->m_apm_data[j] += carry + M_work2->m_apm_data[j];
+
+            if (r->m_apm_data[j] >= 100)
+            {
+                r->m_apm_data[j] -= 100;
+                carry = 1;
+            }
+            else
+                carry = 0;
+
+            if (j == 0)
+                break;
+        }
+    }
+    else
+    {
+        m_apm_copy(r, M_work2);
+        j = (adigits + 1) >> 1;
+        carry = 0;
+
+        while (TRUE)
+        {
+            j--;
+            r->m_apm_data[j] += carry + M_work1->m_apm_data[j];
+
+            if (r->m_apm_data[j] >= 100)
+            {
+                r->m_apm_data[j] -= 100;
+                carry = 1;
+            }
+            else
+                carry = 0;
+
+            if (j == 0)
+                break;
+        }
+    }
+
+    r->m_apm_sign = sign;
+
+    M_apm_normalize(r);
 }
 /****************************************************************************/
 void	m_apm_subtract(M_APM r, M_APM a, M_APM b)
 {
-int	itmp, j, flag, icompare, sign, aexp, bexp, 
-	borrow, adigits, bdigits;
+    int	itmp, j, flag, icompare, sign, aexp, bexp,
+        borrow, adigits, bdigits;
 
-if (M_add_firsttime)
-  {
-   M_add_firsttime = FALSE;
-   M_work1 = m_apm_init();
-   M_work2 = m_apm_init();
-  }
+    if (M_add_firsttime)
+    {
+        M_add_firsttime = FALSE;
+        M_work1 = m_apm_init();
+        M_work2 = m_apm_init();
+    }
 
-if (b->m_apm_sign == 0)
-  {
-   m_apm_copy(r,a);
-   return;
-  }
-  
-if (a->m_apm_sign == 0)
-  {
-   m_apm_copy(r,b);
-   r->m_apm_sign = -(r->m_apm_sign);
-   return;
-  }
+    if (b->m_apm_sign == 0)
+    {
+        m_apm_copy(r, a);
+        return;
+    }
 
-if (a->m_apm_sign == 1 && b->m_apm_sign == -1)
-  {
-   b->m_apm_sign = 1;
-   m_apm_add(r,a,b);
-   b->m_apm_sign = -1;
-   return;
-  }
+    if (a->m_apm_sign == 0)
+    {
+        m_apm_copy(r, b);
+        r->m_apm_sign = -(r->m_apm_sign);
+        return;
+    }
 
-if (a->m_apm_sign == -1 && b->m_apm_sign == 1)
-  {
-   b->m_apm_sign = -1;
-   m_apm_add(r,a,b);
-   b->m_apm_sign = 1;
-   return;
-  }
+    if (a->m_apm_sign == 1 && b->m_apm_sign == -1)
+    {
+        b->m_apm_sign = 1;
+        m_apm_add(r, a, b);
+        b->m_apm_sign = -1;
+        return;
+    }
 
-/* now, the signs are the same  */
-/* make a positive working copy */
+    if (a->m_apm_sign == -1 && b->m_apm_sign == 1)
+    {
+        b->m_apm_sign = -1;
+        m_apm_add(r, a, b);
+        b->m_apm_sign = 1;
+        return;
+    }
 
-m_apm_absolute_value(M_work1, a);
-m_apm_absolute_value(M_work2, b);
+    /* now, the signs are the same  */
+    /* make a positive working copy */
 
-/* are they the same??  if so, the result is zero */
+    m_apm_absolute_value(M_work1, a);
+    m_apm_absolute_value(M_work2, b);
 
-if ((icompare = m_apm_compare(M_work1, M_work2)) == 0)
-  {
-   M_set_to_zero(r);
-   return;
-  }
+    /* are they the same??  if so, the result is zero */
 
-if (icompare == 1)             /*  |a| > |b|  (do A-B)  */
-  {
-   flag = TRUE;
-   sign = a->m_apm_sign;     
-  }
-else                           /*  |b| > |a|  (do B-A)  */
-  {
-   flag = FALSE;
-   sign = -(a->m_apm_sign);     
-  }
+    if ((icompare = m_apm_compare(M_work1, M_work2)) == 0)
+    {
+        M_set_to_zero(r);
+        return;
+    }
 
-aexp = M_work1->m_apm_exponent;
-bexp = M_work2->m_apm_exponent;
+    if (icompare == 1)             /*  |a| > |b|  (do A-B)  */
+    {
+        flag = TRUE;
+        sign = a->m_apm_sign;
+    }
+    else                           /*  |b| > |a|  (do B-A)  */
+    {
+        flag = FALSE;
+        sign = -(a->m_apm_sign);
+    }
 
-if (aexp > bexp)
-  M_apm_scale(M_work2, (aexp - bexp));
+    aexp = M_work1->m_apm_exponent;
+    bexp = M_work2->m_apm_exponent;
 
-if (aexp < bexp)
-  M_apm_scale(M_work1, (bexp - aexp));
+    if (aexp > bexp)
+        M_apm_scale(M_work2, (aexp - bexp));
 
-adigits = M_work1->m_apm_datalength;
-bdigits = M_work2->m_apm_datalength;
+    if (aexp < bexp)
+        M_apm_scale(M_work1, (bexp - aexp));
 
-if (adigits > bdigits)
-  M_apm_pad(M_work2, adigits);
+    adigits = M_work1->m_apm_datalength;
+    bdigits = M_work2->m_apm_datalength;
 
-if (adigits < bdigits)
-  M_apm_pad(M_work1, bdigits);
+    if (adigits > bdigits)
+        M_apm_pad(M_work2, adigits);
 
-if (flag)		/* perform A-B,  M_work1 - M_work2 */
-  {
-   m_apm_copy(r, M_work1);
-   j = (r->m_apm_datalength + 1) >> 1;
-   borrow = 0;
+    if (adigits < bdigits)
+        M_apm_pad(M_work1, bdigits);
 
-   while (TRUE)
-     {
-      j--;
-      itmp = (int)r->m_apm_data[j] - ((int)M_work2->m_apm_data[j] + borrow);
+    if (flag)		/* perform A-B,  M_work1 - M_work2 */
+    {
+        m_apm_copy(r, M_work1);
+        j = (r->m_apm_datalength + 1) >> 1;
+        borrow = 0;
 
-      if (itmp >= 0)
+        while (TRUE)
         {
-         r->m_apm_data[j] = (UCHAR)itmp;
-	 borrow = 0;
+            j--;
+            itmp = (int)r->m_apm_data[j] - ((int)M_work2->m_apm_data[j] + borrow);
+
+            if (itmp >= 0)
+            {
+                r->m_apm_data[j] = (UCHAR)itmp;
+                borrow = 0;
+            }
+            else
+            {
+                r->m_apm_data[j] = (UCHAR)(100 + itmp);
+                borrow = 1;
+            }
+
+            if (j == 0)
+                break;
         }
-      else
+    }
+    else   		/* perform B-A,  M_work2 - M_work1 */
+    {
+        m_apm_copy(r, M_work2);
+        j = (r->m_apm_datalength + 1) >> 1;
+        borrow = 0;
+
+        while (TRUE)
         {
-         r->m_apm_data[j] = (UCHAR)(100 + itmp);
-	 borrow = 1;
-	}
+            j--;
+            itmp = (int)r->m_apm_data[j] - ((int)M_work1->m_apm_data[j] + borrow);
 
-      if (j == 0) 
-        break;
-     }
-  }
-else   		/* perform B-A,  M_work2 - M_work1 */
-  {
-   m_apm_copy(r, M_work2);
-   j = (r->m_apm_datalength + 1) >> 1;
-   borrow = 0;
+            if (itmp >= 0)
+            {
+                r->m_apm_data[j] = (UCHAR)itmp;
+                borrow = 0;
+            }
+            else
+            {
+                r->m_apm_data[j] = (UCHAR)(100 + itmp);
+                borrow = 1;
+            }
 
-   while (TRUE)
-     {
-      j--;
-      itmp = (int)r->m_apm_data[j] - ((int)M_work1->m_apm_data[j] + borrow);
-
-      if (itmp >= 0)
-        {
-         r->m_apm_data[j] = (UCHAR)itmp;
-	 borrow = 0;
+            if (j == 0)
+                break;
         }
-      else
-        {
-         r->m_apm_data[j] = (UCHAR)(100 + itmp);
-	 borrow = 1;
-	}
+    }
 
-      if (j == 0) 
-        break;
-     }
-  }
-   
-r->m_apm_sign = sign;
+    r->m_apm_sign = sign;
 
-M_apm_normalize(r);
+    M_apm_normalize(r);
 }
 /****************************************************************************/
 
 #ifdef __cplusplus
 
-MAPM operator+(const MAPM &a,const MAPM &b)
-	{MAPM ret;m_apm_add(ret.val(),a.cval(),b.cval());return ret;}
-MAPM operator-(const MAPM &a,const MAPM &b)
-	{MAPM ret;m_apm_subtract(ret.val(),a.cval(),b.cval());return ret;}
+MAPM operator+(const MAPM &a, const MAPM &b)
+{
+    MAPM ret;
+    m_apm_add(ret.val(), a.cval(), b.cval());
+    return ret;
+}
+MAPM operator-(const MAPM &a, const MAPM &b)
+{
+    MAPM ret;
+    m_apm_subtract(ret.val(), a.cval(), b.cval());
+    return ret;
+}
 
 #endif

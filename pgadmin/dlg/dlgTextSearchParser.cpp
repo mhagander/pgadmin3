@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -48,14 +48,14 @@ END_EVENT_TABLE();
 
 dlgProperty *pgTextSearchParserFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgTextSearchParser(this, frame, (pgTextSearchParser*)node, (pgSchema*)parent);
+    return new dlgTextSearchParser(this, frame, (pgTextSearchParser *)node, (pgSchema *)parent);
 }
 
 dlgTextSearchParser::dlgTextSearchParser(pgaFactory *f, frmMain *frame, pgTextSearchParser *node, pgSchema *sch)
-: dlgTypeProperty(f, frame, wxT("dlgTextSearchParser"))
+    : dlgTypeProperty(f, frame, wxT("dlgTextSearchParser"))
 {
-    schema=sch;
-    parser=node;
+    schema = sch;
+    parser = node;
 }
 
 
@@ -189,9 +189,9 @@ int dlgTextSearchParser::Go(bool modal)
 
 pgObject *dlgTextSearchParser::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=textSearchParserFactory.CreateObjects(collection, 0,
-         wxT("\n   AND prs.prsname=") + qtDbString(GetName()) +
-         wxT("\n   AND prs.prsnamespace=") + schema->GetOidStr());
+    pgObject *obj = textSearchParserFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND prs.prsname=") + qtDbString(GetName()) +
+                    wxT("\n   AND prs.prsnamespace=") + schema->GetOidStr());
 
     return obj;
 }
@@ -202,12 +202,12 @@ void dlgTextSearchParser::CheckChange()
     if (parser)
     {
         EnableOK(txtName->GetValue() != parser->GetName()
-            || txtComment->GetValue() != parser->GetComment());
+                 || txtComment->GetValue() != parser->GetComment());
     }
     else
     {
-        wxString name=GetName();
-        bool enable=true;
+        wxString name = GetName();
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
         CheckValid(enable, cbStart->GetValue().Length() > 0 , _("Please select a start function."));
         CheckValid(enable, cbGetToken->GetValue().Length() > 0 , _("Please select a gettoken function."));
@@ -228,7 +228,7 @@ void dlgTextSearchParser::OnChange(wxCommandEvent &ev)
 wxString dlgTextSearchParser::GetSql()
 {
     wxString sql;
-    wxString objname=schema->GetQuotedPrefix() + qtIdent(GetName());
+    wxString objname = schema->GetQuotedPrefix() + qtIdent(GetName());
 
     if (parser)
     {
@@ -239,15 +239,15 @@ wxString dlgTextSearchParser::GetSql()
     {
         // create mode
         sql = wxT("CREATE TEXT SEARCH PARSER ")
-            + schema->GetQuotedPrefix() + GetName()
-            + wxT(" (")
-            + wxT("\n  START = ") + cbStart->GetValue()
-            + wxT(",\n  GETTOKEN = ") + cbGetToken->GetValue()
-            + wxT(",\n  END = ") + cbEnd->GetValue()
-            + wxT(",\n  LEXTYPES = ") + cbLextypes->GetValue();
-        
+              + schema->GetQuotedPrefix() + GetName()
+              + wxT(" (")
+              + wxT("\n  START = ") + cbStart->GetValue()
+              + wxT(",\n  GETTOKEN = ") + cbGetToken->GetValue()
+              + wxT(",\n  END = ") + cbEnd->GetValue()
+              + wxT(",\n  LEXTYPES = ") + cbLextypes->GetValue();
+
         AppendIfFilled(sql, wxT(",\n   HEADLINE="), cbHeadline->GetValue());
-        
+
         sql += wxT("\n);\n");
 
     }

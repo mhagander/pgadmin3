@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgSynonym.h - EnterpriseDB Synonym property 
+// dlgSynonym.h - EnterpriseDB Synonym property
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -32,11 +32,20 @@ public:
     pgObject *CreateObject(pgCollection *collection);
     pgObject *GetObject();
 
-    wxString GetHelpPage(bool forCreate) const { return wxT("pg/sql-createpubsynonym"); }
+    wxString GetHelpPage(bool forCreate) const
+    {
+        return wxT("pg/sql-createpubsynonym");
+    }
 
 private:
-    void OnChangeTargetType(wxCommandEvent &ev) { ProcessTypeChange(); };
-    void OnChangeTargetSchema(wxCommandEvent &ev) { ProcessSchemaChange(); };
+    void OnChangeTargetType(wxCommandEvent &ev)
+    {
+        ProcessTypeChange();
+    };
+    void OnChangeTargetSchema(wxCommandEvent &ev)
+    {
+        ProcessSchemaChange();
+    };
     void ProcessTypeChange();
     void ProcessSchemaChange();
 

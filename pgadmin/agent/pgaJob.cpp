@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -23,15 +23,15 @@
 #include "agent/pgaStep.h"
 #include "agent/pgaSchedule.h"
 
-pgaJob::pgaJob(const wxString& newName)
-: pgServerObject(jobFactory, newName)
+pgaJob::pgaJob(const wxString &newName)
+    : pgServerObject(jobFactory, newName)
 {
 }
 
 wxString pgaJob::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -59,7 +59,7 @@ wxString pgaJob::GetTranslatedMessage(int kindOfMessage) const
             message = _("pgAgent job dependents");
             break;
     }
-    
+
     if (!message.IsEmpty())
         message += wxT(" ") + GetName();
 
@@ -77,7 +77,7 @@ int pgaJob::GetIconId()
 
 wxMenu *pgaJob::GetNewMenu()
 {
-    wxMenu *menu=pgObject::GetNewMenu();
+    wxMenu *menu = pgObject::GetNewMenu();
     if (1) // check priv.
     {
         stepFactory.AppendMenu(menu);
@@ -97,7 +97,7 @@ void pgaJob::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
 
         browser->RemoveDummyChild(this);
 
@@ -115,17 +115,17 @@ void pgaJob::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
         properties->AppendItem(_("Name"), GetName());
         properties->AppendItem(_("ID"), GetRecId());
         properties->AppendItem(_("Enabled"), GetEnabled());
-		properties->AppendItem(_("Host agent"), GetHostAgent());
+        properties->AppendItem(_("Host agent"), GetHostAgent());
         properties->AppendItem(_("Job class"), GetJobclass());
         properties->AppendItem(_("Created"), GetCreated());
         properties->AppendItem(_("Changed"), GetChanged());
         properties->AppendItem(_("Next run"), GetNextrun());
         properties->AppendItem(_("Last run"), GetLastrun());
         properties->AppendItem(_("Last result"), GetLastresult());
-		if (!GetCurrentAgent().IsEmpty())
-			properties->AppendItem(_("Running at"), GetCurrentAgent());
-		else
-			properties->AppendItem(_("Running at"), _("Not currently running"));
+        if (!GetCurrentAgent().IsEmpty())
+            properties->AppendItem(_("Running at"), GetCurrentAgent());
+        else
+            properties->AppendItem(_("Running at"), _("Not currently running"));
 
         properties->AppendItem(_("Comment"), firstLineOnly(GetComment()));
     }
@@ -135,11 +135,11 @@ void pgaJob::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *proper
 
 pgObject *pgaJob::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *job=0;
+    pgObject *job = 0;
 
-    pgObject *obj=browser->GetObject(browser->GetItemParent(item));
+    pgObject *obj = browser->GetObject(browser->GetItemParent(item));
     if (obj->IsCollection())
-        job = jobFactory.CreateObjects((pgCollection*)obj, 0, wxT("\n   WHERE j.jobid=") + NumToStr(GetRecId()));
+        job = jobFactory.CreateObjects((pgCollection *)obj, 0, wxT("\n   WHERE j.jobid=") + NumToStr(GetRecId()));
 
     return job;
 }
@@ -148,35 +148,35 @@ pgObject *pgaJob::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgaJobFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgaJob *job=0;
+    pgaJob *job = 0;
 
-    pgSet *jobs= collection->GetConnection()->ExecuteSet(
-       wxT("SELECT j.*, cl.*, ag.*, sub.jlgstatus AS joblastresult ")
-       wxT("  FROM pgagent.pga_job j JOIN")
-       wxT("  pgagent.pga_jobclass cl ON cl.jclid=jobjclid LEFT OUTER JOIN")
-       wxT("  pgagent.pga_jobagent ag ON ag.jagpid=jobagentid LEFT OUTER JOIN")
-       wxT("  (SELECT DISTINCT ON (jlgjobid) jlgstatus, jlgjobid")
-       wxT("   FROM pgagent.pga_joblog")
-       wxT("  ORDER BY jlgjobid, jlgid desc) sub ON sub.jlgjobid = j.jobid ")
-       + restriction +
-       wxT("ORDER BY jobname;"));
+    pgSet *jobs = collection->GetConnection()->ExecuteSet(
+                      wxT("SELECT j.*, cl.*, ag.*, sub.jlgstatus AS joblastresult ")
+                      wxT("  FROM pgagent.pga_job j JOIN")
+                      wxT("  pgagent.pga_jobclass cl ON cl.jclid=jobjclid LEFT OUTER JOIN")
+                      wxT("  pgagent.pga_jobagent ag ON ag.jagpid=jobagentid LEFT OUTER JOIN")
+                      wxT("  (SELECT DISTINCT ON (jlgjobid) jlgstatus, jlgjobid")
+                      wxT("   FROM pgagent.pga_joblog")
+                      wxT("  ORDER BY jlgjobid, jlgid desc) sub ON sub.jlgjobid = j.jobid ")
+                      + restriction +
+                      wxT("ORDER BY jobname;"));
 
     if (jobs)
     {
         while (!jobs->Eof())
         {
-			wxString status;
-			if (jobs->GetVal(wxT("joblastresult")) == wxT("r"))
+            wxString status;
+            if (jobs->GetVal(wxT("joblastresult")) == wxT("r"))
                 status = _("Running");
-		    else if (jobs->GetVal(wxT("joblastresult")) == wxT("s"))
+            else if (jobs->GetVal(wxT("joblastresult")) == wxT("s"))
                 status = _("Successful");
-			else if (jobs->GetVal(wxT("joblastresult")) == wxT("f"))
+            else if (jobs->GetVal(wxT("joblastresult")) == wxT("f"))
                 status = _("Failed");
-			else if (jobs->GetVal(wxT("joblastresult")) == wxT("d"))
+            else if (jobs->GetVal(wxT("joblastresult")) == wxT("d"))
                 status = _("Aborted");
-        	else if (jobs->GetVal(wxT("joblastresult")) == wxT("i"))
+            else if (jobs->GetVal(wxT("joblastresult")) == wxT("i"))
                 status = _("No steps");
-			else
+            else
                 status = _("Unknown");
 
             job = new pgaJob(jobs->GetVal(wxT("jobname")));
@@ -186,24 +186,24 @@ pgObject *pgaJobFactory::CreateObjects(pgCollection *collection, ctlTree *browse
 
             job->iSetEnabled(jobs->GetBool(wxT("jobenabled")));
             job->iSetJobclass(jobs->GetVal(wxT("jclname")));
-			job->iSetHostAgent(jobs->GetVal(wxT("jobhostagent")));
+            job->iSetHostAgent(jobs->GetVal(wxT("jobhostagent")));
             job->iSetCreated(jobs->GetDateTime(wxT("jobcreated")));
             job->iSetChanged(jobs->GetDateTime(wxT("jobchanged")));
             job->iSetNextrun(jobs->GetDateTime(wxT("jobnextrun")));
             job->iSetLastrun(jobs->GetDateTime(wxT("joblastrun")));
             job->iSetLastresult(status);
-			job->iSetCurrentAgent(jobs->GetVal(wxT("jagstation")));
+            job->iSetCurrentAgent(jobs->GetVal(wxT("jagstation")));
 
             if (browser)
             {
                 browser->AppendObject(collection, job);
-				jobs->MoveNext();
+                jobs->MoveNext();
             }
             else
                 break;
         }
 
-		delete jobs;
+        delete jobs;
     }
     return job;
 }
@@ -212,58 +212,58 @@ void pgaJob::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
     wxString sql =
         wxT("SELECT jlgid")
-		     wxT(", jlgstatus")
-             wxT(", jlgstart")
-             wxT(", jlgduration")
-			 wxT(", (jlgstart + jlgduration) AS endtime")
-             wxT("  FROM pgagent.pga_joblog\n")
-             wxT(" WHERE jlgjobid = ") + NumToStr(GetRecId()) +
-			 wxT(" ORDER BY jlgstart DESC") +
-			 wxT(" LIMIT ") + NumToStr(settings->GetMaxRows());
+        wxT(", jlgstatus")
+        wxT(", jlgstart")
+        wxT(", jlgduration")
+        wxT(", (jlgstart + jlgduration) AS endtime")
+        wxT("  FROM pgagent.pga_joblog\n")
+        wxT(" WHERE jlgjobid = ") + NumToStr(GetRecId()) +
+        wxT(" ORDER BY jlgstart DESC") +
+        wxT(" LIMIT ") + NumToStr(settings->GetMaxRows());
 
     if (statistics)
     {
         wxLogInfo(wxT("Displaying statistics for job %s"), GetFullIdentifier().c_str());
 
         // Add the statistics view columns
-		statistics->ClearAll();
-		statistics->AddColumn(_("Run"), 50);
+        statistics->ClearAll();
+        statistics->AddColumn(_("Run"), 50);
         statistics->AddColumn(_("Status"), 60);
-		statistics->AddColumn(_("Start time"), 95);
-		statistics->AddColumn(_("End time"), 95);
-		statistics->AddColumn(_("Duration"), 70);
+        statistics->AddColumn(_("Start time"), 95);
+        statistics->AddColumn(_("End time"), 95);
+        statistics->AddColumn(_("Duration"), 70);
 
         pgSet *stats = GetConnection()->ExecuteSet(sql);
-		wxString status;
-		wxDateTime startTime;
-		wxDateTime endTime;
+        wxString status;
+        wxDateTime startTime;
+        wxDateTime endTime;
 
         if (stats)
         {
             while (!stats->Eof())
             {
-				if (stats->GetVal(1) == wxT("r"))
+                if (stats->GetVal(1) == wxT("r"))
                     status = _("Running");
-				else if (stats->GetVal(1) == wxT("s"))
+                else if (stats->GetVal(1) == wxT("s"))
                     status = _("Successful");
-				else if (stats->GetVal(1) == wxT("f"))
+                else if (stats->GetVal(1) == wxT("f"))
                     status = _("Failed");
-				else if (stats->GetVal(1) == wxT("d"))
+                else if (stats->GetVal(1) == wxT("d"))
                     status = _("Aborted");
-				else if (stats->GetVal(1) == wxT("i"))
+                else if (stats->GetVal(1) == wxT("i"))
                     status = _("No steps");
-				else
+                else
                     status = _("Unknown");
 
-				startTime.ParseDateTime(stats->GetVal(2));
-				endTime.ParseDateTime(stats->GetVal(4));
+                startTime.ParseDateTime(stats->GetVal(2));
+                endTime.ParseDateTime(stats->GetVal(4));
 
-                long pos=statistics->AppendItem(stats->GetVal(0), status, startTime.Format());
-				if (stats->GetVal(4).Length() > 0)
+                long pos = statistics->AppendItem(stats->GetVal(0), status, startTime.Format());
+                if (stats->GetVal(4).Length() > 0)
                     statistics->SetItem(pos, 3, endTime.Format());
-				statistics->SetItem(pos, 4, stats->GetVal(3));
+                statistics->SetItem(pos, 4, stats->GetVal(3));
 
-				stats->MoveNext();
+                stats->MoveNext();
             }
             delete stats;
         }
@@ -278,16 +278,16 @@ bool pgaJob::RunNow()
     return true;
 }
 
-pgaJobObject::pgaJobObject(pgaJob *_job, pgaFactory &factory, const wxString& newName)
-: pgServerObject(factory, newName)
+pgaJobObject::pgaJobObject(pgaJob *_job, pgaFactory &factory, const wxString &newName)
+    : pgServerObject(factory, newName)
 {
-    job=_job;
-    server=job->GetServer();
+    job = _job;
+    server = job->GetServer();
 }
 
 
 pgaJobObjCollection::pgaJobObjCollection(pgaFactory *factory, pgaJob *_job)
-: pgServerObjCollection(factory, _job->GetServer())
+    : pgServerObjCollection(factory, _job->GetServer())
 {
     job = _job;
 }
@@ -301,14 +301,14 @@ bool pgaJobObjCollection::CanCreate()
 
 pgCollection *pgaJobObjFactory::CreateCollection(pgObject *obj)
 {
-    return new pgaJobObjCollection(GetCollectionFactory(), (pgaJob*)obj);
+    return new pgaJobObjCollection(GetCollectionFactory(), (pgaJob *)obj);
 }
 
 
 wxString pgaJobObjCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -318,7 +318,7 @@ wxString pgaJobObjCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Refreshing pgAgent jobs");
             break;
     }
-    
+
     return message;
 }
 
@@ -329,8 +329,8 @@ wxString pgaJobObjCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/jobs.xpm"
 #include "images/jobdisabled.xpm"
 
-pgaJobFactory::pgaJobFactory() 
-: pgServerObjFactory(__("pgAgent Job"), __("New Job"), __("Create a new Job."), job_xpm)
+pgaJobFactory::pgaJobFactory()
+    : pgServerObjFactory(__("pgAgent Job"), __("New Job"), __("Create a new Job."), job_xpm)
 {
     metaType = PGM_JOB;
     disabledId = addIcon(jobdisabled_xpm);

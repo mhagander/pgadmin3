@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,25 +19,28 @@
 class wxTimeSpinCtrl : public wxControl
 {
 public:
-    wxTimeSpinCtrl() { Init(); }
+    wxTimeSpinCtrl()
+    {
+        Init();
+    }
     wxTimeSpinCtrl(wxWindow *parent,
                    wxWindowID id,
-                   const wxPoint& pos = wxDefaultPosition,
-                   const wxSize& size = wxDefaultSize,
-                   long style = wxWANTS_CHARS, const wxString& name=wxT("wxTimeSpinCtrl"));
+                   const wxPoint &pos = wxDefaultPosition,
+                   const wxSize &size = wxDefaultSize,
+                   long style = wxWANTS_CHARS, const wxString &name = wxT("wxTimeSpinCtrl"));
 
     bool Create(wxWindow *parent,
-                   wxWindowID id,
-                   const wxPoint& pos = wxDefaultPosition,
-                   const wxSize& size = wxDefaultSize,
-                   long style = wxWANTS_CHARS, const wxString& name=wxT("wxTimeSpinCtrl"));
+                wxWindowID id,
+                const wxPoint &pos = wxDefaultPosition,
+                const wxSize &size = wxDefaultSize,
+                long style = wxWANTS_CHARS, const wxString &name = wxT("wxTimeSpinCtrl"));
 
     bool Destroy();
-    bool Enable(bool enable=true);
+    bool Enable(bool enable = true);
 
-    void SetMax(long seconds, bool useDay=false);
-    bool SetValue(const wxTimeSpan& span);
-    bool SetTime(const wxDateTime& time);
+    void SetMax(long seconds, bool useDay = false);
+    bool SetValue(const wxTimeSpan &span);
+    bool SetTime(const wxDateTime &time);
     wxTimeSpan GetValue();
 
 private:
@@ -63,7 +66,7 @@ private:
     bool canWrap, hasDay;
 
     wxSize DoGetBestSize() const;
-    void OnSize(wxSizeEvent& event);
+    void OnSize(wxSizeEvent &event);
 
     DECLARE_DYNAMIC_CLASS(wxTimeSpinCtrl)
     DECLARE_EVENT_TABLE()
@@ -78,23 +81,23 @@ public:
     wxTimeSpinCtrl() { }
     wxTimeSpinCtrl(wxWindow *parent,
                    wxWindowID id,
-                   const wxDateTime& date = wxDefaultDateTime,
-                   const wxPoint& pos = wxDefaultPosition,
-                   const wxSize& size = wxDefaultSize,
-                   long style = wxWANTS_CHARS, const wxString& name=wxT("wxTimeSpinCtrl"));
+                   const wxDateTime &date = wxDefaultDateTime,
+                   const wxPoint &pos = wxDefaultPosition,
+                   const wxSize &size = wxDefaultSize,
+                   long style = wxWANTS_CHARS, const wxString &name = wxT("wxTimeSpinCtrl"));
 
     bool Destroy();
 
 
     bool Create(wxWindow *parent,
-                            wxWindowID id,
-                            const wxDateTime& date,
-                            const wxPoint& pos,
-                            const wxSize& size,
-                            long style,
-                            const wxString& name);
+                wxWindowID id,
+                const wxDateTime &date,
+                const wxPoint &pos,
+                const wxSize &size,
+                long style,
+                const wxString &name);
 
-    bool SetValue(const wxTimeSpan& span);
+    bool SetValue(const wxTimeSpan &span);
     wxTimeSpan GetValue();
 
     virtual bool Enable(bool enable = true);
@@ -110,10 +113,10 @@ private:
     bool m_dropped, m_processing;
 
     void Init();
-    void DropDown(bool down=true);
+    void DropDown(bool down = true);
 
-    void OnEditKey(wxKeyEvent & event);
-    void OnCalKey(wxKeyEvent & event);
+    void OnEditKey(wxKeyEvent &event);
+    void OnCalKey(wxKeyEvent &event);
     void OnClick(wxMouseEvent &ev);
     void OnSelChange(wxCalendarEvent &ev);
     void OnActivate(wxActivateEvent &ev);

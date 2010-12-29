@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -48,14 +48,14 @@ END_EVENT_TABLE();
 
 dlgProperty *pgTextSearchDictionaryFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgTextSearchDictionary(this, frame, (pgTextSearchDictionary*)node, (pgSchema*)parent);
+    return new dlgTextSearchDictionary(this, frame, (pgTextSearchDictionary *)node, (pgSchema *)parent);
 }
 
 dlgTextSearchDictionary::dlgTextSearchDictionary(pgaFactory *f, frmMain *frame, pgTextSearchDictionary *node, pgSchema *sch)
-: dlgTypeProperty(f, frame, wxT("dlgTextSearchDictionary"))
+    : dlgTypeProperty(f, frame, wxT("dlgTextSearchDictionary"))
 {
-    schema=sch;
-    dict=node;
+    schema = sch;
+    dict = node;
 }
 
 
@@ -100,11 +100,11 @@ int dlgTextSearchDictionary::Go(bool modal)
         wxString option, optionname, optionvalue;
         while (options.Length() > 0)
         {
-          option = options.BeforeFirst(',');
-          optionname = option.BeforeFirst(wxT('=')).Trim(false).Trim();
-          optionvalue = option.AfterFirst(wxT('=')).Trim(false).Trim();
-          lstOptions->AppendItem(optionname, optionvalue);
-          options = options.AfterFirst(',');
+            option = options.BeforeFirst(',');
+            optionname = option.BeforeFirst(wxT('=')).Trim(false).Trim();
+            optionvalue = option.AfterFirst(wxT('=')).Trim(false).Trim();
+            lstOptions->AppendItem(optionname, optionvalue);
+            options = options.AfterFirst(',');
         }
 
         if (!connection->BackendMinimumVersion(8, 0))
@@ -126,9 +126,9 @@ int dlgTextSearchDictionary::Go(bool modal)
 
 pgObject *dlgTextSearchDictionary::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=textSearchDictionaryFactory.CreateObjects(collection, 0,
-         wxT("\n   AND dict.dictname=") + qtDbString(GetName()) +
-         wxT("\n   AND dict.dictnamespace=") + schema->GetOidStr());
+    pgObject *obj = textSearchDictionaryFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND dict.dictname=") + qtDbString(GetName()) +
+                    wxT("\n   AND dict.dictnamespace=") + schema->GetOidStr());
 
     return obj;
 }
@@ -137,8 +137,8 @@ pgObject *dlgTextSearchDictionary::CreateObject(pgCollection *collection)
 #ifdef __WXMAC__
 void dlgTextSearchDictionary::OnChangeSize(wxSizeEvent &ev)
 {
-	lstOptions->SetSize(wxDefaultCoord, wxDefaultCoord,
-	    ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
+    lstOptions->SetSize(wxDefaultCoord, wxDefaultCoord,
+                        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 350);
     if (GetAutoLayout())
     {
         Layout();
@@ -152,14 +152,14 @@ void dlgTextSearchDictionary::CheckChange()
     if (dict)
     {
         EnableOK(txtName->GetValue() != dict->GetName()
-            || txtComment->GetValue() != dict->GetComment()
-            || cbOwner->GetValue() != dict->GetOwner()
-            || GetOptionsSql().Length() > 0);
+                 || txtComment->GetValue() != dict->GetComment()
+                 || cbOwner->GetValue() != dict->GetOwner()
+                 || GetOptionsSql().Length() > 0);
     }
     else
     {
-        wxString name=GetName();
-        bool enable=true;
+        wxString name = GetName();
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
         CheckValid(enable, cbTemplate->GetValue().Length() > 0 , _("Please select a template."));
 
@@ -182,7 +182,7 @@ void dlgTextSearchDictionary::OnChangeOptionName(wxCommandEvent &ev)
 
 void dlgTextSearchDictionary::OnSelChangeOption(wxListEvent &ev)
 {
-    int row=lstOptions->GetSelection();
+    int row = lstOptions->GetSelection();
     if (row >= 0)
     {
         txtOption->SetValue(lstOptions->GetText(row, 0));
@@ -222,7 +222,7 @@ void dlgTextSearchDictionary::OnAddOption(wxCommandEvent &ev)
 
 void dlgTextSearchDictionary::OnRemoveOption(wxCommandEvent &ev)
 {
-    int sel=lstOptions->GetSelection();
+    int sel = lstOptions->GetSelection();
     lstOptions->DeleteItem(sel);
 
     txtOption->SetValue(wxT(""));
@@ -248,7 +248,7 @@ wxString dlgTextSearchDictionary::GetOptionsSql()
 
         // check for options
         found = false;
-        for (pos=0 ; pos < lstOptions->GetItemCount() && !found; pos++)
+        for (pos = 0 ; pos < lstOptions->GetItemCount() && !found; pos++)
         {
             found = lstOptions->GetText(pos, 0).Cmp(optionname) == 0;
             if (found) break;
@@ -273,7 +273,7 @@ wxString dlgTextSearchDictionary::GetOptionsSql()
         options = options.AfterFirst(',');
     }
 
-    for (pos=0 ; pos < lstOptions->GetItemCount() ; pos++)
+    for (pos = 0 ; pos < lstOptions->GetItemCount() ; pos++)
     {
         options = dict->GetOptions();
         found = false;
@@ -303,7 +303,7 @@ wxString dlgTextSearchDictionary::GetOptionsSql()
 wxString dlgTextSearchDictionary::GetSql()
 {
     wxString sql;
-    wxString objname=schema->GetQuotedPrefix() + qtIdent(GetName());
+    wxString objname = schema->GetQuotedPrefix() + qtIdent(GetName());
 
     if (dict)
     {
@@ -315,24 +315,24 @@ wxString dlgTextSearchDictionary::GetSql()
         if (sqloptions.Length() > 0)
         {
             sql += wxT("ALTER TEXT SEARCH DICTIONARY ") + objname
-                 + wxT(" (") + sqloptions + wxT(")");
+                   + wxT(" (") + sqloptions + wxT(")");
         }
     }
     else
     {
         // create mode
         sql = wxT("CREATE TEXT SEARCH DICTIONARY ")
-            + schema->GetQuotedPrefix() + GetName()
-            + wxT(" (")
-            + wxT("\n  TEMPLATE = ") + cbTemplate->GetValue();
+              + schema->GetQuotedPrefix() + GetName()
+              + wxT(" (")
+              + wxT("\n  TEMPLATE = ") + cbTemplate->GetValue();
 
         // check for options
-        for (int pos=0 ; pos < lstOptions->GetItemCount() ; pos++)
+        for (int pos = 0 ; pos < lstOptions->GetItemCount() ; pos++)
         {
             sql += wxT(", ") + lstOptions->GetText(pos, 0)
                    + wxT("=") + lstOptions->GetText(pos, 1);
         }
-        
+
         sql += wxT("\n);\n");
 
     }

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -18,8 +18,8 @@
 #include "schema/pgTextSearchTemplate.h"
 
 
-pgTextSearchTemplate::pgTextSearchTemplate(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, textSearchTemplateFactory, newName)
+pgTextSearchTemplate::pgTextSearchTemplate(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, textSearchTemplateFactory, newName)
 {
 }
 
@@ -30,7 +30,7 @@ pgTextSearchTemplate::~pgTextSearchTemplate()
 wxString pgTextSearchTemplate::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -43,11 +43,11 @@ wxString pgTextSearchTemplate::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop FTS template \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop FTS template \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop FTS template cascaded?");
@@ -104,15 +104,15 @@ wxString pgTextSearchTemplate::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Text Search Template: ") + GetFullIdentifier() + wxT("\n\n")
-            + wxT("-- DROP TEXT SEARCH TEMPLATE ") + GetFullIdentifier() + wxT("\n\n")
+              + wxT("-- DROP TEXT SEARCH TEMPLATE ") + GetFullIdentifier() + wxT("\n\n")
               wxT("CREATE TEXT SEARCH TEMPLATE ") + GetFullIdentifier() + wxT(" (");
         AppendIfFilled(sql, wxT("\n  INIT = "), GetInit());
         AppendIfFilled(sql, wxT(",\n  LEXIZE = "), GetLexize());
         sql += wxT("\n);\n");
 
-	if (!GetComment().IsNull())
-	    sql += wxT("COMMENT ON TEXT SEARCH TEMPLATE ") + GetFullIdentifier()
-	    + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
+        if (!GetComment().IsNull())
+            sql += wxT("COMMENT ON TEXT SEARCH TEMPLATE ") + GetFullIdentifier()
+                   + wxT(" IS ") + qtDbString(GetComment()) + wxT(";\n");
     }
 
     return sql;
@@ -137,8 +137,8 @@ void pgTextSearchTemplate::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlLi
 
 pgObject *pgTextSearchTemplate::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *tstemplate=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *tstemplate = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         tstemplate = textSearchTemplateFactory.CreateObjects(coll, 0, wxT("\n   AND tmpl.oid=") + GetOidStr());
 
@@ -149,7 +149,7 @@ pgObject *pgTextSearchTemplate::Refresh(ctlTree *browser, const wxTreeItemId ite
 wxString pgTextSearchTemplateCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -162,7 +162,7 @@ wxString pgTextSearchTemplateCollection::GetTranslatedMessage(int kindOfMessage)
             message = _("FTS templates list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -172,16 +172,16 @@ wxString pgTextSearchTemplateCollection::GetTranslatedMessage(int kindOfMessage)
 
 pgObject *pgTextSearchTemplateFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgTextSearchTemplate *tmpl=0;
+    pgTextSearchTemplate *tmpl = 0;
 
-	pgSet *templates;
-	templates = collection->GetDatabase()->ExecuteSet(
-		wxT("SELECT tmpl.oid, tmpl.tmplname, tmpl.tmplinit, tmpl.tmpllexize, description\n")
-		wxT("  FROM pg_ts_template tmpl\n")
-		wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=tmpl.oid\n")
-		wxT(" WHERE tmpl.tmplnamespace = ") + collection->GetSchema()->GetOidStr() 
-		+ restriction + wxT("\n")
-		wxT(" ORDER BY tmpl.tmplname"));
+    pgSet *templates;
+    templates = collection->GetDatabase()->ExecuteSet(
+                    wxT("SELECT tmpl.oid, tmpl.tmplname, tmpl.tmplinit, tmpl.tmpllexize, description\n")
+                    wxT("  FROM pg_ts_template tmpl\n")
+                    wxT("  LEFT OUTER JOIN pg_description des ON des.objoid=tmpl.oid\n")
+                    wxT(" WHERE tmpl.tmplnamespace = ") + collection->GetSchema()->GetOidStr()
+                    + restriction + wxT("\n")
+                    wxT(" ORDER BY tmpl.tmplname"));
 
     if (templates)
     {
@@ -203,13 +203,13 @@ pgObject *pgTextSearchTemplateFactory::CreateObjects(pgCollection *collection, c
             if (browser)
             {
                 browser->AppendObject(collection, tmpl);
-		templates->MoveNext();
+                templates->MoveNext();
             }
             else
                 break;
         }
 
-		delete templates;
+        delete templates;
     }
     return tmpl;
 }
@@ -218,8 +218,8 @@ pgObject *pgTextSearchTemplateFactory::CreateObjects(pgCollection *collection, c
 #include "images/template.xpm"
 #include "images/templates.xpm"
 
-pgTextSearchTemplateFactory::pgTextSearchTemplateFactory() 
-: pgSchemaObjFactory(__("FTS Template"), __("New FTS Template..."), __("Create a new FTS Template."), template_xpm)
+pgTextSearchTemplateFactory::pgTextSearchTemplateFactory()
+    : pgSchemaObjFactory(__("FTS Template"), __("New FTS Template..."), __("Create a new FTS Template."), template_xpm)
 {
 }
 

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -22,12 +22,12 @@ class frmPassword : public pgDialog
 public:
     frmPassword(wxFrame *parent, pgObject *obj);
     ~frmPassword();
-    
+
 private:
     pgServer *server;
-    void OnHelp(wxCommandEvent& ev);
-    void OnOK(wxCommandEvent& event);
-    void OnCancel(wxCommandEvent& event);
+    void OnHelp(wxCommandEvent &ev);
+    void OnOK(wxCommandEvent &event);
+    void OnCancel(wxCommandEvent &event);
     DECLARE_EVENT_TABLE()
 };
 

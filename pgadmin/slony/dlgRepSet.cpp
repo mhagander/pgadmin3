@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -34,13 +34,13 @@ END_EVENT_TABLE();
 
 dlgProperty *slSetFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgRepSet(this, frame, (slSet*)node, (slCluster*)parent);
+    return new dlgRepSet(this, frame, (slSet *)node, (slCluster *)parent);
 }
 
 dlgRepSet::dlgRepSet(pgaFactory *f, frmMain *frame, slSet *s, slCluster *c)
-: dlgRepProperty(f, frame, c, wxT("dlgRepSet"))
+    : dlgRepProperty(f, frame, c, wxT("dlgRepSet"))
 {
-    set=s;
+    set = s;
 }
 
 
@@ -64,7 +64,7 @@ int dlgRepSet::Go(bool modal)
     }
 
     txtOrigin->Disable();
-        
+
     return dlgProperty::Go(modal);
 }
 
@@ -77,8 +77,8 @@ pgObject *dlgRepSet::CreateObject(pgCollection *collection)
     else
         restriction = wxT("(SELECT MAX(set_id) FROM ") + cluster->GetSchemaPrefix() + wxT("sl_set)");
 
-    pgObject *obj=setFactory.CreateObjects(collection, 0,
-         wxT(" WHERE set_id = ") + restriction);
+    pgObject *obj = setFactory.CreateObjects(collection, 0,
+                    wxT(" WHERE set_id = ") + restriction);
 
     return obj;
 }
@@ -92,7 +92,7 @@ void dlgRepSet::CheckChange()
     }
     else
     {
-        bool enable=(!txtComment->IsEmpty());
+        bool enable = (!txtComment->IsEmpty());
 
         EnableOK(enable);
     }
@@ -110,11 +110,11 @@ wxString dlgRepSet::GetSql()
     if (StrToLong(txtID->GetValue()) > 0)
         sql += txtID->GetValue();
     else
-        sql += wxT("(SELECT COALESCE(MAX(set_id), 0) + 1 FROM ") 
-            +  cluster->GetSchemaPrefix() + wxT("sl_set)");
+        sql += wxT("(SELECT COALESCE(MAX(set_id), 0) + 1 FROM ")
+               +  cluster->GetSchemaPrefix() + wxT("sl_set)");
 
     sql += wxT(", ") + qtDbString(txtComment->GetValue())
-        +  wxT(");\n");
+           +  wxT(");\n");
 
     return sql;
 }
@@ -126,14 +126,14 @@ wxString dlgRepSet::GetSql()
 #define cbTargetID  CTRL_COMBOBOX("cbTargetID")
 
 BEGIN_EVENT_TABLE(dlgRepSetMerge, dlgProperty)
-EVT_COMBOBOX(XRCID("cbTargetID"),   dlgRepSetMerge::OnChange)
+    EVT_COMBOBOX(XRCID("cbTargetID"),   dlgRepSetMerge::OnChange)
 END_EVENT_TABLE();
 
 
 dlgRepSetMerge::dlgRepSetMerge(pgaFactory *f, frmMain *frame, slSet *s)
-: dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepSetMerge"))
+    : dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepSetMerge"))
 {
-    set=s;
+    set = s;
 }
 
 
@@ -142,7 +142,7 @@ int dlgRepSetMerge::Go(bool modal)
     txtID->SetValue(IdAndName(set->GetSlId(), set->GetName()));
     txtID->Disable();
 
-    wxString sql=
+    wxString sql =
         wxT("SELECT set_id, set_comment\n")
         wxT("  FROM ") + cluster->GetSchemaPrefix() + wxT("sl_set\n")
         wxT("  LEFT JOIN ") + cluster->GetSchemaPrefix() + wxT("sl_subscribe ON set_id=sub_set\n")
@@ -157,14 +157,14 @@ int dlgRepSetMerge::Go(bool modal)
         sql += wxT("\n")
                wxT("   AND sub_set IS NULL");
 
-    pgSet *sets=connection->ExecuteSet(sql);
+    pgSet *sets = connection->ExecuteSet(sql);
 
     if (sets)
     {
         while (!sets->Eof())
         {
             long id = sets->GetLong(wxT("set_id"));
-            cbTargetID->Append(IdAndName(id, sets->GetVal(wxT("set_comment"))), (void*)id);
+            cbTargetID->Append(IdAndName(id, sets->GetVal(wxT("set_comment"))), (void *)id);
             sets->MoveNext();
         }
         delete sets;
@@ -176,7 +176,7 @@ int dlgRepSetMerge::Go(bool modal)
 
 void dlgRepSetMerge::CheckChange()
 {
-    bool enable=true;
+    bool enable = true;
 
     CheckValid(enable, cbTargetID->GetCount() > 0 , _("No set available to merge to."));
     CheckValid(enable, cbTargetID->GetCurrentSelection() >= 0, _("Please select replication set to merged to."));
@@ -187,8 +187,8 @@ void dlgRepSetMerge::CheckChange()
 wxString dlgRepSetMerge::GetSql()
 {
     wxString sql;
-    wxString addId=NumToStr(set->GetSlId());
-    wxString toId=NumToStr((long)cbTargetID->GetClientData(cbTargetID->GetCurrentSelection()));
+    wxString addId = NumToStr(set->GetSlId());
+    wxString toId = NumToStr((long)cbTargetID->GetClientData(cbTargetID->GetCurrentSelection()));
     wxString prefix = cluster->GetSchemaPrefix();
 
     if (set->GetSubscriptionCount() > 0)
@@ -253,14 +253,14 @@ wxString dlgRepSetMerge::GetSql()
 #define cbTargetNode  CTRL_COMBOBOX("cbTargetNode")
 
 BEGIN_EVENT_TABLE(dlgRepSetMove, dlgProperty)
-EVT_COMBOBOX(XRCID("cbTargetNode"),   dlgRepSetMove::OnChange)
+    EVT_COMBOBOX(XRCID("cbTargetNode"),   dlgRepSetMove::OnChange)
 END_EVENT_TABLE();
 
 
 dlgRepSetMove::dlgRepSetMove(pgaFactory *f, frmMain *frame, slSet *s)
-: dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepSetMove"))
+    : dlgRepProperty(f, frame, s->GetCluster(), wxT("dlgRepSetMove"))
 {
-    set=s;
+    set = s;
 }
 
 
@@ -269,18 +269,18 @@ int dlgRepSetMove::Go(bool modal)
     txtID->SetValue(IdAndName(set->GetSlId(), set->GetName()));
     txtID->Disable();
 
-    pgSet *nodes=connection->ExecuteSet(
-        wxT("SELECT no_id, no_comment\n")
-        wxT("  FROM ") + cluster->GetSchemaPrefix() + wxT("sl_node\n")
-        wxT("  JOIN ") + cluster->GetSchemaPrefix() + wxT("sl_subscribe ON sub_receiver=no_id\n")
-        wxT(" WHERE sub_set = ") + NumToStr(set->GetSlId()));
+    pgSet *nodes = connection->ExecuteSet(
+                       wxT("SELECT no_id, no_comment\n")
+                       wxT("  FROM ") + cluster->GetSchemaPrefix() + wxT("sl_node\n")
+                       wxT("  JOIN ") + cluster->GetSchemaPrefix() + wxT("sl_subscribe ON sub_receiver=no_id\n")
+                       wxT(" WHERE sub_set = ") + NumToStr(set->GetSlId()));
 
     if (nodes)
     {
         while (!nodes->Eof())
         {
-            long id=nodes->GetLong(wxT("no_id"));
-            cbTargetNode->Append(IdAndName(id, nodes->GetVal(wxT("no_comment"))), (void*)id);
+            long id = nodes->GetLong(wxT("no_id"));
+            cbTargetNode->Append(IdAndName(id, nodes->GetVal(wxT("no_comment"))), (void *)id);
             nodes->MoveNext();
         }
         delete nodes;
@@ -291,7 +291,7 @@ int dlgRepSetMove::Go(bool modal)
 
 void dlgRepSetMove::CheckChange()
 {
-    bool enable=true;
+    bool enable = true;
 
     CheckValid(enable, cbTargetNode->GetCount() > 0 , _("No node available to move this set to."));
     CheckValid(enable, cbTargetNode->GetCurrentSelection() >= 0, _("Please select node to move this replication set to."));
@@ -301,10 +301,10 @@ void dlgRepSetMove::CheckChange()
 
 wxString dlgRepSetMove::GetSql()
 {
-    wxString toId=NumToStr((long)cbTargetNode->GetClientData(cbTargetNode->GetCurrentSelection()));
+    wxString toId = NumToStr((long)cbTargetNode->GetClientData(cbTargetNode->GetCurrentSelection()));
 
     wxString sql =
         wxT("SELECT ") + cluster->GetSchemaPrefix() + wxT("moveset(") +
-            NumToStr(set->GetSlId()) + wxT(", ") + toId + wxT(");\n");
+        NumToStr(set->GetSlId()) + wxT(", ") + toId + wxT(");\n");
     return sql;
 }

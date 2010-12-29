@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -29,8 +29,8 @@ BEGIN_EVENT_TABLE(ctlCheckTreeView, wxTreeCtrl)
 END_EVENT_TABLE()
 
 
-ctlCheckTreeView::ctlCheckTreeView(wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size, long style)
-:wxTreeCtrl(parent, id, pos, size, style)
+ctlCheckTreeView::ctlCheckTreeView(wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, long style)
+    : wxTreeCtrl(parent, id, pos, size, style)
 {
     wxImageList *treeimages = new wxImageList(16, 16, true, 3);
     treeimages->Add(wxIcon(unchecked_xpm));
@@ -74,7 +74,7 @@ void ctlCheckTreeView::SetParentAndChildImage(wxTreeItemId node, int newimage)
     }
 }
 
-bool ctlCheckTreeView::IsChecked(const wxTreeItemId& node)
+bool ctlCheckTreeView::IsChecked(const wxTreeItemId &node)
 {
     return (GetItemImage(node) == 1);
 }

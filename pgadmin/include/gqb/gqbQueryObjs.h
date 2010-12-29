@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -41,13 +41,13 @@ enum type_Join
 class gqbQueryObjs : public gqbObjectCollection
 {
 public:
-    gqbQueryObjs();								// No destructor, the base destructor destroy collection 
-												// the unique dynamic object in this class
+    gqbQueryObjs();								// No destructor, the base destructor destroy collection
+    // the unique dynamic object in this class
     void addTable(gqbQueryObject *mtable);		// Uses alias to only allow operations I want to do it.
     void removeTable(gqbQueryObject *mtable);
-    gqbIteratorBase* createQueryIterator();
-    gqbIteratorBase* createDownQueryIterator();
-	int tablesCount();
+    gqbIteratorBase *createQueryIterator();
+    gqbIteratorBase *createDownQueryIterator();
+    int tablesCount();
     void removeAllQueryObjs();
 };
 
@@ -69,17 +69,23 @@ public:
     void addColumn(gqbColumn *column);			// Used only as synonym for gqbObjectCollection addObject
     int getColumnIndex(gqbColumn *column);
     bool existsColumn(gqbColumn *column);
-    gqbIteratorBase* createQueryTableIterator();
-    gqbIteratorBase* createJoinsIterator();
-    gqbIteratorBase* createRegJoinsIterator();
-    gqbQueryJoin* addJoin(gqbQueryObject *owner, gqbQueryObject *observable, gqbColumn *source, gqbColumn *destination, type_Join kind);
+    gqbIteratorBase *createQueryTableIterator();
+    gqbIteratorBase *createJoinsIterator();
+    gqbIteratorBase *createRegJoinsIterator();
+    gqbQueryJoin *addJoin(gqbQueryObject *owner, gqbQueryObject *observable, gqbColumn *source, gqbColumn *destination, type_Join kind);
     void removeJoin(gqbQueryJoin *join, bool unRegister);
     void registerJoin(gqbQueryJoin *join);
     void unregisterJoin(gqbQueryJoin *join, bool removeIt);
     bool getHaveJoins();
     bool getHaveRegJoins();
-    void setAlias(wxString name) { alias=name; };
-	wxString getAlias() { return alias; };
+    void setAlias(wxString name)
+    {
+        alias = name;
+    };
+    wxString getAlias()
+    {
+        return alias;
+    };
 
 private:
     bool selected;
@@ -99,22 +105,22 @@ public:
     gqbQueryJoin(gqbQueryObject *_owner, gqbQueryObject *_destination, gqbColumn *sourceCol, gqbColumn *destCol, type_Join joinKind);
     void setKindofJoin(type_Join join);
     type_Join getKindofJoin();
-    gqbQueryObject* getSourceQTable();
-    gqbQueryObject* getDestQTable();
-    gqbColumn* getDCol();
-    gqbColumn* getSCol();
+    gqbQueryObject *getSourceQTable();
+    gqbQueryObject *getDestQTable();
+    gqbColumn *getDCol();
+    gqbColumn *getSCol();
     wxString getSourceTable();
     wxString getDestTable();
     wxString getSourceCol();
     wxString getDestCol();
     void setSourceAnchor(wxPoint pt);
     void setDestAnchor(wxPoint pt);
-    wxPoint& getSourceAnchor();
-    wxPoint& getDestAnchor();
+    wxPoint &getSourceAnchor();
+    wxPoint &getDestAnchor();
     void setSelected(bool value);
     bool getSelected();
     void setAnchorsUsed(wxPoint pt);
-    wxPoint& getAnchorsUsed();
+    wxPoint &getAnchorsUsed();
 
 private:
     bool selected;
@@ -130,14 +136,38 @@ class gqbQueryRestriction : public gqbObject
 {
 public:
     gqbQueryRestriction();
-    wxString& getLeft(){return leftPart;};
-    wxString& getRestriction(){return restriction;};
-    wxString& getValue_s(){return value_s;};
-    wxString& getConnector(){return connector;};
-    void setLeft(const wxString& value){leftPart=value;};
-    void setRestriction(const wxString& value){restriction=value;};
-    void setValue_s(const wxString& value){value_s=value;};
-    void setConnector(const wxString& value){connector=value;};
+    wxString &getLeft()
+    {
+        return leftPart;
+    };
+    wxString &getRestriction()
+    {
+        return restriction;
+    };
+    wxString &getValue_s()
+    {
+        return value_s;
+    };
+    wxString &getConnector()
+    {
+        return connector;
+    };
+    void setLeft(const wxString &value)
+    {
+        leftPart = value;
+    };
+    void setRestriction(const wxString &value)
+    {
+        restriction = value;
+    };
+    void setValue_s(const wxString &value)
+    {
+        value_s = value;
+    };
+    void setConnector(const wxString &value)
+    {
+        connector = value;
+    };
 
 private:
     wxString leftPart;
@@ -152,14 +182,14 @@ class gqbRestrictions : public gqbObjectCollection
 public:
     gqbRestrictions();
     ~gqbRestrictions();
-	
+
     void addRestriction(gqbQueryRestriction *r);
     void removeRestriction(gqbQueryRestriction *r);
     void deleteAllRestrictions();
-    gqbIteratorBase* createRestrictionsIterator();
+    gqbIteratorBase *createRestrictionsIterator();
     void addRestrictionAt(gqbQueryRestriction *r, int index);
     int restrictionsCount();
-    gqbQueryRestriction* getRestrictionAt(int index);
+    gqbQueryRestriction *getRestrictionAt(int index);
 
 };
 #endif

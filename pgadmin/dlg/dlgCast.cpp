@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -32,7 +32,7 @@
 
 dlgProperty *pgCastFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgCast(this, frame, (pgCast*)node);
+    return new dlgCast(this, frame, (pgCast *)node);
 }
 
 
@@ -45,9 +45,9 @@ END_EVENT_TABLE();
 
 
 dlgCast::dlgCast(pgaFactory *f, frmMain *frame, pgCast *node)
-: dlgTypeProperty(f, frame, wxT("dlgCast"))
+    : dlgTypeProperty(f, frame, wxT("dlgCast"))
 {
-    cast=node;
+    cast = node;
 
     txtCastname->Disable();
 }
@@ -98,9 +98,9 @@ int dlgCast::Go(bool modal)
 
 pgObject *dlgCast::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=castFactory.CreateObjects(collection, 0,
-         wxT(" WHERE castsource = ") + GetTypeOid(cbSourceType->GetGuessedSelection()) +
-         wxT("\n   AND casttarget = ") + GetTypeOid(cbTargetType->GetGuessedSelection()));
+    pgObject *obj = castFactory.CreateObjects(collection, 0,
+                    wxT(" WHERE castsource = ") + GetTypeOid(cbSourceType->GetGuessedSelection()) +
+                    wxT("\n   AND casttarget = ") + GetTypeOid(cbTargetType->GetGuessedSelection()));
 
     return obj;
 }
@@ -114,7 +114,7 @@ void dlgCast::CheckChange()
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, cbSourceType->GetGuessedSelection() > 0, _("Please specify source datatype."));
         CheckValid(enable, cbTargetType->GetGuessedSelection() > 0, _("Please select target datatype."));
 
@@ -151,17 +151,17 @@ void dlgCast::OnChangeType(wxCommandEvent &ev)
         functions.Add(wxEmptyString);
         cbFunction->Append(wxT(" "));
 
-        wxString qry=
+        wxString qry =
             wxT("SELECT proname, nspname\n")
             wxT("  FROM pg_proc p\n")
             wxT("  JOIN pg_namespace n ON n.oid=pronamespace\n")
             wxT(" WHERE proargtypes[0] = ")
             +  GetTypeOid(cbSourceType->GetGuessedSelection())
             +  wxT("\n   AND proargtypes[1] = 0")
-               wxT("\n   AND prorettype = ")
+            wxT("\n   AND prorettype = ")
             +  GetTypeOid(cbTargetType->GetGuessedSelection());
 
-        pgSet *set=connection->ExecuteSet(qry);
+        pgSet *set = connection->ExecuteSet(qry);
         if (set)
         {
             while (!set->Eof())
@@ -191,11 +191,11 @@ wxString dlgCast::GetSql()
     {
         // create mode
         sql = wxT("CREATE CAST (") + cbSourceType->GetValue()
-            + wxT(" AS ") + cbTargetType->GetValue()
-            + wxT(")\n   ");
+              + wxT(" AS ") + cbTargetType->GetValue()
+              + wxT(")\n   ");
         if (cbFunction->GetCurrentSelection() > 0)
             sql += wxT("WITH FUNCTION ") + functions.Item(cbFunction->GetCurrentSelection())
-                +  wxT("(") + cbSourceType->GetValue() + wxT(")");
+                   +  wxT("(") + cbSourceType->GetValue() + wxT(")");
         else
             sql += wxT("WITHOUT FUNCTION");
 
@@ -206,7 +206,7 @@ wxString dlgCast::GetSql()
 
     }
     AppendComment(sql, wxT("CAST (") + cbSourceType->GetValue()
-                       + wxT(" AS ") + cbTargetType->GetValue() + wxT(")"), cast);
+                  + wxT(" AS ") + cbTargetType->GetValue() + wxT(")"), cast);
 
     return sql;
 }

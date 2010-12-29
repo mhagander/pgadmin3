@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -28,7 +28,7 @@
 //
 
 gqbQueryObjs::gqbQueryObjs()
-: gqbObjectCollection(wxT(""), NULL, NULL)
+    : gqbObjectCollection(wxT(""), NULL, NULL)
 {
     setType(GQB_QUERY);
 }
@@ -46,12 +46,12 @@ void gqbQueryObjs::removeTable(gqbQueryObject *mtable)
 }
 
 
-gqbIteratorBase*  gqbQueryObjs::createQueryIterator()
+gqbIteratorBase  *gqbQueryObjs::createQueryIterator()
 {
     return this->createIterator();
 }
 
-gqbIteratorBase*  gqbQueryObjs::createDownQueryIterator()
+gqbIteratorBase  *gqbQueryObjs::createDownQueryIterator()
 {
     return this->createDownIterator();
 }
@@ -75,18 +75,18 @@ void gqbQueryObjs::removeAllQueryObjs()
 //         Because this we can not use directly the base table object
 
 gqbQueryObject::gqbQueryObject(gqbTable *table)
-: gqbObjectCollection(table->getName(), table, table->getConnection())
+    : gqbObjectCollection(table->getName(), table, table->getConnection())
 {
-    selected=false;
+    selected = false;
     parent = table;
 
-	//GQB-TODO: Calculate a good initial position
-    position.x=20;
-    position.y=20;
-    haveJoins=false;
-    haveRegisteredJoins=false;
-    registeredCollection=NULL;
-    joinsCollection=NULL;
+    //GQB-TODO: Calculate a good initial position
+    position.x = 20;
+    position.y = 20;
+    haveJoins = false;
+    haveRegisteredJoins = false;
+    registeredCollection = NULL;
+    joinsCollection = NULL;
     setType(GQB_QUERYOBJ);
 }
 
@@ -101,15 +101,15 @@ gqbQueryObject::~gqbQueryObject()
     gqbQueryJoin *tmp;
     if(registeredCollection)
     {
-        gqbIteratorBase *r=createRegJoinsIterator();
+        gqbIteratorBase *r = createRegJoinsIterator();
         while(r->HasNext())
         {
-            tmp= (gqbQueryJoin *)r->Next();
-            this->unregisterJoin(tmp,true);       // remove and unregister every join in every query object 
-			                                      // which have registered at this query object
+            tmp = (gqbQueryJoin *)r->Next();
+            this->unregisterJoin(tmp, true);      // remove and unregister every join in every query object
+            // which have registered at this query object
 
-            // On each iteration the structure of iterator change because 
-			// modified his own collection & should be reset
+            // On each iteration the structure of iterator change because
+            // modified his own collection & should be reset
             r->ResetIterator();
         }
         delete r;
@@ -117,14 +117,14 @@ gqbQueryObject::~gqbQueryObject()
 
     if(joinsCollection)
     {
-        gqbIteratorBase *j=createJoinsIterator();
+        gqbIteratorBase *j = createJoinsIterator();
         while(j->HasNext())
         {
-            tmp= (gqbQueryJoin *)j->Next();
-            this->removeJoin(tmp,true);           // removes & unregister Join which have like origin this 
-			                                      // query object
-            // On each iteration the structure of iterator change because 
-			// modified his own collection & should be reset
+            tmp = (gqbQueryJoin *)j->Next();
+            this->removeJoin(tmp, true);          // removes & unregister Join which have like origin this
+            // query object
+            // On each iteration the structure of iterator change because
+            // modified his own collection & should be reset
             j->ResetIterator();
         }
         delete j;
@@ -137,7 +137,7 @@ gqbQueryObject::~gqbQueryObject()
 
 void gqbQueryObject::setSelected(bool value)
 {
-    this->selected=value;
+    this->selected = value;
 }
 
 
@@ -149,7 +149,7 @@ bool gqbQueryObject::getSelected()
 
 void gqbQueryObject::setWidth(int value)
 {
-    width=value;
+    width = value;
 }
 
 
@@ -161,7 +161,7 @@ int gqbQueryObject::getWidth()
 
 void gqbQueryObject::setHeight(int value)
 {
-    height=value;
+    height = value;
 }
 
 
@@ -189,35 +189,35 @@ bool gqbQueryObject::existsColumn(gqbColumn *column)
 }
 
 
-gqbIteratorBase* gqbQueryObject::createQueryTableIterator()
+gqbIteratorBase *gqbQueryObject::createQueryTableIterator()
 {
     return this->createIterator();
 }
 
 
-gqbIteratorBase* gqbQueryObject::createJoinsIterator()
+gqbIteratorBase *gqbQueryObject::createJoinsIterator()
 {
     return joinsCollection->createIterator();
 }
 
 
-gqbIteratorBase* gqbQueryObject::createRegJoinsIterator()
+gqbIteratorBase *gqbQueryObject::createRegJoinsIterator()
 {
     return registeredCollection->createIterator();
 }
 
 
 // Create a Join from this table [owner] column to other table [observable] column
-gqbQueryJoin* gqbQueryObject::addJoin(gqbQueryObject *owner, gqbQueryObject *observable, gqbColumn *source, gqbColumn *destination, type_Join kind)
+gqbQueryJoin *gqbQueryObject::addJoin(gqbQueryObject *owner, gqbQueryObject *observable, gqbColumn *source, gqbColumn *destination, type_Join kind)
 {
     if(!haveJoins)
     {
         implementationj = new gqbArrayCollection();
         joinsCollection =  new gqbCollection(implementationj);
-        haveJoins=true;
+        haveJoins = true;
     }
 
-    gqbQueryJoin *join = new gqbQueryJoin(owner,observable,source,destination,kind);
+    gqbQueryJoin *join = new gqbQueryJoin(owner, observable, source, destination, kind);
     joinsCollection->addItem(join);
     observable->registerJoin(join);
     return join;
@@ -229,16 +229,16 @@ void gqbQueryObject::removeJoin(gqbQueryJoin *join, bool unRegister = false)
 {
     // Notify to observable that the join this object owns will be removed & then remove the join
     if(unRegister)
-        join->getDestQTable()->unregisterJoin(join,false);
+        join->getDestQTable()->unregisterJoin(join, false);
     joinsCollection->removeItem(join);
     if(join)
         delete join;                              // Join can be only delete Here by his owner
 
-    if(joinsCollection->count()<=0)
+    if(joinsCollection->count() <= 0)
     {
         delete joinsCollection;                   // implementation it's delete too inside collection.
-        haveJoins=false;
-        joinsCollection=NULL;
+        haveJoins = false;
+        joinsCollection = NULL;
     }
 }
 
@@ -250,7 +250,7 @@ void gqbQueryObject::registerJoin(gqbQueryJoin *join)
     {
         implementationr = new gqbArrayCollection();
         registeredCollection =  new gqbCollection(implementationr);
-        haveRegisteredJoins=true;
+        haveRegisteredJoins = true;
     }
     registeredCollection->addItem(join);
 }
@@ -262,12 +262,12 @@ void gqbQueryObject::unregisterJoin(gqbQueryJoin *join, bool removeIt = false)
     // Notify to source/owner object of join about join removing & then remove
     registeredCollection->removeItem(join);
     if(removeIt)
-        join->getSourceQTable()->removeJoin(join,false);
-    if(registeredCollection->count()<=0)
+        join->getSourceQTable()->removeJoin(join, false);
+    if(registeredCollection->count() <= 0)
     {
         delete registeredCollection;              //implementation it's delete too inside collection.
-        haveRegisteredJoins=false;
-        registeredCollection=NULL;
+        haveRegisteredJoins = false;
+        registeredCollection = NULL;
     }
 }
 
@@ -296,21 +296,21 @@ bool gqbQueryObject::getHaveRegJoins()
 //  A Join inside a query Object like Table or view [Stored at source, registered at destination]
 //  I need to store the owner, destination because columns it's share between multiple joins
 gqbQueryJoin::gqbQueryJoin(gqbQueryObject *_owner, gqbQueryObject *_destination, gqbColumn *sourceCol, gqbColumn *destCol, type_Join joinKind)
-: gqbObject(wxT(""), _owner, NULL)
+    : gqbObject(wxT(""), _owner, NULL)
 {
-    kindofJoin=joinKind;
-    sCol=sourceCol;
-    dCol=destCol;
-    owner=_owner;
-    selected=false;
-    destination=_destination;
+    kindofJoin = joinKind;
+    sCol = sourceCol;
+    dCol = destCol;
+    owner = _owner;
+    selected = false;
+    destination = _destination;
     setType(GQB_JOIN);
 }
 
 
 void gqbQueryJoin::setKindofJoin(type_Join kind)
 {
-    kindofJoin=kind;
+    kindofJoin = kind;
 }
 
 
@@ -321,28 +321,28 @@ type_Join gqbQueryJoin::getKindofJoin()
 
 
 // Return the object where the join is stored
-gqbQueryObject* gqbQueryJoin::getSourceQTable()
+gqbQueryObject *gqbQueryJoin::getSourceQTable()
 {
     return owner;
 }
 
 
 // Return the object where the join point to.
-gqbQueryObject* gqbQueryJoin::getDestQTable()
+gqbQueryObject *gqbQueryJoin::getDestQTable()
 {
     return destination;
 }
 
 
 // Return the gqbObject of Destination Column
-gqbColumn* gqbQueryJoin::getDCol()
+gqbColumn *gqbQueryJoin::getDCol()
 {
     return dCol;
 }
 
 
 // Return the gqbObject of Source Column
-gqbColumn* gqbQueryJoin::getSCol()
+gqbColumn *gqbQueryJoin::getSCol()
 {
     return sCol;
 }
@@ -353,7 +353,7 @@ wxString gqbQueryJoin::getSourceTable()
     if (!owner)
         return wxEmptyString;
 
-    gqbTable *s=(gqbTable*)sCol->getOwner();
+    gqbTable *s = (gqbTable *)sCol->getOwner();
     return s->getName();
 }
 
@@ -363,7 +363,7 @@ wxString gqbQueryJoin::getDestTable()
     if (!destination)
         return wxEmptyString;
 
-    gqbTable *d=(gqbTable*)dCol->getOwner();
+    gqbTable *d = (gqbTable *)dCol->getOwner();
     return d->getName();
 }
 
@@ -388,23 +388,23 @@ wxString gqbQueryJoin::getDestCol()
 
 void gqbQueryJoin::setSourceAnchor(wxPoint pt)
 {
-    sAnchor=pt;
+    sAnchor = pt;
 }
 
 
 void gqbQueryJoin::setDestAnchor(wxPoint pt)
 {
-    dAnchor=pt;
+    dAnchor = pt;
 }
 
 
-wxPoint& gqbQueryJoin::getSourceAnchor()
+wxPoint &gqbQueryJoin::getSourceAnchor()
 {
     return sAnchor;
 }
 
 
-wxPoint& gqbQueryJoin::getDestAnchor()
+wxPoint &gqbQueryJoin::getDestAnchor()
 {
     return dAnchor;
 }
@@ -412,7 +412,7 @@ wxPoint& gqbQueryJoin::getDestAnchor()
 
 void gqbQueryJoin::setSelected(bool value)
 {
-    this->selected=value;
+    this->selected = value;
 }
 
 
@@ -424,11 +424,11 @@ bool gqbQueryJoin::getSelected()
 
 void gqbQueryJoin::setAnchorsUsed(wxPoint pt)
 {
-    anchorsUsed=pt;
+    anchorsUsed = pt;
 }
 
 
-wxPoint& gqbQueryJoin::getAnchorsUsed()
+wxPoint &gqbQueryJoin::getAnchorsUsed()
 {
     return anchorsUsed;
 }
@@ -440,25 +440,25 @@ wxPoint& gqbQueryJoin::getAnchorsUsed()
 
 enum
 {
-    QRButton=9000,
+    QRButton = 9000,
     QRValue,
     QRConnector,
     QRtype
 };
 
 gqbQueryRestriction::gqbQueryRestriction()
-: gqbObject(wxT(""), NULL, NULL)
+    : gqbObject(wxT(""), NULL, NULL)
 {
-    leftPart=wxT("");
-    value_s=wxT("");
-    connector=wxT("AND");
-    restriction=wxT("=");
+    leftPart = wxT("");
+    value_s = wxT("");
+    connector = wxT("AND");
+    restriction = wxT("=");
     setType(GQB_RESTRICTION);
 }
 
 
 gqbRestrictions::gqbRestrictions()
-: gqbObjectCollection(wxT(""), NULL, NULL)
+    : gqbObjectCollection(wxT(""), NULL, NULL)
 {
     setType(GQB_RESTRICTION);
 }
@@ -495,7 +495,7 @@ void gqbRestrictions::deleteAllRestrictions()
 }
 
 
-gqbIteratorBase* gqbRestrictions::createRestrictionsIterator()
+gqbIteratorBase *gqbRestrictions::createRestrictionsIterator()
 {
     return this->createIterator();
 }
@@ -507,7 +507,7 @@ int gqbRestrictions::restrictionsCount()
 }
 
 
-gqbQueryRestriction* gqbRestrictions::getRestrictionAt(int index)
+gqbQueryRestriction *gqbRestrictions::getRestrictionAt(int index)
 {
-    return (gqbQueryRestriction*)this->getObjectAtIndex(index);
+    return (gqbQueryRestriction *)this->getObjectAtIndex(index);
 }

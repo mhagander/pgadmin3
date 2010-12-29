@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,15 +21,15 @@
 #include "agent/pgaStep.h"
 #include "agent/pgaSchedule.h"
 
-pgaStep::pgaStep(pgCollection *_collection, const wxString& newName)
-: pgaJobObject(_collection->GetJob(), stepFactory, newName)
+pgaStep::pgaStep(pgCollection *_collection, const wxString &newName)
+    : pgaJobObject(_collection->GetJob(), stepFactory, newName)
 {
 }
 
 wxString pgaStep::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -57,7 +57,7 @@ wxString pgaStep::GetTranslatedMessage(int kindOfMessage) const
             message = _("pgAgent step dependents");
             break;
     }
-    
+
     if (!message.IsEmpty())
         message += wxT(" ") + GetName();
 
@@ -67,10 +67,10 @@ wxString pgaStep::GetTranslatedMessage(int kindOfMessage) const
 bool pgaStep::IsUpToDate()
 {
     wxString sql = wxT("SELECT xmin FROM pgagent.pga_jobstep WHERE jstid = ") + NumToStr(GetRecId());
-	if (!GetConnection() || GetConnection()->ExecuteScalar(sql) != NumToStr(GetXid()))
-		return false;
-	else
-		return true;
+    if (!GetConnection() || GetConnection()->ExecuteScalar(sql) != NumToStr(GetXid()))
+        return false;
+    else
+        return true;
 }
 
 bool pgaStep::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
@@ -83,7 +83,7 @@ void pgaStep::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 {
     if (!expandedKids)
     {
-        expandedKids=true;
+        expandedKids = true;
     }
 
     if (properties)
@@ -109,9 +109,9 @@ void pgaStep::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListView *prope
 
 pgObject *pgaStep::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *step=0;
+    pgObject *step = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         step = stepFactory.CreateObjects(coll, 0, wxT("\n   AND jstid=") + NumToStr(GetRecId()));
 
@@ -122,13 +122,13 @@ pgObject *pgaStep::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *pgaStepFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgaStep *step=0;
+    pgaStep *step = 0;
 
-    pgSet *steps= collection->GetConnection()->ExecuteSet(
-       wxT("SELECT xmin, * FROM pgagent.pga_jobstep\n")
-       wxT(" WHERE jstjobid=") + NumToStr(collection->GetJob()->GetRecId()) + wxT("\n")
-       + restriction +
-       wxT(" ORDER BY jstname"));
+    pgSet *steps = collection->GetConnection()->ExecuteSet(
+                       wxT("SELECT xmin, * FROM pgagent.pga_jobstep\n")
+                       wxT(" WHERE jstjobid=") + NumToStr(collection->GetJob()->GetRecId()) + wxT("\n")
+                       + restriction +
+                       wxT(" ORDER BY jstname"));
 
     if (steps)
     {
@@ -137,7 +137,7 @@ pgObject *pgaStepFactory::CreateObjects(pgCollection *collection, ctlTree *brows
 
             step = new pgaStep(collection, steps->GetVal(wxT("jstname")));
             step->iSetRecId(steps->GetLong(wxT("jstid")));
-			step->iSetXid(steps->GetOid(wxT("xmin")));
+            step->iSetXid(steps->GetOid(wxT("xmin")));
             step->iSetDbname(steps->GetVal(wxT("jstdbname")));
             if (steps->HasColumn(wxT("jstconnstr")))
                 step->iSetConnStr(steps->GetVal(wxT("jstconnstr")));
@@ -148,8 +148,12 @@ pgObject *pgaStepFactory::CreateObjects(pgCollection *collection, ctlTree *brows
             wxString kinds;
             switch (kindc)
             {
-                case 'b':   kinds = _("Batch");         break;
-                case 's':   kinds = wxT("SQL");         break;
+                case 'b':
+                    kinds = _("Batch");
+                    break;
+                case 's':
+                    kinds = wxT("SQL");
+                    break;
             }
             step->iSetKindChar(kindc);
             step->iSetKind(kinds);
@@ -158,10 +162,16 @@ pgObject *pgaStepFactory::CreateObjects(pgCollection *collection, ctlTree *brows
             wxString onerrs;
             switch (onerrc)
             {
-                case 's':   onerrs = _("Succeed");      break;
-                case 'f':   onerrs = _("Fail");         break;
-                case 'i':   onerrs = _("Ignore");       break;
-    
+                case 's':
+                    onerrs = _("Succeed");
+                    break;
+                case 'f':
+                    onerrs = _("Fail");
+                    break;
+                case 'i':
+                    onerrs = _("Ignore");
+                    break;
+
 
             }
 
@@ -173,13 +183,13 @@ pgObject *pgaStepFactory::CreateObjects(pgCollection *collection, ctlTree *brows
             if (browser)
             {
                 browser->AppendObject(collection, step);
-				steps->MoveNext();
+                steps->MoveNext();
             }
             else
                 break;
         }
 
-		delete steps;
+        delete steps;
     }
     return step;
 }
@@ -189,64 +199,64 @@ void pgaStep::ShowStatistics(frmMain *form, ctlListView *statistics)
 {
     wxString sql =
         wxT("SELECT jsljlgid")
-		     wxT(", jslstatus")
-		     wxT(", jslresult")
-             wxT(", jslstart")
-             wxT(", jslduration")
-			 wxT(", (jslstart + jslduration) AS endtime")
-			 wxT(", jsloutput")
-             wxT("  FROM pgagent.pga_jobsteplog\n")
-             wxT(" WHERE jsljstid = ") + NumToStr(GetRecId()) +
-			 wxT(" ORDER BY jslstart DESC")
-			 wxT(" LIMIT ") + NumToStr(settings->GetMaxRows());
+        wxT(", jslstatus")
+        wxT(", jslresult")
+        wxT(", jslstart")
+        wxT(", jslduration")
+        wxT(", (jslstart + jslduration) AS endtime")
+        wxT(", jsloutput")
+        wxT("  FROM pgagent.pga_jobsteplog\n")
+        wxT(" WHERE jsljstid = ") + NumToStr(GetRecId()) +
+        wxT(" ORDER BY jslstart DESC")
+        wxT(" LIMIT ") + NumToStr(settings->GetMaxRows());
 
     if (statistics)
     {
         wxLogInfo(wxT("Displaying statistics for job %s"), GetFullIdentifier().c_str());
 
         // Add the statistics view columns
-		statistics->ClearAll();
-		statistics->AddColumn(_("Run"), 50);
+        statistics->ClearAll();
+        statistics->AddColumn(_("Run"), 50);
         statistics->AddColumn(_("Status"), 60);
-		statistics->AddColumn(_("Result"), 60);
-		statistics->AddColumn(_("Start time"), 95);
-		statistics->AddColumn(_("End time"), 95);
-		statistics->AddColumn(_("Duration"), 70);
-		statistics->AddColumn(_("Output"), 200);
+        statistics->AddColumn(_("Result"), 60);
+        statistics->AddColumn(_("Start time"), 95);
+        statistics->AddColumn(_("End time"), 95);
+        statistics->AddColumn(_("Duration"), 70);
+        statistics->AddColumn(_("Output"), 200);
 
         pgSet *stats = GetConnection()->ExecuteSet(sql);
-		wxString status;
-		wxDateTime startTime;
-		wxDateTime endTime;
+        wxString status;
+        wxDateTime startTime;
+        wxDateTime endTime;
 
         if (stats)
         {
             while (!stats->Eof())
             {
-				if (stats->GetVal(1) == wxT("r"))
+                if (stats->GetVal(1) == wxT("r"))
                     status = _("Running");
-				else if (stats->GetVal(1) == wxT("s"))
+                else if (stats->GetVal(1) == wxT("s"))
                     status = _("Successful");
-				else if (stats->GetVal(1) == wxT("f"))
+                else if (stats->GetVal(1) == wxT("f"))
                     status = _("Failed");
-				else if (stats->GetVal(1) == wxT("i"))
+                else if (stats->GetVal(1) == wxT("i"))
                     status = _("Ignored");
-				else if (stats->GetVal(1) == wxT("i"))
+                else if (stats->GetVal(1) == wxT("i"))
                     status = _("Aborted");
-				else
+                else
                     status = _("Unknown");
 
-				startTime.ParseDateTime(stats->GetVal(3));
-				endTime.ParseDateTime(stats->GetVal(5));
+                startTime.ParseDateTime(stats->GetVal(3));
+                endTime.ParseDateTime(stats->GetVal(5));
 
-                long pos=statistics->AppendItem(stats->GetVal(0), status, stats->GetVal(2));
-				statistics->SetItem(pos, 3, startTime.Format());
-				if (stats->GetVal(5).Length() > 0)
-					statistics->SetItem(pos, 4, endTime.Format());
-				statistics->SetItem(pos, 5, stats->GetVal(4));
-				statistics->SetItem(pos, 6, stats->GetVal(6));
+                long pos = statistics->AppendItem(stats->GetVal(0), status, stats->GetVal(2));
+                statistics->SetItem(pos, 3, startTime.Format());
+                if (stats->GetVal(5).Length() > 0)
+                    statistics->SetItem(pos, 4, endTime.Format());
+                statistics->SetItem(pos, 5, stats->GetVal(4));
+                statistics->SetItem(pos, 6, stats->GetVal(6));
 
-				stats->MoveNext();
+                stats->MoveNext();
             }
             delete stats;
         }
@@ -259,7 +269,7 @@ void pgaStep::ShowStatistics(frmMain *form, ctlListView *statistics)
 wxString pgaStepCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -269,7 +279,7 @@ wxString pgaStepCollection::GetTranslatedMessage(int kindOfMessage) const
             message = _("Refreshing pgAgent steps");
             break;
     }
-    
+
     return message;
 }
 
@@ -279,8 +289,8 @@ wxString pgaStepCollection::GetTranslatedMessage(int kindOfMessage) const
 #include "images/step.xpm"
 #include "images/steps.xpm"
 
-pgaStepFactory::pgaStepFactory() 
-: pgaJobObjFactory(__("Step"), __("New Step"), __("Create a new Step."), step_xpm)
+pgaStepFactory::pgaStepFactory()
+    : pgaJobObjFactory(__("Step"), __("New Step"), __("Create a new Step."), step_xpm)
 {
     metaType = PGM_STEP;
 }

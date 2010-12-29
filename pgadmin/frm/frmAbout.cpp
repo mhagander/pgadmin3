@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -27,7 +27,7 @@
 
 BEGIN_EVENT_TABLE(frmAbout, wxFrame)
     EVT_PAINT(frmAbout::OnPaint)
-    
+
     EVT_KEY_UP(frmAbout::OnKeyUp)
     EVT_LEFT_DOWN(frmAbout::OnLeftDown)
 #ifdef __WXGTK__
@@ -36,7 +36,7 @@ BEGIN_EVENT_TABLE(frmAbout, wxFrame)
 END_EVENT_TABLE()
 
 frmAbout::frmAbout(wxFrame *parent)
-: wxFrame(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, 100), 0 | wxFRAME_SHAPED | wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR | wxSTAY_ON_TOP)
+    : wxFrame(parent, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(100, 100), 0 | wxFRAME_SHAPED | wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR | wxSTAY_ON_TOP)
 {
     appearanceFactory->SetIcons(this);
     about = appearanceFactory->GetSplashImage();
@@ -50,12 +50,12 @@ frmAbout::frmAbout(wxFrame *parent)
     CenterOnParent();
 }
 
-void frmAbout::OnLeftDown(wxMouseEvent& WXUNUSED(evt))
+void frmAbout::OnLeftDown(wxMouseEvent &WXUNUSED(evt))
 {
     this->Close();
 }
 
-void frmAbout::OnKeyUp(wxKeyEvent& evt)
+void frmAbout::OnKeyUp(wxKeyEvent &evt)
 {
     if (evt.GetKeyCode() == WXK_ESCAPE)
         this->Close();
@@ -68,9 +68,9 @@ void frmAbout::SetWindowShape()
     SetShape(region);
 }
 
-void frmAbout::OnPaint(wxPaintEvent& WXUNUSED(event))
+void frmAbout::OnPaint(wxPaintEvent &WXUNUSED(event))
 {
-    wxPoint pos=appearanceFactory->GetSplashTextPos();
+    wxPoint pos = appearanceFactory->GetSplashTextPos();
 
     wxPaintDC dc(this);
     dc.DrawBitmap(about, 0, 0, true);
@@ -89,7 +89,7 @@ void frmAbout::OnPaint(wxPaintEvent& WXUNUSED(event))
     dc.DrawText(LICENSE, pos);
 }
 
-void frmAbout::OnWindowCreate(wxWindowCreateEvent& WXUNUSED(evt))
+void frmAbout::OnWindowCreate(wxWindowCreateEvent &WXUNUSED(evt))
 {
     SetWindowShape();
 }
@@ -102,7 +102,7 @@ aboutFactory::aboutFactory(menuFactoryList *list, wxMenu *mnu, ctlMenuToolbar *t
 
 wxWindow *aboutFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmAbout *frm=new frmAbout((wxFrame*)form);
+    frmAbout *frm = new frmAbout((wxFrame *)form);
     frm->Show();
     return 0;
 }

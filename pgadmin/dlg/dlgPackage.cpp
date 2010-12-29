@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -27,7 +27,7 @@
 
 dlgProperty *edbPackageFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgPackage(this, frame, (edbPackage*)node, (pgSchema *)parent);
+    return new dlgPackage(this, frame, (edbPackage *)node, (pgSchema *)parent);
 }
 
 
@@ -39,10 +39,10 @@ END_EVENT_TABLE();
 
 
 dlgPackage::dlgPackage(pgaFactory *f, frmMain *frame, edbPackage *node, pgSchema *sch)
-: dlgSecurityProperty(f, frame, node, wxT("dlgPackage"), wxT("EXECUTE"), "X")
+    : dlgSecurityProperty(f, frame, node, wxT("dlgPackage"), wxT("EXECUTE"), "X")
 {
-    schema=sch;
-    package=node;
+    schema = sch;
+    package = node;
 
     bool bVal;
     settings->Read(wxT("frmQuery/ShowLineNumber"), &bVal, false);
@@ -95,13 +95,13 @@ int dlgPackage::Go(bool modal)
 pgObject *dlgPackage::CreateObject(pgCollection *collection)
 {
     pgObject *obj;
-    
+
     if (collection->GetConnection()->EdbMinimumVersion(8, 2))
-        obj=packageFactory.CreateObjects(collection, 0,
-            wxT("   AND nspname = ") + qtDbString(GetName()));
+        obj = packageFactory.CreateObjects(collection, 0,
+                                           wxT("   AND nspname = ") + qtDbString(GetName()));
     else
-        obj=packageFactory.CreateObjects(collection, 0,
-            wxT("   AND pkgname = ") + qtDbString(GetName()));
+        obj = packageFactory.CreateObjects(collection, 0,
+                                           wxT("   AND pkgname = ") + qtDbString(GetName()));
 
     return obj;
 }
@@ -121,19 +121,19 @@ void dlgPackage::OnChangeSize(wxSizeEvent &ev)
 
 void dlgPackage::CheckChange()
 {
-    bool enable=true;
+    bool enable = true;
 
     CheckValid(enable, !txtName->GetValue().IsEmpty(), _("Please specify name."));
     CheckValid(enable, !txtHeader->GetText().IsEmpty(), _("Please specify package header."));
 
     if (package)
     {
-       if (!(txtBody->GetText() != package->GetBodyInner() ||
-           txtHeader->GetText() != package->GetHeaderInner())) 
-           enable = false;
+        if (!(txtBody->GetText() != package->GetBodyInner() ||
+                txtHeader->GetText() != package->GetHeaderInner()))
+            enable = false;
 
-       if (txtComment->GetValue() != package->GetComment())
-           enable = true;
+        if (txtComment->GetValue() != package->GetComment())
+            enable = true;
     }
 
     EnableOK(enable);
@@ -146,7 +146,7 @@ bool dlgPackage::IsUpToDate()
     else
         return true;
 }
-  
+
 void dlgPackage::OnApply(wxCommandEvent &ev)
 {
     dlgProperty::OnApply(ev);
@@ -176,7 +176,7 @@ wxString dlgPackage::GetSql()
     }
 
     if (!package || (package && txtBody->GetText() != package->GetBodyInner())
-                 || (package && txtHeader->GetText() != package->GetHeaderInner()))
+            || (package && txtHeader->GetText() != package->GetHeaderInner()))
     {
         if (!txtBody->GetText().Trim().IsEmpty())
         {

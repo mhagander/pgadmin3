@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -19,8 +19,8 @@
 #include "schema/pgFunction.h"
 
 
-pgOperatorFamily::pgOperatorFamily(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, operatorFamilyFactory, newName)
+pgOperatorFamily::pgOperatorFamily(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, operatorFamilyFactory, newName)
 {
 }
 
@@ -31,7 +31,7 @@ pgOperatorFamily::~pgOperatorFamily()
 wxString pgOperatorFamily::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -44,11 +44,11 @@ wxString pgOperatorFamily::GetTranslatedMessage(int kindOfMessage) const
             break;
         case DROPINCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop operator family \"%s\" including all objects that depend on it?"),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPEXCLUDINGDEPS:
             message = wxString::Format(_("Are you sure you wish to drop operator family \"%s?\""),
-                GetFullIdentifier().c_str());
+                                       GetFullIdentifier().c_str());
             break;
         case DROPCASCADETITLE:
             message = _("Drop operator family cascaded?");
@@ -91,7 +91,7 @@ wxString pgOperatorFamily::GetTranslatedMessage(int kindOfMessage) const
 
 bool pgOperatorFamily::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
 {
-    wxString sql=wxT("DROP OPERATOR FAMILY ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier() + wxT(" USING ") + GetAccessMethod();
+    wxString sql = wxT("DROP OPERATOR FAMILY ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + this->GetQuotedIdentifier() + wxT(" USING ") + GetAccessMethod();
     if (cascaded)
         sql += wxT(" CASCADE");
     return GetDatabase()->ExecuteVoid(sql);
@@ -102,10 +102,10 @@ wxString pgOperatorFamily::GetSql(ctlTree *browser)
     if (sql.IsNull())
     {
         sql = wxT("-- Operator Family: ") + GetName() + wxT("\n\n")
-            + wxT("-- DROP OPERATOR FAMILY ") + GetQuotedFullIdentifier() + wxT(" USING ") + GetAccessMethod() + wxT(";")
-            + wxT("\n\nCREATE OPERATOR FAMILY ") + GetQuotedFullIdentifier()
-            + wxT(" USING ") + GetAccessMethod()
-			+ wxT(";");
+              + wxT("-- DROP OPERATOR FAMILY ") + GetQuotedFullIdentifier() + wxT(" USING ") + GetAccessMethod() + wxT(";")
+              + wxT("\n\nCREATE OPERATOR FAMILY ") + GetQuotedFullIdentifier()
+              + wxT(" USING ") + GetAccessMethod()
+              + wxT(";");
     }
 
     return sql;
@@ -131,8 +131,8 @@ void pgOperatorFamily::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListVi
 
 pgObject *pgOperatorFamily::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *operatorFamily=0;
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgObject *operatorFamily = 0;
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         operatorFamily = operatorFamilyFactory.CreateObjects(coll, 0, wxT("\n   AND opf.oid=") + GetOidStr());
 
@@ -143,7 +143,7 @@ pgObject *pgOperatorFamily::Refresh(ctlTree *browser, const wxTreeItemId item)
 wxString pgOperatorFamilyCollection::GetTranslatedMessage(int kindOfMessage) const
 {
     wxString message = wxEmptyString;
-    
+
     switch (kindOfMessage)
     {
         case RETRIEVINGDETAILS:
@@ -156,7 +156,7 @@ wxString pgOperatorFamilyCollection::GetTranslatedMessage(int kindOfMessage) con
             message = _("Operator families list report");
             break;
     }
-    
+
     return message;
 }
 
@@ -166,17 +166,17 @@ wxString pgOperatorFamilyCollection::GetTranslatedMessage(int kindOfMessage) con
 
 pgObject *pgOperatorFamilyFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    pgOperatorFamily *operatorFamily=0;
+    pgOperatorFamily *operatorFamily = 0;
 
-	pgSet *operatorFamilies;
+    pgSet *operatorFamilies;
 
-	operatorFamilies = collection->GetDatabase()->ExecuteSet(
-		wxT("SELECT opf.oid, opf.*, pg_get_userbyid(opf.opfowner) as opowner, amname\n")
-		wxT("  FROM pg_opfamily opf\n")
-		wxT("  JOIN pg_am am ON am.oid=opf.opfmethod\n")
-		wxT(" WHERE opfnamespace = ") + collection->GetSchema()->GetOidStr()
-		+ restriction + wxT("\n")
-		wxT(" ORDER BY opfname"));
+    operatorFamilies = collection->GetDatabase()->ExecuteSet(
+                           wxT("SELECT opf.oid, opf.*, pg_get_userbyid(opf.opfowner) as opowner, amname\n")
+                           wxT("  FROM pg_opfamily opf\n")
+                           wxT("  JOIN pg_am am ON am.oid=opf.opfmethod\n")
+                           wxT(" WHERE opfnamespace = ") + collection->GetSchema()->GetOidStr()
+                           + restriction + wxT("\n")
+                           wxT(" ORDER BY opfname"));
 
 
     if (operatorFamilies)
@@ -184,7 +184,7 @@ pgObject *pgOperatorFamilyFactory::CreateObjects(pgCollection *collection, ctlTr
         while (!operatorFamilies->Eof())
         {
             operatorFamily = new pgOperatorFamily(
-                        collection->GetSchema(), operatorFamilies->GetVal(wxT("opfname")));
+                collection->GetSchema(), operatorFamilies->GetVal(wxT("opfname")));
 
             operatorFamily->iSetOid(operatorFamilies->GetOid(wxT("oid")));
             operatorFamily->iSetOwner(operatorFamilies->GetVal(wxT("opowner")));
@@ -193,13 +193,13 @@ pgObject *pgOperatorFamilyFactory::CreateObjects(pgCollection *collection, ctlTr
             if (browser)
             {
                 browser->AppendObject(collection, operatorFamily);
-				operatorFamilies->MoveNext();
+                operatorFamilies->MoveNext();
             }
             else
                 break;
         }
 
-		delete operatorFamilies;
+        delete operatorFamilies;
     }
     return operatorFamily;
 }
@@ -208,8 +208,8 @@ pgObject *pgOperatorFamilyFactory::CreateObjects(pgCollection *collection, ctlTr
 #include "images/operatorfamily.xpm"
 #include "images/operatorfamilies.xpm"
 
-pgOperatorFamilyFactory::pgOperatorFamilyFactory() 
-: pgSchemaObjFactory(__("Operator Family"), __("New Operator Family..."), __("Create a new Operator Family."), operatorfamily_xpm)
+pgOperatorFamilyFactory::pgOperatorFamilyFactory()
+    : pgSchemaObjFactory(__("Operator Family"), __("New Operator Family..."), __("Create a new Operator Family."), operatorfamily_xpm)
 {
     metaType = PGM_OPFAMILY;
 }

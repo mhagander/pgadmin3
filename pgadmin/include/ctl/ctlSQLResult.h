@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -25,11 +25,11 @@
 class ctlSQLResult : public ctlSQLGrid
 {
 public:
-    ctlSQLResult(wxWindow *parent, pgConn *conn, wxWindowID id, const wxPoint& pos=wxDefaultPosition, const wxSize& size=wxDefaultSize);
+    ctlSQLResult(wxWindow *parent, pgConn *conn, wxWindowID id, const wxPoint &pos = wxDefaultPosition, const wxSize &size = wxDefaultSize);
     ~ctlSQLResult();
 
 
-    int Execute(const wxString &query, int resultToDisplay=0, wxWindow *caller=0, long eventId=0, void *data=0); // > 0: resultset to display, <=0: last result
+    int Execute(const wxString &query, int resultToDisplay = 0, wxWindow *caller = 0, long eventId = 0, void *data = 0); // > 0: resultset to display, <=0: last result
     void SetConnection(pgConn *conn);
     long NumRows() const;
     long InsertedCount() const;
@@ -38,26 +38,35 @@ public:
     int Abort();
 
     bool Export();
-	bool ToFile();
-	bool ToFile(frmExport *frm);
-    bool CanExport() { return NumRows() >0 && colNames.GetCount() > 0; }
+    bool ToFile();
+    bool ToFile(frmExport *frm);
+    bool CanExport()
+    {
+        return NumRows() > 0 && colNames.GetCount() > 0;
+    }
 
-	wxString OnGetItemText(long item, long col) const;
+    wxString OnGetItemText(long item, long col) const;
     bool IsColText(int col);
-	bool hasRowNumber() { return !rowcountSuppressed; }
+    bool hasRowNumber()
+    {
+        return !rowcountSuppressed;
+    }
 
     int RunStatus();
     wxString GetMessagesAndClear();
     wxString GetErrorMessage();
     pgError GetResultError();
 
-	void DisplayData(bool single=false);
+    void DisplayData(bool single = false);
 
-    bool GetRowCountSuppressed() { return rowcountSuppressed; };
+    bool GetRowCountSuppressed()
+    {
+        return rowcountSuppressed;
+    };
 
     void SetMaxRows(int rows);
     void ResultsFinished();
-    void OnGridSelect(wxGridRangeSelectEvent& event);
+    void OnGridSelect(wxGridRangeSelectEvent &event);
 
     wxArrayString colNames;
     wxArrayString colTypes;
@@ -69,7 +78,7 @@ public:
 private:
     pgQueryThread *thread;
     pgConn *conn;
-	bool rowcountSuppressed;
+    bool rowcountSuppressed;
 };
 
 class sqlResultTable : public wxGridTableBase
@@ -79,12 +88,27 @@ public:
     wxString GetValue(int row, int col);
     int GetNumberRows();
     int GetNumberCols();
-    bool IsEmptyCell(int row, int col) { return false; }
+    bool IsEmptyCell(int row, int col)
+    {
+        return false;
+    }
     wxString GetColLabelValue(int col);
-    void SetValue(int row, int col, const wxString& value) { return; }
-    void SetThread(pgQueryThread *t) { thread = t; }
-    bool DeleteRows(size_t pos = 0, size_t numRows = 1) { return true; }
-    bool DeleteCols(size_t pos = 0, size_t numCols = 1) { return true; }
+    void SetValue(int row, int col, const wxString &value)
+    {
+        return;
+    }
+    void SetThread(pgQueryThread *t)
+    {
+        thread = t;
+    }
+    bool DeleteRows(size_t pos = 0, size_t numRows = 1)
+    {
+        return true;
+    }
+    bool DeleteCols(size_t pos = 0, size_t numCols = 1)
+    {
+        return true;
+    }
 
 private:
     pgQueryThread *thread;

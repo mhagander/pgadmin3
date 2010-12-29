@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -35,7 +35,7 @@ int FindToken(const wxString &str, const wxChar **list)
 }
 
 
-const wxChar *pgConfigTypeStrings[]=
+const wxChar *pgConfigTypeStrings[] =
 {
     wxT("bool"),
     wxT("integer"),
@@ -44,10 +44,10 @@ const wxChar *pgConfigTypeStrings[]=
     0
 };
 
-    
+
 void pgSettingItem::SetType(const wxString &str)
 {
-    int index=FindToken(str, pgConfigTypeStrings);
+    int index = FindToken(str, pgConfigTypeStrings);
     if (index < 0)
         type = PGC_STRING;
     else
@@ -55,7 +55,7 @@ void pgSettingItem::SetType(const wxString &str)
 }
 
 
-const wxChar *pgConfigContextStrings[]=
+const wxChar *pgConfigContextStrings[] =
 {
     wxT("internal"),
     wxT("postmaster"),
@@ -78,7 +78,7 @@ void pgSettingItem::SetContext(const wxString &str)
 }
 
 
-const wxChar *pgConfigSourceStrings[]=
+const wxChar *pgConfigSourceStrings[] =
 {
     wxT("default"),
     wxT("environment variable"),
@@ -95,7 +95,7 @@ const wxChar *pgConfigSourceStrings[]=
     0
 };
 
-    
+
 void pgSettingItem::SetSource(const wxString &str)
 {
     int index = FindToken(str, pgConfigSourceStrings);
@@ -124,9 +124,9 @@ wxString pgSettingItem::GetActiveValue()
 
 pgConfigLine::pgConfigLine(pgConfigLine *line)
 {
-    item=line->item;
-    value=line->value;
-    comment=line->comment;
+    item = line->item;
+    value = line->value;
+    comment = line->comment;
     isComment = line->isComment;
 }
 
@@ -152,7 +152,7 @@ wxString pgConfigLine::GetNewText()
         newLine = wxT("# ");
 
     newLine += item->name + wxT(" = ")
-            + quote + value + quote;
+               + quote + value + quote;
 
     if (!comment.IsEmpty())
     {
@@ -190,11 +190,11 @@ pgSettingFileReader::pgSettingFileReader(bool localized)
 
     wxUtfFile file;
 
-    wxString path=i18nPath + wxT("/") + settings->GetCanonicalLanguageName() +wxT("/pg_settings.csv");
+    wxString path = i18nPath + wxT("/") + settings->GetCanonicalLanguageName() + wxT("/pg_settings.csv");
     if (localized && wxFile::Exists(path))
         file.Open(path);
     else
-        file.Open(i18nPath+wxT("/pg_settings.csv"));
+        file.Open(i18nPath + wxT("/pg_settings.csv"));
 
     if (file.IsOpened())
     {
@@ -207,7 +207,7 @@ pgSettingFileReader::pgSettingFileReader(bool localized)
         buffer = wxTextBuffer::Translate(buffer, wxTextFileType_Unix);
 
         columnNames = buffer.BeforeFirst('\n');
-        bp = (wxChar*)buffer.c_str() + columnNames.Length()+1;
+        bp = (wxChar *)buffer.c_str() + columnNames.Length() + 1;
     }
 }
 
@@ -222,9 +222,9 @@ pgSettingItem *pgSettingFileReader::GetNextItem()
     if (!bp || !*bp || *bp == '\n')
         return 0;
 
-    pgSettingItem *item=new pgSettingItem;
+    pgSettingItem *item = new pgSettingItem;
     wxStringTokenizer tk(columnNames, wxT(";"));
-    wxString column=tk.GetNextToken();
+    wxString column = tk.GetNextToken();
 
     wxChar *c = bp;
     while (*c)
@@ -272,12 +272,12 @@ pgSettingItem *pgSettingFileReader::GetNextItem()
         column = tk.GetNextToken();
         if (*c == '\n')
         {
-            bp = c +1;
+            bp = c + 1;
             break;
         }
         else if (!*c)
         {
-            bp=0;
+            bp = 0;
             break;
         }
         else if (*c == ';')
@@ -295,7 +295,7 @@ pgSettingItem *pgSettingFileReader::GetNextItem()
 
 pgSettingDbReader::pgSettingDbReader(pgConn *conn)
 {
-    set=conn->ExecuteSet(wxT("SELECT name, setting, source, category, short_desc, extra_desc, context, vartype, min_val, max_val FROM pg_settings ORDER BY name"));
+    set = conn->ExecuteSet(wxT("SELECT name, setting, source, category, short_desc, extra_desc, context, vartype, min_val, max_val FROM pg_settings ORDER BY name"));
 }
 
 
@@ -309,8 +309,8 @@ pgSettingItem *pgSettingDbReader::GetNextItem()
 {
     if (set->Eof())
         return 0;
-    
-    pgSettingItem *item=new pgSettingItem;
+
+    pgSettingItem *item = new pgSettingItem;
 
     item->name = set->GetVal(wxT("name")).Lower();
     item->category = set->GetVal(wxT("category"));
@@ -361,20 +361,20 @@ const wxChar *pgHbaMethodStrings[] =
 };
 
 
-bool IsSpaceChar(wxChar c, const wxChar *spaceChars=wxT("\t "))
+bool IsSpaceChar(wxChar c, const wxChar *spaceChars = wxT("\t "))
 {
     return wxStrchr(spaceChars, c) != NULL;
 }
 
 
-void SkipSpace(const wxChar* &ptr, const wxChar *spaceChars=wxT("\t "))
+void SkipSpace(const wxChar* &ptr, const wxChar *spaceChars = wxT("\t "))
 {
     while (*ptr && IsSpaceChar(*ptr))
         ptr++;
 }
 
 
-void SkipNonspace(const wxChar* &ptr, const wxChar *spaceChars=wxT("\t "))
+void SkipNonspace(const wxChar* &ptr, const wxChar *spaceChars = wxT("\t "))
 {
     while (*ptr && !IsSpaceChar(*ptr))
         ptr++;
@@ -383,7 +383,7 @@ void SkipNonspace(const wxChar* &ptr, const wxChar *spaceChars=wxT("\t "))
 
 pgHbaConfigLine::pgHbaConfigLine(const wxString &line)
 {
-    item=-1;
+    item = -1;
     connectType = PGC_INVALIDCONF;
     method = PGC_INVALIDMETHOD;
     Init(line);
@@ -400,7 +400,7 @@ void pgHbaConfigLine::Init(const wxString &line)
 
     text = line;
 
-    const wxChar *p0=line.c_str();
+    const wxChar *p0 = line.c_str();
 
     if (*p0 == '#')
     {
@@ -412,12 +412,12 @@ void pgHbaConfigLine::Init(const wxString &line)
         isComment = false;
 
 
-    const wxChar *p1=p0;
+    const wxChar *p1 = p0;
     SkipNonspace(p1);
 
-    wxString str=line.Mid(p0-line.c_str(), p1-p0);
-    
-    int i=FindToken(str, pgHbaConnectTypeStrings);
+    wxString str = line.Mid(p0 - line.c_str(), p1 - p0);
+
+    int i = FindToken(str, pgHbaConnectTypeStrings);
 
     if (i >= 0)
         connectType = (pgHbaConnectType)i;
@@ -430,8 +430,8 @@ void pgHbaConfigLine::Init(const wxString &line)
 
     SkipSpace(p1);
 
-    const wxChar *p2=p1;
-    bool quoted=false;
+    const wxChar *p2 = p1;
+    bool quoted = false;
 
     while (*p2)
     {
@@ -442,13 +442,13 @@ void pgHbaConfigLine::Init(const wxString &line)
         p2++;
     }
 
-    database = line.Mid(p1-line.c_str(), p2-p1);
+    database = line.Mid(p1 - line.c_str(), p2 - p1);
 
     SkipSpace(p2);
 
-    const wxChar *p3=p2;
+    const wxChar *p3 = p2;
 
-    quoted=false;
+    quoted = false;
     while (*p3)
     {
         if (!quoted && IsSpaceChar(*p3))
@@ -458,11 +458,11 @@ void pgHbaConfigLine::Init(const wxString &line)
         p3++;
     }
 
-    user = line.Mid(p2-line.c_str(), p3-p2);
+    user = line.Mid(p2 - line.c_str(), p3 - p2);
 
     SkipSpace(p3);
 
-    const wxChar *p4=p3;
+    const wxChar *p4 = p3;
 
     if (connectType == PGC_LOCAL)
     {
@@ -470,11 +470,11 @@ void pgHbaConfigLine::Init(const wxString &line)
     }
     else
     {
-        bool hasCidr=false;
+        bool hasCidr = false;
         while (*p4 && !IsSpaceChar(*p4))
         {
             if (*p4 == '/')
-                hasCidr=true;
+                hasCidr = true;
             p4++;
         }
         if (!hasCidr)
@@ -483,14 +483,14 @@ void pgHbaConfigLine::Init(const wxString &line)
             SkipNonspace(p4);
         }
 
-        ipaddress = line.Mid(p3-line.c_str(), p4-p3);
+        ipaddress = line.Mid(p3 - line.c_str(), p4 - p3);
         SkipSpace(p4);
     }
 
-    const wxChar *p5=p4;
+    const wxChar *p5 = p4;
     SkipNonspace(p5);
 
-    str=line.Mid(p4-line.c_str(), p5-p4);
+    str = line.Mid(p4 - line.c_str(), p5 - p4);
 
     i = FindToken(str, pgHbaMethodStrings);
 
@@ -529,13 +529,13 @@ wxString pgHbaConfigLine::GetText()
         return text;
 
     wxString str;
-    wxString tabspace=wxT("\t ");
+    wxString tabspace = wxT("\t ");
     if (isComment)
         str = wxT("# ");
 
-    str += GetConnectType() 
-        +  tabspace + database
-        +  tabspace + user;
+    str += GetConnectType()
+           +  tabspace + database
+           +  tabspace + user;
 
     if (connectType != PGC_LOCAL)
         str += tabspace + ipaddress;
@@ -552,38 +552,38 @@ wxString pgHbaConfigLine::GetText()
 ////////////////////////////////////////////////
 pgPassConfigLine::pgPassConfigLine(const wxString &line)
 {
-    item=-1;
+    item = -1;
     Init(line);
 }
 
 void pgPassConfigLine::Init(const wxString &line)
 {
-	text = line;
+    text = line;
 
     if (line.IsEmpty())
         return;
 
-	isComment = line.StartsWith(wxT("#"));
+    isComment = line.StartsWith(wxT("#"));
 
-	wxStringTokenizer tok(isComment?line.Mid(1):line, wxT(":"));
-	if (tok.HasMoreTokens())
-		hostname = tok.GetNextToken();
-	if (tok.HasMoreTokens())
-		port = tok.GetNextToken();
-	if (tok.HasMoreTokens())
-		database = tok.GetNextToken();
-	if (tok.HasMoreTokens())
-		username = tok.GetNextToken();
-	if (tok.HasMoreTokens())
-		password = tok.GetNextToken();
+    wxStringTokenizer tok(isComment ? line.Mid(1) : line, wxT(":"));
+    if (tok.HasMoreTokens())
+        hostname = tok.GetNextToken();
+    if (tok.HasMoreTokens())
+        port = tok.GetNextToken();
+    if (tok.HasMoreTokens())
+        database = tok.GetNextToken();
+    if (tok.HasMoreTokens())
+        username = tok.GetNextToken();
+    if (tok.HasMoreTokens())
+        password = tok.GetNextToken();
 }
 
 wxString pgPassConfigLine::GetText()
 {
-	return (isComment?wxT("#"):wxT("")) +
-		   hostname + wxT(":") + 
-		   port + wxT(":") +
-		   database + wxT(":") +
-		   username + wxT(":") +
-		   password;
+    return (isComment ? wxT("#") : wxT("")) +
+           hostname + wxT(":") +
+           port + wxT(":") +
+           database + wxT(":") +
+           username + wxT(":") +
+           password;
 }

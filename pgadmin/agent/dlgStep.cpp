@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -48,25 +48,25 @@ END_EVENT_TABLE();
 
 dlgProperty *pgaStepFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgStep(this, frame, (pgaStep*)node, (pgaJob*)parent);
+    return new dlgStep(this, frame, (pgaStep *)node, (pgaJob *)parent);
 }
 
 
 dlgStep::dlgStep(pgaFactory *f, frmMain *frame, pgaStep *node, pgaJob *j)
-: dlgAgentProperty(f, frame, wxT("dlgStep"))
+    : dlgAgentProperty(f, frame, wxT("dlgStep"))
 {
-    step=node;
-    job=j;
+    step = node;
+    job = j;
     if (job)
-        jobId=job->GetRecId();
+        jobId = job->GetRecId();
     else
-        jobId=0;
+        jobId = 0;
 
-    sqlBox=new ctlSQLBox(pnlDefinition, CTL_SQLBOX, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_RICH2);
+    sqlBox = new ctlSQLBox(pnlDefinition, CTL_SQLBOX, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxSUNKEN_BORDER | wxTE_RICH2);
 
-    wxWindow *placeholder=CTRL_TEXT("txtSqlBox");
-    wxSizer *sizer=placeholder->GetContainingSizer();
-    sizer->Add(sqlBox, 1, wxRIGHT|wxGROW, 5);
+    wxWindow *placeholder = CTRL_TEXT("txtSqlBox");
+    wxSizer *sizer = placeholder->GetContainingSizer();
+    sizer->Add(sqlBox, 1, wxRIGHT | wxGROW, 5);
     sizer->Detach(placeholder);
     delete placeholder;
     sizer->Layout();
@@ -90,7 +90,7 @@ int dlgStep::Go(bool modal)
     cbDatabase->Append(wxT(" "));
     cbDatabase->SetSelection(0);
 
-    pgSet *db=connection->ExecuteSet(wxT("SELECT datname FROM pg_database"));
+    pgSet *db = connection->ExecuteSet(wxT("SELECT datname FROM pg_database"));
     if (db)
     {
         while (!db->Eof())
@@ -151,25 +151,25 @@ int dlgStep::Go(bool modal)
 
 pgObject *dlgStep::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgObject *obj=stepFactory.CreateObjects(collection, 0, wxT("   AND jstid=") + NumToStr(recId) + wxT("\n"));
+    pgObject *obj = stepFactory.CreateObjects(collection, 0, wxT("   AND jstid=") + NumToStr(recId) + wxT("\n"));
     return obj;
 }
 
 
 void dlgStep::CheckChange()
 {
-    wxString name=GetName();
+    wxString name = GetName();
     bool enable;
     if (step)
     {
         enable  =  name != step->GetName()
-                || chkEnabled->GetValue() != step->GetEnabled()
-                || rbxKind->GetSelection() != wxString(wxT("sb")).Find(step->GetKindChar())
-                || rbxOnError->GetSelection() != wxString(wxT("fsi")).Find(step->GetOnErrorChar())
-                || txtComment->GetValue() != step->GetComment()
-                || sqlBox->GetText() != step->GetCode();
+                   || chkEnabled->GetValue() != step->GetEnabled()
+                   || rbxKind->GetSelection() != wxString(wxT("sb")).Find(step->GetKindChar())
+                   || rbxOnError->GetSelection() != wxString(wxT("fsi")).Find(step->GetOnErrorChar())
+                   || txtComment->GetValue() != step->GetComment()
+                   || sqlBox->GetText() != step->GetCode();
 
         if (!enable && rbxKind->GetSelection() == 0)
         {
@@ -198,7 +198,7 @@ void dlgStep::CheckChange()
     }
     else
     {
-        enable=true;
+        enable = true;
     }
 
     if (statusBar)
@@ -227,7 +227,7 @@ void dlgStep::CheckChange()
             rbLocalConn->Enable(true);
             if (rbRemoteConn->GetValue())
             {
-                wxString validConnStr;                
+                wxString validConnStr;
 
                 btnSelDatabase->Enable(true);
                 txtConnStr->Enable(true);
@@ -271,7 +271,7 @@ wxString dlgStep::GetInsertSql()
 
     if (!step)
     {
-        wxString name=GetName();
+        wxString name = GetName();
         wxString kind = wxT("sb")[rbxKind->GetSelection()];
         wxString onerror = wxT("fsi")[rbxOnError->GetSelection()];
         wxString db, connstr;
@@ -284,15 +284,15 @@ wxString dlgStep::GetInsertSql()
         if (rbxKind->GetSelection() == 0)
         {
             if (hasConnStrSupport && rbRemoteConn->GetValue())
-			{
+            {
                 connstr = qtDbString(txtConnStr->GetValue().Trim());
-				db = wxT("''");
-			}
+                db = wxT("''");
+            }
             else
-			{
+            {
                 db = qtDbString(cbDatabase->GetValue().Trim());
-				connstr = wxT("''");
-			}
+                connstr = wxT("''");
+            }
         }
         else
         {
@@ -305,8 +305,8 @@ wxString dlgStep::GetInsertSql()
             sql += wxT(", jstconnstr");
         sql += wxT(")\n ") \
                wxT("SELECT <StpId>, ") + jstjobid + wxT(", ") + qtDbString(name) + wxT(", ") + qtDbString(txtComment->GetValue()) + wxT(", ")
-                + BoolToStr(chkEnabled->GetValue()) + wxT(", ") + qtDbString(kind) + wxT(", ") 
-                + qtDbString(onerror) + wxT(", ") + qtDbString(sqlBox->GetText()) + wxT(", ") + db;
+               + BoolToStr(chkEnabled->GetValue()) + wxT(", ") + qtDbString(kind) + wxT(", ")
+               + qtDbString(onerror) + wxT(", ") + qtDbString(sqlBox->GetText()) + wxT(", ") + db;
         if (hasConnStrSupport)
         {
             sql += wxT(", ") + connstr;
@@ -324,7 +324,7 @@ wxString dlgStep::GetUpdateSql()
     if (step)
     {
         // edit mode
-        wxString name=GetName();
+        wxString name = GetName();
         wxString kind = wxT("sb")[rbxKind->GetSelection()];
 
         wxString vars;
@@ -419,18 +419,18 @@ wxString dlgStep::GetUpdateSql()
         }
         if (sqlBox->GetText() != step->GetCode())
         {
-        {
-            if (!vars.IsEmpty())
-                vars.Append(wxT(", "));
-            vars.Append(wxT("jstcode=") + qtDbString(sqlBox->GetText()));
-        }
+            {
+                if (!vars.IsEmpty())
+                    vars.Append(wxT(", "));
+                vars.Append(wxT("jstcode=") + qtDbString(sqlBox->GetText()));
+            }
         }
 
         if (!vars.IsEmpty())
             sql = wxT("UPDATE pgagent.pga_jobstep\n")
                   wxT("   SET ") + vars + wxT("\n")
                   wxT(" WHERE jstid=") + NumToStr(step->GetRecId()) +
-				  wxT(";\n");
+                  wxT(";\n");
     }
     else
     {
@@ -441,10 +441,10 @@ wxString dlgStep::GetUpdateSql()
 
 bool dlgStep::IsUpToDate()
 {
-	if (step && !step->IsUpToDate())
-		return false;
-	else
-		return true;
+    if (step && !step->IsUpToDate())
+        return false;
+    else
+        return true;
 }
 
 void dlgStep::OnSelectDatabase(wxCommandEvent &ev)
@@ -458,7 +458,7 @@ void dlgStep::OnSelectDatabase(wxCommandEvent &ev)
     }
 }
 
-void dlgStep::OnSelRemoteConn(wxCommandEvent& ev)
+void dlgStep::OnSelRemoteConn(wxCommandEvent &ev)
 {
     if (rbRemoteConn->GetValue())
     {
@@ -469,7 +469,7 @@ void dlgStep::OnSelRemoteConn(wxCommandEvent& ev)
     dlgProperty::OnChange(ev);
 }
 
-void dlgStep::OnSelLocalConn(wxCommandEvent& ev)
+void dlgStep::OnSelLocalConn(wxCommandEvent &ev)
 {
     if (rbLocalConn->GetValue())
     {

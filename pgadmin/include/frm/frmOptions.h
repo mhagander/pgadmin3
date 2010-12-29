@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -20,7 +20,7 @@ class frmMain;
 class ItemWithString : public wxClientData
 {
 public:
-	wxString data;
+    wxString data;
 };
 
 // Class declarations
@@ -29,7 +29,7 @@ class frmOptions : public pgDialog
 public:
     frmOptions(frmMain *parent);
     ~frmOptions();
-    
+
 private:
     frmMain *mainForm;
 
@@ -39,10 +39,10 @@ private:
     void OnDefault(wxCommandEvent &ev);
     void OnSuppressHints(wxCommandEvent &ev);
     void OnResetHints(wxCommandEvent &ev);
-	void OnChangeCopyQuote(wxCommandEvent &ev);
-	void OnChangeSQLUseCustomColour(wxCommandEvent &ev);
+    void OnChangeCopyQuote(wxCommandEvent &ev);
+    void OnChangeSQLUseCustomColour(wxCommandEvent &ev);
     wxString CheckColour(wxString colour);
-	void UpdateColourControls();
+    void UpdateColourControls();
     DECLARE_EVENT_TABLE()
 };
 

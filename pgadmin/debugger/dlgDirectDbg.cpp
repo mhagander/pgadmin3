@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
-// dlgDirectDbg.cpp - debugger 
+// dlgDirectDbg.cpp - debugger
 //
 //////////////////////////////////////////////////////////////////////////
 
@@ -38,7 +38,7 @@ IMPLEMENT_CLASS( dlgDirectDbg, pgDialog )
 
 BEGIN_EVENT_TABLE( dlgDirectDbg, pgDialog )
     EVT_BUTTON( wxID_OK,                    dlgDirectDbg::OnOk )
-    EVT_BUTTON( wxID_CANCEL,                dlgDirectDbg::OnCancel )    
+    EVT_BUTTON( wxID_CANCEL,                dlgDirectDbg::OnCancel )
     EVT_BUTTON( MENU_ID_SPAWN_DEBUGGER,  dlgDirectDbg::OnDebug )
     EVT_BUTTON( MENU_ID_NOTICE_RECEIVED, dlgDirectDbg::OnNoticeReceived )
 
@@ -51,24 +51,24 @@ END_EVENT_TABLE()
 ////////////////////////////////////////////////////////////////////////////////
 // dlgDirectDbg constructor
 //
-//    This class implements 'direct-debugging'. In direct-debugging, the user 
+//    This class implements 'direct-debugging'. In direct-debugging, the user
 //  provides a function signature, procedure signature, or OID on the command
-//  line (this identifies the debug target).  We query the server for the 
+//  line (this identifies the debug target).  We query the server for the
 //  names, types, and in/out modes for each target parameter and then prompt
 //    the user to enter a value for each of the IN (and IN/OUT) parameters.
 //
-//  When the user fills in the parameter values and clicks OK, we set a 
-//  breakpoint at the target and then execute a SELECT statement or an 
-//  EXEC statement that invokes the target (with the parameter values 
+//  When the user fills in the parameter values and clicks OK, we set a
+//  breakpoint at the target and then execute a SELECT statement or an
+//  EXEC statement that invokes the target (with the parameter values
 //  provided by the user).
 
-dlgDirectDbg::dlgDirectDbg( frmDebugger *parent, wxWindowID id, const dbgConnProp & connProp )
-  : m_connProp(connProp),
-    m_targetInfo(NULL),
-    m_conn(NULL),
-    m_codeWindow(NULL),
-    m_parent (parent),
-    m_cancelled (false)
+dlgDirectDbg::dlgDirectDbg( frmDebugger *parent, wxWindowID id, const dbgConnProp &connProp )
+    : m_connProp(connProp),
+      m_targetInfo(NULL),
+      m_conn(NULL),
+      m_codeWindow(NULL),
+      m_parent (parent),
+      m_cancelled (false)
 {
     wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(m_parent, wxT("dlgDirectDbg"));
@@ -123,22 +123,30 @@ bool dlgDirectDbg::startDebugging( void )
     //          debugging - you can create other breakpoints once you see
     //          the source code.
 
-    dbgBreakPointList::Node * node = m_breakpoints.GetFirst(); 
+    dbgBreakPointList::Node *node = m_breakpoints.GetFirst();
 
     wxASSERT_MSG( node != NULL, wxT( "Expected to find at least one target on the command line" ));
 
-    dbgBreakPoint * breakpoint = node->GetData();
+    dbgBreakPoint *breakpoint = node->GetData();
 
     m_target = breakpoint->getTarget();
 
-    char    targetType=0;
+    char    targetType = 0;
 
     switch( breakpoint->getTargetType())
     {
-        case dbgBreakPoint::TRIGGER:     targetType = 't'; break;
-        case dbgBreakPoint::FUNCTION:    targetType = 'f'; break;
-        case dbgBreakPoint::PROCEDURE:   targetType = 'p'; break;
-        case dbgBreakPoint::OID:         targetType = 'o'; break;
+        case dbgBreakPoint::TRIGGER:
+            targetType = 't';
+            break;
+        case dbgBreakPoint::FUNCTION:
+            targetType = 'f';
+            break;
+        case dbgBreakPoint::PROCEDURE:
+            targetType = 'p';
+            break;
+        case dbgBreakPoint::OID:
+            targetType = 'o';
+            break;
         default:
         {
             wxASSERT_MSG( false, wxT( "Unexpected target type" ));
@@ -160,11 +168,11 @@ bool dlgDirectDbg::startDebugging( void )
 //  dbgTargetInfo object that loads information about the debug target (that is,
 //  the function or procedure of interest).  Call this function with two
 //  arguments: target should contain the signature of a function or procedure
-//  or the OID of a function or procedure and connProp should contain the 
+//  or the OID of a function or procedure and connProp should contain the
 //  information required to connect to the server (like the hostname, port number,
 //  and user name).
 
-bool dlgDirectDbg::loadTargetInfo( const wxString &target, const dbgConnProp & connProp, char targetType )
+bool dlgDirectDbg::loadTargetInfo( const wxString &target, const dbgConnProp &connProp, char targetType )
 {
     // Connect to the server using the connection properties contained in connProp
 
@@ -185,14 +193,14 @@ bool dlgDirectDbg::loadTargetInfo( const wxString &target, const dbgConnProp & c
         PQclear( m_conn->waitForCommand( wxT( "SET log_min_messages TO fatal" )));
 
         // Now load information about the target into m_targetInfo (note:
-        // the dbgTargetInfo() constructor queries the server for all 
+        // the dbgTargetInfo() constructor queries the server for all
         // required information)
 
         try
         {
             m_targetInfo = new dbgTargetInfo( target, m_conn, targetType );
         }
-        catch( const std::runtime_error & error )
+        catch( const std::runtime_error &error )
         {
             wxLogError(wxT("%s"), wxString(error.what(), wxConvUTF8).c_str());
             m_conn->Close();
@@ -215,8 +223,8 @@ bool dlgDirectDbg::loadTargetInfo( const wxString &target, const dbgConnProp & c
 
 void dlgDirectDbg::populateParamGrid( )
 {
-    // First, try to load default values from a previous invocation into 
-    // m_targetInfo (assuming that we're debugging the same target this 
+    // First, try to load default values from a previous invocation into
+    // m_targetInfo (assuming that we're debugging the same target this
     // time around)
 
     loadSettings();
@@ -225,9 +233,9 @@ void dlgDirectDbg::populateParamGrid( )
 
     for( int count = 0; count < m_targetInfo->getArgCount(); ++count )
     {
-        wsArgInfo & arg = ((*m_targetInfo)[count] );
+        wsArgInfo &arg = ((*m_targetInfo)[count] );
 
-        // If this is an IN parameter (or an IN/OUT parameter), add 
+        // If this is an IN parameter (or an IN/OUT parameter), add
         // a new row to the grid
 
         if( arg.getMode() != wxT( "o" ))
@@ -235,18 +243,18 @@ void dlgDirectDbg::populateParamGrid( )
             grdParams->AppendRows( 1 );
             grdParams->SetCellValue( i, COL_NAME,  arg.getName());
 
-			// Make it obvious which are variadics
-			if (arg.getMode() != wxT( "v" ))
+            // Make it obvious which are variadics
+            if (arg.getMode() != wxT( "v" ))
                 grdParams->SetCellValue( i, COL_TYPE,  arg.getType());
-			else
+            else
                 grdParams->SetCellValue( i, COL_TYPE, arg.getType() + wxT(" VARIADIC"));
 
             grdParams->SetCellValue( i, COL_VALUE, arg.getValue());
-        
+
             grdParams->SetReadOnly( i, COL_NAME,  true );
             grdParams->SetReadOnly( i, COL_TYPE,  true );
             grdParams->SetReadOnly( i, COL_VALUE, false );
-        
+
             i++;
         }
     }
@@ -293,10 +301,10 @@ void dlgDirectDbg::populateParamGrid( )
 // OnOk()
 //
 //    This event handler is called when the user clicks the OK button - we call the
-//  activateDebugger() function to set the required breakpoint and invoke the 
+//  activateDebugger() function to set the required breakpoint and invoke the
 //  target (after nabbing any parameter values from the prompt dialog)
 
-void dlgDirectDbg::OnOk( wxCommandEvent & event )
+void dlgDirectDbg::OnOk( wxCommandEvent &event )
 {
     activateDebugger();
 }
@@ -304,7 +312,7 @@ void dlgDirectDbg::OnOk( wxCommandEvent & event )
 ////////////////////////////////////////////////////////////////////////////////
 // loadSettings()
 //
-//    Loads default values from our .ini file. We save the OID of the most 
+//    Loads default values from our .ini file. We save the OID of the most
 //    recent direct-debugging target when close a session. If we're direct-
 //    debugging the same target this time around, we load the argument values
 //    from the .ini file.
@@ -312,7 +320,7 @@ void dlgDirectDbg::OnOk( wxCommandEvent & event )
 void dlgDirectDbg::loadSettings()
 {
     long        lastOID;
-    
+
     settings->Read( wxT( "Debugger/Proc/OID" ), &lastOID, -1 );
 
     if( lastOID == m_targetInfo->getOid())
@@ -321,7 +329,7 @@ void dlgDirectDbg::loadSettings()
 
         for( int i = 0; i < m_targetInfo->getArgCount(); ++i )
         {
-            wsArgInfo & arg = (*m_targetInfo)[i];
+            wsArgInfo &arg = (*m_targetInfo)[i];
 
             if( arg.getMode() != wxT( "o" ))
             {
@@ -334,10 +342,10 @@ void dlgDirectDbg::loadSettings()
 ////////////////////////////////////////////////////////////////////////////////
 // saveSettings()
 //
-//    Save default values to our .ini file. We save the OID of the most 
-//    recent direct-debugging target when close a session. We also save the 
+//    Save default values to our .ini file. We save the OID of the most
+//    recent direct-debugging target when close a session. We also save the
 //  value of each argument - if you debug the same target again next time,
-//    loadSettings() will initialize the parameter-values window with the 
+//    loadSettings() will initialize the parameter-values window with the
 //    same parameter values that you entered in this session.
 
 void dlgDirectDbg::saveSettings()
@@ -348,7 +356,7 @@ void dlgDirectDbg::saveSettings()
 
     for( int i = 0; i < m_targetInfo->getArgCount(); ++i )
     {
-        wsArgInfo & arg = ( *m_targetInfo)[i];
+        wsArgInfo &arg = ( *m_targetInfo)[i];
 
         if( arg.getMode() != wxT( "o" ))
         {
@@ -365,9 +373,9 @@ void dlgDirectDbg::saveSettings()
 //    This event handler is called when the user clicks the Cancel button - we
 //    close the connection to the server and then close ourself.
 
-void dlgDirectDbg::OnCancel( wxCommandEvent & event )
+void dlgDirectDbg::OnCancel( wxCommandEvent &event )
 {
-    // This will raise close event which is handled by 
+    // This will raise close event which is handled by
     // dlgDirectDbg::OnClose().
     m_cancelled = true;
     Close();
@@ -377,10 +385,10 @@ void dlgDirectDbg::OnCancel( wxCommandEvent & event )
 // OnClose()
 //
 //    wxWidgets invokes this event handler when the user closes the parameter
-//    window. We close the connection with server and raise close event for 
+//    window. We close the connection with server and raise close event for
 //    MainFrame.
 
-void dlgDirectDbg::OnClose( wxCloseEvent & event )
+void dlgDirectDbg::OnClose( wxCloseEvent &event )
 {
     // Destroy the grid - required as it seems to create threads in some cases
     if (grdParams)
@@ -397,7 +405,7 @@ void dlgDirectDbg::OnClose( wxCloseEvent & event )
         m_conn = NULL;
     }
 
-	// Closing frmMain from here leads to recursive call
+    // Closing frmMain from here leads to recursive call
     // to OnClose function on windows
 #ifndef __WXWIN__
     // This will inform the MainWindow to close.
@@ -423,7 +431,7 @@ void dlgDirectDbg::OnClose( wxCloseEvent & event )
 //    This function is called after the user has filled in any parameter values
 //  and clicked the Ok button.  activateDebugger() extracts the paramter values
 //  from the grid control and copies those values into our dbgTargetInfo object
-//  (m_targetInfo).  Next, we set a breakpoint at the target, and, finally, 
+//  (m_targetInfo).  Next, we set a breakpoint at the target, and, finally,
 //  we invoke the target function/procedure
 
 bool dlgDirectDbg::activateDebugger( )
@@ -437,7 +445,7 @@ bool dlgDirectDbg::activateDebugger( )
 
     for( int count = 0; count < m_targetInfo->getArgCount(); ++count )
     {
-        wsArgInfo & arg = (*m_targetInfo)[count];
+        wsArgInfo &arg = (*m_targetInfo)[count];
 
         // Populate the ArgInfo object's IN or INOUT variables only, OUT
         // variables will be assigned NULL later on.
@@ -446,7 +454,7 @@ bool dlgDirectDbg::activateDebugger( )
         {
             arg.setValue( grdParams->GetCellValue(i, COL_VALUE));
             i++;
-        }    
+        }
     }
 
     // Write the target OID and argument values to our settings file
@@ -455,7 +463,7 @@ bool dlgDirectDbg::activateDebugger( )
 
     // Now set a breakpoint at the target (note: the call to setBreakpoint()
     // will hang until the  server sends us a response)
-    
+
     try
     {
         // Debug the initialiser. We can only do so once, so unset, and disable
@@ -468,7 +476,7 @@ bool dlgDirectDbg::activateDebugger( )
 
         setBreakpoint( m_targetInfo->getPkgOid(), m_targetInfo->getOid());
     }
-    catch( const std::runtime_error & error )
+    catch( const std::runtime_error &error )
     {
         wxMessageBox( wxString( error.what(), wxConvUTF8 ), _( "Cannot create breakpoint" ), wxOK | wxICON_ERROR );
         return( false );
@@ -482,7 +490,7 @@ bool dlgDirectDbg::activateDebugger( )
     {
         invokeTarget();
     }
-    catch( const std::runtime_error & error )
+    catch( const std::runtime_error &error )
     {
         wxMessageBox( wxString( error.what(), wxConvUTF8 ), _( "Cannot invoke target" ), wxOK | wxICON_ERROR );
         return( false );
@@ -495,13 +503,13 @@ bool dlgDirectDbg::activateDebugger( )
 // setBreakpoint()
 //
 //    This function creates a breakpoint at the target.  For now, we always create
-//  a breakpoint by calling edb_procoid_debug() or plpgsql_procoid_debug() with 
-//  the OID of the target.  Later, we'll change this function to use the 
+//  a breakpoint by calling edb_procoid_debug() or plpgsql_procoid_debug() with
+//  the OID of the target.  Later, we'll change this function to use the
 //  new CREATE BREAKPOINT command.
 
 void dlgDirectDbg::setBreakpoint(long pkgOid, long funcOid)
 {
-    dbgResultset * result;
+    dbgResultset *result;
 
     if (m_conn->DebuggerApiVersion() <= DEBUGGER_V2_API)
     {
@@ -526,7 +534,7 @@ void dlgDirectDbg::setBreakpoint(long pkgOid, long funcOid)
 // invokeTarget()
 //
 //    This function invokes the debugger target (that is, the function or procedure
-//  that the user wants to debug).  If the target is a function, we generate a 
+//  that the user wants to debug).  If the target is a function, we generate a
 //  SELECT statement; if the target is a procedure, we generate an EXEC statement.
 //  In either case, we build the argument list from the argument values found
 //  in m_targetInfo
@@ -540,9 +548,9 @@ void dlgDirectDbg::invokeTarget()
     // Otherwise, just SELECT/EXEC it as per normal.
 #ifdef __WXMSW__
     if (!m_targetInfo->getIsFunction() &&
-        PQiGetOutResult && 
-        PQiPrepareOut && 
-        PQiSendQueryPreparedOut)
+            PQiGetOutResult &&
+            PQiPrepareOut &&
+            PQiSendQueryPreparedOut)
         invokeTargetCallable();
     else
 #else
@@ -556,12 +564,12 @@ void dlgDirectDbg::invokeTarget()
 
     // Since parameter window has done its job, we need to hide
     // it and let code window come in front.
-    if (m_codeWindow) 
+    if (m_codeWindow)
     {
         m_codeWindow->enableTools();
         m_codeWindow->resumeLocalDebugging();
     }
-    
+
     this->Show( false );
 }
 
@@ -577,7 +585,7 @@ void dlgDirectDbg::invokeTargetCallable()
     params->paramValues = new char*[params->nParams];
     params->paramModes = new int[params->nParams];
 
-    // Iterate through the parameters, adding them to the param 
+    // Iterate through the parameters, adding them to the param
     // struct and the statement as we go.
     for( int i = 0; i < params->nParams; ++i )
     {
@@ -623,16 +631,16 @@ void dlgDirectDbg::invokeTargetCallable()
                 params->paramValues[i] = tmp;
         }
 
-            if (i)
-                query += wxT(", ");
-            query += wxString::Format(wxT("$%d::"), i + 1) + arg.getType();
+        if (i)
+            query += wxT(", ");
+        query += wxString::Format(wxT("$%d::"), i + 1) + arg.getType();
 
     }
 
     query += wxT(");");
 
-    // And send the completed command to the server - we'll get 
-    // a dbgDbResult event when the command completes (and that 
+    // And send the completed command to the server - we'll get
+    // a dbgDbResult event when the command completes (and that
     // event will get routed to dlgDirectDbg::OnResultReady())
     m_conn->startCommand( query, GetEventHandler(), RESULT_ID_DIRECT_TARGET_COMPLETE, params );
 }
@@ -655,10 +663,10 @@ void dlgDirectDbg::invokeTargetStatement()
     // we have at least one OUT/INOUT param, we should select from
     // the function to get a full resultset.
     if (m_targetInfo->getIsFunction() && m_targetInfo->getLanguage() != wxT("edbspl") &&
-        (m_targetInfo->getReturnType() != wxT("record") ||
-         m_targetInfo->getArgInOutCount() > 0 ||
-         m_targetInfo->getArgOutCount() > 0))
-         query.Append(wxT("* FROM "));
+            (m_targetInfo->getReturnType() != wxT("record") ||
+             m_targetInfo->getArgInOutCount() > 0 ||
+             m_targetInfo->getArgOutCount() > 0))
+        query.Append(wxT("* FROM "));
 
     // Stuff the verb (SELECT or EXEC), schema, and target name into the query
     query.Append(m_targetInfo->getFQName());
@@ -668,7 +676,7 @@ void dlgDirectDbg::invokeTargetStatement()
 
     for(int i = 0; i < m_targetInfo->getArgCount(); ++i)
     {
-        wsArgInfo & arg = (*m_targetInfo)[i];
+        wsArgInfo &arg = (*m_targetInfo)[i];
 
         if(arg.getMode() == wxT("o") && !m_conn->EdbMinimumVersion(8, 4))
         {
@@ -729,10 +737,10 @@ void dlgDirectDbg::invokeTargetStatement()
     if (m_conn->EdbMinimumVersion(8, 4) && (m_targetInfo->getLanguage() == wxT("edbspl") || !m_targetInfo->getIsFunction()))
     {
         wxString tmpQuery = wxT("DECLARE\n")
-                          + declareStatement
-                          + wxT("BEGIN\n")
-                          + query + wxT(";\n")
-                          + wxT("END;");
+                            + declareStatement
+                            + wxT("BEGIN\n")
+                            + query + wxT(";\n")
+                            + wxT("END;");
         query = tmpQuery;
     }
 
@@ -755,11 +763,11 @@ void dlgDirectDbg::invokeTargetStatement()
 //
 //  We should really display the complete result set somewhere too.
 
-void dlgDirectDbg::OnTargetComplete( wxCommandEvent & event )
+void dlgDirectDbg::OnTargetComplete( wxCommandEvent &event )
 {
     // Extract the result set handle from the event and log the status info
 
-    PGresult   * result = (PGresult *)event.GetClientData();
+    PGresult    *result = (PGresult *)event.GetClientData();
 
     wxLogInfo( wxT( "OnTargetComplete() called\n" ));
     wxLogInfo( wxT( "%s\n" ), wxString(PQresStatus( PQresultStatus( result )), wxConvUTF8).c_str());
@@ -772,7 +780,7 @@ void dlgDirectDbg::OnTargetComplete( wxCommandEvent & event )
         message.Replace( wxT( "\n" ), wxT( " " ));
 
         m_parent->getStatusBar()->SetStatusText( message, 1 );
-        char *state = PQresultErrorField(result,PG_DIAG_SQLSTATE);
+        char *state = PQresultErrorField(result, PG_DIAG_SQLSTATE);
 
         // Don't bother telling the user that he aborted - he already knows!
         if (state != NULL && strcmp(state, "57014"))
@@ -817,14 +825,14 @@ void dlgDirectDbg::OnTargetComplete( wxCommandEvent & event )
 //    This event handler is called when a notice is received from the server (in
 //  response to our invoking the target).  For now, we just forward this event
 //  to the debugger window (m_codeWindow) and the notification message is added
-//  to the debugger's message window.  
+//  to the debugger's message window.
 //
 //  When/if we get around to adding a result set window to this class, we should
 //  also add a message window too and display notice messages here instead of in
 //  the debugger window.
 
-void dlgDirectDbg::OnNoticeReceived( wxCommandEvent & event )
-{   
+void dlgDirectDbg::OnNoticeReceived( wxCommandEvent &event )
+{
     if( m_codeWindow )
         m_codeWindow->OnNoticeReceived( event );
 }
@@ -833,19 +841,19 @@ void dlgDirectDbg::OnNoticeReceived( wxCommandEvent & event )
 // OnDebug()
 //
 //    This event handler is called when a PLDBGBREAK notice is received from the
-//  server.  A quick review:  we've already set a breakpoint at the target and 
+//  server.  A quick review:  we've already set a breakpoint at the target and
 //  then we invoked the target (using the parameter values entered by the user).
 //  Now we're waiting for a result set from the target.  Since we set a breakpoint
-//  inside of the target, the server will send us a specially crafted NOTICE 
-//  that tells use which port to attach to in order to contact the debugger 
+//  inside of the target, the server will send us a specially crafted NOTICE
+//  that tells use which port to attach to in order to contact the debugger
 //  server - that's what 'event' contains.
 //
 //  When we get the PLDBGBREAK message (inside of 'event'), we create a new
-//  debugger window by calling glMainFrame->addDebug() and let that window 
-//  take over for a while.  When the target finally completes, we'll get a 
+//  debugger window by calling glMainFrame->addDebug() and let that window
+//  take over for a while.  When the target finally completes, we'll get a
 //  a dbgDbResult event and handle the result set inside of OnResultReady()
 
-void dlgDirectDbg::OnDebug( wxCommandEvent & event )
+void dlgDirectDbg::OnDebug( wxCommandEvent &event )
 {
     // This event contains a string of the form:
     //     /path/debugger -k --database=db --host=host --port=port --user=user &"
@@ -856,7 +864,7 @@ void dlgDirectDbg::OnDebug( wxCommandEvent & event )
     // call event.GetClientData().  Once we have the map, we can look for the
     // debugger connection properties such as "database", "host", "port", ...
 
-    dbgConnProp * debugProps = (dbgConnProp *)event.GetClientData();
+    dbgConnProp *debugProps = (dbgConnProp *)event.GetClientData();
 
     m_codeWindow = m_parent->addDebug( *debugProps );
 
@@ -873,8 +881,8 @@ void dlgDirectDbg::OnDebug( wxCommandEvent & event )
 //  caller typically populates this list before calling startDebugging() - we
 //  set a breakpoint for each member of the list
 
-dbgBreakPointList & dlgDirectDbg::getBreakpointList()
-{ 
-    return( m_breakpoints ); 
+dbgBreakPointList &dlgDirectDbg::getBreakpointList()
+{
+    return( m_breakpoints );
 }
 

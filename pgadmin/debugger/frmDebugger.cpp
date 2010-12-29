@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -61,7 +61,7 @@ END_EVENT_TABLE()
 // frmDebugger constructor
 //
 //  frmDebugger manages the user interface for the workstation. This class
-//  manages the toolbar, menu, status bar, and top-level windows.  
+//  manages the toolbar, menu, status bar, and top-level windows.
 
 frmDebugger::frmDebugger(frmMain *parent, const wxString &title)
     : pgFrame(NULL, title),
@@ -105,9 +105,9 @@ frmDebugger::frmDebugger(frmMain *parent, const wxString &title)
 frmDebugger::~frmDebugger()
 {
     // Only save the settings if the window was completely setup
-    // This may not be the case if the params dialog was displayed, 
+    // This may not be the case if the params dialog was displayed,
     // and the user hit cancel before the main form opened.
-    wxAuiPaneInfo& pane = manager.GetPane(wxT("sourcePane"));
+    wxAuiPaneInfo &pane = manager.GetPane(wxT("sourcePane"));
     if (pane.IsOk())
         settings->Write(wxT("Debugger/frmDebugger/Perspective-") + wxString(FRMDEBUGGER_PERSPECTIVE_VER), manager.SavePerspective());
 
@@ -122,12 +122,12 @@ frmDebugger::~frmDebugger()
 // onHelp()
 //
 //     Help menu options
-void frmDebugger::OnContents(wxCommandEvent& event)
+void frmDebugger::OnContents(wxCommandEvent &event)
 {
     DisplayHelp(wxT("debugger"), HELP_PGADMIN);
 }
 
-void frmDebugger::OnHelp(wxCommandEvent& event)
+void frmDebugger::OnHelp(wxCommandEvent &event)
 {
     DisplayHelp(wxT("plpgsql"), HELP_POSTGRESQL);
 }
@@ -137,7 +137,7 @@ void frmDebugger::OnHelp(wxCommandEvent& event)
 //
 //     This function creates a new debugger window...
 
-ctlCodeWindow * frmDebugger::addDebug( const dbgConnProp & connProps )
+ctlCodeWindow *frmDebugger::addDebug( const dbgConnProp &connProps )
 {
     try
     {
@@ -145,14 +145,14 @@ ctlCodeWindow * frmDebugger::addDebug( const dbgConnProp & connProps )
         m_standaloneDebugger->Show( false );
         return( m_standaloneDebugger );
     }
-    catch( const std::runtime_error & error )
+    catch( const std::runtime_error &error )
     {
         wxLogError(wxT("%s"), wxString(error.what(), wxConvUTF8).c_str());
         return NULL;
     }
 }
 
-dlgDirectDbg * frmDebugger::addDirectDbg( const dbgConnProp & connProp )
+dlgDirectDbg *frmDebugger::addDirectDbg( const dbgConnProp &connProp )
 {
     try
     {
@@ -160,7 +160,7 @@ dlgDirectDbg * frmDebugger::addDirectDbg( const dbgConnProp & connProp )
         m_standaloneDirectDbg->setupParamWindow();
         return( m_standaloneDirectDbg );
     }
-    catch( const std::runtime_error & error )
+    catch( const std::runtime_error &error )
     {
         wxLogError(wxT("%s"), wxString(error.what(), wxConvUTF8).c_str());
         return NULL;
@@ -170,11 +170,11 @@ dlgDirectDbg * frmDebugger::addDirectDbg( const dbgConnProp & connProp )
 ////////////////////////////////////////////////////////////////////////////////
 // OnDebugCommand()
 //
-//     This event handler is invoked when the user clicks one of the debugger 
-//     tools (on the debugger toolbar) - we simply forward the event to the 
+//     This event handler is invoked when the user clicks one of the debugger
+//     tools (on the debugger toolbar) - we simply forward the event to the
 //  debugger window.
 
-void frmDebugger::OnDebugCommand( wxCommandEvent & event )
+void frmDebugger::OnDebugCommand( wxCommandEvent &event )
 {
     if (m_standaloneDebugger)
         m_standaloneDebugger->OnCommand( event );
@@ -186,7 +186,7 @@ void frmDebugger::OnDebugCommand( wxCommandEvent & event )
 //     This event handler is invoked when the user clicks one of the stack frames
 //  - we simply forward the event to the debugger window.
 
-void frmDebugger::OnSelectFrame( wxCommandEvent & event )
+void frmDebugger::OnSelectFrame( wxCommandEvent &event )
 {
     if (m_standaloneDebugger)
         m_standaloneDebugger->OnSelectFrame( event );
@@ -198,7 +198,7 @@ void frmDebugger::OnSelectFrame( wxCommandEvent & event )
 //     This event handler is invoked when the user clicks one of the stack frames
 //  - we simply forward the event to the debugger window.
 
-void frmDebugger::OnMarginClick( wxStyledTextEvent & event )
+void frmDebugger::OnMarginClick( wxStyledTextEvent &event )
 {
     if (m_standaloneDebugger)
         m_standaloneDebugger->OnMarginClick( event );
@@ -207,11 +207,11 @@ void frmDebugger::OnMarginClick( wxStyledTextEvent & event )
 ////////////////////////////////////////////////////////////////////////////////
 // OnPositionStc()
 //
-//     This event handler is invoked when the user positions the cursor in the 
+//     This event handler is invoked when the user positions the cursor in the
 //       code window
 //  - we simply forward the event to the debugger window.
 
-void frmDebugger::OnPositionStc( wxStyledTextEvent & event )
+void frmDebugger::OnPositionStc( wxStyledTextEvent &event )
 {
     if (m_standaloneDebugger)
         m_standaloneDebugger->OnPositionStc( event );
@@ -223,7 +223,7 @@ void frmDebugger::OnPositionStc( wxStyledTextEvent & event )
 //     This event handler is invoked when the user edits a variable value
 //  - we simply forward the event to the debugger window.
 
-void frmDebugger::OnVarChange( wxGridEvent & event )
+void frmDebugger::OnVarChange( wxGridEvent &event )
 {
     if (m_standaloneDebugger)
         m_standaloneDebugger->OnVarChange( event );
@@ -232,15 +232,15 @@ void frmDebugger::OnVarChange( wxGridEvent & event )
 ////////////////////////////////////////////////////////////////////////////////
 // OnSize()
 //
-//    This event handler is called when a resize event occurs (that is, when 
+//    This event handler is called when a resize event occurs (that is, when
 //  wxWidgets needs to size the application window)
 
-void frmDebugger::OnSize( wxSizeEvent & event )
+void frmDebugger::OnSize( wxSizeEvent &event )
 {
     event.Skip();
 }
 
-void frmDebugger::OnEraseBackground(wxEraseEvent& event)
+void frmDebugger::OnEraseBackground(wxEraseEvent &event)
 {
     event.Skip();
 }
@@ -250,12 +250,12 @@ void frmDebugger::OnEraseBackground(wxEraseEvent& event)
 //
 //    This function creates the standard toolbar
 
-ctlMenuToolbar * frmDebugger::setupToolBar( void )
+ctlMenuToolbar *frmDebugger::setupToolBar( void )
 {
     m_toolBar = new ctlMenuToolbar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTB_FLAT | wxTB_NODIVIDER);
 
     m_toolBar->SetToolBitmapSize( wxSize( 16, 16 ));
- 
+
     m_toolBar->AddTool( MENU_ID_STEP_INTO,    	 _( "Step into" ),    		 wxBitmap(stepInto_xpm), _( "Step into" ));
     m_toolBar->AddTool( MENU_ID_STEP_OVER,    	 _( "Step over" ),    		 wxBitmap(stepOver_xpm), _( "Step over" ));
     m_toolBar->AddTool( MENU_ID_CONTINUE,    	 _( "Continue" ),    		 wxBitmap(continue_xpm), _( "Continue" ));
@@ -283,9 +283,9 @@ ctlMenuToolbar * frmDebugger::setupToolBar( void )
 //    This function initializes the status bar (we don't have one at the moment
 //  so this function simply returns)
 
-wxStatusBar * frmDebugger::setupStatusBar( void )
+wxStatusBar *frmDebugger::setupStatusBar( void )
 {
-    wxStatusBar * bar = CreateStatusBar( 3, wxST_SIZEGRIP );
+    wxStatusBar *bar = CreateStatusBar( 3, wxST_SIZEGRIP );
     int    		  widths[] = { 0, -1, 130 };
 
     bar->SetStatusWidths(3, widths);
@@ -316,11 +316,11 @@ wxMenuBar *frmDebugger::setupMenuBar(void)
     /*
     *  F10 is treated as a System menu under GTK. Hence, we will use Ctrl+F10 for
     *  "step over" operation under GTK, instead of F10.
-    *  
+    *
     *  To make the behavior consitent, we will also use Ctrl+ for all the operations
-    *  under GTK. (i.e. Step into, Step over, Continue, Toggle breakpoint, Stop 
+    *  under GTK. (i.e. Step into, Step over, Continue, Toggle breakpoint, Stop
     *  debugging)
-    * 
+    *
     *  Please follow this link for more details:
     *  http://trac.wxwidgets.org/ticket/2404
     */
@@ -360,7 +360,7 @@ wxMenuBar *frmDebugger::setupMenuBar(void)
     m_viewMenu->Enable(MENU_ID_VIEW_STACKPANE,	   false);
     m_menuBar->Append(m_viewMenu, _("&View"));
 
-    wxMenu *helpMenu=new wxMenu();
+    wxMenu *helpMenu = new wxMenu();
     helpMenu->Append(MNU_CONTENTS, _("&Help"),                 _("Open the helpfile."));
     helpMenu->Append(MNU_HELP, _("&SQL Help\tF1"),                _("Display help on SQL commands."));
     m_menuBar->Append(helpMenu, _("&Help"));
@@ -375,7 +375,7 @@ wxMenuBar *frmDebugger::setupMenuBar(void)
 //
 //    wxWidgets invokes this event handler when the user closes the main window
 
-void frmDebugger::OnClose( wxCloseEvent & event )
+void frmDebugger::OnClose( wxCloseEvent &event )
 {
     if (m_standaloneDebugger)
     {
@@ -394,7 +394,7 @@ void frmDebugger::OnClose( wxCloseEvent & event )
 //
 //    Close the debugger
 
-void frmDebugger::OnExit( wxCommandEvent & event )
+void frmDebugger::OnExit( wxCommandEvent &event )
 {
     Close();
 }
@@ -404,7 +404,7 @@ void frmDebugger::OnExit( wxCommandEvent & event )
 //  OnToggleToolBar()
 //
 //    Turn the tool bar on or off
-void frmDebugger::OnToggleToolBar(wxCommandEvent& event)
+void frmDebugger::OnToggleToolBar(wxCommandEvent &event)
 {
     if (m_viewMenu->IsChecked(MENU_ID_VIEW_TOOLBAR))
         manager.GetPane(wxT("toolBar")).Show(true);
@@ -417,7 +417,7 @@ void frmDebugger::OnToggleToolBar(wxCommandEvent& event)
 //  OnToggleStackPane()
 //
 //    Turn the tool bar on or off
-void frmDebugger::OnToggleStackPane(wxCommandEvent& event)
+void frmDebugger::OnToggleStackPane(wxCommandEvent &event)
 {
     if (m_viewMenu->IsChecked(MENU_ID_VIEW_STACKPANE))
         manager.GetPane(wxT("stackPane")).Show(true);
@@ -430,7 +430,7 @@ void frmDebugger::OnToggleStackPane(wxCommandEvent& event)
 //  OnToggleOutputPane()
 //
 //    Turn the tool bar on or off
-void frmDebugger::OnToggleOutputPane(wxCommandEvent& event)
+void frmDebugger::OnToggleOutputPane(wxCommandEvent &event)
 {
     if (m_viewMenu->IsChecked(MENU_ID_VIEW_OUTPUTPANE))
         manager.GetPane(wxT("outputPane")).Show(true);
@@ -443,7 +443,7 @@ void frmDebugger::OnToggleOutputPane(wxCommandEvent& event)
 //  OnAuiUpdate()
 //
 //    Update the view menu to reflect AUI changes
-void frmDebugger::OnAuiUpdate(wxAuiManagerEvent& event)
+void frmDebugger::OnAuiUpdate(wxAuiManagerEvent &event)
 {
     if(event.pane->name == wxT("toolBar"))
     {
@@ -464,7 +464,7 @@ void frmDebugger::OnAuiUpdate(wxAuiManagerEvent& event)
 //  OnDefaultView()
 //
 //    Reset the AUI view to the default
-void frmDebugger::OnDefaultView(wxCommandEvent& event)
+void frmDebugger::OnDefaultView(wxCommandEvent &event)
 {
     manager.LoadPerspective(FRMDEBUGGER_DEFAULT_PERSPECTIVE, true);
 

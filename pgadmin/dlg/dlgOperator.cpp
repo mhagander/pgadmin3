@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -60,14 +60,14 @@ END_EVENT_TABLE();
 
 dlgProperty *pgOperatorFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgOperator(this, frame, (pgOperator*)node, (pgSchema*)parent);
+    return new dlgOperator(this, frame, (pgOperator *)node, (pgSchema *)parent);
 }
 
 dlgOperator::dlgOperator(pgaFactory *f, frmMain *frame, pgOperator *node, pgSchema *sch)
-: dlgTypeProperty(f, frame, wxT("dlgOperator"))
+    : dlgTypeProperty(f, frame, wxT("dlgOperator"))
 {
-    schema=sch;
-    oper=node;
+    schema = sch;
+    oper = node;
 
     cbRestrict->Disable();
     cbJoin->Disable();
@@ -117,23 +117,23 @@ int dlgOperator::Go(bool modal)
         cbNegator->Append(oper->GetNegator());
         cbNegator->SetSelection(0);
 
-		if (!connection->BackendMinimumVersion(8, 3))
-		{
-			cbLeftSort->Append(oper->GetLeftSortOperator());
-			cbLeftSort->SetSelection(0);
+        if (!connection->BackendMinimumVersion(8, 3))
+        {
+            cbLeftSort->Append(oper->GetLeftSortOperator());
+            cbLeftSort->SetSelection(0);
 
-	        cbRightSort->Append(oper->GetRightSortOperator());
-			cbRightSort->SetSelection(0);
+            cbRightSort->Append(oper->GetRightSortOperator());
+            cbRightSort->SetSelection(0);
 
-			cbLess->Append(oper->GetLessOperator());
-			cbLess->SetSelection(0);
+            cbLess->Append(oper->GetLessOperator());
+            cbLess->SetSelection(0);
 
-			cbGreater->Append(oper->GetGreaterOperator());
-			cbGreater->SetSelection(0);
-		}
+            cbGreater->Append(oper->GetGreaterOperator());
+            cbGreater->SetSelection(0);
+        }
 
         chkCanHash->SetValue(oper->GetHashJoins());
-		chkCanMerge->SetValue(oper->GetMergeJoins());
+        chkCanMerge->SetValue(oper->GetMergeJoins());
 
 
         txtName->Disable();
@@ -182,11 +182,11 @@ int dlgOperator::Go(bool modal)
 
 pgObject *dlgOperator::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=operatorFactory.CreateObjects(collection, 0,
-         wxT("\n   AND op.oprname=") + qtDbString(GetName()) +
-         wxT("\n   AND op.oprnamespace=") + schema->GetOidStr() +
-         wxT("\n   AND op.oprleft = ") + GetTypeOid(cbLeftType->GetGuessedSelection()) +
-         wxT("\n   AND op.oprright = ") + GetTypeOid(cbRightType->GetGuessedSelection()));
+    pgObject *obj = operatorFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND op.oprname=") + qtDbString(GetName()) +
+                    wxT("\n   AND op.oprnamespace=") + schema->GetOidStr() +
+                    wxT("\n   AND op.oprleft = ") + GetTypeOid(cbLeftType->GetGuessedSelection()) +
+                    wxT("\n   AND op.oprright = ") + GetTypeOid(cbRightType->GetGuessedSelection()));
 
     return obj;
 }
@@ -197,14 +197,14 @@ void dlgOperator::CheckChange()
     if (oper)
     {
         EnableOK(txtComment->GetValue() != oper->GetComment()
-            || cbOwner->GetValue() != oper->GetOwner());
+                 || cbOwner->GetValue() != oper->GetOwner());
     }
     else
     {
-        wxString name=GetName();
-        bool enable=true;
+        wxString name = GetName();
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
-        CheckValid(enable, cbLeftType->GetGuessedSelection()>0 || cbRightType->GetGuessedSelection() > 0 , _("Please select left or right datatype."));
+        CheckValid(enable, cbLeftType->GetGuessedSelection() > 0 || cbRightType->GetGuessedSelection() > 0 , _("Please select left or right datatype."));
         CheckValid(enable, cbProcedure->GetGuessedSelection() >= 0, _("Please specify a procedure."));
 
         EnableOK(enable);
@@ -226,18 +226,18 @@ void dlgOperator::OnChangeTypeRight(wxCommandEvent &ev)
 
 void dlgOperator::CheckChangeType()
 {
-    bool binaryOp=cbLeftType->GetGuessedSelection() > 0 && cbRightType->GetGuessedSelection() > 0;
+    bool binaryOp = cbLeftType->GetGuessedSelection() > 0 && cbRightType->GetGuessedSelection() > 0;
 
     cbRestrict->Enable(binaryOp);
     cbJoin->Enable(binaryOp);
 
-	if (!connection->BackendMinimumVersion(8, 3))
-	{
-		cbLeftSort->Enable(binaryOp);
-		cbRightSort->Enable(binaryOp);
-		cbLess->Enable(binaryOp);
-		cbGreater->Enable(binaryOp);
-	}
+    if (!connection->BackendMinimumVersion(8, 3))
+    {
+        cbLeftSort->Enable(binaryOp);
+        cbRightSort->Enable(binaryOp);
+        cbLess->Enable(binaryOp);
+        cbGreater->Enable(binaryOp);
+    }
 
     chkCanHash->Enable(binaryOp);
     chkCanMerge->Enable(binaryOp);
@@ -250,13 +250,13 @@ void dlgOperator::CheckChangeType()
     cbCommutator->Clear();
     cbNegator->Clear();
 
-	if (!connection->BackendMinimumVersion(8, 3))
-	{
-		cbLeftSort->Clear();
-		cbRightSort->Clear();
-		cbLess->Clear();
-		cbGreater->Clear();
-	}
+    if (!connection->BackendMinimumVersion(8, 3))
+    {
+        cbLeftSort->Clear();
+        cbRightSort->Clear();
+        cbLess->Clear();
+        cbGreater->Clear();
+    }
 
     cbRestrict->Append(wxEmptyString);
     cbJoin->Append(wxEmptyString);
@@ -268,7 +268,7 @@ void dlgOperator::CheckChangeType()
 
     if (cbLeftType->GetGuessedSelection() > 0 || cbRightType->GetGuessedSelection() > 0)
     {
-        wxString qry=
+        wxString qry =
             wxT("SELECT proname, nspname\n")
             wxT("  FROM pg_proc p\n")
             wxT("  JOIN pg_namespace n ON n.oid=pronamespace\n")
@@ -286,12 +286,12 @@ void dlgOperator::CheckChangeType()
 
         if (binaryOp)
             qry += wxT("\n   AND proargtypes[1] = ");
-        
+
         if (cbRightType->GetGuessedSelection() > 0)
             qry += GetTypeOid(cbRightType->GetGuessedSelection());
 
 
-        pgSet *set=connection->ExecuteSet(qry);
+        pgSet *set = connection->ExecuteSet(qry);
         if (set)
         {
             while (!set->Eof())
@@ -310,9 +310,9 @@ void dlgOperator::CheckChangeType()
             delete set;
         }
 
-        qry= wxT("SELECT oprname, nspname\n")
-             wxT("  FROM pg_operator o\n")
-             wxT("  JOIN pg_namespace n ON n.oid=oprnamespace\n");
+        qry = wxT("SELECT oprname, nspname\n")
+              wxT("  FROM pg_operator o\n")
+              wxT("  JOIN pg_namespace n ON n.oid=oprnamespace\n");
 
         if (cbLeftType->GetGuessedSelection() > 0)
             qry += wxT(" WHERE oprleft = ") + GetTypeOid(cbLeftType->GetGuessedSelection());
@@ -329,20 +329,20 @@ void dlgOperator::CheckChangeType()
 
         cbCommutator->Append(wxT(" "));
         cbNegator->Append(wxT(" "));
-		if (!connection->BackendMinimumVersion(8, 3))
-		{
-			cbLeftSort->Append(wxT(" "));
-			cbRightSort->Append(wxT(" "));
-			cbLess->Append(wxT(" "));
-			cbGreater->Append(wxT(" "));
-		}
+        if (!connection->BackendMinimumVersion(8, 3))
+        {
+            cbLeftSort->Append(wxT(" "));
+            cbRightSort->Append(wxT(" "));
+            cbLess->Append(wxT(" "));
+            cbGreater->Append(wxT(" "));
+        }
 
-        set=connection->ExecuteSet(qry);
+        set = connection->ExecuteSet(qry);
         if (set)
         {
             while (!set->Eof())
             {
-                wxString opname=database->GetSchemaPrefix(set->GetVal(wxT("nspname"))) + set->GetVal(wxT("oprname"));
+                wxString opname = database->GetSchemaPrefix(set->GetVal(wxT("nspname"))) + set->GetVal(wxT("oprname"));
 
                 cbCommutator->Append(opname);
                 cbNegator->Append(opname);
@@ -366,7 +366,7 @@ void dlgOperator::CheckChangeType()
 void dlgOperator::OnChangeJoin(wxCommandEvent &ev)
 {
     bool implicitMerges = (cbLeftSort->GetCurrentSelection() > 0 || cbRightSort->GetCurrentSelection() > 0
-               || cbLess->GetCurrentSelection() > 0 || cbGreater->GetCurrentSelection() > 0);
+                           || cbLess->GetCurrentSelection() > 0 || cbGreater->GetCurrentSelection() > 0);
 
     if (implicitMerges)
         chkCanMerge->SetValue(true);
@@ -377,10 +377,10 @@ void dlgOperator::OnChangeJoin(wxCommandEvent &ev)
 
 void dlgOperator::AppendFilledOperator(wxString &sql, const wxChar *txt, ctlComboBoxFix *cb)
 {
-    wxString op=cb->GetValue().Trim();
+    wxString op = cb->GetValue().Trim();
     if (!op.IsNull())
     {
-		sql += txt;
+        sql += txt;
         if (op.Find('.') > 0)
             sql += wxT("OPERATOR(") + op + wxT(")");
         else
@@ -396,52 +396,52 @@ wxString dlgOperator::GetSql()
     if (oper)
     {
         // edit mode
-    	name = oper->GetQuotedFullIdentifier()
-	        + wxT("(") + oper->GetOperands() + wxT(")");
+        name = oper->GetQuotedFullIdentifier()
+               + wxT("(") + oper->GetOperands() + wxT(")");
 
         if (cbOwner->GetValue() != oper->GetOwner())
-            sql += wxT("ALTER OPERATOR ") + name 
-                +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue())
-                +  wxT(";\n");
+            sql += wxT("ALTER OPERATOR ") + name
+                   +  wxT(" OWNER TO ") + qtIdent(cbOwner->GetValue())
+                   +  wxT(";\n");
     }
     else
     {
         // create mode
         name = schema->GetQuotedPrefix() + GetName() + wxT("(");
-	    if (cbLeftType->GetGuessedSelection() > 0)
-	        name += GetQuotedTypename(cbLeftType->GetGuessedSelection());
-	    else
-	        name += wxT("NONE");
-	    name += wxT(", ");
-	    if (cbRightType->GetGuessedSelection() > 0)
-	        name += GetQuotedTypename(cbRightType->GetGuessedSelection());
-	    else
-	        name += wxT("NONE");
-	    name += wxT(")");
+        if (cbLeftType->GetGuessedSelection() > 0)
+            name += GetQuotedTypename(cbLeftType->GetGuessedSelection());
+        else
+            name += wxT("NONE");
+        name += wxT(", ");
+        if (cbRightType->GetGuessedSelection() > 0)
+            name += GetQuotedTypename(cbRightType->GetGuessedSelection());
+        else
+            name += wxT("NONE");
+        name += wxT(")");
 
 
         sql = wxT("CREATE OPERATOR ") + schema->GetQuotedPrefix() + GetName()
-            + wxT("(\n   PROCEDURE=") + procedures.Item(cbProcedure->GetGuessedSelection());
-        
+              + wxT("(\n   PROCEDURE=") + procedures.Item(cbProcedure->GetGuessedSelection());
+
         AppendIfFilled(sql, wxT(",\n   LEFTARG="), GetQuotedTypename(cbLeftType->GetGuessedSelection()));
         AppendIfFilled(sql, wxT(",\n   RIGHTARG="), GetQuotedTypename(cbRightType->GetGuessedSelection()));
         AppendIfFilled(sql, wxT(",\n   COMMUTATOR="), cbCommutator->GetValue().Trim());
         AppendIfFilled(sql, wxT(",\n   NEGATOR="), cbNegator->GetValue().Trim());
-        
+
         if (cbLeftType->GetGuessedSelection() > 0 && cbRightType->GetGuessedSelection() > 0)
         {
             if (cbRestrict->GetCurrentSelection() > 0)
-                sql += wxT(",\n   RESTRICT=") + procedures.Item(cbRestrict->GetCurrentSelection()-1);
+                sql += wxT(",\n   RESTRICT=") + procedures.Item(cbRestrict->GetCurrentSelection() - 1);
             if (cbJoin->GetCurrentSelection() > 0)
-                sql += wxT(",\n   JOIN=") + procedures.Item(cbJoin->GetCurrentSelection()-1);
+                sql += wxT(",\n   JOIN=") + procedures.Item(cbJoin->GetCurrentSelection() - 1);
 
-			if (!connection->BackendMinimumVersion(8, 3))
-			{
-				AppendFilledOperator(sql, wxT(",\n   SORT1="), cbLeftSort);
-				AppendFilledOperator(sql, wxT(",\n   SORT2="), cbRightSort);
-				AppendFilledOperator(sql, wxT(",\n   LTCMP="), cbLess);
-				AppendFilledOperator(sql, wxT(",\n   GTCMP="), cbGreater);
-			}
+            if (!connection->BackendMinimumVersion(8, 3))
+            {
+                AppendFilledOperator(sql, wxT(",\n   SORT1="), cbLeftSort);
+                AppendFilledOperator(sql, wxT(",\n   SORT2="), cbRightSort);
+                AppendFilledOperator(sql, wxT(",\n   LTCMP="), cbLess);
+                AppendFilledOperator(sql, wxT(",\n   GTCMP="), cbGreater);
+            }
 
             if (chkCanMerge->GetValue() || chkCanHash->GetValue())
             {

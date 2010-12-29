@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -62,21 +62,21 @@ END_EVENT_TABLE();
 
 dlgProperty *pgForeignKeyFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgForeignKey(this, frame, (pgForeignKey*)node, (pgTable*)parent);
+    return new dlgForeignKey(this, frame, (pgForeignKey *)node, (pgTable *)parent);
 }
 
 
 dlgForeignKey::dlgForeignKey(pgaFactory *f, frmMain *frame, pgForeignKey *node, pgTable *parentNode)
-: dlgCollistProperty(f, frame, wxT("dlgForeignKey"), parentNode)
+    : dlgCollistProperty(f, frame, wxT("dlgForeignKey"), parentNode)
 {
-    foreignKey=node;
+    foreignKey = node;
 }
 
 
 dlgForeignKey::dlgForeignKey(pgaFactory *f, frmMain *frame, ctlListView *colList)
-: dlgCollistProperty(f, frame, wxT("dlgForeignKey"), colList)
+    : dlgCollistProperty(f, frame, wxT("dlgForeignKey"), colList)
 {
-    foreignKey=0;
+    foreignKey = 0;
 }
 
 
@@ -97,7 +97,7 @@ wxString dlgForeignKey::DefaultIndexName(const wxString &name)
 void dlgForeignKey::OnOK(wxCommandEvent &ev)
 {
     if (chkAutoIndex->IsEnabled() && !chkAutoIndex->GetValue()
-        && frmHint::ShowHint(this, HINT_FKINDEX) == wxID_CANCEL)
+            && frmHint::ShowHint(this, HINT_FKINDEX) == wxID_CANCEL)
         return;
 
     dlgProperty::OnOK(ev);
@@ -107,8 +107,8 @@ void dlgForeignKey::OnOK(wxCommandEvent &ev)
 #ifdef __WXMAC__
 void dlgForeignKey::OnChangeSize(wxSizeEvent &ev)
 {
-	lstColumns->SetSize(wxDefaultCoord, wxDefaultCoord,
-	    ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 450);
+    lstColumns->SetSize(wxDefaultCoord, wxDefaultCoord,
+                        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 450);
     if (GetAutoLayout())
     {
         Layout();
@@ -122,20 +122,20 @@ void dlgForeignKey::CheckChange()
     if (processing)
         return;
 
-    processing=true;
+    processing = true;
 
-    wxString name=GetName();
+    wxString name = GetName();
 
     wxString cols;
     int pos;
-    for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+    for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
     {
         if (pos)
             cols += wxT(", ");
         cols += qtIdent(lstColumns->GetText(pos));
     }
 
-    bool canDef=chkDeferrable->GetValue();
+    bool canDef = chkDeferrable->GetValue();
     if (!canDef)
         chkDeferred->SetValue(false);
     chkDeferred->Enable(canDef);
@@ -187,11 +187,11 @@ void dlgForeignKey::CheckChange()
 
     if (foreignKey)
     {
-        bool enable=true;
+        bool enable = true;
         if (chkAutoIndex->GetValue())
         {
             CheckValid(enable, !txtIndexName->GetValue().IsEmpty(),
-                _("Please specify covering index name."));
+                       _("Please specify covering index name."));
         }
         else
             enable = txtComment->GetValue() != foreignKey->GetComment();
@@ -199,11 +199,11 @@ void dlgForeignKey::CheckChange()
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
         txtComment->Enable(!name.IsEmpty());
         CheckValid(enable, lstColumns->GetItemCount() > 0, _("Please specify columns."));
         CheckValid(enable, !chkAutoIndex->GetValue() || !txtIndexName->GetValue().IsEmpty(),
-            _("Please specify covering index name."));
+                   _("Please specify covering index name."));
         EnableOK(enable);
     }
 
@@ -226,24 +226,24 @@ void dlgForeignKey::OnSelChangeRef(wxCommandEvent &ev)
 {
     cbRefColumns->Clear();
 
-    wxString tab=cbReferences->GetValue();
+    wxString tab = cbReferences->GetValue();
     wxString nsp;
     if (tab.Find('.') >= 0)
     {
-        nsp=tab.BeforeFirst('.');
-        tab=tab.AfterFirst('.');
+        nsp = tab.BeforeFirst('.');
+        tab = tab.AfterFirst('.');
     }
     else
-		nsp=database->GetDefaultSchema();
+        nsp = database->GetDefaultSchema();
 
-    pgSet *set=connection->ExecuteSet(
-        wxT("SELECT attname\n")
-        wxT("  FROM pg_attribute att, pg_class cl, pg_namespace nsp\n")
-        wxT(" WHERE attrelid=cl.oid AND relnamespace=nsp.oid\n")
-        wxT("   AND nspname=") + qtDbString(nsp) +
-        wxT("\n   AND relname=") + qtDbString(tab) +
-        wxT("\n   AND attnum > 0\n")
-          wxT("\n ORDER BY attnum"));
+    pgSet *set = connection->ExecuteSet(
+                     wxT("SELECT attname\n")
+                     wxT("  FROM pg_attribute att, pg_class cl, pg_namespace nsp\n")
+                     wxT(" WHERE attrelid=cl.oid AND relnamespace=nsp.oid\n")
+                     wxT("   AND nspname=") + qtDbString(nsp) +
+                     wxT("\n   AND relname=") + qtDbString(tab) +
+                     wxT("\n   AND attnum > 0\n")
+                     wxT("\n ORDER BY attnum"));
     if (set)
     {
         while (!set->Eof())
@@ -263,8 +263,8 @@ void dlgForeignKey::OnSelChangeRef(wxCommandEvent &ev)
 
 void dlgForeignKey::OnAddRef(wxCommandEvent &ev)
 {
-    wxString col=cbColumns->GetValue();
-    wxString ref=cbRefColumns->GetValue();
+    wxString col = cbColumns->GetValue();
+    wxString ref = cbRefColumns->GetValue();
     if (!col.IsEmpty() && !ref.IsEmpty())
     {
         lstColumns->AppendItem(columnFactory.GetIconId(), col, ref);
@@ -286,12 +286,12 @@ void dlgForeignKey::OnAddRef(wxCommandEvent &ev)
 
 void dlgForeignKey::OnRemoveRef(wxCommandEvent &ev)
 {
-    long pos=lstColumns->GetSelection();
+    long pos = lstColumns->GetSelection();
 
     if (pos >= 0)
     {
-        wxString col=lstColumns->GetText(pos);
-        wxString ref=lstColumns->GetText(pos, 1);
+        wxString col = lstColumns->GetText(pos);
+        wxString ref = lstColumns->GetText(pos, 1);
         cbColumns->Append(col);
         cbRefColumns->Append(ref);
 
@@ -310,13 +310,13 @@ pgObject *dlgForeignKey::GetObject()
 
 pgObject *dlgForeignKey::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
     if (name.IsEmpty())
         return 0;
 
-    pgObject *obj=foreignKeyFactory.CreateObjects(collection, 0, wxT(
-        "\n   AND conname=") + qtDbString(name) + wxT(
-        "\n   AND cl.relnamespace=") + table->GetSchema()->GetOidStr());
+    pgObject *obj = foreignKeyFactory.CreateObjects(collection, 0, wxT(
+                        "\n   AND conname=") + qtDbString(name) + wxT(
+                        "\n   AND cl.relnamespace=") + table->GetSchema()->GetOidStr());
     return obj;
 }
 
@@ -325,7 +325,7 @@ int dlgForeignKey::Go(bool modal)
 {
     lstColumns->CreateColumns(0, _("Local"), _("Referenced"), -1);
 
-    processing=true;    // protect from OnChange execution
+    processing = true;  // protect from OnChange execution
 
     btnAddRef->Disable();
     btnRemoveRef->Disable();
@@ -364,19 +364,19 @@ int dlgForeignKey::Go(bool modal)
             chkAutoIndex->Disable();
             txtIndexName->Disable();
         }
-	    
+
         btnAddRef->Disable();
         btnRemoveRef->Disable();
         cbColumns->Disable();
         cbRefColumns->Disable();
 
-        int pos=0;
+        int pos = 0;
         wxStringTokenizer cols(foreignKey->GetFkColumns(), wxT(","));
         wxStringTokenizer refs(foreignKey->GetRefColumns(), wxT(","));
         while (cols.HasMoreTokens())
         {
-            wxString col=cols.GetNextToken().Trim(false).Trim(true);
-            wxString ref=refs.GetNextToken().Trim(false).Trim(true);
+            wxString col = cols.GetNextToken().Trim(false).Trim(true);
+            wxString ref = refs.GetNextToken().Trim(false).Trim(true);
             if (pos++)
             {
                 if (col.Last() == ',')
@@ -396,18 +396,18 @@ int dlgForeignKey::Go(bool modal)
         if (!settings->GetShowSystemObjects())
             systemRestriction = wxT("   AND ") + connection->SystemNamespaceRestriction(wxT("nsp.nspname"));
 
-		wxString sql =  wxT("SELECT nspname, relname FROM pg_namespace nsp, pg_class cl\n")
-						wxT(" WHERE relnamespace=nsp.oid AND relkind='r'\n");
+        wxString sql =  wxT("SELECT nspname, relname FROM pg_namespace nsp, pg_class cl\n")
+                        wxT(" WHERE relnamespace=nsp.oid AND relkind='r'\n");
 
-		if (connection->BackendMinimumVersion(8, 1))
-			sql += wxT("   AND nsp.nspname NOT LIKE E'pg\\_temp\\_%'\n");
-		else
-			sql += wxT("   AND nsp.nspname NOT LIKE 'pg\\_temp\\_%'\n");
+        if (connection->BackendMinimumVersion(8, 1))
+            sql += wxT("   AND nsp.nspname NOT LIKE E'pg\\_temp\\_%'\n");
+        else
+            sql += wxT("   AND nsp.nspname NOT LIKE 'pg\\_temp\\_%'\n");
 
-		sql += systemRestriction +
+        sql += systemRestriction +
                wxT(" ORDER BY nsp.oid, relname");
 
-        pgSet *set=connection->ExecuteSet(sql);
+        pgSet *set = connection->ExecuteSet(sql);
 
         if (set)
         {
@@ -429,7 +429,7 @@ int dlgForeignKey::Go(bool modal)
         }
     }
 
-    processing=false;
+    processing = false;
 
     wxCommandEvent nullEvent;
     OnSelChangeRef(nullEvent);
@@ -441,28 +441,28 @@ int dlgForeignKey::Go(bool modal)
 wxString dlgForeignKey::GetSql()
 {
     wxString sql;
-    wxString name=GetName();
+    wxString name = GetName();
 
     if (!foreignKey)
     {
         sql = wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-            + wxT(" ADD");
+              + wxT(" ADD");
         AppendIfFilled(sql, wxT(" CONSTRAINT "), qtIdent(name));
-        sql +=wxT(" FOREIGN KEY ") + GetDefinition()
-            + wxT(";\n");
+        sql += wxT(" FOREIGN KEY ") + GetDefinition()
+               + wxT(";\n");
     }
     if (!name.IsEmpty())
-        AppendComment(sql, wxT("CONSTRAINT ") + qtIdent(name) 
-            + wxT(" ON ") + table->GetQuotedFullIdentifier(), foreignKey);
+        AppendComment(sql, wxT("CONSTRAINT ") + qtIdent(name)
+                      + wxT(" ON ") + table->GetQuotedFullIdentifier(), foreignKey);
 
     if (chkAutoIndex->GetValue())
     {
         sql += wxT("CREATE INDEX ") + qtIdent(txtIndexName->GetValue())
-            +  wxT(" ON ") + table->GetQuotedFullIdentifier()
-            +  wxT("(");
+               +  wxT(" ON ") + table->GetQuotedFullIdentifier()
+               +  wxT("(");
 
         int pos;
-        for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+        for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
         {
             if (pos)
                 sql += wxT(", ");
@@ -483,7 +483,7 @@ wxString dlgForeignKey::GetDefinition()
 
     int pos;
 
-    for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+    for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
     {
         if (pos)
         {
@@ -494,11 +494,11 @@ wxString dlgForeignKey::GetDefinition()
         refs += qtIdent(lstColumns->GetText(pos, 1));
     }
 
-    sql = wxT("(") + cols 
-        + wxT(") REFERENCES ");
+    sql = wxT("(") + cols
+          + wxT(") REFERENCES ");
     AppendQuoted(sql, cbReferences->GetValue());
     sql += wxT(" (") + refs
-        + wxT(")");
+           + wxT(")");
 
     if (chkMatchFull->GetValue())
         sql += wxT(" MATCH FULL");

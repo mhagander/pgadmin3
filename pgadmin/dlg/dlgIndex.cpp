@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -47,22 +47,22 @@ END_EVENT_TABLE();
 
 dlgProperty *pgIndexFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgIndex(this, frame, (pgIndex*)node, (pgTable*)parent);
+    return new dlgIndex(this, frame, (pgIndex *)node, (pgTable *)parent);
 }
 
 
 dlgIndexBase::dlgIndexBase(pgaFactory *f, frmMain *frame, const wxString &resName, pgIndexBase *node, pgTable *parentNode)
-: dlgCollistProperty(f, frame, resName, parentNode)
+    : dlgCollistProperty(f, frame, resName, parentNode)
 {
-    index=node;
+    index = node;
     wxASSERT(!table || table->GetMetaType() == PGM_TABLE || table->GetMetaType() == GP_PARTITION);
 }
 
 
 dlgIndexBase::dlgIndexBase(pgaFactory *f, frmMain *frame, const wxString &resName, ctlListView *colList)
-: dlgCollistProperty(f, frame, resName, colList)
+    : dlgCollistProperty(f, frame, resName, colList)
 {
-    index=0;
+    index = 0;
 }
 
 
@@ -120,12 +120,12 @@ void dlgIndexBase::OnSelectComboCol(wxCommandEvent &ev)
             cbOpClass->Clear();
 
             wxString sql = wxT("SELECT opcname FROM pg_opclass ");
-            sql+= wxT("WHERE opcintype=");
-            sql+= NumToStr(cbColumns->GetOIDKey(cbColumns->GetCurrentSelection()));
-            sql+= wxT("AND opcmethod=") + cbType->GetStringKey(cbType->GetCurrentSelection())
-                + wxT(" AND NOT opcdefault")
-                + wxT(" ORDER BY 1");
-            pgSet *set=connection->ExecuteSet(sql);
+            sql += wxT("WHERE opcintype=");
+            sql += NumToStr(cbColumns->GetOIDKey(cbColumns->GetCurrentSelection()));
+            sql += wxT("AND opcmethod=") + cbType->GetStringKey(cbType->GetCurrentSelection())
+                   + wxT(" AND NOT opcdefault")
+                   + wxT(" ORDER BY 1");
+            pgSet *set = connection->ExecuteSet(sql);
             if (set)
             {
                 while (!set->Eof())
@@ -143,9 +143,9 @@ void dlgIndexBase::OnSelectComboCol(wxCommandEvent &ev)
 
 void dlgIndexBase::OnSelectCol()
 {
-	// Can't change the columns on an existing index.
-	if (index)
-		return;
+    // Can't change the columns on an existing index.
+    if (index)
+        return;
 
     if (lstColumns->GetSelection() != wxNOT_FOUND)
         btnRemoveCol->Enable(true);
@@ -168,7 +168,7 @@ void dlgIndexBase::CheckChange()
     }
     else
     {
-        bool enable=true;
+        bool enable = true;
         txtComment->Enable(!GetName().IsEmpty());
         CheckValid(enable, lstColumns->GetItemCount() > 0, _("Please specify columns."));
         EnableOK(enable);
@@ -187,9 +187,9 @@ BEGIN_EVENT_TABLE(dlgIndex, dlgIndexBase)
     EVT_COMBOBOX(XRCID("cbType"),                   dlgIndex::OnSelectType)
 END_EVENT_TABLE();
 
-        
+
 dlgIndex::dlgIndex(pgaFactory *f, frmMain *frame, pgIndex *index, pgTable *parentNode)
-: dlgIndexBase(f, frame, wxT("dlgIndex"), index, parentNode)
+    : dlgIndexBase(f, frame, wxT("dlgIndex"), index, parentNode)
 {
     lstColumns->AddColumn(_("Column name"), 90);
     lstColumns->AddColumn(_("Order"), 40);
@@ -200,7 +200,7 @@ dlgIndex::dlgIndex(pgaFactory *f, frmMain *frame, pgIndex *index, pgTable *paren
 
 void dlgIndex::CheckChange()
 {
-    bool fill=false;
+    bool fill = false;
 
     if (index)
     {
@@ -209,18 +209,18 @@ void dlgIndex::CheckChange()
             fill = txtFillFactor->GetValue() != index->GetFillFactor() && !txtFillFactor->GetValue().IsEmpty();
         }
 
-        EnableOK(fill || 
-                 txtComment->GetValue() != index->GetComment() || 
+        EnableOK(fill ||
+                 txtComment->GetValue() != index->GetComment() ||
                  chkClustered->GetValue() != index->GetIsClustered() ||
                  cbTablespace->GetOIDKey() != index->GetTablespaceOid() ||
-                 (txtName->GetValue() != index->GetName() && 
-                 txtName->GetValue().Length() != 0));
+                 (txtName->GetValue() != index->GetName() &&
+                  txtName->GetValue().Length() != 0));
     }
     else
     {
-        wxString name=GetName();
+        wxString name = GetName();
 
-        bool enable=true;
+        bool enable = true;
         CheckValid(enable, !name.IsEmpty() || (name.IsEmpty() && this->database->BackendMinimumVersion(9, 0)), _("Please specify name."));
         CheckValid(enable, lstColumns->GetItemCount() > 0, _("Please specify columns."));
         EnableOK(enable);
@@ -230,7 +230,7 @@ void dlgIndex::CheckChange()
 void dlgIndex::OnSelectType(wxCommandEvent &ev)
 {
     // The column options available change depending on the
-    // index type. We need to clear the column list, and 
+    // index type. We need to clear the column list, and
     // setup some of the other controls accordingly.
 
     wxString newType = cbType->GetValue();
@@ -239,7 +239,7 @@ void dlgIndex::OnSelectType(wxCommandEvent &ev)
     // Detect if we're changing between default and btree (which are the same) to
     // avoid annoying the user needlessly.
     if ((m_previousType == wxEmptyString && cbType->GetValue() == wxT("btree")) ||
-        (m_previousType == wxT("btree") && cbType->GetValue() == wxEmptyString))
+            (m_previousType == wxT("btree") && cbType->GetValue() == wxEmptyString))
         changingDefault = true;
 
     if (lstColumns->GetItemCount() > 0 && !changingDefault)
@@ -286,7 +286,7 @@ wxString dlgIndex::GetColumns()
 
     int pos;
     // iterate cols
-    for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+    for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
     {
         if (pos)
             sql += wxT(", ");
@@ -323,12 +323,12 @@ int dlgIndex::Go(bool modal)
 
         // We only display the column options (ASC/DESC, NULLS FIRST/LAST)
         // on PostgreSQL 8.3+, for btree indexes.
-		wxArrayString colsArr = index->GetColumnList();
+        wxArrayString colsArr = index->GetColumnList();
         wxString colDef, colRest, colName, descDef, nullsDef, opclassDef;
         const wxString firstOrder = wxT(" NULLS FIRST"), lastOrder = wxT(" NULLS LAST"), descOrder = wxT(" DESC");
         if (this->database->BackendMinimumVersion(8, 3) && index->GetIndexType() == wxT("btree"))
         {
-            for (int colIdx=0,colsCount=colsArr.Count(); colIdx<colsCount; colIdx++)
+            for (int colIdx = 0, colsCount = colsArr.Count(); colIdx < colsCount; colIdx++)
             {
                 colDef = colsArr.Item(colIdx);
 
@@ -368,7 +368,7 @@ int dlgIndex::Go(bool modal)
                 else
                     opclassDef = wxEmptyString;
 
-			    lstColumns->InsertItem(colIdx, colDef, columnFactory.GetIconId());
+                lstColumns->InsertItem(colIdx, colDef, columnFactory.GetIconId());
                 lstColumns->SetItem(colIdx, 1, descDef);
                 lstColumns->SetItem(colIdx, 2, nullsDef);
                 lstColumns->SetItem(colIdx, 3, opclassDef);
@@ -376,7 +376,7 @@ int dlgIndex::Go(bool modal)
         }
         else
         {
-            for (int colIdx=0,colsCount=colsArr.Count(); colIdx<colsCount; colIdx++)
+            for (int colIdx = 0, colsCount = colsArr.Count(); colIdx < colsCount; colIdx++)
             {
                 int pos = colDef.First(wxT(" "));
                 if (pos > 0)
@@ -388,7 +388,7 @@ int dlgIndex::Go(bool modal)
                 else
                     opclassDef = wxEmptyString;
 
-			    lstColumns->InsertItem(colIdx, colsArr.Item(colIdx), columnFactory.GetIconId());
+                lstColumns->InsertItem(colIdx, colsArr.Item(colIdx), columnFactory.GetIconId());
                 lstColumns->SetItem(colIdx, 3, cbOpClass->GetValue());
             }
         }
@@ -413,8 +413,8 @@ int dlgIndex::Go(bool modal)
         // create mode
         PrepareTablespace(cbTablespace);
         cbType->Append(wxT(""));
-        pgSet *set=connection->ExecuteSet(wxT(
-            "SELECT oid, amname FROM pg_am"));
+        pgSet *set = connection->ExecuteSet(wxT(
+                                                "SELECT oid, amname FROM pg_am"));
         if (set)
         {
             while (!set->Eof())
@@ -435,7 +435,7 @@ int dlgIndex::Go(bool modal)
             rdbNullsLast->Disable();
         }
 
-        // Add the default tablespace 
+        // Add the default tablespace
         cbTablespace->Insert(_("<default tablespace>"), 0, (void *)0);
         cbTablespace->SetSelection(0);
     }
@@ -447,8 +447,8 @@ int dlgIndex::Go(bool modal)
 
     // This fixes a UI glitch on MacOS X
     // Because of the new layout code, the Columns pane doesn't size itself properly
-    SetSize(GetSize().GetWidth()+1, GetSize().GetHeight());
-    SetSize(GetSize().GetWidth()-1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() + 1, GetSize().GetHeight());
+    SetSize(GetSize().GetWidth() - 1, GetSize().GetHeight());
 
     return returnCode;
 }
@@ -456,7 +456,7 @@ int dlgIndex::Go(bool modal)
 
 void dlgIndex::OnAddCol(wxCommandEvent &ev)
 {
-    wxString colName=cbColumns->GetValue();
+    wxString colName = cbColumns->GetValue();
 
     if (!colName.IsEmpty())
     {
@@ -515,10 +515,10 @@ void dlgIndex::OnAddCol(wxCommandEvent &ev)
 
 void dlgIndex::OnRemoveCol(wxCommandEvent &ev)
 {
-    long pos=lstColumns->GetSelection();
+    long pos = lstColumns->GetSelection();
     if (pos >= 0)
     {
-        wxString colName=lstColumns->GetItemText(pos);
+        wxString colName = lstColumns->GetItemText(pos);
 
         lstColumns->DeleteItem(pos);
         cbColumns->Append(colName);
@@ -531,8 +531,8 @@ void dlgIndex::OnRemoveCol(wxCommandEvent &ev)
 #ifdef __WXMAC__
 void dlgIndex::OnChangeSize(wxSizeEvent &ev)
 {
-	lstColumns->SetSize(wxDefaultCoord, wxDefaultCoord,
-	    ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 700);
+    lstColumns->SetSize(wxDefaultCoord, wxDefaultCoord,
+                        ev.GetSize().GetWidth(), ev.GetSize().GetHeight() - 700);
     if (GetAutoLayout())
     {
         Layout();
@@ -546,7 +546,7 @@ wxString dlgIndex::GetSql()
 
     if (table)
     {
-        wxString name=GetName();
+        wxString name = GetName();
         if (!index)
         {
             sql = wxT("CREATE ");
@@ -566,7 +566,7 @@ wxString dlgIndex::GetSql()
                 AppendIfFilled(sql, wxT(" USING "), cbType->GetValue());
 
             sql += wxT(" (") + GetColumns()
-                + wxT(")");
+                   + wxT(")");
 
             if (txtFillFactor)
             {
@@ -584,31 +584,31 @@ wxString dlgIndex::GetSql()
         {
             if (connection->BackendMinimumVersion(8, 2) && txtFillFactor->GetValue().Length() > 0)
                 sql += wxT("ALTER INDEX ") + qtIdent(index->GetSchema()->GetName()) + wxT(".")
-                    + qtIdent(index->GetName()) +  wxT(" SET (FILLFACTOR=")
-                    + txtFillFactor->GetValue() + wxT(");\n");
+                       + qtIdent(index->GetName()) +  wxT(" SET (FILLFACTOR=")
+                       + txtFillFactor->GetValue() + wxT(");\n");
 
             if(connection->BackendMinimumVersion(8, 0))
             {
                 if (index->GetName() != txtName->GetValue() &&
-                    !txtName->GetValue().IsEmpty())
+                        !txtName->GetValue().IsEmpty())
                     sql += wxT("ALTER INDEX ") + qtIdent(index->GetSchema()->GetName()) + wxT(".")
-                        + qtIdent(index->GetName()) +  wxT(" RENAME TO ")
-                        + qtIdent(txtName->GetValue()) + wxT(";\n");
+                           + qtIdent(index->GetName()) +  wxT(" RENAME TO ")
+                           + qtIdent(txtName->GetValue()) + wxT(";\n");
 
                 if (cbTablespace->GetOIDKey() != index->GetTablespaceOid())
-                    sql += wxT("ALTER INDEX ") + qtIdent(index->GetSchema()->GetName()) + wxT(".") + qtIdent(name) 
-                        +  wxT(" SET TABLESPACE ") + qtIdent(cbTablespace->GetValue())
-                        +  wxT(";\n");
+                    sql += wxT("ALTER INDEX ") + qtIdent(index->GetSchema()->GetName()) + wxT(".") + qtIdent(name)
+                           +  wxT(" SET TABLESPACE ") + qtIdent(cbTablespace->GetValue())
+                           +  wxT(";\n");
             }
         }
         if (connection->BackendMinimumVersion(7, 4))
         {
             if (index && index->GetIsClustered() && !chkClustered->GetValue())
                 sql += wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-                    +  wxT(" SET WITHOUT CLUSTER;\n");
+                       +  wxT(" SET WITHOUT CLUSTER;\n");
             else if (chkClustered->GetValue() && (!index || !index->GetIsClustered()))
                 sql += wxT("ALTER TABLE ") + table->GetQuotedFullIdentifier()
-                    +  wxT(" CLUSTER ON ") + qtIdent(name) + wxT(";\n");
+                       +  wxT(" CLUSTER ON ") + qtIdent(name) + wxT(";\n");
         }
 
         AppendComment(sql, wxT("INDEX"), table->GetSchema(), index);
@@ -619,11 +619,11 @@ wxString dlgIndex::GetSql()
 
 pgObject *dlgIndex::CreateObject(pgCollection *collection)
 {
-    wxString name=GetName();
+    wxString name = GetName();
 
-    pgObject *obj=indexFactory.CreateObjects(collection, 0, wxT(
-        "\n   AND cls.relname=") + qtDbString(name) + wxT(
-        "\n   AND cls.relnamespace=") + table->GetSchema()->GetOidStr());
+    pgObject *obj = indexFactory.CreateObjects(collection, 0, wxT(
+                        "\n   AND cls.relname=") + qtDbString(name) + wxT(
+                        "\n   AND cls.relnamespace=") + table->GetSchema()->GetOidStr());
     return obj;
 }
 

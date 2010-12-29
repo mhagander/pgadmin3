@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -45,7 +45,7 @@ END_EVENT_TABLE()
 
 frmBackupGlobals::frmBackupGlobals(frmMain *form, pgObject *obj) : ExternProcessDialog(form)
 {
-    object=obj;
+    object = obj;
 
     wxWindowBase::SetFont(settings->GetSystemFont());
     LoadResource(form, wxT("frmBackupGlobals"));
@@ -53,22 +53,22 @@ frmBackupGlobals::frmBackupGlobals(frmMain *form, pgObject *obj) : ExternProcess
 
     SetTitle(object->GetTranslatedMessage(BACKUPGLOBALS));
 
-    if (object->GetConnection()->EdbMinimumVersion(8,0))
-        backupExecutable=edbBackupExecutable;
+    if (object->GetConnection()->EdbMinimumVersion(8, 0))
+        backupExecutable = edbBackupExecutable;
     else if (object->GetConnection()->GetIsGreenplum())
-        backupExecutable=gpBackupExecutable;
+        backupExecutable = gpBackupExecutable;
     else
-        backupExecutable=pgBackupExecutable;
+        backupExecutable = pgBackupExecutable;
 
     wxString val;
     settings->Read(wxT("frmBackupGlobals/LastFile"), &val, wxEmptyString);
     txtFilename->SetValue(val);
 
-    pgServer * server;
+    pgServer *server;
     if (object->GetMetaType() == PGM_SERVER)
         server = (pgServer *)object;
     else
-        server=object->GetDatabase()->GetServer();
+        server = object->GetDatabase()->GetServer();
 
     bool roles_supported = pgAppMinimumVersion(backupExecutable, 8, 4) && server->GetConnection()->BackendMinimumVersion(8, 1);
     cbRolename->Enable(roles_supported);
@@ -77,9 +77,9 @@ frmBackupGlobals::frmBackupGlobals(frmMain *form, pgObject *obj) : ExternProcess
     {
         // Collect the available rolenames
         pgSetIterator set(server->GetConnection(),
-            wxT("SELECT DISTINCT rolname\n")
-            wxT("FROM pg_roles db\n")
-            wxT("ORDER BY rolname"));
+                          wxT("SELECT DISTINCT rolname\n")
+                          wxT("FROM pg_roles db\n")
+                          wxT("ORDER BY rolname"));
 
         cbRolename->Append(wxEmptyString);
 
@@ -102,7 +102,7 @@ frmBackupGlobals::frmBackupGlobals(frmMain *form, pgObject *obj) : ExternProcess
     txtMessages->SetMaxLength(0L);
     btnOK->Disable();
 
-    if (!pgAppMinimumVersion(backupExecutable, 9,1))
+    if (!pgAppMinimumVersion(backupExecutable, 9, 1))
     {
         chkForceQuoteForIdent->Disable();
     }
@@ -172,11 +172,11 @@ wxString frmBackupGlobals::GetDisplayCmd(int step)
 
 wxString frmBackupGlobals::getCmdPart1()
 {
-	pgServer * server;
-	if (object->GetMetaType() == PGM_SERVER)
-		server = (pgServer *)object;
-	else
-        server=object->GetDatabase()->GetServer();
+    pgServer *server;
+    if (object->GetMetaType() == PGM_SERVER)
+        server = (pgServer *)object;
+    else
+        server = object->GetDatabase()->GetServer();
 
     wxString cmd = backupExecutable;
 
@@ -184,7 +184,7 @@ wxString frmBackupGlobals::getCmdPart1()
         cmd += wxT(" --host ") + server->GetName();
 
     cmd +=  wxT(" --port ") + NumToStr((long)server->GetPort())
-         +  wxT(" --username \"") + commandLineCleanOption(qtIdent(server->GetUsername())) + wxT("\"");
+            +  wxT(" --username \"") + commandLineCleanOption(qtIdent(server->GetUsername())) + wxT("\"");
 
     if (!cbRolename->GetValue().IsEmpty())
         cmd += wxT(" --role \"") + commandLineCleanOption(qtIdent(cbRolename->GetValue())) + wxT("\"");
@@ -253,7 +253,7 @@ backupGlobalsFactory::backupGlobalsFactory(menuFactoryList *list, wxMenu *mnu, c
 
 wxWindow *backupGlobalsFactory::StartDialog(frmMain *form, pgObject *obj)
 {
-    frmBackupGlobals *frm=new frmBackupGlobals(form, obj);
+    frmBackupGlobals *frm = new frmBackupGlobals(form, obj);
     frm->Go();
     return 0;
 }
@@ -261,12 +261,12 @@ wxWindow *backupGlobalsFactory::StartDialog(frmMain *form, pgObject *obj)
 
 bool backupGlobalsFactory::CheckEnable(pgObject *obj)
 {
-	if (!obj)
-		return false;
+    if (!obj)
+        return false;
 
-	if (obj->GetMetaType() == PGM_SERVER)
-		if (!((pgServer *)obj)->GetConnected())
-			return false;
+    if (obj->GetMetaType() == PGM_SERVER)
+        if (!((pgServer *)obj)->GetConnected())
+            return false;
 
     if (obj->GetConnection() && obj->GetConnection()->EdbMinimumVersion(8, 0))
         return obj->CanBackupGlobals() && !edbBackupExecutable.IsEmpty() && pgAppMinimumVersion(edbBackupExecutable, 8, 3);

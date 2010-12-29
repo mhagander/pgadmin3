@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -15,7 +15,7 @@
 
 enum
 {
-    FEATURE_INITIALIZED=0,
+    FEATURE_INITIALIZED = 0,
     FEATURE_SIZE,
     FEATURE_FILEREAD,
     FEATURE_ROTATELOG,

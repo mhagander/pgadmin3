@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -17,12 +17,12 @@
 #include "utils/misc.h"
 #include "schema/edbPrivateSynonym.h"
 
-edbPrivateSynonym::edbPrivateSynonym(pgSchema *newSchema, const wxString& newName)
-: pgSchemaObject(newSchema, edbPrivFactory, newName)
+edbPrivateSynonym::edbPrivateSynonym(pgSchema *newSchema, const wxString &newName)
+    : pgSchemaObject(newSchema, edbPrivFactory, newName)
 {
     isPublic = false;
     if (newSchema && newSchema->GetName() == wxT("public"))
-       isPublic = true; 
+        isPublic = true;
 }
 
 bool edbPrivateSynonym::DropObject(wxFrame *frame, ctlTree *browser, bool cascaded)
@@ -32,7 +32,7 @@ bool edbPrivateSynonym::DropObject(wxFrame *frame, ctlTree *browser, bool cascad
         sql = wxT("DROP PUBLIC SYNONYM ") + GetQuotedIdentifier();
     else
         sql = wxT("DROP SYNONYM ") + this->GetSchema()->GetQuotedIdentifier() + wxT(".") + GetQuotedIdentifier();
-       
+
     return GetDatabase()->ExecuteVoid(sql);
 }
 
@@ -83,12 +83,12 @@ void edbPrivateSynonym::ShowTreeDetail(ctlTree *browser, frmMain *form, ctlListV
 
 pgObject *edbPrivateSynonym::Refresh(ctlTree *browser, const wxTreeItemId item)
 {
-    pgObject *synonym=0;
+    pgObject *synonym = 0;
 
-    pgCollection *coll=browser->GetParentCollection(item);
+    pgCollection *coll = browser->GetParentCollection(item);
     if (coll)
         synonym = edbPrivFactory.CreateObjects(coll, 0, wxT(" WHERE s.synname=") + qtDbString(GetName()) +
-                  wxT(" AND s.synnamespace=") + coll->GetSchema()->GetOidStr() + wxT(" \n"));
+                                               wxT(" AND s.synnamespace=") + coll->GetSchema()->GetOidStr() + wxT(" \n"));
 
     return synonym;
 }
@@ -97,19 +97,19 @@ pgObject *edbPrivateSynonym::Refresh(ctlTree *browser, const wxTreeItemId item)
 
 pgObject *edbPrivateSynonymFactory::CreateObjects(pgCollection *collection, ctlTree *browser, const wxString &restriction)
 {
-    edbPrivateSynonym *synonym=0;
+    edbPrivateSynonym *synonym = 0;
 
-    wxString sql = wxT("SELECT s.*, pg_get_userbyid(s.synowner) AS owner,\n") 
-               wxT("  COALESCE((SELECT relkind \n")
-               wxT("  FROM pg_class c, pg_namespace n\n")
-               wxT("  WHERE c.relnamespace = n.oid\n") 
-               wxT("    AND n.nspname = s.synobjschema\n")
-               wxT("    AND c.relname = s.synobjname), '') AS targettype\n")
-               wxT("  FROM pg_synonym s\n")
-               wxT("  JOIN pg_namespace ns ON s.synnamespace = ns.oid AND ns.nspname = ")
-               + qtConnString(collection->GetSchema()->GetName()) + wxT(" \n")
-               + restriction +
-               wxT("  ORDER BY synname;");
+    wxString sql = wxT("SELECT s.*, pg_get_userbyid(s.synowner) AS owner,\n")
+                   wxT("  COALESCE((SELECT relkind \n")
+                   wxT("  FROM pg_class c, pg_namespace n\n")
+                   wxT("  WHERE c.relnamespace = n.oid\n")
+                   wxT("    AND n.nspname = s.synobjschema\n")
+                   wxT("    AND c.relname = s.synobjname), '') AS targettype\n")
+                   wxT("  FROM pg_synonym s\n")
+                   wxT("  JOIN pg_namespace ns ON s.synnamespace = ns.oid AND ns.nspname = ")
+                   + qtConnString(collection->GetSchema()->GetName()) + wxT(" \n")
+                   + restriction +
+                   wxT("  ORDER BY synname;");
 
     pgSet *synonyms = collection->GetDatabase()->ExecuteSet(sql);
 
@@ -117,7 +117,7 @@ pgObject *edbPrivateSynonymFactory::CreateObjects(pgCollection *collection, ctlT
     {
         while (!synonyms->Eof())
         {
-            wxString name=synonyms->GetVal(wxT("synname"));
+            wxString name = synonyms->GetVal(wxT("synname"));
             synonym = new edbPrivateSynonym(collection->GetSchema(), name);
 
             synonym->iSetDatabase(collection->GetDatabase());
@@ -138,7 +138,7 @@ pgObject *edbPrivateSynonymFactory::CreateObjects(pgCollection *collection, ctlT
             if (browser)
             {
                 browser->AppendObject(collection, synonym);
-			    synonyms->MoveNext();
+                synonyms->MoveNext();
             }
             else
                 break;
@@ -154,7 +154,7 @@ pgObject *edbPrivateSynonymFactory::CreateObjects(pgCollection *collection, ctlT
 #include "images/synonyms.xpm"
 
 edbPrivateSynonymFactory::edbPrivateSynonymFactory()
-: pgSchemaObjFactory(__("Synonym"), __("New Synonym..."), __("Create a new Synonym."), synonym_xpm)
+    : pgSchemaObjFactory(__("Synonym"), __("New Synonym..."), __("Create a new Synonym."), synonym_xpm)
 {}
 
 edbPrivateSynonymFactory edbPrivFactory;

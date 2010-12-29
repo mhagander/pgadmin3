@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -62,17 +62,17 @@ END_EVENT_TABLE();
 
 dlgProperty *pgTriggerFactory::CreateDialog(frmMain *frame, pgObject *node, pgObject *parent)
 {
-    return new dlgTrigger(this, frame, (pgTrigger*)node, (pgTable*)parent);
+    return new dlgTrigger(this, frame, (pgTrigger *)node, (pgTable *)parent);
 }
 
 
 dlgTrigger::dlgTrigger(pgaFactory *f, frmMain *frame, pgTrigger *node, pgTable *parentNode)
-: dlgCollistProperty(f, frame, wxT("dlgTrigger"), parentNode)
+    : dlgCollistProperty(f, frame, wxT("dlgTrigger"), parentNode)
 {
-    trigger=node;
-    table=parentNode;
+    trigger = node;
+    table = parentNode;
     wxASSERT(!table || table->GetMetaType() == PGM_TABLE || table->GetMetaType() == PGM_VIEW
-        || table->GetMetaType() == GP_PARTITION);
+             || table->GetMetaType() == GP_PARTITION);
 
     bool bVal;
     settings->Read(wxT("frmQuery/ShowLineNumber"), &bVal, false);
@@ -98,7 +98,7 @@ wxString dlgTrigger::GetColumns()
 
     int pos;
     // iterate cols
-    for (pos=0 ; pos < lstColumns->GetItemCount() ; pos++)
+    for (pos = 0 ; pos < lstColumns->GetItemCount() ; pos++)
     {
         if (pos)
             sql += wxT(", ");
@@ -118,7 +118,7 @@ int dlgTrigger::Go(bool modal)
         chkInsert->SetValue((trigger->GetTriggerType() & TRIGGER_TYPE_INSERT) != 0);
         chkUpdate->SetValue((trigger->GetTriggerType() & TRIGGER_TYPE_UPDATE) != 0);
         chkDelete->SetValue((trigger->GetTriggerType() & TRIGGER_TYPE_DELETE) != 0);
-		chkTruncate->SetValue((trigger->GetTriggerType() & TRIGGER_TYPE_TRUNCATE) != 0);
+        chkTruncate->SetValue((trigger->GetTriggerType() & TRIGGER_TYPE_TRUNCATE) != 0);
         if (trigger->GetTriggerType() & TRIGGER_TYPE_BEFORE)
             rdbFires->SetSelection(0);
         else if (trigger->GetTriggerType() & TRIGGER_TYPE_INSTEAD)
@@ -145,41 +145,41 @@ int dlgTrigger::Go(bool modal)
         txtArguments->Disable();
         cbFunction->Disable();
 
-        if (!connection->EdbMinimumVersion(8,0))
+        if (!connection->EdbMinimumVersion(8, 0))
         {
             chkRow->Disable();
             rdbFires->Disable();
             chkInsert->Disable();
             chkUpdate->Disable();
             chkDelete->Disable();
-		    chkTruncate->Disable();
+            chkTruncate->Disable();
         }
         else if (!connection->BackendMinimumVersion(8, 4))
-			chkTruncate->Disable();
+            chkTruncate->Disable();
         else if (!connection->BackendMinimumVersion(8, 5))
             txtWhen->Disable();
 
-		wxArrayString colsArr = trigger->GetColumnList();
-        for (int colIdx=0,colsCount=colsArr.Count(); colIdx<colsCount; colIdx++)
+        wxArrayString colsArr = trigger->GetColumnList();
+        for (int colIdx = 0, colsCount = colsArr.Count(); colIdx < colsCount; colIdx++)
         {
-		    lstColumns->InsertItem(colIdx, colsArr.Item(colIdx));
+            lstColumns->InsertItem(colIdx, colsArr.Item(colIdx));
         }
     }
     else
     {
         // create mode
-        if (connection->EdbMinimumVersion(8,0))
+        if (connection->EdbMinimumVersion(8, 0))
             cbFunction->Append(wxString::Format(wxT("<%s>"), _("Inline EDB-SPL")));
 
         wxString sysRestr;
         if (!settings->GetShowSystemObjects())
             sysRestr = wxT("   AND ") + connection->SystemNamespaceRestriction(wxT("nspname"));
 
-        pgSet *set=connection->ExecuteSet(
-            wxT("SELECT quote_ident(nspname) || '.' || quote_ident(proname)\n")
-            wxT("  FROM pg_proc p, pg_namespace n, pg_language l\n")
-            wxT(" WHERE p.pronamespace = n.oid AND p.prolang = l.oid AND l.lanname != 'edbspl' AND prorettype=") + NumToStr(PGOID_TYPE_TRIGGER) + sysRestr + 
-            wxT(" ORDER BY nspname ASC, proname ASC "));
+        pgSet *set = connection->ExecuteSet(
+                         wxT("SELECT quote_ident(nspname) || '.' || quote_ident(proname)\n")
+                         wxT("  FROM pg_proc p, pg_namespace n, pg_language l\n")
+                         wxT(" WHERE p.pronamespace = n.oid AND p.prolang = l.oid AND l.lanname != 'edbspl' AND prorettype=") + NumToStr(PGOID_TYPE_TRIGGER) + sysRestr +
+                         wxT(" ORDER BY nspname ASC, proname ASC "));
         if (set)
         {
             while (!set->Eof())
@@ -194,14 +194,14 @@ int dlgTrigger::Go(bool modal)
             chkRow->SetValue(true);
             chkRow->Disable();
         }
-        
+
         txtBody->Disable();
 
-		if (!connection->BackendMinimumVersion(8, 4))
-			chkTruncate->Disable();
+        if (!connection->BackendMinimumVersion(8, 4))
+            chkTruncate->Disable();
 
-		if (!connection->BackendMinimumVersion(9, 1) || table->GetMetaType() != PGM_VIEW)
-			rdbFires->Enable(2, false);
+        if (!connection->BackendMinimumVersion(9, 1) || table->GetMetaType() != PGM_VIEW)
+            rdbFires->Enable(2, false);
     }
 
     cbColumns->Disable();
@@ -214,7 +214,7 @@ int dlgTrigger::Go(bool modal)
 
 void dlgTrigger::OnAddCol(wxCommandEvent &ev)
 {
-    wxString colName=cbColumns->GetValue();
+    wxString colName = cbColumns->GetValue();
 
     if (!colName.IsEmpty())
     {
@@ -233,10 +233,10 @@ void dlgTrigger::OnAddCol(wxCommandEvent &ev)
 
 void dlgTrigger::OnRemoveCol(wxCommandEvent &ev)
 {
-    long pos=lstColumns->GetSelection();
+    long pos = lstColumns->GetSelection();
     if (pos >= 0)
     {
-        wxString colName=lstColumns->GetItemText(pos);
+        wxString colName = lstColumns->GetItemText(pos);
 
         lstColumns->DeleteItem(pos);
         cbColumns->Append(colName);
@@ -249,23 +249,23 @@ void dlgTrigger::OnRemoveCol(wxCommandEvent &ev)
 wxString dlgTrigger::GetSql()
 {
     wxString sql;
-    wxString name=GetName();
+    wxString name = GetName();
 
     if (trigger)
     {
         if (name != trigger->GetName())
             sql = wxT("ALTER TRIGGER ") + trigger->GetQuotedIdentifier() + wxT(" ON ") + table->GetQuotedFullIdentifier()
-                + wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n\n");
+                  + wxT(" RENAME TO ") + qtIdent(name) + wxT(";\n\n");
     }
 
     if (!trigger ||
-        (cbFunction->GetValue() == wxString::Format(wxT("<%s>"), _("Inline EDB-SPL")) && txtBody->GetText() != trigger->GetSource()) ||
-        chkRow->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_ROW) ||
-        chkInsert->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_INSERT ? true : false) ||
-        chkUpdate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_UPDATE ? true : false) ||
-        chkDelete->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_DELETE ? true : false) ||
-		chkTruncate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_TRUNCATE ? true : false) ||
-        rdbFires->GetSelection() != (trigger->GetTriggerType() & TRIGGER_TYPE_BEFORE ? 0 : TRIGGER_TYPE_INSTEAD ? 2 : 1))
+            (cbFunction->GetValue() == wxString::Format(wxT("<%s>"), _("Inline EDB-SPL")) && txtBody->GetText() != trigger->GetSource()) ||
+            chkRow->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_ROW) ||
+            chkInsert->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_INSERT ? true : false) ||
+            chkUpdate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_UPDATE ? true : false) ||
+            chkDelete->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_DELETE ? true : false) ||
+            chkTruncate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_TRUNCATE ? true : false) ||
+            rdbFires->GetSelection() != (trigger->GetTriggerType() & TRIGGER_TYPE_BEFORE ? 0 : TRIGGER_TYPE_INSTEAD ? 2 : 1))
     {
         if (cbFunction->GetValue() == wxString::Format(wxT("<%s>"), _("Inline EDB-SPL")))
             sql += wxT("CREATE OR REPLACE TRIGGER ") + qtIdent(name);
@@ -278,7 +278,7 @@ wxString dlgTrigger::GetSql()
             sql += wxT(" INSTEAD OF");
         else
             sql += wxT(" BEFORE");
-        int actionCount=0;
+        int actionCount = 0;
         if (chkInsert->GetValue())
         {
             if (actionCount++)
@@ -306,7 +306,7 @@ wxString dlgTrigger::GetSql()
             sql += wxT(" TRUNCATE");
         }
         sql += wxT("\n   ON ") + table->GetQuotedFullIdentifier()
-            + wxT(" FOR EACH ");
+               + wxT(" FOR EACH ");
         if (chkRow->GetValue())
             sql += wxT("ROW");
         else
@@ -318,8 +318,8 @@ wxString dlgTrigger::GetSql()
         if (cbFunction->GetValue() != wxString::Format(wxT("<%s>"), _("Inline EDB-SPL")))
         {
             sql += wxT("\n   EXECUTE PROCEDURE ") + cbFunction->GetValue()
-                + wxT("(") + txtArguments->GetValue()
-                + wxT(");\n");
+                   + wxT("(") + txtArguments->GetValue()
+                   + wxT(");\n");
         }
         else
         {
@@ -329,8 +329,8 @@ wxString dlgTrigger::GetSql()
             sql += wxT("\n");
         }
     }
-    AppendComment(sql, wxT("TRIGGER ") + qtIdent(GetName()) 
-        + wxT(" ON ") + table->GetQuotedFullIdentifier(), trigger);
+    AppendComment(sql, wxT("TRIGGER ") + qtIdent(GetName())
+                  + wxT(" ON ") + table->GetQuotedFullIdentifier(), trigger);
 
     return sql;
 }
@@ -338,10 +338,10 @@ wxString dlgTrigger::GetSql()
 
 pgObject *dlgTrigger::CreateObject(pgCollection *collection)
 {
-    pgObject *obj=triggerFactory.CreateObjects(collection, 0, 
-        wxT("\n   AND tgname=") + qtDbString(GetName()) +
-        wxT("\n   AND tgrelid=") + table->GetOidStr() +
-        wxT("\n   AND relnamespace=") + table->GetSchema()->GetOidStr());
+    pgObject *obj = triggerFactory.CreateObjects(collection, 0,
+                    wxT("\n   AND tgname=") + qtDbString(GetName()) +
+                    wxT("\n   AND tgrelid=") + table->GetOidStr() +
+                    wxT("\n   AND relnamespace=") + table->GetSchema()->GetOidStr());
     return obj;
 }
 
@@ -402,28 +402,28 @@ void dlgTrigger::OnChangeFunc(wxCommandEvent &ev)
 
 void dlgTrigger::CheckChange()
 {
-    bool enable=true;
+    bool enable = true;
 
-    wxString function=cbFunction->GetValue();
-    wxString name=GetName();
+    wxString function = cbFunction->GetValue();
+    wxString name = GetName();
 
-	// We can only have per-statement TRUNCATE triggers
-	if (trigger || connection->BackendMinimumVersion(8, 4))
-	{
-		if (chkRow->GetValue())
-		{
-			chkTruncate->Disable();
-			chkTruncate->SetValue(false);
-		}
-		else if (connection->EdbMinimumVersion(8,0))
-			chkTruncate->Enable();
-	}
+    // We can only have per-statement TRUNCATE triggers
+    if (trigger || connection->BackendMinimumVersion(8, 4))
+    {
+        if (chkRow->GetValue())
+        {
+            chkTruncate->Disable();
+            chkTruncate->SetValue(false);
+        }
+        else if (connection->EdbMinimumVersion(8, 0))
+            chkTruncate->Enable();
+    }
 
     CheckValid(enable, !name.IsEmpty(), _("Please specify name."));
     CheckValid(enable, !function.IsEmpty(), _("Please specify trigger function."));
 
-    CheckValid(enable, chkInsert->GetValue() || chkUpdate->GetValue() ||chkDelete->GetValue() ||chkTruncate->GetValue(),
-        _("Please specify at least one action."));
+    CheckValid(enable, chkInsert->GetValue() || chkUpdate->GetValue() || chkDelete->GetValue() || chkTruncate->GetValue(),
+               _("Please specify at least one action."));
 
     if (cbFunction->GetValue() == wxString::Format(wxT("<%s>"), _("Inline EDB-SPL")))
         CheckValid(enable, !txtBody->GetText().IsEmpty(), _("Please specify trigger body."));
@@ -432,15 +432,15 @@ void dlgTrigger::CheckChange()
     {
         EnableOK(enable &&
                  (txtComment->GetValue() != trigger->GetComment() ||
-                 txtName->GetValue() != trigger->GetName() ||
-                 (txtBody->GetText() != trigger->GetSource() && cbFunction->GetValue() == wxString::Format(wxT("<%s>"), _("Inline EDB-SPL"))) ||
-                 txtWhen->GetValue() != trigger->GetWhen() ||
-                 chkRow->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_ROW ? true : false) ||
-                 chkInsert->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_INSERT ? true : false) ||
-                 chkUpdate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_UPDATE ? true : false) ||
-                 chkDelete->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_DELETE ? true : false) ||
-				 chkTruncate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_TRUNCATE ? true : false) ||
-                 rdbFires->GetSelection() != (trigger->GetTriggerType() & TRIGGER_TYPE_BEFORE ? 0 : (trigger->GetTriggerType() & TRIGGER_TYPE_INSTEAD ? 2 : 1))));
+                  txtName->GetValue() != trigger->GetName() ||
+                  (txtBody->GetText() != trigger->GetSource() && cbFunction->GetValue() == wxString::Format(wxT("<%s>"), _("Inline EDB-SPL"))) ||
+                  txtWhen->GetValue() != trigger->GetWhen() ||
+                  chkRow->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_ROW ? true : false) ||
+                  chkInsert->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_INSERT ? true : false) ||
+                  chkUpdate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_UPDATE ? true : false) ||
+                  chkDelete->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_DELETE ? true : false) ||
+                  chkTruncate->GetValue() != (trigger->GetTriggerType() & TRIGGER_TYPE_TRUNCATE ? true : false) ||
+                  rdbFires->GetSelection() != (trigger->GetTriggerType() & TRIGGER_TYPE_BEFORE ? 0 : (trigger->GetTriggerType() & TRIGGER_TYPE_INSTEAD ? 2 : 1))));
     }
     else
     {
@@ -450,18 +450,18 @@ void dlgTrigger::CheckChange()
 
 bool dlgTrigger::IsUpToDate()
 {
-	if (trigger && !trigger->IsUpToDate())
-		return false;
-	else
-		return true;
+    if (trigger && !trigger->IsUpToDate())
+        return false;
+    else
+        return true;
 }
-  
+
 void dlgTrigger::OnApply(wxCommandEvent &ev)
 {
     dlgProperty::OnApply(ev);
 
     wxString sql = wxT("SELECT xmin FROM pg_trigger WHERE oid = ") + trigger->GetOidStr();
-	trigger->iSetXid(StrToOid(connection->ExecuteScalar(sql)));
+    trigger->iSetXid(StrToOid(connection->ExecuteScalar(sql)));
 }
 
 
@@ -478,9 +478,9 @@ void dlgTrigger::OnSelectComboCol(wxCommandEvent &ev)
 
 void dlgTrigger::OnSelectCol()
 {
-	// Can't change the columns on an existing index.
-	if (trigger)
-		return;
+    // Can't change the columns on an existing index.
+    if (trigger)
+        return;
 
     if (lstColumns->GetSelection() != wxNOT_FOUND)
         btnRemoveCol->Enable(true);

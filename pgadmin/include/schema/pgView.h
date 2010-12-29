@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin III - PostgreSQL Tools
-// 
+//
 // Copyright (C) 2002 - 2010, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
@@ -21,7 +21,7 @@ class pgViewFactory : public pgSchemaObjFactory
 public:
     pgViewFactory();
     virtual dlgProperty *CreateDialog(frmMain *frame, pgObject *node, pgObject *parent);
-    virtual pgObject *CreateObjects(pgCollection *obj, ctlTree *browser, const wxString &restr=wxEmptyString);
+    virtual pgObject *CreateObjects(pgCollection *obj, ctlTree *browser, const wxString &restr = wxEmptyString);
 };
 extern pgViewFactory viewFactory;
 
@@ -29,21 +29,42 @@ extern pgViewFactory viewFactory;
 class pgView : public pgRuleObject
 {
 public:
-    pgView(pgSchema *newSchema, const wxString& newName = wxT(""));
+    pgView(pgSchema *newSchema, const wxString &newName = wxT(""));
     ~pgView();
 
     wxString GetTranslatedMessage(int kindOfMessage) const;
-    void ShowTreeDetail(ctlTree *browser, frmMain *form=0, ctlListView *properties=0, ctlSQLBox *sqlPane=0);
-    bool CanDropCascaded() { return !GetSystemObject() && pgSchemaObject::CanDrop(); }
+    void ShowTreeDetail(ctlTree *browser, frmMain *form = 0, ctlListView *properties = 0, ctlSQLBox *sqlPane = 0);
+    bool CanDropCascaded()
+    {
+        return !GetSystemObject() && pgSchemaObject::CanDrop();
+    }
 
     bool DropObject(wxFrame *frame, ctlTree *browser, bool cascaded);
-    bool CanCreate() { return GetSchema()->CanCreate(); }
-    bool CanView() { return true; }
-    bool WantDummyChild() { return true; }
+    bool CanCreate()
+    {
+        return GetSchema()->CanCreate();
+    }
+    bool CanView()
+    {
+        return true;
+    }
+    bool WantDummyChild()
+    {
+        return true;
+    }
 
-	bool HasInsertRule() { return hasInsertRule; }
-	bool HasUpdateRule() { return hasUpdateRule; }
-	bool HasDeleteRule() { return hasDeleteRule; }
+    bool HasInsertRule()
+    {
+        return hasInsertRule;
+    }
+    bool HasUpdateRule()
+    {
+        return hasUpdateRule;
+    }
+    bool HasDeleteRule()
+    {
+        return hasDeleteRule;
+    }
 
     wxMenu *GetNewMenu();
     wxString GetSql(ctlTree *browser);
@@ -52,19 +73,31 @@ public:
     wxString GetUpdateSql(ctlTree *browser);
     pgObject *Refresh(ctlTree *browser, const wxTreeItemId item);
 
-    bool HasStats() { return false; }
-    bool HasDepends() { return true; }
-    bool HasReferences() { return true; }
+    bool HasStats()
+    {
+        return false;
+    }
+    bool HasDepends()
+    {
+        return true;
+    }
+    bool HasReferences()
+    {
+        return true;
+    }
 
-	void ShowHint(frmMain *form, bool force);
-	bool GetCanHint() { return true; };
+    void ShowHint(frmMain *form, bool force);
+    bool GetCanHint()
+    {
+        return true;
+    };
 
-	bool IsUpToDate();
+    bool IsUpToDate();
 
 private:
-	wxString GetCols(ctlTree *browser, size_t indent, wxString &QMs, bool withQM);
+    wxString GetCols(ctlTree *browser, size_t indent, wxString &QMs, bool withQM);
     void AppendStuff(wxString &sql, ctlTree *browser, pgaFactory &factory);
-	bool hasInsertRule, hasUpdateRule, hasDeleteRule;
+    bool hasInsertRule, hasUpdateRule, hasDeleteRule;
 };
 
 class pgViewCollection : public pgSchemaObjCollection
